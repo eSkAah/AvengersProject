@@ -1,37 +1,45 @@
-<div class="kpi-header">
-  <app-kpi-card
-    [value]="data.total"
-    label="Total Engagements"
-    icon="clipboard-list"
-    variant="info"
-    [active]="isActive('all')"
-    (cardClick)="onFilterClick('all')"
-  ></app-kpi-card>
+<div class="kpi-header" @staggerCards>
+  <div class="kpi-card-wrapper">
+    <app-kpi-card
+      [value]="data.total"
+      label="Total Engagements"
+      icon="clipboard-list"
+      variant="info"
+      [active]="isActive('all')"
+      (cardClick)="onFilterClick('all')"
+    ></app-kpi-card>
+  </div>
 
-  <app-kpi-card
-    [value]="data.processing"
-    label="En cours"
-    icon="clock"
-    variant="warning"
-    [active]="isActive('processing')"
-    (cardClick)="onFilterClick('processing')"
-  ></app-kpi-card>
+  <div class="kpi-card-wrapper">
+    <app-kpi-card
+      [value]="data.processing"
+      label="En cours"
+      icon="clock"
+      variant="warning"
+      [active]="isActive('processing')"
+      (cardClick)="onFilterClick('processing')"
+    ></app-kpi-card>
+  </div>
 
-  <app-kpi-card
-    [value]="data.highRisk"
-    label="À risque"
-    icon="alert-triangle"
-    variant="error"
-    [active]="isActive('high-risk')"
-    (cardClick)="onFilterClick('high-risk')"
-  ></app-kpi-card>
+  <div class="kpi-card-wrapper">
+    <app-kpi-card
+      [value]="data.highRisk"
+      label="À risque"
+      icon="alert-triangle"
+      variant="error"
+      [active]="isActive('high-risk')"
+      (cardClick)="onFilterClick('high-risk')"
+    ></app-kpi-card>
+  </div>
 
-  <app-kpi-card
-    [value]="data.completed"
-    label="Complétés"
-    icon="check-circle"
-    variant="success"
-    [active]="isActive('completed')"
-    (cardClick)="onFilterClick('completed')"
-  ></app-kpi-card>
+  <div class="kpi-card-wrapper">
+    <app-kpi-card
+      [value]="data.completed"
+      label="Complétés"
+      icon="check-circle"
+      variant="success"
+      [active]="isActive('completed')"
+      (cardClick)="onFilterClick('completed')"
+    ></app-kpi-card>
+  </div>
 </div>

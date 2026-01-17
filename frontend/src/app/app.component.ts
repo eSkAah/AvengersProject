@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LayoutShellComponent } from './core';
 import { ToastComponent, EveFabComponent, EvePanelComponent } from './shared';
+import { routeAnimations } from './core/animations';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,12 @@ import { ToastComponent, EveFabComponent, EvePanelComponent } from './shared';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [routeAnimations],
 })
 export class AppComponent {
   title = 'Avengers Project';
+
+  prepareRoute(outlet: RouterOutlet) {
+    return outlet?.activatedRouteData?.['animation'] ?? outlet?.activatedRoute?.snapshot?.url;
+  }
 }

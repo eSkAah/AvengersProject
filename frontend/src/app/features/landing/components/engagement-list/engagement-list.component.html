@@ -50,7 +50,7 @@
     </div>
 
     <!-- Expanded content -->
-    <div class="engagement-item__content" *ngIf="isExpanded(engagement.id)">
+    <div class="engagement-item__content" *ngIf="isExpanded(engagement.id)" @expandCollapse>
       <div class="engagement-item__details">
         <!-- Financial Data -->
         <div class="engagement-item__section">

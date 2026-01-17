@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ToastService, Toast } from './toast.service';
 
 @Component({
@@ -10,6 +11,17 @@ import { ToastService, Toast } from './toast.service';
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('toastAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(100%)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateX(100%)' })),
+      ]),
+    ]),
+  ],
 })
 export class ToastComponent {
   private toastService = inject(ToastService);

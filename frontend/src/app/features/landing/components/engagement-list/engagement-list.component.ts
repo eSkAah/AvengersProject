@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Engagement } from '../../../../core';
 import {
@@ -39,6 +40,25 @@ import {
   templateUrl: './engagement-list.component.html',
   styleUrl: './engagement-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('expandCollapse', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0, paddingTop: 0, paddingBottom: 0 }),
+        animate('250ms ease-out', style({ height: '*', opacity: 1, paddingTop: '*', paddingBottom: '*' })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ height: 0, opacity: 0, paddingTop: 0, paddingBottom: 0 })),
+      ]),
+    ]),
+    trigger('rotateChevron', [
+      transition('collapsed => expanded', [
+        animate('200ms ease-out'),
+      ]),
+      transition('expanded => collapsed', [
+        animate('200ms ease-out'),
+      ]),
+    ]),
+  ],
 })
 export class EngagementListComponent {
   private readonly engagementApi = inject(EngagementApiService);

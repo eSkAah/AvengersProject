@@ -1,6 +1,6 @@
 <div class="toast-container">
   @for (toast of toasts(); track toast.id) {
-    <div [class]="getToastClasses(toast)" role="alert">
+    <div [class]="getToastClasses(toast)" role="alert" @toastAnimation>
       <lucide-icon [name]="getIconName(toast.type)" class="toast__icon" [size]="18"></lucide-icon>
       <span class="toast__message">{{ toast.message }}</span>
       <button class="toast__close" (click)="dismiss(toast.id)" aria-label="Close">
