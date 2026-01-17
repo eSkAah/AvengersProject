@@ -113,11 +113,11 @@ development_status:
   # ============================================
   # Epic 7: Risk & Prédictions (J7-J8)
   # ============================================
-  epic-7: backlog
-  7-1-risk-calculation-service: backlog
-  7-2-prediction-calculation-service: backlog
-  7-3-risk-badge-avec-tooltip: backlog
-  7-4-prediction-display: backlog
+  epic-7: done
+  7-1-risk-calculation-service: done  # RiskDetails dataclass + calculate_risk_with_details()
+  7-2-prediction-calculation-service: done  # PredictionDetails + calculate_predicted_completion()
+  7-3-risk-badge-avec-tooltip: done  # Rich tooltip with reasons/actions
+  7-4-prediction-display: done  # engagement-list prediction display with API
   epic-7-retrospective: optional
 
   # ============================================
