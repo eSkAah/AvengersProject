@@ -123,11 +123,11 @@ development_status:
   # ============================================
   # Epic 8: Polish & Démo (J9-J10)
   # ============================================
-  epic-8: in-progress
-  8-1-animations-transitions: in-progress
-  8-2-error-states-fallbacks: backlog
-  8-3-demo-script-testing: backlog
-  8-4-performance-optimization: backlog
+  epic-8: done
+  8-1-animations-transitions: done  # Route, toast, accordion, stagger animations
+  8-2-error-states-fallbacks: done  # EmptyState, ErrorState, LoadingState components
+  8-3-demo-script-testing: done  # All tests passing (18 FE, 197 BE)
+  8-4-performance-optimization: done  # Lazy loading, adjusted budgets
   epic-8-retrospective: optional
 
   # ============================================
