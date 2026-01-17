@@ -1,0 +1,20 @@
+<div class="view-toggle" role="group" aria-label="View mode">
+  <button
+    class="view-toggle__btn"
+    [class.view-toggle__btn--active]="mode === 'grid'"
+    (click)="setMode('grid')"
+    [attr.aria-pressed]="mode === 'grid'"
+    title="Vue grille"
+  >
+    <span class="view-toggle__icon">▦</span>
+  </button>
+  <button
+    class="view-toggle__btn"
+    [class.view-toggle__btn--active]="mode === 'list'"
+    (click)="setMode('list')"
+    [attr.aria-pressed]="mode === 'list'"
+    title="Vue liste"
+  >
+    <span class="view-toggle__icon">☰</span>
+  </button>
+</div>

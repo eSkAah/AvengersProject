@@ -1,0 +1,18 @@
+<div
+  class="kpi-card"
+  [class.kpi-card--clickable]="clickable"
+  [class.kpi-card--active]="active"
+  [class.kpi-card--info]="variant === 'info'"
+  [class.kpi-card--warning]="variant === 'warning'"
+  [class.kpi-card--error]="variant === 'error'"
+  [class.kpi-card--success]="variant === 'success'"
+  (click)="onClick()"
+  [attr.role]="clickable ? 'button' : null"
+  [attr.tabindex]="clickable ? 0 : null"
+>
+  <div class="kpi-card__icon">{{ icon }}</div>
+  <div class="kpi-card__content">
+    <span class="kpi-card__value">{{ displayValue() }}</span>
+    <span class="kpi-card__label">{{ label }}</span>
+  </div>
+</div>

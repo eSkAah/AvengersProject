@@ -1,0 +1,20 @@
+<div
+  class="notification-item"
+  [class.notification-item--warning]="notification.type === 'warning'"
+  [class.notification-item--info]="notification.type === 'info'"
+  [class.notification-item--urgent]="notification.type === 'urgent'"
+  (click)="onClick()"
+  role="button"
+  tabindex="0"
+>
+  <span class="notification-item__icon">{{ icon }}</span>
+  <span class="notification-item__message">{{ notification.message }}</span>
+  <button
+    *ngIf="dismissible"
+    class="notification-item__dismiss"
+    (click)="onDismiss($event)"
+    aria-label="Dismiss notification"
+  >
+    ×
+  </button>
+</div>

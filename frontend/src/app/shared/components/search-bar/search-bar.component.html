@@ -1,0 +1,19 @@
+<div class="search-bar">
+  <span class="search-bar__icon">🔍</span>
+  <input
+    type="text"
+    class="search-bar__input"
+    [placeholder]="placeholder"
+    [value]="value"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+  />
+  <button
+    *ngIf="value"
+    class="search-bar__clear"
+    (click)="onClear()"
+    aria-label="Clear search"
+  >
+    ×
+  </button>
+</div>

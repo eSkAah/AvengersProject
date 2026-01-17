@@ -1,0 +1,18 @@
+<header class="header" [class.header--sidebar-collapsed]="sidebarCollapsed">
+  <div class="header__left">
+    <h1 class="header__title">{{ title }}</h1>
+  </div>
+
+  <div class="header__right">
+    <button class="header__notification" aria-label="Notifications">
+      <span class="header__notification-icon">🔔</span>
+      <span class="header__notification-badge" *ngIf="notificationCount > 0">
+        {{ notificationCount }}
+      </span>
+    </button>
+
+    <button class="header__profile" aria-label="User profile">
+      <span class="header__profile-avatar">{{ userInitials }}</span>
+    </button>
+  </div>
+</header>

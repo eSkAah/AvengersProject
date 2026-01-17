@@ -1,0 +1,24 @@
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed">
+  <div class="sidebar__logo">
+    <span class="sidebar__logo-icon">⚡</span>
+    <span class="sidebar__logo-text" *ngIf="!collapsed">Star-Eyes</span>
+  </div>
+
+  <nav class="sidebar__nav">
+    @for (item of navItems; track item.route) {
+      <a
+        class="sidebar__nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="sidebar__nav-item--active"
+        [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+      >
+        <span class="sidebar__nav-icon">{{ item.icon }}</span>
+        <span class="sidebar__nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <button class="sidebar__toggle" (click)="toggleCollapse()" [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+    <span class="sidebar__toggle-icon">{{ collapsed ? '→' : '←' }}</span>
+  </button>
+</aside>

@@ -1,0 +1,141 @@
+# generated: 2026-01-17
+# project: AvengersProject
+# project_key: star-eyes
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Mark epic as 'in-progress' when starting work on its first story
+# - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+
+generated: 2026-01-17
+project: AvengersProject
+project_key: star-eyes
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # ============================================
+  # Epic 1: Setup & Design System (J1-J2)
+  # ============================================
+  epic-1: done
+  1-1-setup-projet-angular: done
+  1-2-setup-projet-fastapi: done
+  1-3-design-system-palette-variables: done
+  1-4-design-system-composants-base: done
+  1-5-layout-shell-sidebar-header: done
+  1-6-seed-data-donnees-demo: done
+  epic-1-retrospective: optional
+
+  # ============================================
+  # Epic 2: Landing Page & Engagements (J2-J3)
+  # ============================================
+  epic-2: done
+  2-1-api-engagements-crud: done  # Backend (FastAPI)
+  2-2-kpis-header: done
+  2-3-liste-engagements-vue-accordeon: done
+  2-4-risk-badge-component: done
+  2-5-progress-bar-component: done
+  2-6-notifications-zone: done
+  epic-2-retrospective: optional
+
+  # ============================================
+  # Epic 3: Document Library (J3-J5)
+  # ============================================
+  epic-3: done
+  3-1-api-documents-crud: review  # Backend (FastAPI)
+  3-2-document-tree-navigation: done
+  3-3-document-grid-view: done
+  3-4-document-list-view: done
+  3-5-view-toggle-grid-list: done
+  3-6-search-filter-documents: done
+  3-7-breadcrumb-navigation: done
+  epic-3-retrospective: optional
+
+  # ============================================
+  # Epic 4: Smart Upload & Classification (J3-J5)
+  # ============================================
+  epic-4: backlog
+  4-1-api-upload-document: backlog
+  4-2-upload-zone-component: backlog
+  4-3-classification-ia-service: backlog
+  4-4-upload-progress-feedback: backlog
+  4-5-auto-update-engagement-status: backlog
+  epic-4-retrospective: optional
+
+  # ============================================
+  # Epic 5: Dashboard & Charts (J4-J6)
+  # ============================================
+  epic-5: backlog
+  5-1-api-dashboard-kpis: backlog
+  5-2-api-dashboard-charts: backlog
+  5-3-kpi-section-dashboard: backlog
+  5-4-assets-bar-chart: backlog
+  5-5-comparison-chart-n-vs-n1: backlog
+  5-6-smart-tooltip-avec-source: backlog
+  5-7-cmd-click-integration: backlog
+  5-8-chart-drill-down-on-click: backlog
+  epic-5-retrospective: optional
+
+  # ============================================
+  # Epic 6: Eve Chatbot (J5-J7)
+  # ============================================
+  epic-6: backlog
+  6-1-api-eve-chat: backlog
+  6-2-api-eve-explain: backlog
+  6-3-eve-floating-button-fab: backlog
+  6-4-eve-chat-panel: backlog
+  6-5-message-bubbles: backlog
+  6-6-eve-context-awareness: backlog
+  6-7-eve-prompts-predefinis: backlog
+  epic-6-retrospective: optional
+
+  # ============================================
+  # Epic 7: Risk & Prédictions (J7-J8)
+  # ============================================
+  epic-7: backlog
+  7-1-risk-calculation-service: backlog
+  7-2-prediction-calculation-service: backlog
+  7-3-risk-badge-avec-tooltip: backlog
+  7-4-prediction-display: backlog
+  epic-7-retrospective: optional
+
+  # ============================================
+  # Epic 8: Polish & Démo (J9-J10)
+  # ============================================
+  epic-8: backlog
+  8-1-animations-transitions: backlog
+  8-2-error-states-fallbacks: backlog
+  8-3-demo-script-testing: backlog
+  8-4-performance-optimization: backlog
+  epic-8-retrospective: optional
+
+  # ============================================
+  # Epic 9: Features Bonus (Should-Have)
+  # ============================================
+  epic-9: backlog
+  9-1-gantt-chart-generation: backlog
+  9-2-comparison-n1-auto: backlog
+  9-3-document-preview-inline: backlog
+  9-4-eve-proactive-notifications: backlog
+  epic-9-retrospective: optional

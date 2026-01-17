@@ -1,0 +1,53 @@
+<div class="document-filters">
+  <div class="document-filters__search">
+    <app-search-bar
+      placeholder="Rechercher un document..."
+      [value]="filters().search"
+      (search)="onSearchChange($event)"
+    ></app-search-bar>
+  </div>
+
+  <div class="document-filters__dropdowns">
+    <select
+      class="document-filters__select"
+      [value]="filters().type || ''"
+      (change)="onTypeChange($event)"
+    >
+      <option value="">Tous les types</option>
+      <option *ngFor="let type of documentTypes" [value]="type.value">
+        {{ type.label }}
+      </option>
+    </select>
+
+    <select
+      class="document-filters__select"
+      [value]="filters().status || ''"
+      (change)="onStatusChange($event)"
+    >
+      <option value="">Tous les statuts</option>
+      <option *ngFor="let status of documentStatuses" [value]="status.value">
+        {{ status.label }}
+      </option>
+    </select>
+
+    <select
+      class="document-filters__select"
+      [value]="filters().engagementId || ''"
+      (change)="onEngagementChange($event)"
+    >
+      <option value="">Tous les engagements</option>
+      <option *ngFor="let eng of engagements" [value]="eng.id">
+        {{ eng.countryFlag }} {{ eng.entity }}
+      </option>
+    </select>
+  </div>
+
+  <app-button
+    *ngIf="hasActiveFilters()"
+    variant="ghost"
+    size="sm"
+    (buttonClick)="clearFilters()"
+  >
+    ✕ Effacer filtres
+  </app-button>
+</div>

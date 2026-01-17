@@ -1,0 +1,50 @@
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb__list">
+    <!-- Home -->
+    <li class="breadcrumb__item">
+      <button
+        class="breadcrumb__link breadcrumb__home"
+        (click)="onHomeClick()"
+        aria-label="Home"
+      >
+        🏠
+      </button>
+    </li>
+
+    <!-- Separator after home -->
+    <li class="breadcrumb__separator" *ngIf="items.length > 0">
+      <span *ngIf="separator === 'chevron'">›</span>
+      <span *ngIf="separator === 'slash'">/</span>
+    </li>
+
+    <!-- Items -->
+    <ng-container *ngFor="let item of items; let i = index; let last = last">
+      <li class="breadcrumb__item">
+        <button
+          *ngIf="!isLast(i)"
+          class="breadcrumb__link"
+          (click)="onItemClick(item, i)"
+          [title]="item.label"
+        >
+          <span class="breadcrumb__icon" *ngIf="item.icon">{{ item.icon }}</span>
+          {{ truncateLabel(item.label) }}
+        </button>
+        <span
+          *ngIf="isLast(i)"
+          class="breadcrumb__current"
+          [title]="item.label"
+          aria-current="page"
+        >
+          <span class="breadcrumb__icon" *ngIf="item.icon">{{ item.icon }}</span>
+          {{ truncateLabel(item.label) }}
+        </span>
+      </li>
+
+      <!-- Separator between items -->
+      <li class="breadcrumb__separator" *ngIf="!last">
+        <span *ngIf="separator === 'chevron'">›</span>
+        <span *ngIf="separator === 'slash'">/</span>
+      </li>
+    </ng-container>
+  </ol>
+</nav>

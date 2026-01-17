@@ -1,0 +1,21 @@
+<div class="notifications-zone" *ngIf="notificationCount() > 0">
+  <div class="notifications-zone__header" (click)="toggleCollapse()">
+    <div class="notifications-zone__title">
+      <span class="notifications-zone__icon">🔔</span>
+      <span>Notifications</span>
+      <app-badge variant="error">{{ notificationCount() }}</app-badge>
+    </div>
+    <button class="notifications-zone__toggle" [class.collapsed]="collapsed()">
+      ▼
+    </button>
+  </div>
+
+  <div class="notifications-zone__content" *ngIf="!collapsed()">
+    <app-notification-item
+      *ngFor="let notification of visibleNotifications(); trackBy: trackById"
+      [notification]="notification"
+      (dismiss)="onDismiss($event)"
+      (notificationClick)="onNotificationClick($event)"
+    ></app-notification-item>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+@use 'styles/variables' as *;
+
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 72px;
+$header-height: 64px;
+
+.layout {
+  min-height: 100vh;
+  background-color: $color-background;
+
+  &__main {
+    margin-left: $sidebar-width;
+    margin-top: $header-height;
+    padding: $spacing-6;
+    min-height: calc(100vh - #{$header-height});
+    transition: margin-left $transition-normal $transition-timing;
+  }
+
+  &--sidebar-collapsed {
+    .layout__main {
+      margin-left: $sidebar-collapsed-width;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .layout {
+    &__main {
+      margin-left: $sidebar-collapsed-width;
+      padding: $spacing-4;
+    }
+  }
+}

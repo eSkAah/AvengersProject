@@ -1,0 +1,65 @@
+@use 'styles/variables' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-full;
+  white-space: nowrap;
+
+  // Sizes
+  &--sm {
+    padding: 2px $spacing-2;
+    font-size: $font-size-xs;
+  }
+
+  &--md {
+    padding: $spacing-1 $spacing-3;
+    font-size: $font-size-sm;
+  }
+
+  // Variants
+  &--success {
+    background-color: $color-success-light;
+    color: darken($color-success, 10%);
+    border: 1px solid rgba($color-success, 0.2);
+  }
+
+  &--warning {
+    background-color: $color-warning-light;
+    color: darken($color-warning, 15%);
+    border: 1px solid rgba($color-warning, 0.2);
+  }
+
+  &--error {
+    background-color: $color-error-light;
+    color: darken($color-error, 10%);
+    border: 1px solid rgba($color-error, 0.2);
+  }
+
+  &--info {
+    background-color: $color-info-light;
+    color: darken($color-info, 10%);
+    border: 1px solid rgba($color-info, 0.2);
+  }
+
+  &--neutral {
+    background-color: $color-background;
+    color: $color-text-secondary;
+    border: 1px solid $color-border;
+  }
+
+  // Dot indicator
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: $radius-full;
+    background-color: currentColor;
+  }
+
+  &--dot {
+    padding-left: $spacing-2;
+  }
+}

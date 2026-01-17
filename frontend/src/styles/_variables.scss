@@ -1,0 +1,125 @@
+// =============================================================================
+// Star-Eyes Design System Variables
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// EY Brand Colors
+// -----------------------------------------------------------------------------
+$ey-yellow: #ffe600;
+$ey-yellow-hover: #ffd000;
+$ey-yellow-light: #fff9cc;
+$ey-black: #2e2e38;
+$ey-gray: #747480;
+
+// -----------------------------------------------------------------------------
+// Neutrals
+// -----------------------------------------------------------------------------
+$color-background: #fafafa;
+$color-surface: #ffffff;
+$color-border: #e5e5e5;
+$color-border-light: #f3f4f6;
+$color-text-primary: #2e2e38;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
+
+// -----------------------------------------------------------------------------
+// Semantic Colors
+// -----------------------------------------------------------------------------
+$color-success: #10b981;
+$color-success-light: #d1fae5;
+$color-warning: #f59e0b;
+$color-warning-light: #fef3c7;
+$color-error: #ef4444;
+$color-error-light: #fee2e2;
+$color-info: #3b82f6;
+$color-info-light: #dbeafe;
+
+// -----------------------------------------------------------------------------
+// Typography
+// -----------------------------------------------------------------------------
+$font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+$font-family-heading: 'Inter', system-ui, -apple-system, sans-serif;
+
+// Font Sizes
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-base: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.25rem; // 20px
+$font-size-2xl: 1.5rem; // 24px
+$font-size-3xl: 1.875rem; // 30px
+$font-size-4xl: 2.25rem; // 36px
+
+// Font Weights
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Line Heights
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// -----------------------------------------------------------------------------
+// Spacing (4, 8, 12, 16, 24, 32px standard)
+// -----------------------------------------------------------------------------
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+$spacing-6: 24px;
+$spacing-8: 32px;
+$spacing-10: 40px;
+$spacing-12: 48px;
+$spacing-16: 64px;
+
+// -----------------------------------------------------------------------------
+// Border Radius
+// -----------------------------------------------------------------------------
+$radius-none: 0;
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+// -----------------------------------------------------------------------------
+// Shadows
+// -----------------------------------------------------------------------------
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+$shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+// -----------------------------------------------------------------------------
+// Transitions
+// -----------------------------------------------------------------------------
+$transition-fast: 150ms;
+$transition-normal: 200ms;
+$transition-slow: 300ms;
+$transition-timing: cubic-bezier(0.16, 1, 0.3, 1);
+
+// -----------------------------------------------------------------------------
+// Z-Index Scale
+// -----------------------------------------------------------------------------
+$z-index-dropdown: 100;
+$z-index-sticky: 200;
+$z-index-fixed: 300;
+$z-index-modal-backdrop: 400;
+$z-index-modal: 500;
+$z-index-popover: 600;
+$z-index-tooltip: 700;
+$z-index-toast: 800;
+
+// -----------------------------------------------------------------------------
+// Breakpoints
+// -----------------------------------------------------------------------------
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;

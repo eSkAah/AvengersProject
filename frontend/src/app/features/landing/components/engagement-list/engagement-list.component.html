@@ -1,0 +1,131 @@
+<div class="engagement-list">
+  <div
+    *ngFor="let engagement of engagements; trackBy: trackById"
+    class="engagement-item"
+    [class.engagement-item--expanded]="isExpanded(engagement.id)"
+  >
+    <!-- Header (always visible) -->
+    <div class="engagement-item__header" (click)="toggleExpand(engagement.id)">
+      <div class="engagement-item__main">
+        <div class="engagement-item__entity">
+          <span class="engagement-item__flag">{{ engagement.countryFlag }}</span>
+          <span class="engagement-item__name">{{ engagement.entity }}</span>
+        </div>
+        <span class="engagement-item__service">{{ engagement.service }}</span>
+      </div>
+
+      <div class="engagement-item__status">
+        <app-badge [variant]="getStatusVariant(engagement.status)">
+          {{ getStatusLabel(engagement.status) }}
+        </app-badge>
+      </div>
+
+      <div class="engagement-item__due-date">
+        <span class="engagement-item__due-label">Échéance</span>
+        <span class="engagement-item__due-value">{{ formatDate(engagement.dueDate) }}</span>
+      </div>
+
+      <div class="engagement-item__progress">
+        <app-progress-bar
+          [value]="engagement.completionPercent"
+          [riskLevel]="engagement.riskLevel"
+          [animate]="false"
+          height="sm"
+        ></app-progress-bar>
+      </div>
+
+      <div class="engagement-item__risk">
+        <app-risk-badge
+          [level]="engagement.riskLevel"
+          [showLabel]="false"
+          size="sm"
+        ></app-risk-badge>
+      </div>
+
+      <div class="engagement-item__expand-icon">
+        <span [class.rotated]="isExpanded(engagement.id)">▼</span>
+      </div>
+    </div>
+
+    <!-- Expanded content -->
+    <div class="engagement-item__content" *ngIf="isExpanded(engagement.id)">
+      <div class="engagement-item__details">
+        <!-- Financial Data -->
+        <div class="engagement-item__section">
+          <h4>Données Financières</h4>
+          <div class="engagement-item__financials">
+            <div class="financial-item">
+              <span class="financial-item__label">Actifs</span>
+              <span class="financial-item__value">{{ formatCurrency(engagement.financialData.assets) }}</span>
+            </div>
+            <div class="financial-item">
+              <span class="financial-item__label">Passifs</span>
+              <span class="financial-item__value">{{ formatCurrency(engagement.financialData.liabilities) }}</span>
+            </div>
+            <div class="financial-item">
+              <span class="financial-item__label">Chiffre d'affaires</span>
+              <span class="financial-item__value">{{ formatCurrency(engagement.financialData.revenue) }}</span>
+            </div>
+            <div class="financial-item">
+              <span class="financial-item__label">Évolution N/N-1</span>
+              <span
+                class="financial-item__value"
+                [class.positive]="engagement.financialData.yoyChange > 0"
+                [class.negative]="engagement.financialData.yoyChange < 0"
+              >
+                {{ engagement.financialData.yoyChange > 0 ? '+' : '' }}{{ engagement.financialData.yoyChange }}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="engagement-item__section">
+          <h4>Documents</h4>
+          <div class="engagement-item__docs">
+            <div class="docs-status">
+              <span class="docs-status__count">
+                {{ engagement.documentsUploaded.length }}/{{ engagement.documentsRequired.length }}
+              </span>
+              <span class="docs-status__label">documents uploadés</span>
+            </div>
+            <div class="docs-missing" *ngIf="getMissingDocsCount(engagement) > 0">
+              <span class="docs-missing__icon">📄</span>
+              <span class="docs-missing__text">{{ getMissingDocsCount(engagement) }} document(s) manquant(s)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prediction -->
+        <div class="engagement-item__section" *ngIf="engagement.predictedCompletion">
+          <h4>Prédiction</h4>
+          <div class="engagement-item__prediction">
+            <span class="prediction__icon">🎯</span>
+            <span class="prediction__text">
+              Complétion estimée: {{ formatDate(engagement.predictedCompletion) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="engagement-item__actions">
+        <app-button variant="primary" (buttonClick)="viewDashboard.emit(engagement)">
+          📊 Dashboard
+        </app-button>
+        <app-button variant="secondary" (buttonClick)="uploadDocs.emit(engagement)">
+          📤 Upload Docs
+        </app-button>
+        <app-button variant="ghost" (buttonClick)="askEve.emit(engagement)">
+          💬 Ask Eve
+        </app-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div class="engagement-list__empty" *ngIf="engagements.length === 0">
+  <span class="engagement-list__empty-icon">📋</span>
+  <p>Aucun engagement trouvé</p>
+</div>

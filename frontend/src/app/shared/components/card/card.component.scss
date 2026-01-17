@@ -1,0 +1,47 @@
+@use 'styles/variables' as *;
+
+.card {
+  background-color: $color-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  border: 1px solid $color-border-light;
+  transition: all $transition-normal $transition-timing;
+
+  // Padding variants
+  &--padding-none {
+    padding: 0;
+  }
+
+  &--padding-sm {
+    padding: $spacing-3;
+  }
+
+  &--padding-md {
+    padding: $spacing-4;
+  }
+
+  &--padding-lg {
+    padding: $spacing-6;
+  }
+
+  // Hoverable
+  &--hoverable {
+    &:hover {
+      box-shadow: $shadow-card-hover;
+      transform: translateY(-2px);
+    }
+  }
+
+  // Clickable
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: $shadow-card-hover;
+    }
+
+    &:active {
+      transform: scale(0.99);
+    }
+  }
+}

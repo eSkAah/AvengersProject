@@ -1,0 +1,62 @@
+<div class="documents-page">
+  <!-- Sidebar with Tree -->
+  <aside class="documents-page__sidebar">
+    <h3 class="documents-page__sidebar-title">Navigation</h3>
+    <app-document-tree
+      [engagements]="engagements()"
+      [documents]="allDocuments()"
+      (nodeSelect)="onTreeNodeSelect($event)"
+    ></app-document-tree>
+  </aside>
+
+  <!-- Main content -->
+  <main class="documents-page__main">
+    <!-- Header -->
+    <header class="documents-page__header">
+      <app-breadcrumb
+        [items]="breadcrumbItems()"
+        (navigate)="onBreadcrumbNavigate($event)"
+        (homeClick)="onBreadcrumbHome()"
+      ></app-breadcrumb>
+
+      <app-view-toggle
+        [mode]="viewMode()"
+        persistKey="documents"
+        (modeChange)="onViewModeChange($event)"
+      ></app-view-toggle>
+    </header>
+
+    <!-- Filters -->
+    <app-document-filters
+      [engagements]="engagements()"
+      (filtersChange)="onFiltersChange($event)"
+    ></app-document-filters>
+
+    <!-- Documents count -->
+    <div class="documents-page__count">
+      {{ filteredDocuments().length }} document(s)
+    </div>
+
+    <!-- Document views -->
+    <div class="documents-page__content">
+      <app-document-grid
+        *ngIf="viewMode() === 'grid'"
+        [documents]="filteredDocuments()"
+        (documentClick)="onDocumentClick($event)"
+        (download)="onDownload($event)"
+        (preview)="onPreview($event)"
+        (askEve)="onAskEve($event)"
+      ></app-document-grid>
+
+      <app-document-list
+        *ngIf="viewMode() === 'list'"
+        [documents]="filteredDocuments()"
+        [engagements]="engagements()"
+        (documentClick)="onDocumentClick($event)"
+        (download)="onDownload($event)"
+        (preview)="onPreview($event)"
+        (askEve)="onAskEve($event)"
+      ></app-document-list>
+    </div>
+  </main>
+</div>

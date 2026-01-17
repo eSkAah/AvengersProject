@@ -1,0 +1,73 @@
+<div class="document-list" *ngIf="documents.length > 0">
+  <table class="document-table">
+    <thead class="document-table__head">
+      <tr>
+        <th class="document-table__th sortable" (click)="onSort('name')">
+          Nom {{ getSortIcon('name') }}
+        </th>
+        <th class="document-table__th sortable" (click)="onSort('type')">
+          Type {{ getSortIcon('type') }}
+        </th>
+        <th class="document-table__th">Engagement</th>
+        <th class="document-table__th sortable" (click)="onSort('status')">
+          Status {{ getSortIcon('status') }}
+        </th>
+        <th class="document-table__th sortable" (click)="onSort('uploadedAt')">
+          Date {{ getSortIcon('uploadedAt') }}
+        </th>
+        <th class="document-table__th sortable" (click)="onSort('size')">
+          Taille {{ getSortIcon('size') }}
+        </th>
+        <th class="document-table__th">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="document-table__body">
+      <tr
+        *ngFor="let doc of sortedDocuments; trackBy: trackById"
+        class="document-table__row"
+        (click)="documentClick.emit(doc)"
+      >
+        <td class="document-table__td document-table__td--name">
+          <span class="document-name">{{ doc.name }}</span>
+        </td>
+        <td class="document-table__td">{{ typeLabels[doc.type] }}</td>
+        <td class="document-table__td">{{ getEngagementName(doc.engagementId) }}</td>
+        <td class="document-table__td">
+          <app-badge [variant]="getStatusVariant(doc.status)" size="sm">
+            {{ statusLabels[doc.status] }}
+          </app-badge>
+        </td>
+        <td class="document-table__td">{{ formatDate(doc.uploadedAt) }}</td>
+        <td class="document-table__td">{{ formatSize(doc.size) }}</td>
+        <td class="document-table__td document-table__td--actions">
+          <button
+            class="action-btn"
+            (click)="download.emit(doc); $event.stopPropagation()"
+            title="Télécharger"
+          >
+            ⬇️
+          </button>
+          <button
+            class="action-btn"
+            (click)="preview.emit(doc); $event.stopPropagation()"
+            title="Prévisualiser"
+          >
+            👁️
+          </button>
+          <button
+            class="action-btn"
+            (click)="askEve.emit(doc); $event.stopPropagation()"
+            title="Ask Eve"
+          >
+            💬
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="document-list__empty" *ngIf="documents.length === 0">
+  <span class="document-list__empty-icon">📂</span>
+  <p>Aucun document trouvé</p>
+</div>

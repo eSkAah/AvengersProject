@@ -1,0 +1,63 @@
+# ====================
+# Root .gitignore
+# ====================
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# ====================
+# Python / Backend
+# ====================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+ENV/
+env/
+dist/
+build/
+*.egg-info/
+*.db
+*.sqlite3
+.pytest_cache/
+.coverage
+htmlcov/
+backend/data/
+
+# ====================
+# Node / Frontend
+# ====================
+node_modules/
+frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+frontend/.angular/cache
+npm-debug.log
+yarn-error.log
+
+# ====================
+# Uploads (POC demo files)
+# ====================
+uploads/
+
+# ====================
+# Claude Code
+# ====================
+.claude/
+
+# ====================
+# Playwright MCP
+# ====================
+.playwright-mcp/

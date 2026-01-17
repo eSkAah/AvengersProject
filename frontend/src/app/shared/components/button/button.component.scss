@@ -1,0 +1,123 @@
+@use 'styles/variables' as *;
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all $transition-normal $transition-timing;
+
+  &:focus-visible {
+    outline: 2px solid $ey-yellow;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  // Sizes
+  &--sm {
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+  }
+
+  &--md {
+    padding: $spacing-3 $spacing-6;
+    font-size: $font-size-sm;
+  }
+
+  &--lg {
+    padding: $spacing-4 $spacing-8;
+    font-size: $font-size-base;
+  }
+
+  // Variants
+  &--primary {
+    background-color: $ey-yellow;
+    color: $ey-black;
+    border: none;
+
+    &:hover:not(:disabled) {
+      background-color: $ey-yellow-hover;
+      transform: scale(1.02);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  &--secondary {
+    background-color: transparent;
+    color: $ey-black;
+    border: 1px solid $color-border;
+
+    &:hover:not(:disabled) {
+      background-color: $color-background;
+      border-color: $ey-gray;
+    }
+  }
+
+  &--ghost {
+    background-color: transparent;
+    color: $color-text-secondary;
+    border: none;
+
+    &:hover:not(:disabled) {
+      background-color: $color-background;
+      color: $color-text-primary;
+    }
+  }
+
+  // Full width
+  &--full-width {
+    width: 100%;
+  }
+
+  // Loading state
+  &--loading {
+    cursor: wait;
+  }
+
+  &__spinner {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    &.invisible {
+      visibility: hidden;
+    }
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

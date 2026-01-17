@@ -1,0 +1,162 @@
+// =============================================================================
+// Star-Eyes Design System Mixins
+// =============================================================================
+
+@use 'variables' as *;
+
+// -----------------------------------------------------------------------------
+// Typography Mixins
+// -----------------------------------------------------------------------------
+@mixin heading-1 {
+  font-family: $font-family-heading;
+  font-size: $font-size-4xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: $color-text-primary;
+}
+
+@mixin heading-2 {
+  font-family: $font-family-heading;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  color: $color-text-primary;
+}
+
+@mixin heading-3 {
+  font-family: $font-family-heading;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  color: $color-text-primary;
+}
+
+@mixin body-text {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+}
+
+@mixin small-text {
+  font-family: $font-family-base;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-normal;
+  color: $color-text-secondary;
+}
+
+// -----------------------------------------------------------------------------
+// Card Mixins
+// -----------------------------------------------------------------------------
+@mixin card {
+  background-color: $color-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  border: 1px solid $color-border-light;
+  transition: box-shadow $transition-normal $transition-timing;
+
+  &:hover {
+    box-shadow: $shadow-card-hover;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Button Mixins
+// -----------------------------------------------------------------------------
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-6;
+  font-family: $font-family-base;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all $transition-normal $transition-timing;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: $ey-yellow;
+  color: $ey-black;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background-color: $ey-yellow-hover;
+    transform: scale(1.02);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: transparent;
+  color: $ey-black;
+  border: 1px solid $color-border;
+
+  &:hover:not(:disabled) {
+    background-color: $color-background;
+    border-color: $ey-gray;
+  }
+}
+
+@mixin button-ghost {
+  @include button-base;
+  background-color: transparent;
+  color: $color-text-secondary;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background-color: $color-background;
+    color: $color-text-primary;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Focus Ring
+// -----------------------------------------------------------------------------
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid $ey-yellow;
+    outline-offset: 2px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Responsive Breakpoints
+// -----------------------------------------------------------------------------
+@mixin sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin xl {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}

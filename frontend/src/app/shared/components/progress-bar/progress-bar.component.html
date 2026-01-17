@@ -1,0 +1,16 @@
+<div
+  class="progress-bar"
+  [class.progress-bar--sm]="height === 'sm'"
+  [class.progress-bar--lg]="height === 'lg'"
+>
+  <div class="progress-bar__track">
+    <div
+      class="progress-bar__fill"
+      [class.progress-bar__fill--high]="riskLevel === 'high'"
+      [class.progress-bar__fill--medium]="riskLevel === 'medium'"
+      [class.progress-bar__fill--low]="riskLevel === 'low'"
+      [style.width.%]="displayValue()"
+    ></div>
+  </div>
+  <span class="progress-bar__label" *ngIf="showLabel">{{ displayLabel }}</span>
+</div>

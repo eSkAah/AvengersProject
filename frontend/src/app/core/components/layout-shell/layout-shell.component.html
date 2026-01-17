@@ -1,0 +1,12 @@
+<div class="layout" [class.layout--sidebar-collapsed]="sidebarCollapsed()">
+  <app-sidebar
+    [collapsed]="sidebarCollapsed()"
+    (collapsedChange)="onSidebarCollapsedChange($event)"
+  ></app-sidebar>
+
+  <app-header [sidebarCollapsed]="sidebarCollapsed()"></app-header>
+
+  <main class="layout__main">
+    <ng-content></ng-content>
+  </main>
+</div>

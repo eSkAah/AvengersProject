@@ -1,0 +1,36 @@
+<div class="home">
+  <!-- Header -->
+  <div class="home__header">
+    <h1>Bienvenue sur Star-Eyes</h1>
+    <p>Digital Engagement Platform</p>
+  </div>
+
+  <!-- Notifications Zone -->
+  <app-notifications-zone
+    [notifications]="notifications()"
+    (notificationClick)="onNotificationClick($event)"
+  ></app-notifications-zone>
+
+  <!-- KPIs Header -->
+  <section class="home__kpis">
+    <app-kpi-header
+      [data]="kpiData()"
+      (filterChange)="onFilterChange($event)"
+    ></app-kpi-header>
+  </section>
+
+  <!-- Engagements List -->
+  <section class="home__engagements">
+    <div class="section-header">
+      <h2>Mes Engagements</h2>
+      <span class="section-header__count">{{ filteredEngagements().length }} engagement(s)</span>
+    </div>
+
+    <app-engagement-list
+      [engagements]="filteredEngagements()"
+      (viewDashboard)="onViewDashboard($event)"
+      (uploadDocs)="onUploadDocs($event)"
+      (askEve)="onAskEve($event)"
+    ></app-engagement-list>
+  </section>
+</div>

@@ -1,0 +1,203 @@
+// =============================================================================
+// Star-Eyes Global Styles
+// =============================================================================
+
+// Design System (must come before @tailwind)
+@use 'styles/variables' as *;
+
+// Tailwind CSS
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// -----------------------------------------------------------------------------
+// Base Styles
+// -----------------------------------------------------------------------------
+html {
+  font-family: $font-family-base;
+  font-size: 16px;
+  background-color: $color-background;
+  color: $color-text-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  line-height: $line-height-normal;
+}
+
+// -----------------------------------------------------------------------------
+// Typography
+// -----------------------------------------------------------------------------
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $font-family-heading;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+h1 {
+  font-size: $font-size-4xl;
+  line-height: $line-height-tight;
+}
+
+h2 {
+  font-size: $font-size-3xl;
+  line-height: $line-height-tight;
+}
+
+h3 {
+  font-size: $font-size-2xl;
+  line-height: $line-height-tight;
+}
+
+h4 {
+  font-size: $font-size-xl;
+}
+
+h5 {
+  font-size: $font-size-lg;
+}
+
+h6 {
+  font-size: $font-size-base;
+}
+
+p {
+  margin: 0 0 $spacing-4;
+}
+
+a {
+  color: $ey-black;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $ey-gray;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Focus Ring (Accessibility)
+// -----------------------------------------------------------------------------
+*:focus-visible {
+  outline: 2px solid $ey-yellow;
+  outline-offset: 2px;
+}
+
+// -----------------------------------------------------------------------------
+// Scrollbar Styling
+// -----------------------------------------------------------------------------
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $color-background;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-border;
+  border-radius: $radius-full;
+
+  &:hover {
+    background: $ey-gray;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Selection
+// -----------------------------------------------------------------------------
+::selection {
+  background-color: $ey-yellow-light;
+  color: $ey-black;
+}
+
+// -----------------------------------------------------------------------------
+// Utility Classes
+// -----------------------------------------------------------------------------
+.text-primary {
+  color: $color-text-primary;
+}
+
+.text-secondary {
+  color: $color-text-secondary;
+}
+
+.text-muted {
+  color: $color-text-muted;
+}
+
+.text-success {
+  color: $color-success;
+}
+
+.text-warning {
+  color: $color-warning;
+}
+
+.text-error {
+  color: $color-error;
+}
+
+.bg-surface {
+  background-color: $color-surface;
+}
+
+.bg-background {
+  background-color: $color-background;
+}
+
+// -----------------------------------------------------------------------------
+// Animation Classes
+// -----------------------------------------------------------------------------
+.animate-fade-in {
+  animation: fadeIn $transition-normal $transition-timing;
+}
+
+.animate-slide-up {
+  animation: slideUp $transition-normal $transition-timing;
+}
+
+.animate-scale-in {
+  animation: scaleIn $transition-fast $transition-timing;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

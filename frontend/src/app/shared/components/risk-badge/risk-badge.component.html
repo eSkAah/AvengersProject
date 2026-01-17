@@ -1,0 +1,13 @@
+<div
+  class="risk-badge"
+  [class.risk-badge--high]="level === 'high'"
+  [class.risk-badge--medium]="level === 'medium'"
+  [class.risk-badge--low]="level === 'low'"
+  [class.risk-badge--sm]="size === 'sm'"
+  [class.risk-badge--lg]="size === 'lg'"
+  [class.risk-badge--pulse]="shouldPulse"
+  [title]="currentConfig.tooltip"
+>
+  <span class="risk-badge__icon">{{ currentConfig.icon }}</span>
+  <span class="risk-badge__label" *ngIf="showLabel">{{ currentConfig.label }}</span>
+</div>

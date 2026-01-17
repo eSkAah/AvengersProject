@@ -1,0 +1,65 @@
+@use 'styles/variables' as *;
+
+.document-filters {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  flex-wrap: wrap;
+
+  &__search {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+  }
+
+  &__dropdowns {
+    display: flex;
+    gap: $spacing-3;
+    flex-wrap: wrap;
+  }
+
+  &__select {
+    padding: $spacing-2 $spacing-3;
+    padding-right: $spacing-8;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background: $color-surface;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right $spacing-3 center;
+
+    &:hover {
+      border-color: $color-text-secondary;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $ey-yellow;
+      box-shadow: 0 0 0 2px rgba($ey-yellow, 0.2);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .document-filters {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__search {
+      max-width: 100%;
+    }
+
+    &__dropdowns {
+      flex-direction: column;
+    }
+
+    &__select {
+      width: 100%;
+    }
+  }
+}

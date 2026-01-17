@@ -1,0 +1,40 @@
+@use 'styles/variables' as *;
+
+.view-toggle {
+  display: inline-flex;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(&--active) {
+      background: rgba($ey-black, 0.05);
+      color: $color-text-primary;
+    }
+
+    &--active {
+      background: $ey-yellow;
+      color: $ey-black;
+    }
+
+    &:first-child {
+      border-right: 1px solid $color-border;
+    }
+  }
+
+  &__icon {
+    font-size: $font-size-lg;
+  }
+}

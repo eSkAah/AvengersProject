@@ -1,0 +1,118 @@
+@use 'styles/variables' as *;
+
+$header-height: 64px;
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 72px;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: $header-height;
+  padding: 0 $spacing-6;
+  background-color: $color-surface;
+  border-bottom: 1px solid $color-border-light;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: $sidebar-width;
+  z-index: $z-index-sticky;
+  transition: left $transition-normal $transition-timing;
+
+  &--sidebar-collapsed {
+    left: $sidebar-collapsed-width;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin: 0;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  &__notification {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    border-radius: $radius-full;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: $color-background;
+    }
+
+    &-icon {
+      font-size: 1.25rem;
+    }
+
+    &-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 $spacing-1;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-bold;
+      color: white;
+      background-color: $color-error;
+      border-radius: $radius-full;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: 2px solid $color-border;
+    border-radius: $radius-full;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      border-color: $ey-yellow;
+    }
+
+    &-avatar {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $ey-black;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .header {
+    left: $sidebar-collapsed-width;
+    padding: 0 $spacing-4;
+
+    &__title {
+      font-size: $font-size-lg;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+<div class="document-grid">
+  <div
+    *ngFor="let doc of documents; trackBy: trackById"
+    class="document-card"
+    (click)="documentClick.emit(doc)"
+  >
+    <div class="document-card__icon">
+      {{ getTypeIcon(doc.type) }}
+    </div>
+
+    <div class="document-card__content">
+      <h4 class="document-card__name" [title]="doc.name">
+        {{ truncateName(doc.name) }}
+      </h4>
+      <span class="document-card__type">{{ typeLabels[doc.type] }}</span>
+    </div>
+
+    <div class="document-card__meta">
+      <app-badge [variant]="getStatusVariant(doc.status)" size="sm">
+        {{ statusLabels[doc.status] }}
+      </app-badge>
+      <span class="document-card__date">{{ formatDate(doc.uploadedAt) }}</span>
+    </div>
+
+    <div class="document-card__actions">
+      <button
+        class="document-card__action"
+        (click)="download.emit(doc); $event.stopPropagation()"
+        title="Télécharger"
+      >
+        ⬇️
+      </button>
+      <button
+        class="document-card__action"
+        (click)="preview.emit(doc); $event.stopPropagation()"
+        title="Prévisualiser"
+      >
+        👁️
+      </button>
+      <button
+        class="document-card__action"
+        (click)="askEve.emit(doc); $event.stopPropagation()"
+        title="Ask Eve"
+      >
+        💬
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="document-grid__empty" *ngIf="documents.length === 0">
+  <span class="document-grid__empty-icon">📂</span>
+  <p>Aucun document trouvé</p>
+</div>
