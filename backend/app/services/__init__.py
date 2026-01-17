@@ -1,4 +1,4 @@
-"""Business logic services for Star-Eyes platform."""
+"""Business logic services for Avengers Project platform."""
 
 from app.services.engagement_service import (
     get_all_engagements,

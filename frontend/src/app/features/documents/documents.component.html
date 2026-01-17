@@ -3,7 +3,6 @@
   <aside class="documents-page__sidebar">
     <h3 class="documents-page__sidebar-title">Navigation</h3>
     <app-document-tree
-      [engagements]="engagements()"
       [documents]="allDocuments()"
       (nodeSelect)="onTreeNodeSelect($event)"
     ></app-document-tree>
@@ -19,12 +18,45 @@
         (homeClick)="onBreadcrumbHome()"
       ></app-breadcrumb>
 
-      <app-view-toggle
-        [mode]="viewMode()"
-        persistKey="documents"
-        (modeChange)="onViewModeChange($event)"
-      ></app-view-toggle>
+      <div class="documents-page__header-actions">
+        <app-button
+          variant="primary"
+          size="sm"
+          (clicked)="toggleUploadZone()"
+        >
+          {{ showUploadZone() ? 'Masquer' : 'Télécharger' }}
+        </app-button>
+
+        <app-view-toggle
+          [mode]="viewMode()"
+          persistKey="documents"
+          (modeChange)="onViewModeChange($event)"
+        ></app-view-toggle>
+      </div>
     </header>
+
+    <!-- Upload Zone -->
+    <div *ngIf="showUploadZone()" class="documents-page__upload">
+      <app-upload-zone
+        [engagementId]="selectedEngagementId()"
+        [disabled]="isUploading()"
+        (filesSelected)="onFilesSelected($event)"
+        (uploadStart)="onUploadStart($event)"
+        (uploadSuccess)="onUploadSuccess($event)"
+        (uploadError)="onUploadError($event)"
+        (uploadComplete)="onUploadComplete($event)"
+      ></app-upload-zone>
+
+      <div class="documents-page__upload-actions" *ngIf="uploadZone?.canUpload()">
+        <app-button
+          variant="primary"
+          [loading]="isUploading()"
+          (clicked)="triggerUpload()"
+        >
+          Confirmer le téléchargement
+        </app-button>
+      </div>
+    </div>
 
     <!-- Filters -->
     <app-document-filters

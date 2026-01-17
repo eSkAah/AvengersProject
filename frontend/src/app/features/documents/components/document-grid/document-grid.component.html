@@ -5,7 +5,7 @@
     (click)="documentClick.emit(doc)"
   >
     <div class="document-card__icon">
-      {{ getTypeIcon(doc.type) }}
+      <lucide-icon [name]="getTypeIcon(doc.type)" [size]="24"></lucide-icon>
     </div>
 
     <div class="document-card__content">
@@ -28,27 +28,27 @@
         (click)="download.emit(doc); $event.stopPropagation()"
         title="Télécharger"
       >
-        ⬇️
+        <lucide-icon name="download" [size]="16"></lucide-icon>
       </button>
       <button
         class="document-card__action"
         (click)="preview.emit(doc); $event.stopPropagation()"
         title="Prévisualiser"
       >
-        👁️
+        <lucide-icon name="eye" [size]="16"></lucide-icon>
       </button>
       <button
         class="document-card__action"
         (click)="askEve.emit(doc); $event.stopPropagation()"
         title="Ask Eve"
       >
-        💬
+        <lucide-icon name="message-circle" [size]="16"></lucide-icon>
       </button>
     </div>
   </div>
 </div>
 
 <div class="document-grid__empty" *ngIf="documents.length === 0">
-  <span class="document-grid__empty-icon">📂</span>
+  <lucide-icon name="folder-open" class="document-grid__empty-icon" [size]="48"></lucide-icon>
   <p>Aucun document trouvé</p>
 </div>

@@ -46,7 +46,7 @@ export class MockDataService {
   }
 
   getDocumentsByEngagement(engagementId: string): Document[] {
-    return this.documentsSignal().filter((d) => d.engagementId === engagementId);
+    return this.documentsSignal().filter((d) => d.engagementIds.includes(engagementId));
   }
 
   filterEngagements(filters: {
@@ -69,13 +69,37 @@ export class MockDataService {
     );
   }
 
+  /**
+   * Update engagement after document upload
+   * Called with data from backend response
+   */
+  updateEngagementFromUpload(
+    id: string,
+    status: string,
+    completionPercent: number,
+    riskLevel: string
+  ): void {
+    this.engagementsSignal.update((engagements) =>
+      engagements.map((e) =>
+        e.id === id
+          ? {
+              ...e,
+              status: status as EngagementStatus,
+              completionPercent,
+              riskLevel: riskLevel as RiskLevel,
+            }
+          : e
+      )
+    );
+  }
+
   addDocument(document: Document): void {
     this.documentsSignal.update((documents) => [...documents, document]);
 
-    // Update engagement's documentsUploaded
+    // Update engagement's documentsUploaded for all linked engagements
     this.engagementsSignal.update((engagements) =>
       engagements.map((e) =>
-        e.id === document.engagementId
+        document.engagementIds.includes(e.id)
           ? { ...e, documentsUploaded: [...e.documentsUploaded, document.id] }
           : e
       )

@@ -8,6 +8,6 @@ export interface Environment {
 export const environment: Environment = {
   production: false,
   apiUrl: 'http://localhost:8000/api',
-  appName: 'Star-Eyes',
+  appName: 'Avengers Project',
   version: '1.0.0-dev',
 };

@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { Engagement } from '../../../../core';
 import {
   RiskBadgeComponent,
@@ -20,6 +21,7 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    LucideAngularModule,
     RiskBadgeComponent,
     ProgressBarComponent,
     ButtonComponent,

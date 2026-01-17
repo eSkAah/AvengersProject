@@ -15,12 +15,13 @@
         class="tree-node__toggle"
         (click)="toggleExpand(node.id, $event)"
       >
-        <span [class.rotated]="isExpanded(node.id)">▶</span>
+        <lucide-icon [name]="isExpanded(node.id) ? 'chevron-down' : 'chevron-right'" [size]="14"></lucide-icon>
       </button>
       <span *ngIf="!hasChildren(node)" class="tree-node__spacer"></span>
 
       <!-- Icon -->
-      <span class="tree-node__icon">{{ node.icon }}</span>
+      <span class="tree-node__icon" *ngIf="node.isEmoji">{{ node.icon }}</span>
+      <lucide-icon *ngIf="!node.isEmoji" [name]="node.icon" class="tree-node__icon" [size]="16"></lucide-icon>
 
       <!-- Label -->
       <span class="tree-node__label">{{ node.label }}</span>

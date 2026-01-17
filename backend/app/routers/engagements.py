@@ -1,4 +1,4 @@
-"""Engagements API router for Star-Eyes platform."""
+"""Engagements API router for Avengers Project platform."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession

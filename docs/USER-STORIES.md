@@ -1,4 +1,4 @@
-# User Stories - Star-Eyes
+# User Stories - Avengers Project
 
 **Version:** 1.0
 **Date:** 2026-01-17
@@ -39,7 +39,7 @@
 
 **Tâches techniques:**
 ```bash
-ng new star-eyes-frontend --standalone --style=scss --routing
+ng new avengers-project-frontend --standalone --style=scss --routing
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init
 ```

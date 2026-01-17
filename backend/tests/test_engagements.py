@@ -312,3 +312,75 @@ async def test_all_five_demo_countries_present(client):
     country_codes = {e["country_code"] for e in data["engagements"]}
     expected_countries = {"FR", "DE", "NL", "BE", "LU"}
     assert country_codes == expected_countries
+
+
+# =============================================================================
+# Upload Response with Engagement Update Tests
+# =============================================================================
+
+
+@pytest.mark.asyncio
+async def test_upload_returns_engagement_update(client):
+    """Test that document upload returns engagement status update."""
+    # Upload to France SPV (waiting status)
+    content = b"test,content\n1,2"
+    response = await client.post(
+        "/api/documents/upload",
+        files={"file": ("Grand_Livre_FR_2025.csv", content, "text/csv")},
+        data={"engagement_id": "ENG-FR-001"},
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    # Check engagement update is present
+    assert "engagement_update" in data
+    assert data["engagement_update"] is not None
+    assert "status" in data["engagement_update"]
+    assert "completion_percent" in data["engagement_update"]
+    assert "risk_level" in data["engagement_update"]
+
+
+@pytest.mark.asyncio
+async def test_upload_updates_engagement_status_after_classification(client):
+    """Test that successful classification updates engagement status."""
+    # Upload a document that will be classified
+    content = b"test,content\n1,2"
+    response = await client.post(
+        "/api/documents/upload",
+        files={"file": ("Trial_Balance_2025.csv", content, "text/csv")},
+        data={"engagement_id": "ENG-FR-001"},
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    # Engagement should have valid status after classification
+    # (could be processing if not enough docs, or completed if threshold reached)
+    eng_update = data["engagement_update"]
+    assert eng_update["status"] in ["received", "processing", "completed"]
+    assert eng_update["risk_level"] in ["low", "medium", "high"]
+    assert 0 <= eng_update["completion_percent"] <= 100
+
+
+@pytest.mark.asyncio
+async def test_engagement_status_updates_after_upload(client):
+    """Test that engagement status is actually updated in the database."""
+    # Get initial status of France SPV
+    initial_response = await client.get("/api/engagements/ENG-FR-001")
+    initial_data = initial_response.json()
+    initial_status = initial_data["status"]
+
+    # Upload a document with classification
+    content = b"test,content\n1,2"
+    await client.post(
+        "/api/documents/upload",
+        files={"file": ("financial_statement_FR.csv", content, "text/csv")},
+        data={"engagement_id": "ENG-FR-001"},
+    )
+
+    # Get updated engagement
+    updated_response = await client.get("/api/engagements/ENG-FR-001")
+    updated_data = updated_response.json()
+
+    # Status should have changed if initial was waiting
+    if initial_status == "waiting":
+        assert updated_data["status"] in ["received", "processing"]

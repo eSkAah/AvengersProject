@@ -29,6 +29,11 @@ async def lifespan(app: FastAPI):
     data_dir.mkdir(exist_ok=True)
     logger.info("Data directory ensured: %s", data_dir.absolute())
 
+    # Ensure uploads directory exists (Story 4-1)
+    upload_dir = Path(settings.upload_dir)
+    upload_dir.mkdir(exist_ok=True)
+    logger.info("Upload directory ensured: %s", upload_dir.absolute())
+
     # Create database tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

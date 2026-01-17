@@ -7,13 +7,17 @@ export const routes: Routes = [
       import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
-    path: 'documents',
+    path: 'engagements/:id',
     loadComponent: () =>
-      import('./features/documents/documents.component').then((m) => m.DocumentsComponent),
+      import('./features/engagement-detail/engagement-detail.component').then(
+        (m) => m.EngagementDetailComponent
+      ),
   },
   {
-    path: 'dashboard',
+    path: 'documents',
     loadComponent: () =>
-      import('./features/home/home.component').then((m) => m.HomeComponent),
+      import('./features/documents/documents.component').then(
+        (m) => m.DocumentsComponent
+      ),
   },
 ];

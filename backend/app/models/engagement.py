@@ -1,4 +1,4 @@
-"""Engagement SQLAlchemy model for Star-Eyes platform."""
+"""Engagement SQLAlchemy model for Avengers Project platform."""
 
 from datetime import datetime, date
 from enum import Enum as PyEnum
@@ -32,7 +32,7 @@ class RiskLevel(str, PyEnum):
 
 class Engagement(Base):
     """
-    Engagement model representing a client engagement in the Star-Eyes platform.
+    Engagement model representing a client engagement in the Avengers Project platform.
 
     Attributes:
         id: Unique engagement identifier (e.g., ENG-FR-001)
@@ -48,6 +48,7 @@ class Engagement(Base):
         documents_required: List of required document types
         financial_data: JSON with financial metrics
         ai_insights: List of AI-generated insights
+        documents: Many-to-many relationship with documents
     """
 
     __tablename__ = "engagements"
@@ -76,11 +77,11 @@ class Engagement(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationship to documents (for future use)
+    # Many-to-many relationship with documents
     documents = relationship(
         "Document",
-        back_populates="engagement",
-        cascade="all, delete-orphan",
+        secondary="document_engagements",
+        back_populates="engagements",
         lazy="selectin",
     )
 

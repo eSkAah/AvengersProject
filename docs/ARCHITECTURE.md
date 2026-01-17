@@ -1,4 +1,4 @@
-# Architecture Technique - Star-Eyes
+# Architecture Technique - Avengers Project
 
 **Version:** 1.0
 **Date:** 2026-01-17
@@ -371,7 +371,7 @@ backend/
 │
 ├── uploads/                           # Uploaded files storage
 ├── data/
-│   └── star_eyes.db                   # SQLite database
+│   └── avengers_project.db            # SQLite database
 │
 ├── tests/
 │   ├── __init__.py
@@ -394,7 +394,7 @@ from app.db.database import create_tables
 from app.db.seed import seed_demo_data
 
 app = FastAPI(
-    title="Star-Eyes API",
+    title="Avengers Project API",
     description="Digital Engagement Platform POC",
     version="1.0.0"
 )
@@ -611,7 +611,7 @@ class ClassificationService:
 ```python
 # app/ai/prompts.py
 
-EVE_SYSTEM_PROMPT = """Vous êtes Eve, l'assistante IA de la plateforme Star-Eyes pour EY.
+EVE_SYSTEM_PROMPT = """Vous êtes Eve, l'assistante IA de la plateforme Avengers Project pour EY.
 
 PERSONNALITÉ:
 - Style corporate et professionnel
@@ -821,7 +821,7 @@ export interface DashboardKPIs {
 
 ```bash
 # .env
-DATABASE_URL=sqlite:///./data/star_eyes.db
+DATABASE_URL=sqlite:///./data/avengers_project.db
 FACTORY_AI_URL=https://factory-ai.ey.com/api
 FACTORY_AI_KEY=your-api-key
 UPLOAD_DIR=./uploads

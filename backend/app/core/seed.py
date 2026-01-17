@@ -1,11 +1,12 @@
-"""Demo data seeding for Star-Eyes platform."""
+"""Demo data seeding for Avengers Project platform."""
 
 import logging
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.engagement import Engagement, StatusEnum, RiskLevel
 from app.models.document import Document, DocumentStatus, DocumentType
@@ -147,7 +148,7 @@ async def seed_demo_engagements(db: AsyncSession) -> int:
         return 0
 
     # Seed demo engagements
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     for eng_data in DEMO_ENGAGEMENTS:
         engagement = Engagement(
             id=eng_data["id"],
@@ -173,98 +174,98 @@ async def seed_demo_engagements(db: AsyncSession) -> int:
     return len(DEMO_ENGAGEMENTS)
 
 
-# Demo documents data as specified in the story
+# Demo documents data - now with engagement_ids list for many-to-many
 DEMO_DOCUMENTS = [
     # Germany PropCo documents (ENG-DE-001) - processing
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-DE-001",
+        "engagement_ids": ["ENG-DE-001"],
         "name": "Grand_Livre_DE_2025.xlsx",
         "type": DocumentType.general_ledger,
         "format": "xlsx",
         "size_bytes": 245760,
         "status": DocumentStatus.analyzed,
         "ai_summary": "General ledger containing 1,234 transactions for fiscal year 2025. Total debits: €28.5M, Total credits: €28.5M.",
-        "file_path": "ENG-DE-001/Grand_Livre_DE_2025.xlsx",
+        "file_path": "documents/Grand_Livre_DE_2025.xlsx",
     },
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-DE-001",
+        "engagement_ids": ["ENG-DE-001"],
         "name": "Balance_Generale_DE.xlsx",
         "type": DocumentType.trial_balance,
         "format": "xlsx",
         "size_bytes": 98304,
         "status": DocumentStatus.analyzing,
         "ai_summary": None,
-        "file_path": "ENG-DE-001/Balance_Generale_DE.xlsx",
+        "file_path": "documents/Balance_Generale_DE.xlsx",
     },
     # Netherlands BV documents (ENG-NL-001) - completed
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-NL-001",
+        "engagement_ids": ["ENG-NL-001"],
         "name": "Grand_Livre_NL_2025.xlsx",
         "type": DocumentType.general_ledger,
         "format": "xlsx",
         "size_bytes": 312500,
         "status": DocumentStatus.analyzed,
         "ai_summary": "General ledger with 2,156 transactions. All accounts balanced. Revenue recognition compliant with IFRS 15.",
-        "file_path": "ENG-NL-001/Grand_Livre_NL_2025.xlsx",
+        "file_path": "documents/Grand_Livre_NL_2025.xlsx",
     },
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-NL-001",
+        "engagement_ids": ["ENG-NL-001"],
         "name": "Balance_Generale_NL.xlsx",
         "type": DocumentType.trial_balance,
         "format": "xlsx",
         "size_bytes": 87040,
         "status": DocumentStatus.analyzed,
         "ai_summary": "Trial balance verified. Total assets: €42M, Total liabilities: €18.5M, Equity: €23.5M.",
-        "file_path": "ENG-NL-001/Balance_Generale_NL.xlsx",
+        "file_path": "documents/Balance_Generale_NL.xlsx",
     },
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-NL-001",
+        "engagement_ids": ["ENG-NL-001"],
         "name": "Declaration_Fiscale_NL.pdf",
         "type": DocumentType.tax_return,
         "format": "pdf",
         "size_bytes": 524288,
         "status": DocumentStatus.analyzed,
         "ai_summary": "Corporate tax return for fiscal year 2025. Taxable income: €6.6M. Tax due: €1.65M at 25% rate.",
-        "file_path": "ENG-NL-001/Declaration_Fiscale_NL.pdf",
+        "file_path": "documents/Declaration_Fiscale_NL.pdf",
     },
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-NL-001",
+        "engagement_ids": ["ENG-NL-001"],
         "name": "Bank_Statement_NL.pdf",
         "type": DocumentType.financial_statement,
         "format": "pdf",
         "size_bytes": 156672,
         "status": DocumentStatus.analyzed,
         "ai_summary": "Bank statements for Q4 2025. Closing balance: €8.2M. Cash flow positive with €1.1M net inflow.",
-        "file_path": "ENG-NL-001/Bank_Statement_NL.pdf",
+        "file_path": "documents/Bank_Statement_NL.pdf",
     },
     # Belgium HoldCo documents (ENG-BE-001) - received
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-BE-001",
+        "engagement_ids": ["ENG-BE-001"],
         "name": "Grand_Livre_BE_2025.xlsx",
         "type": DocumentType.general_ledger,
         "format": "xlsx",
         "size_bytes": 178432,
         "status": DocumentStatus.uploaded,
         "ai_summary": None,
-        "file_path": "ENG-BE-001/Grand_Livre_BE_2025.xlsx",
+        "file_path": "documents/Grand_Livre_BE_2025.xlsx",
     },
     {
         "id": str(uuid.uuid4()),
-        "engagement_id": "ENG-BE-001",
+        "engagement_ids": ["ENG-BE-001"],
         "name": "Balance_Generale_BE.xlsx",
         "type": DocumentType.trial_balance,
         "format": "xlsx",
         "size_bytes": 65536,
         "status": DocumentStatus.uploaded,
         "ai_summary": None,
-        "file_path": "ENG-BE-001/Balance_Generale_BE.xlsx",
+        "file_path": "documents/Balance_Generale_BE.xlsx",
     },
 ]
 
@@ -289,12 +290,15 @@ async def seed_demo_documents(db: AsyncSession) -> int:
         logger.info("Documents table already populated, skipping seed")
         return 0
 
+    # Fetch engagements for linking
+    eng_result = await db.execute(select(Engagement))
+    engagements = {eng.id: eng for eng in eng_result.scalars().all()}
+
     # Seed demo documents
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     for doc_data in DEMO_DOCUMENTS:
         document = Document(
             id=doc_data["id"],
-            engagement_id=doc_data["engagement_id"],
             name=doc_data["name"],
             type=doc_data["type"],
             format=doc_data["format"],
@@ -304,6 +308,12 @@ async def seed_demo_documents(db: AsyncSession) -> int:
             file_path=doc_data["file_path"],
             uploaded_at=now,
         )
+
+        # Link to engagements
+        for eng_id in doc_data.get("engagement_ids", []):
+            if eng_id in engagements:
+                document.engagements.append(engagements[eng_id])
+
         db.add(document)
 
     await db.commit()

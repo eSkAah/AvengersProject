@@ -8,6 +8,7 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import {
   NotificationItemComponent,
   Notification,
@@ -17,7 +18,7 @@ import {
 @Component({
   selector: 'app-notifications-zone',
   standalone: true,
-  imports: [CommonModule, NotificationItemComponent, BadgeComponent],
+  imports: [CommonModule, LucideAngularModule, NotificationItemComponent, BadgeComponent],
   templateUrl: './notifications-zone.component.html',
   styleUrl: './notifications-zone.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

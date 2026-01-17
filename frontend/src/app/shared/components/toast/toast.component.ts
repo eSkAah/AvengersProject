@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { ToastService, Toast } from './toast.service';
 
 @Component({
   selector: 'app-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,17 +20,17 @@ export class ToastComponent {
     return ['toast', `toast--${toast.type}`].join(' ');
   }
 
-  getIcon(type: string): string {
+  getIconName(type: string): string {
     switch (type) {
       case 'success':
-        return '✓';
+        return 'check-circle';
       case 'error':
-        return '✕';
+        return 'x';
       case 'warning':
-        return '⚠';
+        return 'alert-triangle';
       case 'info':
       default:
-        return 'ℹ';
+        return 'info';
     }
   }
 

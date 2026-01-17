@@ -28,7 +28,7 @@ async def test_health_endpoint_returns_healthy_status(client):
     response = await client.get("/api/v1/health")
     data = response.json()
     assert data["status"] == "healthy"
-    assert data["app_name"] == "Star-Eyes"
+    assert data["app_name"] == "Avengers Project"
     assert "version" in data
     assert "database_status" in data
 

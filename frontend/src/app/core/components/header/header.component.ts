@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  @Input() title = 'Star-Eyes';
+  @Input() title = 'Avengers Project';
   @Input() sidebarCollapsed = false;
 
   notificationCount = 3;

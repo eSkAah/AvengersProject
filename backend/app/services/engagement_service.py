@@ -1,4 +1,4 @@
-"""Engagement service with business logic for the Star-Eyes platform."""
+"""Engagement service with business logic for the Avengers Project platform."""
 
 from datetime import date
 from typing import List, Optional, Union
@@ -162,6 +162,94 @@ async def update_engagement_risk(
         status=engagement.status,
     )
     engagement.risk_level = new_risk
+
+    if commit:
+        await db.commit()
+        await db.refresh(engagement)
+
+    return engagement
+
+
+async def count_engagement_documents(
+    db: AsyncSession,
+    engagement_id: str,
+) -> int:
+    """
+    Count the number of documents uploaded for an engagement.
+
+    Args:
+        db: Async database session
+        engagement_id: Engagement ID to count documents for
+
+    Returns:
+        Number of documents
+    """
+    from app.models.document import Document, document_engagements
+
+    result = await db.execute(
+        select(Document)
+        .join(document_engagements)
+        .where(document_engagements.c.engagement_id == engagement_id)
+    )
+    return len(list(result.scalars().all()))
+
+
+async def update_engagement_after_upload(
+    db: AsyncSession,
+    engagement: Engagement,
+    classification_success: bool = False,
+    commit: bool = True,
+) -> Engagement:
+    """
+    Update engagement status, completion percent, and risk level after a document upload.
+
+    Status transitions:
+    - waiting → received (first document received)
+    - received → processing (classification completed successfully)
+
+    Args:
+        db: Async database session
+        engagement: Engagement object to update
+        classification_success: Whether classification was successful
+        commit: Whether to commit the changes
+
+    Returns:
+        Updated Engagement object
+    """
+    # Count documents for this engagement
+    documents_count = await count_engagement_documents(db, engagement.id)
+
+    # Get required documents count
+    documents_required = len(engagement.documents_required) if engagement.documents_required else 4
+
+    # Status transitions
+    old_status = engagement.status
+
+    # First document received: waiting → received
+    if old_status == StatusEnum.waiting and documents_count >= 1:
+        engagement.status = StatusEnum.received
+
+    # Classification success: received → processing
+    if classification_success and engagement.status in (StatusEnum.waiting, StatusEnum.received):
+        engagement.status = StatusEnum.processing
+
+    # All required documents uploaded: → completed
+    if documents_count >= documents_required:
+        engagement.status = StatusEnum.completed
+
+    # Recalculate completion percent
+    engagement.completion_percent = calculate_completion_percent(
+        documents_uploaded=documents_count,
+        documents_required=documents_required,
+        status=engagement.status,
+    )
+
+    # Recalculate risk level
+    engagement.risk_level = calculate_risk_level(
+        due_date=engagement.due_date,
+        completion_percent=engagement.completion_percent,
+        status=engagement.status,
+    )
 
     if commit:
         await db.commit()

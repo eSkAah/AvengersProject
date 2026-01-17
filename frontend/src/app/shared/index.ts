@@ -15,3 +15,4 @@ export * from './components/notification-item/notification-item.component';
 export * from './components/breadcrumb/breadcrumb.component';
 export * from './components/view-toggle/view-toggle.component';
 export * from './components/search-bar/search-bar.component';
+export * from './components/upload-zone/upload-zone.component';

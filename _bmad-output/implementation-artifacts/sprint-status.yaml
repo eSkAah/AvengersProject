@@ -1,6 +1,6 @@
 # generated: 2026-01-17
 # project: AvengersProject
-# project_key: star-eyes
+# project_key: avengers-project
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
 
@@ -30,7 +30,7 @@
 
 generated: 2026-01-17
 project: AvengersProject
-project_key: star-eyes
+project_key: avengers-project
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
@@ -63,7 +63,7 @@ development_status:
   # Epic 3: Document Library (J3-J5)
   # ============================================
   epic-3: done
-  3-1-api-documents-crud: review  # Backend (FastAPI)
+  3-1-api-documents-crud: done  # Backend (FastAPI) - Code review completed
   3-2-document-tree-navigation: done
   3-3-document-grid-view: done
   3-4-document-list-view: done
@@ -75,12 +75,12 @@ development_status:
   # ============================================
   # Epic 4: Smart Upload & Classification (J3-J5)
   # ============================================
-  epic-4: backlog
-  4-1-api-upload-document: backlog
-  4-2-upload-zone-component: backlog
-  4-3-classification-ia-service: backlog
-  4-4-upload-progress-feedback: backlog
-  4-5-auto-update-engagement-status: backlog
+  epic-4: done
+  4-1-api-upload-document: done  # Code review completed
+  4-2-upload-zone-component: done
+  4-3-classification-ia-service: done
+  4-4-upload-progress-feedback: done
+  4-5-auto-update-engagement-status: done
   epic-4-retrospective: optional
 
   # ============================================

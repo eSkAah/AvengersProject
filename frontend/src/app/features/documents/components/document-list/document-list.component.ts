@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { Document, Engagement, DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../../../../core';
 import { BadgeComponent, ButtonComponent } from '../../../../shared';
 
@@ -16,7 +17,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-document-list',
   standalone: true,
-  imports: [CommonModule, BadgeComponent, ButtonComponent],
+  imports: [CommonModule, LucideAngularModule, BadgeComponent, ButtonComponent],
   templateUrl: './document-list.component.html',
   styleUrl: './document-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,13 +76,25 @@ export class DocumentListComponent {
   }
 
   getSortIcon(column: SortColumn): string {
-    if (this.sortColumn() !== column) return '↕️';
-    return this.sortDirection() === 'asc' ? '↑' : '↓';
+    if (this.sortColumn() !== column) return 'arrow-up-down';
+    return this.sortDirection() === 'asc' ? 'arrow-up' : 'arrow-down';
   }
 
-  getEngagementName(engagementId: string): string {
-    const engagement = this.engagements.find((e) => e.id === engagementId);
-    return engagement ? `${engagement.countryFlag} ${engagement.entity}` : engagementId;
+  getEngagementNames(engagementIds: string[]): string {
+    if (!engagementIds || engagementIds.length === 0) {
+      return '-';
+    }
+    const names = engagementIds
+      .map((id) => {
+        const engagement = this.engagements.find((e) => e.id === id);
+        return engagement ? `${engagement.countryFlag} ${engagement.entity}` : id;
+      })
+      .slice(0, 2); // Show max 2
+
+    if (engagementIds.length > 2) {
+      return `${names.join(', ')} +${engagementIds.length - 2}`;
+    }
+    return names.join(', ');
   }
 
   getStatusVariant(status: string): 'success' | 'warning' | 'error' | 'info' {

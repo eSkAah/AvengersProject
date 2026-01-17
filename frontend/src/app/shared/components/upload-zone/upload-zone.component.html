@@ -1,0 +1,171 @@
+<div
+  [class]="zoneClasses"
+  (dragenter)="onDragEnter($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="onZoneClick()"
+>
+  <!-- Hidden file input -->
+  <input
+    #fileInput
+    type="file"
+    multiple
+    accept=".xlsx,.xls,.pdf,.csv"
+    class="upload-zone__input"
+    (change)="onFileInputChange($event)"
+    (click)="$event.stopPropagation()"
+  />
+
+  <!-- Drop zone content -->
+  <div class="upload-zone__content">
+    <!-- Icon -->
+    <div class="upload-zone__icon">
+      <lucide-icon
+        *ngIf="state() === 'default' || state() === 'dragover'"
+        name="upload"
+        class="upload-zone__icon-svg"
+        [size]="48"
+      ></lucide-icon>
+      <span *ngIf="state() === 'uploading'" class="upload-zone__spinner"></span>
+      <lucide-icon
+        *ngIf="state() === 'success'"
+        name="check-circle"
+        class="upload-zone__icon-svg upload-zone__icon-svg--success"
+        [size]="48"
+      ></lucide-icon>
+      <lucide-icon
+        *ngIf="state() === 'error'"
+        name="x"
+        class="upload-zone__icon-svg upload-zone__icon-svg--error"
+        [size]="48"
+      ></lucide-icon>
+    </div>
+
+    <!-- Text content -->
+    <div class="upload-zone__text">
+      <p class="upload-zone__title" *ngIf="state() === 'default'">
+        Glissez-déposez vos fichiers ici
+      </p>
+      <p class="upload-zone__title" *ngIf="state() === 'dragover'">
+        Relâchez pour ajouter les fichiers
+      </p>
+      <p class="upload-zone__title" *ngIf="state() === 'uploading'">
+        Upload en cours...
+      </p>
+      <p class="upload-zone__title" *ngIf="state() === 'success'">
+        Upload terminé avec succès
+      </p>
+      <p class="upload-zone__title" *ngIf="state() === 'error'">
+        Erreur lors de l'upload
+      </p>
+
+      <p class="upload-zone__subtitle" *ngIf="state() === 'default' || state() === 'dragover'">
+        ou <span class="upload-zone__link">cliquez pour sélectionner</span>
+      </p>
+      <p class="upload-zone__formats">
+        Formats acceptés: XLSX, XLS, PDF, CSV • Max 10 MB
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- File preview list -->
+<div class="upload-zone__files" *ngIf="hasFiles()">
+  <div class="upload-zone__files-header">
+    <span class="upload-zone__files-count">
+      {{ selectedFiles().length }} fichier(s) sélectionné(s)
+      <span *ngIf="invalidFiles().length > 0" class="upload-zone__files-invalid">
+        ({{ invalidFiles().length }} invalide(s))
+      </span>
+    </span>
+    <button
+      type="button"
+      class="upload-zone__clear-btn"
+      (click)="clearAllFiles()"
+      [disabled]="state() === 'uploading'"
+    >
+      Tout effacer
+    </button>
+  </div>
+
+  <ul class="upload-zone__file-list">
+    <li
+      *ngFor="let preview of selectedFiles()"
+      class="upload-zone__file-item"
+      [class.upload-zone__file-item--invalid]="!preview.isValid"
+      [class.upload-zone__file-item--uploading]="preview.uploadStatus === 'uploading'"
+      [class.upload-zone__file-item--classifying]="preview.uploadStatus === 'classifying'"
+      [class.upload-zone__file-item--success]="preview.uploadStatus === 'success'"
+      [class.upload-zone__file-item--error]="preview.uploadStatus === 'error'"
+    >
+      <div class="upload-zone__file-icon">
+        <lucide-icon [name]="getFileIcon(preview.extension)" [size]="20"></lucide-icon>
+      </div>
+
+      <div class="upload-zone__file-info">
+        <span class="upload-zone__file-name">{{ preview.name }}</span>
+        <span class="upload-zone__file-meta">
+          {{ formatFileSize(preview.size) }}
+          <span *ngIf="preview.errorMessage" class="upload-zone__file-error">
+            • {{ preview.errorMessage }}
+          </span>
+        </span>
+      </div>
+
+      <app-badge
+        [variant]="preview.isValid ? getExtensionVariant(preview.extension) : 'error'"
+      >
+        {{ preview.extension.toUpperCase() }}
+      </app-badge>
+
+      <!-- Upload progress -->
+      <div
+        *ngIf="preview.uploadStatus === 'uploading'"
+        class="upload-zone__file-progress"
+        title="Téléchargement..."
+      >
+        <div class="upload-zone__progress-spinner"></div>
+      </div>
+
+      <!-- Classifying animation -->
+      <div
+        *ngIf="preview.uploadStatus === 'classifying'"
+        class="upload-zone__file-progress upload-zone__file-classifying"
+        title="Classification en cours..."
+      >
+        <div class="upload-zone__classify-animation">
+          <lucide-icon name="search" class="upload-zone__classify-icon" [size]="16"></lucide-icon>
+        </div>
+      </div>
+
+      <!-- Status icons -->
+      <span *ngIf="preview.uploadStatus === 'success'" class="upload-zone__file-status upload-zone__file-status--success" [title]="preview.classificationResult || 'Succès'">
+        <lucide-icon name="check" [size]="14"></lucide-icon>
+      </span>
+      <span *ngIf="preview.uploadStatus === 'error'" class="upload-zone__file-status upload-zone__file-status--error">
+        <lucide-icon name="x" [size]="14"></lucide-icon>
+      </span>
+
+      <!-- Classification result badge -->
+      <span *ngIf="preview.uploadStatus === 'success' && preview.classificationResult" class="upload-zone__classification-badge">
+        {{ preview.classificationResult }}
+      </span>
+
+      <button
+        *ngIf="preview.uploadStatus === 'pending'"
+        type="button"
+        class="upload-zone__file-remove"
+        (click)="removeFile(preview.id); $event.stopPropagation()"
+        title="Supprimer"
+      >
+        <lucide-icon name="x" [size]="16"></lucide-icon>
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- No engagement warning -->
+<div *ngIf="engagementId === null && hasFiles()" class="upload-zone__warning">
+  Veuillez sélectionner un engagement avant de télécharger des fichiers.
+</div>

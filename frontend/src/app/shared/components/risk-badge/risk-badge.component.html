@@ -8,6 +8,11 @@
   [class.risk-badge--pulse]="shouldPulse"
   [title]="currentConfig.tooltip"
 >
-  <span class="risk-badge__icon">{{ currentConfig.icon }}</span>
+  <span
+    class="risk-badge__dot"
+    [style.background-color]="currentConfig.color"
+    [style.width.px]="iconSize"
+    [style.height.px]="iconSize"
+  ></span>
   <span class="risk-badge__label" *ngIf="showLabel">{{ currentConfig.label }}</span>
 </div>

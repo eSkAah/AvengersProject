@@ -61,7 +61,7 @@ main        ← Source of truth, always deployable, NEVER commit directly
 
 ---
 
-## Project: Star-Eyes Backend
+## Project: Avengers Project Backend
 
 ### Tech Stack
 - FastAPI 0.115.6

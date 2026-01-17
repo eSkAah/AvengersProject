@@ -3,53 +3,280 @@
 .home {
   max-width: 1400px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-6;
+  padding: $spacing-4;
 
   &__header {
-    margin-bottom: $spacing-2;
-
-    h1 {
-      font-size: $font-size-3xl;
-      font-weight: $font-weight-bold;
-      color: $color-text-primary;
-      margin-bottom: $spacing-1;
-    }
-
-    p {
-      font-size: $font-size-lg;
-      color: $color-text-secondary;
-    }
-  }
-
-  &__kpis {
-    margin-bottom: $spacing-2;
-  }
-
-  &__engagements {
     display: flex;
-    flex-direction: column;
-    gap: $spacing-4;
+    justify-content: space-between;
+    align-items: center;
+
+    &-content {
+      h1 {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+        color: $color-text-primary;
+        margin-bottom: $spacing-1;
+      }
+
+      p {
+        font-size: $font-size-base;
+        color: $color-text-secondary;
+      }
+    }
+
+    &-decoration {
+      color: $ey-yellow;
+      opacity: 0.8;
+    }
   }
 }
 
+// Bento Grid Layout
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  grid-template-rows: auto auto auto 1fr;
+  gap: $spacing-4;
+  min-height: calc(100vh - 120px);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto;
+  }
+}
+
+// Bento Card - Premium Styling
+.bento-card {
+  background: $color-surface;
+  border-radius: $radius-xl;
+  overflow: hidden;
+
+  // Premium shadow layering
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.04);
+
+  // Subtle border for definition
+  border: 1px solid rgba($color-border, 0.4);
+
+  // Smooth transition for hover states
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.02),
+      0 4px 8px rgba(0, 0, 0, 0.03),
+      0 8px 16px rgba(0, 0, 0, 0.04),
+      0 16px 32px rgba(0, 0, 0, 0.06),
+      0 24px 48px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  // Header Card
+  &--header {
+    grid-column: 1 / -1;
+    padding: $spacing-5 $spacing-6;
+    background: linear-gradient(
+      135deg,
+      $color-surface 0%,
+      rgba($ey-yellow, 0.03) 100%
+    );
+    border-bottom: 2px solid rgba($ey-yellow, 0.3);
+
+    @media (max-width: 1024px) {
+      grid-column: 1;
+    }
+  }
+
+  // KPIs Card
+  &--kpis {
+    grid-column: 1;
+    grid-row: 2;
+    padding: $spacing-4;
+
+    // Let the KPI header component handle internal styling
+    :host ::ng-deep .kpi-header {
+      margin: 0;
+    }
+  }
+
+  // Notifications Card
+  &--notifications {
+    grid-column: 2;
+    grid-row: 2 / 5;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    max-height: 700px;
+
+    // Remove inner card styling since notifications-zone has its own
+    background: transparent;
+    box-shadow: none;
+    border: none;
+
+    &:hover {
+      box-shadow: none;
+      transform: none;
+    }
+
+    // Let the notifications zone fill the card
+    app-notifications-zone {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      ::ng-deep .notifications-zone {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      grid-column: 1;
+      grid-row: 3;
+      max-height: 400px;
+    }
+  }
+
+  // Financial Summary Card
+  &--financial {
+    grid-column: 1;
+    grid-row: 3;
+    padding: $spacing-5;
+
+    @media (max-width: 1024px) {
+      grid-column: 1;
+      grid-row: 4;
+    }
+  }
+
+  // Engagements Card
+  &--engagements {
+    grid-column: 1;
+    grid-row: 4;
+    padding: $spacing-5;
+
+    @media (max-width: 1024px) {
+      grid-column: 1;
+      grid-row: 5;
+    }
+  }
+}
+
+// Section Header
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: $spacing-4;
 
-  h2 {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-semibold;
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
     color: $color-text-primary;
+
+    lucide-icon {
+      color: $ey-yellow;
+    }
+
+    h2 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+      margin: 0;
+    }
   }
 
   &__count {
     font-size: $font-size-sm;
     color: $color-text-secondary;
-    background: $color-background;
+    background: rgba($ey-black, 0.04);
     padding: $spacing-1 $spacing-3;
     border-radius: $radius-full;
+    font-weight: $font-weight-medium;
+  }
+}
+
+// Financial Summary
+.financial-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-4;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.financial-metric {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-4;
+  background: rgba($color-background, 0.5);
+  border-radius: $radius-lg;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($color-background, 0.8);
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    flex-shrink: 0;
+
+    &--assets {
+      background: rgba($color-success, 0.1);
+      color: $color-success;
+    }
+
+    &--liabilities {
+      background: rgba($color-error, 0.1);
+      color: $color-error;
+    }
+
+    &--revenue {
+      background: rgba($color-info, 0.1);
+      color: $color-info;
+    }
+
+    &--completion {
+      background: rgba($ey-yellow, 0.15);
+      color: $ey-black;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    white-space: nowrap;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }

@@ -7,7 +7,7 @@
   role="button"
   tabindex="0"
 >
-  <span class="notification-item__icon">{{ icon }}</span>
+  <lucide-icon [name]="icon" class="notification-item__icon" [size]="18"></lucide-icon>
   <span class="notification-item__message">{{ notification.message }}</span>
   <button
     *ngIf="dismissible"
@@ -15,6 +15,6 @@
     (click)="onDismiss($event)"
     aria-label="Dismiss notification"
   >
-    ×
+    <lucide-icon name="x" [size]="14"></lucide-icon>
   </button>
 </div>

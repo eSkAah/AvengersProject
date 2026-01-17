@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Star-Eyes** is a Digital Engagement Platform POC (10-day hackathon) for a real estate fund client. The goal is to demonstrate premium AI capabilities through a polished Angular frontend + FastAPI backend.
+**Avengers Project** is a Digital Engagement Platform POC (10-day hackathon) for a real estate fund client. The goal is to demonstrate premium AI capabilities through a polished Angular frontend + FastAPI backend.
 
 **Key Demo Features:**
 - Smart document classification via AI (Blackwell / Azure foundry model AI / OpenAI Api for POC)

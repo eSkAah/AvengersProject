@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 import { MockDataService, Engagement } from '../../core';
 import { Notification } from '../../shared';
 import {
@@ -15,6 +16,7 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    LucideAngularModule,
     KpiHeaderComponent,
     EngagementListComponent,
     NotificationsZoneComponent,
@@ -54,31 +56,54 @@ export class HomeComponent {
 
   readonly notifications = this.mockData.notifications;
 
+  // Financial summary data
+  readonly financialTotals = computed(() => {
+    const engagements = this.mockData.engagements();
+    return {
+      totalAssets: engagements.reduce((sum, e) => sum + e.financialData.assets, 0),
+      totalLiabilities: engagements.reduce((sum, e) => sum + e.financialData.liabilities, 0),
+      totalRevenue: engagements.reduce((sum, e) => sum + e.financialData.revenue, 0),
+      avgCompletion: Math.round(
+        engagements.reduce((sum, e) => sum + e.completionPercent, 0) / engagements.length
+      ),
+    };
+  });
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value);
+  }
+
   onFilterChange(filter: KpiFilter): void {
     this.activeFilter.set(filter);
   }
 
   onViewDashboard(engagement: Engagement): void {
-    console.log('View dashboard for:', engagement.entity);
-    // TODO: Navigate to dashboard
-    // this.router.navigate(['/dashboard', engagement.id]);
+    // Navigate to engagement detail page
+    this.router.navigate(['/engagements', engagement.id]);
   }
 
   onUploadDocs(engagement: Engagement): void {
-    console.log('Upload docs for:', engagement.entity);
-    // TODO: Navigate to documents
-    // this.router.navigate(['/documents'], { queryParams: { engagement: engagement.id } });
+    this.router.navigate(['/documents'], {
+      queryParams: { engagement: engagement.id },
+    });
   }
 
   onAskEve(engagement: Engagement): void {
-    console.log('Ask Eve about:', engagement.entity);
-    // TODO: Open Eve chatbot
+    // Open Eve chat with engagement context
+    this.router.navigate(['/eve'], {
+      queryParams: { engagement: engagement.id },
+    });
   }
 
   onNotificationClick(notification: Notification): void {
     if (notification.engagementId) {
-      console.log('Navigate to engagement:', notification.engagementId);
-      // TODO: Navigate or expand engagement
+      // Navigate to engagement detail page
+      this.router.navigate(['/engagements', notification.engagementId]);
     }
   }
 }

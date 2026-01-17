@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'styles/variables' as *;
 
 .progress-bar {
@@ -40,15 +41,15 @@
     transition: width 0.3s ease-out;
 
     &--high {
-      background: linear-gradient(90deg, $color-error 0%, lighten($color-error, 10%) 100%);
+      background: linear-gradient(90deg, $color-error 0%, color.adjust($color-error, $lightness: 10%) 100%);
     }
 
     &--medium {
-      background: linear-gradient(90deg, $color-warning 0%, lighten($color-warning, 10%) 100%);
+      background: linear-gradient(90deg, $color-warning 0%, color.adjust($color-warning, $lightness: 10%) 100%);
     }
 
     &--low {
-      background: linear-gradient(90deg, $color-success 0%, lighten($color-success, 10%) 100%);
+      background: linear-gradient(90deg, $color-success 0%, color.adjust($color-success, $lightness: 10%) 100%);
     }
   }
 

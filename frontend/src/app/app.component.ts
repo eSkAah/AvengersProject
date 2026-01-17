@@ -12,5 +12,5 @@ import { ToastComponent } from './shared';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  title = 'Star-Eyes';
+  title = 'Avengers Project';
 }

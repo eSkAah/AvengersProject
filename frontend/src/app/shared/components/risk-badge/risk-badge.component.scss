@@ -64,6 +64,12 @@
     line-height: 1;
   }
 
+  &__dot {
+    display: inline-block;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   &__label {
     text-transform: uppercase;
     letter-spacing: 0.5px;

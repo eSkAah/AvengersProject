@@ -8,13 +8,14 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 
 export type KpiVariant = 'default' | 'info' | 'warning' | 'error' | 'success';
 
 @Component({
   selector: 'app-kpi-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './kpi-card.component.html',
   styleUrl: './kpi-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,7 +23,7 @@ export type KpiVariant = 'default' | 'info' | 'warning' | 'error' | 'success';
 export class KpiCardComponent implements OnInit {
   @Input({ required: true }) value!: number;
   @Input({ required: true }) label!: string;
-  @Input() icon = '📊';
+  @Input() icon = 'bar-chart-3';
   @Input() variant: KpiVariant = 'default';
   @Input() clickable = true;
   @Input() active = false;

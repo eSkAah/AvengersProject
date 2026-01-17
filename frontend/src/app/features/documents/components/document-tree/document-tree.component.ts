@@ -8,29 +8,40 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Engagement, Document } from '../../../../core';
+import { LucideAngularModule } from 'lucide-angular';
+import {
+  Document,
+  DocumentLibrary,
+  DocumentCategory,
+  DocumentType,
+  DOCUMENT_CATEGORY_LABELS,
+  DOCUMENT_TYPE_LABELS,
+} from '../../../../core';
 
 export interface TreeNode {
   id: string;
   label: string;
   icon: string;
-  type: 'client' | 'engagement' | 'document';
+  isEmoji?: boolean;
+  type: 'library' | 'category' | 'doctype' | 'document';
   children?: TreeNode[];
   count?: number;
-  engagementId?: string;
+  documentId?: string;
+  docType?: DocumentType;
+  category?: DocumentCategory;
 }
 
 @Component({
   selector: 'app-document-tree',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './document-tree.component.html',
   styleUrl: './document-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentTreeComponent {
-  @Input() set engagements(value: Engagement[]) {
-    this.engagementsSignal.set(value);
+  @Input() set library(value: DocumentLibrary | null) {
+    this.librarySignal.set(value);
   }
 
   @Input() set documents(value: Document[]) {
@@ -38,55 +49,161 @@ export class DocumentTreeComponent {
   }
 
   @Output() nodeSelect = new EventEmitter<TreeNode>();
+  @Output() documentSelect = new EventEmitter<Document>();
 
-  private engagementsSignal = signal<Engagement[]>([]);
+  private librarySignal = signal<DocumentLibrary | null>(null);
   private documentsSignal = signal<Document[]>([]);
 
   expandedNodes = signal<Set<string>>(new Set(['root']));
   selectedNodeId = signal<string | null>(null);
 
+  private categoryIcons: Record<string, string> = {
+    accounting: 'book-open',
+    tax: 'clipboard-list',
+    financial: 'landmark',
+  };
+
+  private typeIcons: Record<string, string> = {
+    general_ledger: 'book-open',
+    trial_balance: 'bar-chart-3',
+    bank_statement: 'landmark',
+    tax_return: 'clipboard-list',
+    financial_statement: 'file-text',
+  };
+
   treeData = computed<TreeNode>(() => {
-    const engagements = this.engagementsSignal();
+    const library = this.librarySignal();
+
+    // If we have a library from the API, use it
+    if (library) {
+      return this.buildTreeFromLibrary(library);
+    }
+
+    // Otherwise, build from documents list (legacy mode)
     const documents = this.documentsSignal();
+    return this.buildTreeFromDocuments(documents);
+  });
 
-    const engagementNodes: TreeNode[] = engagements.map((eng) => {
-      const engDocs = documents.filter((d) => d.engagementId === eng.id);
-
-      return {
-        id: eng.id,
-        label: eng.entity,
-        icon: eng.countryFlag,
-        type: 'engagement' as const,
-        count: engDocs.length,
-        engagementId: eng.id,
-        children: engDocs.map((doc) => ({
+  private buildTreeFromLibrary(library: DocumentLibrary): TreeNode {
+    const categoryNodes: TreeNode[] = library.categories.map((cat) => ({
+      id: `category-${cat.category}`,
+      label: cat.categoryLabel,
+      icon: this.categoryIcons[cat.category] || 'folder',
+      isEmoji: false,
+      type: 'category' as const,
+      category: cat.category as DocumentCategory,
+      count: cat.totalCount,
+      children: cat.types.map((typeGroup) => ({
+        id: `type-${typeGroup.type}`,
+        label: typeGroup.typeLabel,
+        icon: this.typeIcons[typeGroup.type] || 'file-text',
+        isEmoji: false,
+        type: 'doctype' as const,
+        docType: typeGroup.type as DocumentType,
+        count: typeGroup.count,
+        children: typeGroup.documents.map((doc) => ({
           id: doc.id,
           label: doc.name,
-          icon: this.getDocIcon(doc.type),
+          icon: this.typeIcons[doc.type] || 'file-text',
+          isEmoji: false,
           type: 'document' as const,
-          engagementId: eng.id,
+          documentId: doc.id,
         })),
-      };
-    });
+      })),
+    }));
 
     return {
       id: 'root',
-      label: 'Real Estate Fund Global',
-      icon: '🏢',
-      type: 'client',
-      count: documents.length,
-      children: engagementNodes,
+      label: 'Bibliothèque de Documents',
+      icon: 'folder-open',
+      isEmoji: false,
+      type: 'library',
+      count: library.totalCount,
+      children: categoryNodes,
     };
-  });
+  }
 
-  private getDocIcon(type: string): string {
-    const icons: Record<string, string> = {
-      general_ledger: '📗',
-      trial_balance: '📊',
-      bank_statement: '🏦',
-      tax_return: '📋',
+  private buildTreeFromDocuments(documents: Document[]): TreeNode {
+    // Group documents by category and type
+    const grouped = new Map<DocumentCategory, Map<DocumentType, Document[]>>();
+
+    for (const doc of documents) {
+      if (!doc.type) continue;
+
+      const category = this.getDocumentCategory(doc.type);
+      if (!category) continue;
+
+      if (!grouped.has(category)) {
+        grouped.set(category, new Map());
+      }
+
+      const categoryMap = grouped.get(category)!;
+      if (!categoryMap.has(doc.type)) {
+        categoryMap.set(doc.type, []);
+      }
+
+      categoryMap.get(doc.type)!.push(doc);
+    }
+
+    const categoryNodes: TreeNode[] = [];
+
+    for (const [category, typeMap] of grouped) {
+      const typeNodes: TreeNode[] = [];
+      let categoryTotal = 0;
+
+      for (const [docType, docs] of typeMap) {
+        typeNodes.push({
+          id: `type-${docType}`,
+          label: DOCUMENT_TYPE_LABELS[docType] || docType,
+          icon: this.typeIcons[docType] || 'file-text',
+          isEmoji: false,
+          type: 'doctype',
+          docType,
+          count: docs.length,
+          children: docs.map((doc) => ({
+            id: doc.id,
+            label: doc.name,
+            icon: this.typeIcons[doc.type] || 'file-text',
+            isEmoji: false,
+            type: 'document' as const,
+            documentId: doc.id,
+          })),
+        });
+        categoryTotal += docs.length;
+      }
+
+      categoryNodes.push({
+        id: `category-${category}`,
+        label: DOCUMENT_CATEGORY_LABELS[category] || category,
+        icon: this.categoryIcons[category] || 'folder',
+        isEmoji: false,
+        type: 'category',
+        category,
+        count: categoryTotal,
+        children: typeNodes,
+      });
+    }
+
+    return {
+      id: 'root',
+      label: 'Bibliothèque de Documents',
+      icon: 'folder-open',
+      isEmoji: false,
+      type: 'library',
+      count: documents.length,
+      children: categoryNodes,
     };
-    return icons[type] || '📄';
+  }
+
+  private getDocumentCategory(type: DocumentType): DocumentCategory | null {
+    const mapping: Record<DocumentType, DocumentCategory> = {
+      general_ledger: 'accounting',
+      trial_balance: 'accounting',
+      tax_return: 'tax',
+      financial_statement: 'financial',
+      bank_statement: 'financial',
+    };
+    return mapping[type] || null;
   }
 
   isExpanded(nodeId: string): boolean {

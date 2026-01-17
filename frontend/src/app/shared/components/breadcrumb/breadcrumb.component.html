@@ -7,13 +7,13 @@
         (click)="onHomeClick()"
         aria-label="Home"
       >
-        🏠
+        <lucide-icon name="home" [size]="16"></lucide-icon>
       </button>
     </li>
 
     <!-- Separator after home -->
     <li class="breadcrumb__separator" *ngIf="items.length > 0">
-      <span *ngIf="separator === 'chevron'">›</span>
+      <lucide-icon *ngIf="separator === 'chevron'" name="chevron-right" [size]="14"></lucide-icon>
       <span *ngIf="separator === 'slash'">/</span>
     </li>
 
@@ -42,7 +42,7 @@
 
       <!-- Separator between items -->
       <li class="breadcrumb__separator" *ngIf="!last">
-        <span *ngIf="separator === 'chevron'">›</span>
+        <lucide-icon *ngIf="separator === 'chevron'" name="chevron-right" [size]="14"></lucide-icon>
         <span *ngIf="separator === 'slash'">/</span>
       </li>
     </ng-container>

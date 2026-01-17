@@ -3,20 +3,20 @@
     <thead class="document-table__head">
       <tr>
         <th class="document-table__th sortable" (click)="onSort('name')">
-          Nom {{ getSortIcon('name') }}
+          Nom <lucide-icon [name]="getSortIcon('name')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th sortable" (click)="onSort('type')">
-          Type {{ getSortIcon('type') }}
+          Type <lucide-icon [name]="getSortIcon('type')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th">Engagement</th>
         <th class="document-table__th sortable" (click)="onSort('status')">
-          Status {{ getSortIcon('status') }}
+          Status <lucide-icon [name]="getSortIcon('status')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th sortable" (click)="onSort('uploadedAt')">
-          Date {{ getSortIcon('uploadedAt') }}
+          Date <lucide-icon [name]="getSortIcon('uploadedAt')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th sortable" (click)="onSort('size')">
-          Taille {{ getSortIcon('size') }}
+          Taille <lucide-icon [name]="getSortIcon('size')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th">Actions</th>
       </tr>
@@ -31,7 +31,7 @@
           <span class="document-name">{{ doc.name }}</span>
         </td>
         <td class="document-table__td">{{ typeLabels[doc.type] }}</td>
-        <td class="document-table__td">{{ getEngagementName(doc.engagementId) }}</td>
+        <td class="document-table__td">{{ getEngagementNames(doc.engagementIds) }}</td>
         <td class="document-table__td">
           <app-badge [variant]="getStatusVariant(doc.status)" size="sm">
             {{ statusLabels[doc.status] }}
@@ -45,21 +45,21 @@
             (click)="download.emit(doc); $event.stopPropagation()"
             title="Télécharger"
           >
-            ⬇️
+            <lucide-icon name="download" [size]="16"></lucide-icon>
           </button>
           <button
             class="action-btn"
             (click)="preview.emit(doc); $event.stopPropagation()"
             title="Prévisualiser"
           >
-            👁️
+            <lucide-icon name="eye" [size]="16"></lucide-icon>
           </button>
           <button
             class="action-btn"
             (click)="askEve.emit(doc); $event.stopPropagation()"
             title="Ask Eve"
           >
-            💬
+            <lucide-icon name="message-circle" [size]="16"></lucide-icon>
           </button>
         </td>
       </tr>
@@ -68,6 +68,6 @@
 </div>
 
 <div class="document-list__empty" *ngIf="documents.length === 0">
-  <span class="document-list__empty-icon">📂</span>
+  <lucide-icon name="folder-open" class="document-list__empty-icon" [size]="48"></lucide-icon>
   <p>Aucun document trouvé</p>
 </div>

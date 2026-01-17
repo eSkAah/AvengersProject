@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 
 export type ViewMode = 'grid' | 'list';
 
-const STORAGE_KEY = 'star-eyes-view-mode';
+const STORAGE_KEY = 'avengers-project-view-mode';
 
 @Component({
   selector: 'app-view-toggle',

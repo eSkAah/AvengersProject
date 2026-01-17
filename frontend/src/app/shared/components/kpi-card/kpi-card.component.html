@@ -10,7 +10,9 @@
   [attr.role]="clickable ? 'button' : null"
   [attr.tabindex]="clickable ? 0 : null"
 >
-  <div class="kpi-card__icon">{{ icon }}</div>
+  <div class="kpi-card__icon">
+    <lucide-icon [name]="icon" [size]="24"></lucide-icon>
+  </div>
   <div class="kpi-card__content">
     <span class="kpi-card__value">{{ displayValue() }}</span>
     <span class="kpi-card__label">{{ label }}</span>

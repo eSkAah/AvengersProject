@@ -61,7 +61,7 @@ main        ← Source of truth, always deployable, NEVER commit directly
 
 ---
 
-## Project: Star-Eyes Frontend
+## Project: Avengers Project Frontend
 
 ### Tech Stack
 - Angular 19 (standalone components)

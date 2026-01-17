@@ -1,4 +1,4 @@
-"""SQLAlchemy models for Star-Eyes platform."""
+"""SQLAlchemy models for Avengers Project platform."""
 
 from app.models.engagement import Engagement, StatusEnum, RiskLevel
 from app.models.document import Document, DocumentStatus, DocumentType

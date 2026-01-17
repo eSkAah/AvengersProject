@@ -2,7 +2,7 @@
   <app-kpi-card
     [value]="data.total"
     label="Total Engagements"
-    icon="📋"
+    icon="clipboard-list"
     variant="info"
     [active]="isActive('all')"
     (cardClick)="onFilterClick('all')"
@@ -11,7 +11,7 @@
   <app-kpi-card
     [value]="data.processing"
     label="En cours"
-    icon="⏳"
+    icon="clock"
     variant="warning"
     [active]="isActive('processing')"
     (cardClick)="onFilterClick('processing')"
@@ -20,7 +20,7 @@
   <app-kpi-card
     [value]="data.highRisk"
     label="À risque"
-    icon="⚠️"
+    icon="alert-triangle"
     variant="error"
     [active]="isActive('high-risk')"
     (cardClick)="onFilterClick('high-risk')"
@@ -29,7 +29,7 @@
   <app-kpi-card
     [value]="data.completed"
     label="Complétés"
-    icon="✅"
+    icon="check-circle"
     variant="success"
     [active]="isActive('completed')"
     (cardClick)="onFilterClick('completed')"

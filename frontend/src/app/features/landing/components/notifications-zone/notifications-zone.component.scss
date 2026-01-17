@@ -2,21 +2,42 @@
 
 .notifications-zone {
   background: $color-surface;
-  border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  // Premium shadow layering
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.04);
+
+  border: 1px solid rgba($color-border, 0.4);
 
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $spacing-3 $spacing-4;
-    background: $color-background;
+    padding: $spacing-4 $spacing-5;
     cursor: pointer;
     transition: background 0.2s ease;
+    border-bottom: 1px solid rgba($color-border, 0.3);
+    background: linear-gradient(
+      180deg,
+      rgba($color-surface, 1) 0%,
+      rgba($color-background, 0.5) 100%
+    );
 
     &:hover {
-      background: darken($color-background, 2%);
+      background: linear-gradient(
+        180deg,
+        rgba($ey-black, 0.02) 0%,
+        rgba($color-background, 0.5) 100%
+      );
     }
   }
 
@@ -25,49 +46,75 @@
     align-items: center;
     gap: $spacing-2;
     font-weight: $font-weight-semibold;
+    font-size: $font-size-sm;
     color: $color-text-primary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   &__icon {
-    font-size: $font-size-lg;
+    color: $ey-yellow;
   }
 
   &__toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: transparent;
-    color: $color-text-secondary;
-    font-size: $font-size-xs;
-    cursor: pointer;
-    border-radius: $radius-sm;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: rgba($ey-black, 0.05);
-    }
-
-    &.collapsed {
-      transform: rotate(-90deg);
-    }
+    color: $color-text-muted;
+    transition: transform 0.2s ease;
   }
 
   &__content {
     display: flex;
     flex-direction: column;
     gap: $spacing-2;
-    padding: $spacing-3 $spacing-4;
+    padding: $spacing-3;
     animation: slideDown 0.2s ease-out;
+    flex: 1;
+    overflow-y: auto;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      margin: $spacing-2;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba($ey-black, 0.1);
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba($ey-black, 0.2);
+      }
+    }
+  }
+
+  // Empty state
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-8 $spacing-4;
+    color: $color-text-muted;
+    text-align: center;
+
+    lucide-icon {
+      margin-bottom: $spacing-2;
+      opacity: 0.5;
+    }
+
+    span {
+      font-size: $font-size-sm;
+    }
   }
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;

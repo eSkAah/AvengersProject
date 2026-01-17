@@ -1,4 +1,4 @@
-# PRD : Project Star-Eyes (Digital Engagement Platform POC)
+# PRD : Avengers Project (Digital Engagement Platform POC)
 
 **Type de projet :** Prototype / Hackathon (10 jours)
 **Date de démo cible :** 29 du mois
@@ -15,7 +15,7 @@ Ce projet est un prototype technique ("Proof of Concept") destiné à deux audie
 2. **Finance Dept (Interne) :** Prouver que l'équipe interne peut livrer une solution intégrant l'IA (Factory AI) plus rapidement et efficacement que les prestataires externes.
 
 ### Vision Produit
-> **"Star-Eyes : Une plateforme où l'IA comprend vos documents, répond en contexte, et anticipe vos besoins - le tout dans une UI premium digne de 2026."**
+> **"Avengers Project : Une plateforme où l'IA comprend vos documents, répond en contexte, et anticipe vos besoins - le tout dans une UI premium digne de 2026."**
 
 ### Les 3 Preuves WOW de la Démo
 1. **"L'IA comprend mes documents"** → Smart Classification automatique
@@ -551,7 +551,7 @@ FINANCIAL_DATA (embedded)
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                         HEADER                                │
-│  [Logo EY] Star-Eyes              [🔔 Notifs] [👤 Profile]   │
+│  [Logo EY] Avengers               [🔔 Notifs] [👤 Profile]   │
 ├────────┬─────────────────────────────────────────────────────┤
 │        │                                                      │
 │  S     │                    MAIN CONTENT                      │

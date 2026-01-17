@@ -1,13 +1,15 @@
 <div class="notifications-zone" *ngIf="notificationCount() > 0">
   <div class="notifications-zone__header" (click)="toggleCollapse()">
     <div class="notifications-zone__title">
-      <span class="notifications-zone__icon">🔔</span>
+      <lucide-icon name="bell" [size]="18" class="notifications-zone__icon"></lucide-icon>
       <span>Notifications</span>
       <app-badge variant="error">{{ notificationCount() }}</app-badge>
     </div>
-    <button class="notifications-zone__toggle" [class.collapsed]="collapsed()">
-      ▼
-    </button>
+    <lucide-icon
+      [name]="collapsed() ? 'chevron-right' : 'chevron-down'"
+      [size]="16"
+      class="notifications-zone__toggle"
+    ></lucide-icon>
   </div>
 
   <div class="notifications-zone__content" *ngIf="!collapsed()">

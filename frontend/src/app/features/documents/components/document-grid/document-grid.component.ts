@@ -6,13 +6,14 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { Document, DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../../../../core';
 import { BadgeComponent } from '../../../../shared';
 
 @Component({
   selector: 'app-document-grid',
   standalone: true,
-  imports: [CommonModule, BadgeComponent],
+  imports: [CommonModule, LucideAngularModule, BadgeComponent],
   templateUrl: './document-grid.component.html',
   styleUrl: './document-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,14 +30,15 @@ export class DocumentGridComponent {
   readonly statusLabels = DOCUMENT_STATUS_LABELS;
 
   readonly typeIcons: Record<string, string> = {
-    general_ledger: '📗',
-    trial_balance: '📊',
-    bank_statement: '🏦',
-    tax_return: '📋',
+    general_ledger: 'book-open',
+    trial_balance: 'bar-chart-3',
+    bank_statement: 'landmark',
+    tax_return: 'clipboard-list',
+    financial_statement: 'file-text',
   };
 
   getTypeIcon(type: string): string {
-    return this.typeIcons[type] || '📄';
+    return this.typeIcons[type] || 'file-text';
   }
 
   getStatusVariant(status: string): 'success' | 'warning' | 'error' | 'info' {

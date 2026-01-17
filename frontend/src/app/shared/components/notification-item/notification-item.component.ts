@@ -6,6 +6,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 
 export type NotificationType = 'warning' | 'info' | 'urgent';
 
@@ -20,7 +21,7 @@ export interface Notification {
 @Component({
   selector: 'app-notification-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './notification-item.component.html',
   styleUrl: './notification-item.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,9 +34,9 @@ export class NotificationItemComponent {
   @Output() notificationClick = new EventEmitter<Notification>();
 
   readonly icons: Record<NotificationType, string> = {
-    warning: '⚠️',
-    info: 'ℹ️',
-    urgent: '🚨',
+    warning: 'alert-triangle',
+    info: 'info',
+    urgent: 'alert-octagon',
   };
 
   get icon(): string {

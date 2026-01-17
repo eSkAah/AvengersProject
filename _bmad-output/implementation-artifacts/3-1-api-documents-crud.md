@@ -1,6 +1,6 @@
 # Story 3.1: API Documents - CRUD
 
-Status: review
+Status: done
 
 ## Story
 
@@ -216,10 +216,24 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### Completion Notes List
 
 - All 6 tasks completed successfully
-- 58 unit tests passing (24 document tests + 31 engagement tests + 3 health tests)
+- 62 unit tests passing (28 document tests + 31 engagement tests + 3 health tests)
 - API endpoints documented with OpenAPI schemas
 - 8 demo documents seeded (2 for DE, 4 for NL, 2 for BE)
 - Document content endpoint returns FileResponse or 404 if file doesn't exist
+
+### Code Review Fixes (2026-01-17)
+
+**Reviewer:** Claude Opus 4.5 (adversarial code review)
+
+**Issues Fixed (6 HIGH/MEDIUM):**
+1. ✅ **HIGH - Path Traversal Vulnerability** - Added path validation in `get_document_file_path()` to prevent `../` attacks
+2. ✅ **MEDIUM - Deprecated Query.example** - Removed deprecated `example` param from Query
+3. ✅ **MEDIUM - Duplicate Enum Definitions** - Schemas now import enums from models (DRY)
+4. ✅ **MEDIUM - Unused Import** - Removed `import os` from document_service.py
+5. ✅ **MEDIUM - Deprecated datetime.utcnow()** - Changed to `datetime.now(timezone.utc)`
+6. ✅ **MEDIUM - Missing Pagination** - Added skip/limit params to list endpoint
+
+**Tests Added:** 4 pagination tests (test_list_documents_includes_pagination_fields, test_list_documents_with_limit, test_list_documents_with_skip, test_list_documents_with_engagement_and_pagination)
 
 ### File List
 

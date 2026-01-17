@@ -1,7 +1,7 @@
 <aside class="sidebar" [class.sidebar--collapsed]="collapsed">
   <div class="sidebar__logo">
-    <span class="sidebar__logo-icon">⚡</span>
-    <span class="sidebar__logo-text" *ngIf="!collapsed">Star-Eyes</span>
+    <lucide-icon name="zap" class="sidebar__logo-icon" [size]="20"></lucide-icon>
+    <span class="sidebar__logo-text" *ngIf="!collapsed">Avengers</span>
   </div>
 
   <nav class="sidebar__nav">
@@ -12,13 +12,13 @@
         routerLinkActive="sidebar__nav-item--active"
         [routerLinkActiveOptions]="{ exact: item.route === '/' }"
       >
-        <span class="sidebar__nav-icon">{{ item.icon }}</span>
+        <lucide-icon [name]="item.icon" class="sidebar__nav-icon" [size]="20"></lucide-icon>
         <span class="sidebar__nav-label" *ngIf="!collapsed">{{ item.label }}</span>
       </a>
     }
   </nav>
 
   <button class="sidebar__toggle" (click)="toggleCollapse()" [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-    <span class="sidebar__toggle-icon">{{ collapsed ? '→' : '←' }}</span>
+    <lucide-icon [name]="collapsed ? 'chevron-right' : 'chevron-left'" class="sidebar__toggle-icon" [size]="16"></lucide-icon>
   </button>
 </aside>

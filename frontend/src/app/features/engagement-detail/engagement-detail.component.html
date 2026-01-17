@@ -1,0 +1,170 @@
+<div class="engagement-detail" *ngIf="engagement(); else notFound">
+  <!-- Breadcrumb -->
+  <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
+
+  <!-- Header Card -->
+  <div class="detail-card detail-card--header">
+    <div class="header">
+      <div class="header__main">
+        <div class="header__flag">{{ engagement()!.countryFlag }}</div>
+        <div class="header__info">
+          <h1 class="header__title">{{ engagement()!.entity }}</h1>
+          <p class="header__service">{{ engagement()!.service }}</p>
+        </div>
+      </div>
+      <div class="header__badges">
+        <app-badge [variant]="statusConfig().variant">
+          <lucide-icon [name]="statusConfig().icon" [size]="14"></lucide-icon>
+          {{ statusConfig().label }}
+        </app-badge>
+        <app-risk-badge [level]="engagement()!.riskLevel" size="md"></app-risk-badge>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+    <!-- Left Column - Financial Data -->
+    <div class="detail-card">
+      <div class="card-header">
+        <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
+        <h2>Données Financières</h2>
+      </div>
+
+      <div class="financial-grid">
+        <div class="financial-item">
+          <span class="financial-item__label">Actifs</span>
+          <span class="financial-item__value">{{ formatCurrency(engagement()!.financialData.assets) }}</span>
+        </div>
+        <div class="financial-item">
+          <span class="financial-item__label">Passifs</span>
+          <span class="financial-item__value">{{ formatCurrency(engagement()!.financialData.liabilities) }}</span>
+        </div>
+        <div class="financial-item">
+          <span class="financial-item__label">Chiffre d'affaires</span>
+          <span class="financial-item__value">{{ formatCurrency(engagement()!.financialData.revenue) }}</span>
+        </div>
+        <div class="financial-item financial-item--highlight">
+          <span class="financial-item__label">Variation N/N-1</span>
+          <span
+            class="financial-item__value"
+            [class.financial-item__value--positive]="engagement()!.financialData.yoyChange > 0"
+            [class.financial-item__value--negative]="engagement()!.financialData.yoyChange < 0"
+          >
+            <lucide-icon
+              [name]="engagement()!.financialData.yoyChange >= 0 ? 'trending-up' : 'trending-down'"
+              [size]="18"
+            ></lucide-icon>
+            {{ engagement()!.financialData.yoyChange > 0 ? '+' : '' }}{{ engagement()!.financialData.yoyChange }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Progress & Deadline -->
+    <div class="detail-card">
+      <div class="card-header">
+        <lucide-icon name="clock" [size]="20"></lucide-icon>
+        <h2>Progression</h2>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-info">
+          <span class="progress-info__label">Avancement global</span>
+          <span class="progress-info__value">{{ engagement()!.completionPercent }}%</span>
+        </div>
+        <app-progress-bar
+          [value]="engagement()!.completionPercent"
+          [riskLevel]="engagement()!.riskLevel"
+          [showLabel]="false"
+          height="lg"
+        ></app-progress-bar>
+      </div>
+
+      <div class="deadline-section">
+        <div class="deadline-item">
+          <lucide-icon name="calendar" [size]="18"></lucide-icon>
+          <div class="deadline-item__content">
+            <span class="deadline-item__label">Date limite</span>
+            <span class="deadline-item__value">{{ formattedDueDate() }}</span>
+          </div>
+        </div>
+        <div
+          class="deadline-item"
+          [class.deadline-item--warning]="daysRemaining() <= 7 && daysRemaining() > 0"
+          [class.deadline-item--danger]="daysRemaining() <= 0"
+        >
+          <lucide-icon name="hourglass" [size]="18"></lucide-icon>
+          <div class="deadline-item__content">
+            <span class="deadline-item__label">Jours restants</span>
+            <span class="deadline-item__value">
+              {{ daysRemaining() > 0 ? daysRemaining() + ' jours' : 'Échéance dépassée' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documents Section -->
+  <div class="detail-card">
+    <div class="card-header">
+      <lucide-icon name="folder-open" [size]="20"></lucide-icon>
+      <h2>Documents</h2>
+      <span class="card-header__count">{{ documents().length }} / {{ engagement()!.documentsRequired.length }}</span>
+    </div>
+
+    <div class="documents-grid" *ngIf="documents().length > 0; else noDocuments">
+      <div class="document-item" *ngFor="let doc of documents()">
+        <lucide-icon [name]="getDocumentIcon(doc.name)" [size]="24" class="document-item__icon"></lucide-icon>
+        <div class="document-item__info">
+          <span class="document-item__name">{{ doc.name }}</span>
+          <span class="document-item__meta">{{ getFileFormat(doc.name).toUpperCase() }} • {{ doc.type || 'Non classifié' }}</span>
+        </div>
+        <app-badge [variant]="getStatusBadgeVariant(doc.status)" size="sm">
+          {{ doc.status }}
+        </app-badge>
+      </div>
+    </div>
+
+    <ng-template #noDocuments>
+      <div class="empty-state">
+        <lucide-icon name="file-question" [size]="48"></lucide-icon>
+        <p>Aucun document téléchargé</p>
+        <button class="btn btn--primary" (click)="goToDocuments()">
+          <lucide-icon name="upload" [size]="18"></lucide-icon>
+          Télécharger des documents
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn--secondary" (click)="goBack()">
+      <lucide-icon name="arrow-left" [size]="18"></lucide-icon>
+      Retour
+    </button>
+    <div class="actions__right">
+      <button class="btn btn--outline" (click)="goToDocuments()">
+        <lucide-icon name="folder-open" [size]="18"></lucide-icon>
+        Gérer les documents
+      </button>
+      <button class="btn btn--primary" (click)="askEve()">
+        <lucide-icon name="message-circle" [size]="18"></lucide-icon>
+        Demander à Eve
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <div class="not-found">
+    <lucide-icon name="search-x" [size]="64"></lucide-icon>
+    <h2>Engagement non trouvé</h2>
+    <p>L'engagement demandé n'existe pas ou a été supprimé.</p>
+    <button class="btn btn--primary" (click)="goBack()">
+      Retour à l'accueil
+    </button>
+  </div>
+</ng-template>

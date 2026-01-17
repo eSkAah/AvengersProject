@@ -43,7 +43,7 @@
       </div>
 
       <div class="engagement-item__expand-icon">
-        <span [class.rotated]="isExpanded(engagement.id)">▼</span>
+        <lucide-icon [name]="isExpanded(engagement.id) ? 'chevron-down' : 'chevron-right'" [size]="16"></lucide-icon>
       </div>
     </div>
 
@@ -90,7 +90,7 @@
               <span class="docs-status__label">documents uploadés</span>
             </div>
             <div class="docs-missing" *ngIf="getMissingDocsCount(engagement) > 0">
-              <span class="docs-missing__icon">📄</span>
+              <lucide-icon name="file-text" class="docs-missing__icon" [size]="16"></lucide-icon>
               <span class="docs-missing__text">{{ getMissingDocsCount(engagement) }} document(s) manquant(s)</span>
             </div>
           </div>
@@ -100,7 +100,7 @@
         <div class="engagement-item__section" *ngIf="engagement.predictedCompletion">
           <h4>Prédiction</h4>
           <div class="engagement-item__prediction">
-            <span class="prediction__icon">🎯</span>
+            <lucide-icon name="clock" class="prediction__icon" [size]="16"></lucide-icon>
             <span class="prediction__text">
               Complétion estimée: {{ formatDate(engagement.predictedCompletion) }}
             </span>
@@ -111,13 +111,13 @@
       <!-- Actions -->
       <div class="engagement-item__actions">
         <app-button variant="primary" (buttonClick)="viewDashboard.emit(engagement)">
-          📊 Dashboard
+          <lucide-icon name="bar-chart-3" [size]="16" style="margin-right: 4px"></lucide-icon> Dashboard
         </app-button>
         <app-button variant="secondary" (buttonClick)="uploadDocs.emit(engagement)">
-          📤 Upload Docs
+          <lucide-icon name="upload" [size]="16" style="margin-right: 4px"></lucide-icon> Upload Docs
         </app-button>
         <app-button variant="ghost" (buttonClick)="askEve.emit(engagement)">
-          💬 Ask Eve
+          <lucide-icon name="message-circle" [size]="16" style="margin-right: 4px"></lucide-icon> Ask Eve
         </app-button>
       </div>
     </div>
@@ -126,6 +126,6 @@
 
 <!-- Empty state -->
 <div class="engagement-list__empty" *ngIf="engagements.length === 0">
-  <span class="engagement-list__empty-icon">📋</span>
+  <lucide-icon name="clipboard-list" class="engagement-list__empty-icon" [size]="48"></lucide-icon>
   <p>Aucun engagement trouvé</p>
 </div>

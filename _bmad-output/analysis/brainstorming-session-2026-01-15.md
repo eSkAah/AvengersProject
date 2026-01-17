@@ -1,7 +1,7 @@
 ---
 stepsCompleted: [1, 2, 3, 4]
 inputDocuments: [docs/PRD.md]
-session_topic: 'Project Star-Eyes POC - Vision, WOW Factor, Feature Prioritization'
+session_topic: 'Project Avengers Project POC - Vision, WOW Factor, Feature Prioritization'
 session_goals: 'Clarifier vision POC, identifier améliorations WOW, catégoriser Must-Have vs Nice-to-Have'
 selected_approach: 'Progressive Technique Flow'
 techniques_used: ['What If Scenarios', 'Role Playing', 'Six Thinking Hats', 'First Principles', 'Resource Constraints']
@@ -17,7 +17,7 @@ status: 'completed'
 
 ## Session Overview
 
-**Topic:** Project Star-Eyes POC - Vision claire, effet WOW, priorisation des features
+**Topic:** Project Avengers Project POC - Vision claire, effet WOW, priorisation des features
 
 **Goals:**
 1. Clarifier la vision globale du POC à livrer en 10 jours
@@ -26,7 +26,7 @@ status: 'completed'
 
 ### Context Guidance
 
-_PRD Star-Eyes: POC Angular+FastAPI+FactoryAI pour fonds immobilier. 4 écrans (Landing, Dropzone, Dashboard, AI Eve). Double audience: client externe + finance interne. Contrainte initiale "Happy Path" remise en question - potentiel pour backend fonctionnel complet._
+_PRD Avengers Project: POC Angular+FastAPI+FactoryAI pour fonds immobilier. 4 écrans (Landing, Dropzone, Dashboard, AI Eve). Double audience: client externe + finance interne. Contrainte initiale "Happy Path" remise en question - potentiel pour backend fonctionnel complet._
 
 ### Session Setup
 
@@ -241,7 +241,7 @@ _PRD Star-Eyes: POC Angular+FastAPI+FactoryAI pour fonds immobilier. 4 écrans (
 
 ## Vision Finale
 
-> **Star-Eyes: Une plateforme où l'IA comprend vos documents, répond en contexte, et anticipe vos besoins - le tout dans une UI premium digne de 2026.**
+> **Avengers Project: Une plateforme où l'IA comprend vos documents, répond en contexte, et anticipe vos besoins - le tout dans une UI premium digne de 2026.**
 
 ### Les 3 preuves WOW de la démo:
 1. "L'IA comprend mes documents" → Smart Classification

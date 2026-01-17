@@ -37,6 +37,27 @@
     align-items: center;
   }
 
+  &__header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  &__upload {
+    padding: $spacing-4;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+  }
+
+  &__upload-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: $spacing-4;
+    padding-top: $spacing-4;
+    border-top: 1px solid $color-border;
+  }
+
   &__count {
     font-size: $font-size-sm;
     color: $color-text-secondary;

@@ -15,10 +15,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'Star-Eyes' title`, () => {
+  it(`should have the 'Avengers Project' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Star-Eyes');
+    expect(app.title).toEqual('Avengers Project');
   });
 
   it('should render layout shell', () => {

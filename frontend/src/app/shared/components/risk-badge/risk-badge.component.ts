@@ -16,19 +16,19 @@ export class RiskBadgeComponent {
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
   @Input() pulse = true;
 
-  readonly config: Record<RiskLevel, { icon: string; label: string; tooltip: string }> = {
+  readonly config: Record<RiskLevel, { color: string; label: string; tooltip: string }> = {
     high: {
-      icon: '🔴',
+      color: '#EF4444',
       label: 'HIGH',
       tooltip: 'Risque élevé: Action immédiate requise. Documents manquants ou deadline proche.',
     },
     medium: {
-      icon: '🟠',
+      color: '#F59E0B',
       label: 'MEDIUM',
       tooltip: 'Risque modéré: Attention requise. Suivi recommandé.',
     },
     low: {
-      icon: '🟢',
+      color: '#10B981',
       label: 'LOW',
       tooltip: 'Risque faible: Tout est sous contrôle.',
     },
@@ -40,5 +40,10 @@ export class RiskBadgeComponent {
 
   get shouldPulse(): boolean {
     return this.pulse && this.level === 'high';
+  }
+
+  get iconSize(): number {
+    const sizes = { sm: 12, md: 16, lg: 20 };
+    return sizes[this.size];
   }
 }

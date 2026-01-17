@@ -1,36 +1,103 @@
 <div class="home">
-  <!-- Header -->
-  <div class="home__header">
-    <h1>Bienvenue sur Star-Eyes</h1>
-    <p>Digital Engagement Platform</p>
-  </div>
-
-  <!-- Notifications Zone -->
-  <app-notifications-zone
-    [notifications]="notifications()"
-    (notificationClick)="onNotificationClick($event)"
-  ></app-notifications-zone>
-
-  <!-- KPIs Header -->
-  <section class="home__kpis">
-    <app-kpi-header
-      [data]="kpiData()"
-      (filterChange)="onFilterChange($event)"
-    ></app-kpi-header>
-  </section>
-
-  <!-- Engagements List -->
-  <section class="home__engagements">
-    <div class="section-header">
-      <h2>Mes Engagements</h2>
-      <span class="section-header__count">{{ filteredEngagements().length }} engagement(s)</span>
+  <!-- Bento Grid Layout -->
+  <div class="bento-grid">
+    <!-- Header Card - spans full width -->
+    <div class="bento-card bento-card--header">
+      <div class="home__header">
+        <div class="home__header-content">
+          <h1>Bienvenue sur Avengers Project</h1>
+          <p>Digital Engagement Platform</p>
+        </div>
+        <div class="home__header-decoration">
+          <lucide-icon name="layout-dashboard" [size]="48"></lucide-icon>
+        </div>
+      </div>
     </div>
 
-    <app-engagement-list
-      [engagements]="filteredEngagements()"
-      (viewDashboard)="onViewDashboard($event)"
-      (uploadDocs)="onUploadDocs($event)"
-      (askEve)="onAskEve($event)"
-    ></app-engagement-list>
-  </section>
+    <!-- KPIs Section - main column -->
+    <div class="bento-card bento-card--kpis">
+      <app-kpi-header
+        [data]="kpiData()"
+        (filterChange)="onFilterChange($event)"
+      ></app-kpi-header>
+    </div>
+
+    <!-- Notifications - right column -->
+    <div class="bento-card bento-card--notifications">
+      <app-notifications-zone
+        [notifications]="notifications()"
+        (notificationClick)="onNotificationClick($event)"
+      ></app-notifications-zone>
+    </div>
+
+    <!-- Financial Summary - spans full width -->
+    <div class="bento-card bento-card--financial">
+      <div class="section-header">
+        <div class="section-header__title">
+          <lucide-icon name="coins" [size]="20"></lucide-icon>
+          <h2>Résumé Financier</h2>
+        </div>
+      </div>
+
+      <div class="financial-summary">
+        <div class="financial-metric">
+          <div class="financial-metric__icon financial-metric__icon--assets">
+            <lucide-icon name="trending-up" [size]="24"></lucide-icon>
+          </div>
+          <div class="financial-metric__content">
+            <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalAssets) }}</span>
+            <span class="financial-metric__label">Total Actifs</span>
+          </div>
+        </div>
+
+        <div class="financial-metric">
+          <div class="financial-metric__icon financial-metric__icon--liabilities">
+            <lucide-icon name="trending-down" [size]="24"></lucide-icon>
+          </div>
+          <div class="financial-metric__content">
+            <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalLiabilities) }}</span>
+            <span class="financial-metric__label">Total Passifs</span>
+          </div>
+        </div>
+
+        <div class="financial-metric">
+          <div class="financial-metric__icon financial-metric__icon--revenue">
+            <lucide-icon name="wallet" [size]="24"></lucide-icon>
+          </div>
+          <div class="financial-metric__content">
+            <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalRevenue) }}</span>
+            <span class="financial-metric__label">Chiffre d'affaires</span>
+          </div>
+        </div>
+
+        <div class="financial-metric">
+          <div class="financial-metric__icon financial-metric__icon--completion">
+            <lucide-icon name="percent" [size]="24"></lucide-icon>
+          </div>
+          <div class="financial-metric__content">
+            <span class="financial-metric__value">{{ financialTotals().avgCompletion }}%</span>
+            <span class="financial-metric__label">Avancement moyen</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engagements List - spans full width -->
+    <div class="bento-card bento-card--engagements">
+      <div class="section-header">
+        <div class="section-header__title">
+          <lucide-icon name="briefcase" [size]="20"></lucide-icon>
+          <h2>Mes Engagements</h2>
+        </div>
+        <span class="section-header__count">{{ filteredEngagements().length }} engagement(s)</span>
+      </div>
+
+      <app-engagement-list
+        [engagements]="filteredEngagements()"
+        (viewDashboard)="onViewDashboard($event)"
+        (uploadDocs)="onUploadDocs($event)"
+        (askEve)="onAskEve($event)"
+      ></app-engagement-list>
+    </div>
+  </div>
 </div>
