@@ -16,3 +16,11 @@ export * from './components/breadcrumb/breadcrumb.component';
 export * from './components/view-toggle/view-toggle.component';
 export * from './components/search-bar/search-bar.component';
 export * from './components/upload-zone/upload-zone.component';
+export * from './components/smart-tooltip/smart-tooltip.component';
+export * from './components/drill-down-modal/drill-down-modal.component';
+
+// Charts
+export * from './components/charts';
+
+// Directives
+export * from './directives';

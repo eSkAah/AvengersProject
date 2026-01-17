@@ -86,8 +86,8 @@ development_status:
   # ============================================
   # Epic 5: Dashboard & Charts (J4-J6)
   # ============================================
-  epic-5: backlog
-  5-1-api-dashboard-kpis: backlog
+  epic-5: in-progress
+  5-1-api-dashboard-kpis: review
   5-2-api-dashboard-charts: backlog
   5-3-kpi-section-dashboard: backlog
   5-4-assets-bar-chart: backlog

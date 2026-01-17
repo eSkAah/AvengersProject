@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base, async_session_maker
 from app.core.seed import seed_demo_engagements, seed_demo_documents
-from app.routers import health_router, engagements_router, documents_router
+from app.routers import health_router, engagements_router, documents_router, dashboard_router
 
 # Import models to register them with Base.metadata before create_all()
 from app.models import Engagement, Document  # noqa: F401
@@ -83,3 +83,6 @@ app.include_router(engagements_router, prefix="/api/engagements")
 
 # Documents API (matches frontend expectations at /api/documents)
 app.include_router(documents_router, prefix="/api/documents")
+
+# Dashboard API (stats endpoint at /api/engagements/{id}/stats)
+app.include_router(dashboard_router, prefix="/api/engagements", tags=["Dashboard"])

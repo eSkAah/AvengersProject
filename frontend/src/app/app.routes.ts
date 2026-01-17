@@ -14,10 +14,29 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'engagements/:id/dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/engagement-dashboard/engagement-dashboard.component').then(
+        (m) => m.EngagementDashboardComponent
+      ),
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent
+      ),
+  },
+  {
     path: 'documents',
     loadComponent: () =>
       import('./features/documents/documents.component').then(
         (m) => m.DocumentsComponent
       ),
+  },
+  {
+    path: 'eve',
+    loadComponent: () =>
+      import('./features/eve/eve.component').then((m) => m.EveComponent),
   },
 ];
