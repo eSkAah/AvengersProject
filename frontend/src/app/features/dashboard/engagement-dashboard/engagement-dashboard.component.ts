@@ -17,6 +17,7 @@ import {
   DrillDownModalComponent,
   DrillDownData,
 } from '../../../shared';
+import { EveApiService } from '../../../core/services/eve-api.service';
 import { KpiSectionComponent } from '../components/kpi-section/kpi-section.component';
 import { ChartsSectionComponent, DrillDownEvent } from '../components/charts-section/charts-section.component';
 import { KpiMetric, KpiClickEvent } from '../../../shared/components/charts/kpi-metric-card.component';
@@ -77,15 +78,6 @@ import { KpiMetric, KpiClickEvent } from '../../../shared/components/charts/kpi-
           </button>
         </div>
       }
-
-      <!-- Eve Floating Action Button -->
-      <button
-        class="eve-fab"
-        (click)="openEve()"
-        title="Demander à Eve"
-      >
-        <lucide-icon name="message-circle" [size]="24"></lucide-icon>
-      </button>
 
       <!-- Drill-down Modal -->
       <app-drill-down-modal
@@ -189,29 +181,6 @@ import { KpiMetric, KpiClickEvent } from '../../../shared/components/charts/kpi-
       font-size: 14px;
       margin: 0 0 24px 0;
     }
-
-    .eve-fab {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 56px;
-      height: 56px;
-      border-radius: 28px;
-      background: #2E2E38;
-      color: #FFFFFF;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      transition: all 200ms ease-out;
-    }
-
-    .eve-fab:hover {
-      background: #1E1E28;
-      transform: scale(1.05);
-    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -221,6 +190,7 @@ export class EngagementDashboardComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly eveService = inject(EveApiService);
 
   readonly engagementId = signal<string | null>(null);
   readonly drillDownData = signal<DrillDownData | null>(null);
@@ -234,7 +204,12 @@ export class EngagementDashboardComponent implements OnInit {
     this.route.paramMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
-        this.engagementId.set(params.get('id'));
+        const id = params.get('id');
+        this.engagementId.set(id);
+        // Set Eve context for this engagement
+        if (id) {
+          this.eveService.setEngagementContext(id, 'Engagement Dashboard');
+        }
       });
   }
 
@@ -275,7 +250,20 @@ export class EngagementDashboardComponent implements OnInit {
   }
 
   onKpiCmdClick(metric: KpiMetric): void {
-    this.askEve(`Expliquez-moi le KPI "${metric.label}" avec la valeur ${this.formatCurrency(metric.value)}`);
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    // Use the explain API for CMD+Click on KPIs
+    this.eveService.openPanel();
+    this.eveService
+      .explainValue(
+        this.formatCurrency(metric.value),
+        metric.label,
+        engagementId,
+        { sourceDocument: metric.sourceDocument }
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   onDrillDown(event: DrillDownEvent): void {
@@ -316,7 +304,20 @@ export class EngagementDashboardComponent implements OnInit {
   }
 
   onChartCmdClick(event: DrillDownEvent): void {
-    this.askEve(`Analysez "${event.label}" avec une valeur de ${this.formatCurrency(event.value)} dans le graphique ${event.chartType}`);
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    // Use the explain API for CMD+Click on charts
+    this.eveService.openPanel();
+    this.eveService
+      .explainValue(
+        this.formatCurrency(event.value),
+        event.label,
+        engagementId,
+        { chartType: event.chartType, ...event.additionalData }
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   onModalClose(): void {
@@ -328,13 +329,12 @@ export class EngagementDashboardComponent implements OnInit {
   }
 
   private askEve(question: string): void {
-    const id = this.engagementId();
-    this.router.navigate(['/eve'], {
-      queryParams: {
-        engagement: id,
-        question,
-      },
-    });
+    // Open Eve panel and send the question
+    this.eveService.openPanel();
+    this.eveService
+      .sendMessage(question)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   private formatCurrency(value: number): string {
@@ -343,13 +343,6 @@ export class EngagementDashboardComponent implements OnInit {
       currency: 'EUR',
       maximumFractionDigits: 0,
     }).format(value);
-  }
-
-  openEve(): void {
-    const id = this.engagementId();
-    this.router.navigate(['/eve'], {
-      queryParams: { engagement: id },
-    });
   }
 
   goBack(): void {

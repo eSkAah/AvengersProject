@@ -22,5 +22,10 @@ export * from './components/drill-down-modal/drill-down-modal.component';
 // Charts
 export * from './components/charts';
 
+// Eve Components
+export * from './components/eve-fab/eve-fab.component';
+export * from './components/eve-panel/eve-panel.component';
+export * from './components/eve-message/eve-message.component';
+
 // Directives
 export * from './directives';

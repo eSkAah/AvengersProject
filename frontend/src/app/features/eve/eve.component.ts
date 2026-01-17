@@ -5,17 +5,21 @@ import {
   signal,
   OnInit,
   DestroyRef,
+  ViewChild,
+  ElementRef,
+  AfterViewChecked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
-import { BreadcrumbComponent, BreadcrumbItem } from '../../shared';
+import { BreadcrumbComponent, BreadcrumbItem, EveMessageComponent } from '../../shared';
+import { EveApiService } from '../../core/services/eve-api.service';
 
 @Component({
   selector: 'app-eve',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, BreadcrumbComponent],
+  imports: [CommonModule, LucideAngularModule, BreadcrumbComponent, EveMessageComponent],
   template: `
     <div class="eve-page">
       <app-breadcrumb [items]="breadcrumbs"></app-breadcrumb>
@@ -27,38 +31,52 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../shared';
           </div>
           <div class="eve-info">
             <h1>Eve</h1>
-            <p>Votre assistante IA contextuelle</p>
+            <p>
+              @if (eveService.currentEngagementName()) {
+                {{ eveService.currentEngagementName() }}
+              } @else {
+                Votre assistante IA contextuelle
+              }
+            </p>
           </div>
         </div>
 
-        <div class="eve-chat">
-          @if (initialQuestion()) {
-            <div class="chat-message chat-message--user">
-              <div class="chat-message__content">
-                {{ initialQuestion() }}
-              </div>
-            </div>
-            <div class="chat-message chat-message--eve">
-              <div class="chat-message__avatar">
-                <lucide-icon name="bot" [size]="20"></lucide-icon>
-              </div>
-              <div class="chat-message__content">
-                <p>Bonjour, je suis Eve, votre assistante IA spécialisée dans l'audit financier.</p>
-                <p>Je serais ravie de vous aider avec votre question concernant : <strong>{{ initialQuestion() }}</strong></p>
-                <p class="chat-message__note">
-                  <lucide-icon name="info" [size]="14"></lucide-icon>
-                  Cette fonctionnalité sera disponible dans une prochaine version.
-                </p>
-              </div>
-            </div>
-          } @else {
+        <div class="eve-chat" #messagesContainer>
+          @if (!eveService.hasMessages()) {
             <div class="eve-welcome">
               <lucide-icon name="message-circle" [size]="64"></lucide-icon>
               <h2>Comment puis-je vous aider ?</h2>
               <p>Posez-moi une question sur vos données financières, documents ou engagements.</p>
             </div>
+          } @else {
+            @for (message of eveService.messages(); track message.timestamp) {
+              <app-eve-message [message]="message"></app-eve-message>
+            }
+
+            @if (eveService.isLoading()) {
+              <div class="loading-indicator">
+                <div class="loading-avatar">
+                  <lucide-icon name="bot" [size]="18"></lucide-icon>
+                </div>
+                <div class="loading-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            }
           }
         </div>
+
+        @if (eveService.error()) {
+          <div class="eve-error">
+            <lucide-icon name="alert-circle" [size]="16"></lucide-icon>
+            <span>{{ eveService.error() }}</span>
+            <button (click)="eveService.clearError()">
+              <lucide-icon name="x" [size]="14"></lucide-icon>
+            </button>
+          </div>
+        }
 
         <div class="eve-input">
           <input
@@ -67,8 +85,10 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../shared';
             [value]="inputValue()"
             (input)="onInputChange($event)"
             (keyup.enter)="onSend()"
+            [disabled]="eveService.isLoading()"
+            #inputField
           />
-          <button class="eve-send" (click)="onSend()" [disabled]="!inputValue()">
+          <button class="eve-send" (click)="onSend()" [disabled]="!inputValue() || eveService.isLoading()">
             <lucide-icon name="send" [size]="20"></lucide-icon>
           </button>
         </div>
@@ -301,30 +321,118 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../shared';
       background: #F5F5F5;
       border-color: #D4D4D4;
     }
+
+    .loading-indicator {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .loading-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #2E2E38;
+      color: #FFE600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 6px;
+      padding: 16px;
+      background: #F5F5F5;
+      border-radius: 16px 16px 16px 4px;
+    }
+
+    .loading-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9CA3AF;
+      animation: loadingDot 1.4s infinite ease-in-out;
+    }
+
+    .loading-dots span:nth-child(1) { animation-delay: 0s; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes loadingDot {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .eve-error {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      margin: 0 24px 8px 24px;
+      background: #FEF2F2;
+      border: 1px solid #FEE2E2;
+      border-radius: 8px;
+      color: #DC2626;
+      font-size: 13px;
+    }
+
+    .eve-error span { flex: 1; }
+
+    .eve-error button {
+      background: none;
+      border: none;
+      color: #DC2626;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EveComponent implements OnInit {
+export class EveComponent implements OnInit, AfterViewChecked {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly eveService = inject(EveApiService);
+
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('inputField') inputField!: ElementRef<HTMLInputElement>;
 
   readonly breadcrumbs: BreadcrumbItem[] = [
     { label: 'Accueil', path: '/' },
     { label: 'Eve' },
   ];
 
-  readonly initialQuestion = signal<string | null>(null);
   readonly inputValue = signal('');
   private engagementId: string | null = null;
+  private shouldScrollToBottom = false;
 
   ngOnInit(): void {
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
-        this.initialQuestion.set(params.get('question'));
+        const question = params.get('question');
         this.engagementId = params.get('engagement');
+
+        // Set engagement context
+        if (this.engagementId) {
+          this.eveService.setEngagementContext(this.engagementId);
+        }
+
+        // Send initial question if provided
+        if (question) {
+          this.sendMessage(question);
+        }
       });
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
   }
 
   onInputChange(event: Event): void {
@@ -334,10 +442,38 @@ export class EveComponent implements OnInit {
 
   onSend(): void {
     const value = this.inputValue();
-    if (value.trim()) {
-      // Placeholder - would send to Eve API
-      console.log('Sending to Eve:', value, 'Engagement:', this.engagementId);
+    if (value.trim() && !this.eveService.isLoading()) {
+      this.sendMessage(value);
       this.inputValue.set('');
+    }
+  }
+
+  private sendMessage(message: string): void {
+    this.shouldScrollToBottom = true;
+    this.eveService
+      .sendMessage(message)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.shouldScrollToBottom = true;
+          this.focusInput();
+        },
+        error: () => {
+          this.focusInput();
+        },
+      });
+  }
+
+  private scrollToBottom(): void {
+    if (this.messagesContainer?.nativeElement) {
+      const container = this.messagesContainer.nativeElement;
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  private focusInput(): void {
+    if (this.inputField?.nativeElement) {
+      this.inputField.nativeElement.focus();
     }
   }
 

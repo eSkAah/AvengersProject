@@ -86,28 +86,28 @@ development_status:
   # ============================================
   # Epic 5: Dashboard & Charts (J4-J6)
   # ============================================
-  epic-5: in-progress
-  5-1-api-dashboard-kpis: review
-  5-2-api-dashboard-charts: backlog
-  5-3-kpi-section-dashboard: backlog
-  5-4-assets-bar-chart: backlog
-  5-5-comparison-chart-n-vs-n1: backlog
-  5-6-smart-tooltip-avec-source: backlog
-  5-7-cmd-click-integration: backlog
-  5-8-chart-drill-down-on-click: backlog
+  epic-5: done
+  5-1-api-dashboard-kpis: done
+  5-2-api-dashboard-charts: done
+  5-3-kpi-section-dashboard: done
+  5-4-assets-bar-chart: done
+  5-5-comparison-chart-n-vs-n1: done
+  5-6-smart-tooltip-avec-source: done
+  5-7-cmd-click-integration: done
+  5-8-chart-drill-down-on-click: done
   epic-5-retrospective: optional
 
   # ============================================
   # Epic 6: Eve Chatbot (J5-J7)
   # ============================================
-  epic-6: backlog
-  6-1-api-eve-chat: backlog
-  6-2-api-eve-explain: backlog
-  6-3-eve-floating-button-fab: backlog
-  6-4-eve-chat-panel: backlog
-  6-5-message-bubbles: backlog
-  6-6-eve-context-awareness: backlog
-  6-7-eve-prompts-predefinis: backlog
+  epic-6: done
+  6-1-api-eve-chat: done  # Backend POST /api/eve/chat
+  6-2-api-eve-explain: done  # Backend POST /api/eve/explain
+  6-3-eve-floating-button-fab: done  # EveFabComponent (global)
+  6-4-eve-chat-panel: done  # EvePanelComponent (sliding panel)
+  6-5-message-bubbles: done  # EveMessageComponent
+  6-6-eve-context-awareness: done  # EveApiService with engagement context
+  6-7-eve-prompts-predefinis: done  # System prompts and quick actions
   epic-6-retrospective: optional
 
   # ============================================

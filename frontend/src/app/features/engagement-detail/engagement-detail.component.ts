@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
 import { MockDataService, Engagement, Document } from '../../core';
+import { EveApiService } from '../../core/services/eve-api.service';
 import {
   RiskBadgeComponent,
   ProgressBarComponent,
@@ -42,6 +43,7 @@ export class EngagementDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly mockData = inject(MockDataService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly eveService = inject(EveApiService);
 
   private engagementId = signal<string | null>(null);
 
@@ -102,7 +104,14 @@ export class EngagementDetailComponent implements OnInit {
     this.route.paramMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
-        this.engagementId.set(params.get('id'));
+        const id = params.get('id');
+        this.engagementId.set(id);
+
+        // Set Eve context when engagement changes
+        if (id) {
+          const engagement = this.mockData.engagements().find((e) => e.id === id);
+          this.eveService.setEngagementContext(id, engagement?.entity ?? 'Engagement');
+        }
       });
   }
 
@@ -123,10 +132,8 @@ export class EngagementDetailComponent implements OnInit {
   }
 
   askEve(): void {
-    const id = this.engagementId();
-    if (id) {
-      this.router.navigate(['/eve'], { queryParams: { engagement: id } });
-    }
+    // Open Eve panel - context is already set
+    this.eveService.openPanel();
   }
 
   goBack(): void {
