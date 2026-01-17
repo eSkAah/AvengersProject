@@ -83,8 +83,8 @@ export class HomeComponent {
   }
 
   onViewDashboard(engagement: Engagement): void {
-    // Navigate to engagement detail page
-    this.router.navigate(['/engagements', engagement.id]);
+    // Navigate to engagement dashboard page
+    this.router.navigate(['/engagements', engagement.id, 'dashboard']);
   }
 
   onUploadDocs(engagement: Engagement): void {

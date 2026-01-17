@@ -44,7 +44,6 @@ const QUICK_PROMPTS = [
       <div
         class="eve-backdrop"
         (click)="closePanel()"
-        [@fadeIn]
       ></div>
     }
 

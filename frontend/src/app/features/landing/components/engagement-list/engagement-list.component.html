@@ -129,13 +129,13 @@
 
       <!-- Actions -->
       <div class="engagement-item__actions">
-        <app-button variant="primary" (buttonClick)="viewDashboard.emit(engagement)">
+        <app-button variant="primary" (clicked)="viewDashboard.emit(engagement); $event.stopPropagation()">
           <lucide-icon name="bar-chart-3" [size]="16" style="margin-right: 4px"></lucide-icon> Dashboard
         </app-button>
-        <app-button variant="secondary" (buttonClick)="uploadDocs.emit(engagement)">
+        <app-button variant="secondary" (clicked)="uploadDocs.emit(engagement); $event.stopPropagation()">
           <lucide-icon name="upload" [size]="16" style="margin-right: 4px"></lucide-icon> Upload Docs
         </app-button>
-        <app-button variant="ghost" (buttonClick)="askEve.emit(engagement)">
+        <app-button variant="ghost" (clicked)="askEve.emit(engagement); $event.stopPropagation()">
           <lucide-icon name="message-circle" [size]="16" style="margin-right: 4px"></lucide-icon> Ask Eve
         </app-button>
       </div>

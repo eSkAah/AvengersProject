@@ -7,6 +7,7 @@ import {
   Home,
   FileText,
   BarChart3,
+  BarChart2,
   Circle,
   BookOpen,
   Landmark,
@@ -56,6 +57,12 @@ import {
   Wallet,
   Percent,
   AlertCircle,
+  Bot,
+  Send,
+  GitCompare,
+  PieChart,
+  Trash2,
+  HelpCircle,
 } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -71,6 +78,7 @@ export const appConfig: ApplicationConfig = {
         Home,
         FileText,
         BarChart3,
+        BarChart2,
         Circle,
         BookOpen,
         Landmark,
@@ -120,6 +128,12 @@ export const appConfig: ApplicationConfig = {
         Wallet,
         Percent,
         AlertCircle,
+        Bot,
+        Send,
+        GitCompare,
+        PieChart,
+        Trash2,
+        HelpCircle,
       })
     ),
   ],
