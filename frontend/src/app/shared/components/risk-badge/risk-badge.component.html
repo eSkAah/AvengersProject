@@ -6,7 +6,9 @@
   [class.risk-badge--sm]="size === 'sm'"
   [class.risk-badge--lg]="size === 'lg'"
   [class.risk-badge--pulse]="shouldPulse"
-  [title]="currentConfig.tooltip"
+  [title]="simpleTooltip"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
 >
   <span
     class="risk-badge__dot"
@@ -16,3 +18,78 @@
   ></span>
   <span class="risk-badge__label" *ngIf="showLabel">{{ currentConfig.label }}</span>
 </div>
+
+<!-- Rich Tooltip -->
+@if (isTooltipVisible() && hasRichTooltip && riskDetails) {
+  <div
+    class="risk-tooltip"
+    [style.top.px]="tooltipTop()"
+    [style.left.px]="tooltipLeft()"
+  >
+    <!-- Header -->
+    <div class="risk-tooltip__header" [class]="'risk-tooltip__header--' + level">
+      <lucide-icon [name]="currentConfig.icon" [size]="18"></lucide-icon>
+      <span class="risk-tooltip__title">
+        Risque {{ level === 'high' ? 'Élevé' : level === 'medium' ? 'Modéré' : 'Faible' }}
+      </span>
+    </div>
+
+    <!-- Reasons -->
+    @if (riskDetails.reasons && riskDetails.reasons.length > 0) {
+      <div class="risk-tooltip__section">
+        <div class="risk-tooltip__section-title">
+          <lucide-icon name="info" [size]="14"></lucide-icon>
+          Raisons
+        </div>
+        <ul class="risk-tooltip__list">
+          @for (reason of riskDetails.reasons; track reason) {
+            <li>{{ reason }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- Days Remaining -->
+    @if (riskDetails.daysRemaining !== undefined) {
+      <div class="risk-tooltip__meta">
+        <lucide-icon name="calendar" [size]="14"></lucide-icon>
+        @if (riskDetails.daysRemaining >= 0) {
+          {{ riskDetails.daysRemaining }} jour(s) restant(s)
+        } @else {
+          En retard de {{ -riskDetails.daysRemaining }} jour(s)
+        }
+      </div>
+    }
+
+    <!-- Missing Documents -->
+    @if (riskDetails.missingDocuments && riskDetails.missingDocuments.length > 0) {
+      <div class="risk-tooltip__section">
+        <div class="risk-tooltip__section-title">
+          <lucide-icon name="file-x" [size]="14"></lucide-icon>
+          Documents manquants
+        </div>
+        <ul class="risk-tooltip__list risk-tooltip__list--docs">
+          @for (doc of riskDetails.missingDocuments.slice(0, 3); track doc) {
+            <li>{{ doc }}</li>
+          }
+          @if (riskDetails.missingDocuments.length > 3) {
+            <li class="risk-tooltip__more">+{{ riskDetails.missingDocuments.length - 3 }} autres</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- Suggested Actions -->
+    @if (riskDetails.suggestedActions && riskDetails.suggestedActions.length > 0) {
+      <div class="risk-tooltip__actions">
+        <div class="risk-tooltip__section-title">
+          <lucide-icon name="lightbulb" [size]="14"></lucide-icon>
+          Actions suggérées
+        </div>
+        @for (action of riskDetails.suggestedActions.slice(0, 2); track action) {
+          <div class="risk-tooltip__action">{{ action }}</div>
+        }
+      </div>
+    }
+  </div>
+}

@@ -105,3 +105,30 @@ class EngagementUpdate(BaseModel):
     documents_required: Optional[List[str]] = None
     financial_data: Optional[Dict[str, Any]] = None
     ai_insights: Optional[List[str]] = None
+
+
+class RiskDetailsResponse(BaseModel):
+    """Schema for detailed risk information."""
+
+    engagement_id: str = Field(..., description="Engagement identifier")
+    level: RiskLevel = Field(..., description="Risk level classification")
+    reasons: List[str] = Field(..., description="List of reasons for the risk level")
+    suggested_actions: List[str] = Field(..., description="Suggested actions to mitigate risk")
+    days_remaining: int = Field(..., description="Days until deadline")
+    completion_percent: int = Field(..., description="Current completion percentage")
+    missing_documents: List[str] = Field(..., description="List of missing document types")
+
+
+class PredictionResponse(BaseModel):
+    """Schema for completion prediction."""
+
+    engagement_id: str = Field(..., description="Engagement identifier")
+    predicted_date: Optional[date] = Field(None, description="Predicted completion date")
+    days_difference: int = Field(
+        ..., description="Days difference vs deadline (positive=late, negative=early)"
+    )
+    velocity: float = Field(..., description="Completion velocity (% per day)")
+    is_on_track: bool = Field(..., description="Whether engagement is on track")
+    confidence: str = Field(..., description="Prediction confidence: high, medium, low")
+    due_date: date = Field(..., description="Original deadline")
+    formatted_prediction: str = Field(..., description="Human-readable prediction")

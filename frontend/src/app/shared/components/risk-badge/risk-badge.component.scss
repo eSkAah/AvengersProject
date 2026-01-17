@@ -85,3 +85,132 @@
     box-shadow: 0 0 0 6px rgba($color-error, 0);
   }
 }
+
+// Rich Tooltip
+.risk-tooltip {
+  position: fixed;
+  z-index: 9999;
+  width: 320px;
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: tooltipFadeIn 200ms ease-out;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 14px;
+
+    &--high {
+      background: rgba($color-error, 0.1);
+      color: $color-error;
+    }
+
+    &--medium {
+      background: rgba($color-warning, 0.1);
+      color: $color-warning;
+    }
+
+    &--low {
+      background: rgba($color-success, 0.1);
+      color: $color-success;
+    }
+  }
+
+  &__title {
+    flex: 1;
+  }
+
+  &__section {
+    padding: 12px 16px;
+    border-bottom: 1px solid #F3F4F6;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0 0 0 20px;
+    font-size: 13px;
+    color: #2E2E38;
+
+    li {
+      margin-bottom: 4px;
+      line-height: 1.4;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &--docs {
+      padding-left: 16px;
+
+      li {
+        color: #6B7280;
+      }
+    }
+  }
+
+  &__more {
+    color: #9CA3AF !important;
+    font-style: italic;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #6B7280;
+    background: #F9FAFB;
+  }
+
+  &__actions {
+    padding: 12px 16px;
+    background: #FFFBEB;
+  }
+
+  &__action {
+    font-size: 13px;
+    color: #92400E;
+    padding: 6px 0;
+    border-bottom: 1px dashed #FDE68A;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -229,6 +229,45 @@
 
   &__text {
     font-size: $font-size-sm;
+    font-weight: 600;
+  }
+
+  &__confidence {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: $radius-full;
+    margin-left: auto;
+
+    &--high {
+      background: rgba($color-success, 0.1);
+      color: $color-success;
+    }
+
+    &--medium {
+      background: rgba($color-warning, 0.1);
+      color: $color-warning;
+    }
+
+    &--low {
+      background: rgba($color-text-secondary, 0.1);
+      color: $color-text-secondary;
+    }
+  }
+}
+
+.engagement-item__prediction {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-3;
+  border-radius: $radius-md;
+
+  &.on-track {
+    background: rgba($color-success, 0.05);
+  }
+
+  &.late {
+    background: rgba($color-error, 0.05);
   }
 }
 

@@ -39,6 +39,8 @@
           [level]="engagement.riskLevel"
           [showLabel]="false"
           size="sm"
+          [showRichTooltip]="true"
+          [riskDetails]="getRiskDetails(engagement.id)"
         ></app-risk-badge>
       </div>
 
@@ -97,15 +99,32 @@
         </div>
 
         <!-- Prediction -->
-        <div class="engagement-item__section" *ngIf="engagement.predictedCompletion">
-          <h4>Prédiction</h4>
-          <div class="engagement-item__prediction">
-            <lucide-icon name="clock" class="prediction__icon" [size]="16"></lucide-icon>
-            <span class="prediction__text">
-              Complétion estimée: {{ formatDate(engagement.predictedCompletion) }}
-            </span>
+        @if (getPredictionDisplay(engagement.id); as pred) {
+          <div class="engagement-item__section">
+            <h4>Prédiction IA</h4>
+            <div class="engagement-item__prediction" [class.on-track]="getPrediction(engagement.id)?.is_on_track" [class.late]="!getPrediction(engagement.id)?.is_on_track">
+              <lucide-icon [name]="pred.icon" class="prediction__icon" [size]="18" [style.color]="pred.color"></lucide-icon>
+              <span class="prediction__text" [style.color]="pred.color">
+                {{ pred.text }}
+              </span>
+              @if (getPrediction(engagement.id); as prediction) {
+                <span class="prediction__confidence" [class]="'confidence--' + prediction.confidence">
+                  {{ prediction.confidence === 'high' ? 'Fiabilité haute' : prediction.confidence === 'medium' ? 'Fiabilité moyenne' : 'Estimation' }}
+                </span>
+              }
+            </div>
           </div>
-        </div>
+        } @else if (engagement.predictedCompletion) {
+          <div class="engagement-item__section">
+            <h4>Prédiction</h4>
+            <div class="engagement-item__prediction">
+              <lucide-icon name="clock" class="prediction__icon" [size]="16"></lucide-icon>
+              <span class="prediction__text">
+                Complétion estimée: {{ formatDate(engagement.predictedCompletion) }}
+              </span>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Actions -->

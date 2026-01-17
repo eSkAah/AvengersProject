@@ -384,3 +384,207 @@ async def test_engagement_status_updates_after_upload(client):
     # Status should have changed if initial was waiting
     if initial_status == "waiting":
         assert updated_data["status"] in ["received", "processing"]
+
+
+# =============================================================================
+# Risk Details Endpoint Tests
+# =============================================================================
+
+
+@pytest.mark.asyncio
+async def test_get_risk_details_returns_200(client):
+    """Test that GET /api/engagements/{id}/risk returns 200 OK."""
+    response = await client.get("/api/engagements/ENG-FR-001/risk")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_get_risk_details_returns_correct_structure(client):
+    """Test that risk details response has correct structure."""
+    response = await client.get("/api/engagements/ENG-FR-001/risk")
+    data = response.json()
+
+    assert "engagement_id" in data
+    assert "level" in data
+    assert "reasons" in data
+    assert "suggested_actions" in data
+    assert "days_remaining" in data
+    assert "completion_percent" in data
+    assert "missing_documents" in data
+
+    assert data["engagement_id"] == "ENG-FR-001"
+    assert data["level"] in ["high", "medium", "low"]
+    assert isinstance(data["reasons"], list)
+    assert isinstance(data["suggested_actions"], list)
+    assert isinstance(data["days_remaining"], int)
+    assert isinstance(data["completion_percent"], int)
+    assert isinstance(data["missing_documents"], list)
+
+
+@pytest.mark.asyncio
+async def test_get_risk_details_not_found(client):
+    """Test that non-existent engagement returns 404."""
+    response = await client.get("/api/engagements/NONEXISTENT/risk")
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_risk_details_has_reasons_for_high_risk(client):
+    """Test that high risk engagements have reasons."""
+    response = await client.get("/api/engagements/ENG-FR-001/risk")
+    data = response.json()
+
+    # France SPV is typically high risk in demo data
+    if data["level"] == "high":
+        assert len(data["reasons"]) > 0
+        assert len(data["suggested_actions"]) > 0
+
+
+# =============================================================================
+# Prediction Endpoint Tests
+# =============================================================================
+
+
+@pytest.mark.asyncio
+async def test_get_prediction_returns_200(client):
+    """Test that GET /api/engagements/{id}/prediction returns 200 OK."""
+    response = await client.get("/api/engagements/ENG-FR-001/prediction")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_get_prediction_returns_correct_structure(client):
+    """Test that prediction response has correct structure."""
+    response = await client.get("/api/engagements/ENG-FR-001/prediction")
+    data = response.json()
+
+    assert "engagement_id" in data
+    assert "predicted_date" in data
+    assert "days_difference" in data
+    assert "velocity" in data
+    assert "is_on_track" in data
+    assert "confidence" in data
+    assert "due_date" in data
+    assert "formatted_prediction" in data
+
+    assert data["engagement_id"] == "ENG-FR-001"
+    assert isinstance(data["days_difference"], int)
+    assert isinstance(data["velocity"], (int, float))
+    assert isinstance(data["is_on_track"], bool)
+    assert data["confidence"] in ["high", "medium", "low"]
+    assert isinstance(data["formatted_prediction"], str)
+
+
+@pytest.mark.asyncio
+async def test_get_prediction_not_found(client):
+    """Test that non-existent engagement returns 404."""
+    response = await client.get("/api/engagements/NONEXISTENT/prediction")
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_prediction_has_formatted_string(client):
+    """Test that prediction includes human-readable format."""
+    response = await client.get("/api/engagements/ENG-FR-001/prediction")
+    data = response.json()
+
+    formatted = data["formatted_prediction"]
+    # Should contain "Prévu le" or similar French text
+    assert "Prévu" in formatted or "Prédiction" in formatted
+
+
+# =============================================================================
+# Risk and Prediction Service Unit Tests
+# =============================================================================
+
+
+class TestCalculateRiskWithDetails:
+    """Tests for calculate_risk_with_details function."""
+
+    def test_completed_engagement_is_low_risk(self):
+        """Test completed engagements return low risk with appropriate reason."""
+        from app.services.engagement_service import calculate_risk_with_details
+
+        details = calculate_risk_with_details(
+            due_date=date.today() + timedelta(days=5),
+            completion_percent=100,
+            status=StatusEnum.completed,
+            documents_required=["Doc1", "Doc2"],
+            documents_uploaded=2,
+        )
+
+        assert details.level == RiskLevel.low
+        assert "terminé" in details.reasons[0].lower()
+        assert len(details.suggested_actions) == 0
+
+    def test_high_risk_has_actions(self):
+        """Test high risk engagements have suggested actions."""
+        from app.services.engagement_service import calculate_risk_with_details
+
+        details = calculate_risk_with_details(
+            due_date=date.today() + timedelta(days=3),
+            completion_percent=50,
+            status=StatusEnum.waiting,
+            documents_required=["Doc1", "Doc2", "Doc3"],
+            documents_uploaded=1,
+        )
+
+        assert details.level == RiskLevel.high
+        assert len(details.reasons) > 0
+        assert len(details.suggested_actions) > 0
+
+
+class TestCalculatePredictedCompletion:
+    """Tests for calculate_predicted_completion function."""
+
+    def test_completed_engagement_predicts_today(self):
+        """Test completed engagements predict today."""
+        from app.services.engagement_service import calculate_predicted_completion
+
+        prediction = calculate_predicted_completion(
+            created_at=date.today() - timedelta(days=10),
+            due_date=date.today() + timedelta(days=5),
+            completion_percent=100,
+            status=StatusEnum.completed,
+        )
+
+        assert prediction.predicted_date == date.today()
+        assert prediction.is_on_track is True
+
+    def test_zero_progress_uses_default_velocity(self):
+        """Test new engagement with no progress uses default velocity."""
+        from app.services.engagement_service import calculate_predicted_completion
+
+        prediction = calculate_predicted_completion(
+            created_at=date.today(),
+            due_date=date.today() + timedelta(days=30),
+            completion_percent=0,
+            status=StatusEnum.waiting,
+        )
+
+        assert prediction.predicted_date is not None
+        assert prediction.confidence == "low"
+
+    def test_prediction_indicates_late_or_early(self):
+        """Test prediction correctly indicates if on track."""
+        from app.services.engagement_service import calculate_predicted_completion
+
+        # Fast progress - should be early
+        prediction_fast = calculate_predicted_completion(
+            created_at=date.today() - timedelta(days=5),
+            due_date=date.today() + timedelta(days=30),
+            completion_percent=80,
+            status=StatusEnum.processing,
+        )
+
+        assert prediction_fast.is_on_track is True
+
+        # Slow progress - should be late
+        prediction_slow = calculate_predicted_completion(
+            created_at=date.today() - timedelta(days=20),
+            due_date=date.today() + timedelta(days=5),
+            completion_percent=20,
+            status=StatusEnum.received,
+        )
+
+        assert prediction_slow.is_on_track is False

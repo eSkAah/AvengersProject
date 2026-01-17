@@ -5,12 +5,21 @@ import {
   Output,
   EventEmitter,
   signal,
+  inject,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Engagement } from '../../../../core';
 import {
+  EngagementApiService,
+  RiskDetailsResponse,
+  PredictionResponse,
+} from '../../../../core/services';
+import {
   RiskBadgeComponent,
+  RiskDetails,
   ProgressBarComponent,
   ButtonComponent,
   BadgeComponent,
@@ -32,6 +41,9 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EngagementListComponent {
+  private readonly engagementApi = inject(EngagementApiService);
+  private readonly destroyRef = inject(DestroyRef);
+
   @Input({ required: true }) engagements: Engagement[] = [];
 
   @Output() viewDashboard = new EventEmitter<Engagement>();
@@ -39,9 +51,67 @@ export class EngagementListComponent {
   @Output() askEve = new EventEmitter<Engagement>();
 
   expandedId = signal<string | null>(null);
+  readonly riskDetailsMap = signal<Map<string, RiskDetails>>(new Map());
+  readonly predictionsMap = signal<Map<string, PredictionResponse>>(new Map());
 
   toggleExpand(id: string): void {
-    this.expandedId.update((current) => (current === id ? null : id));
+    const newId = this.expandedId() === id ? null : id;
+    this.expandedId.set(newId);
+
+    // Fetch risk details and prediction when expanding
+    if (newId) {
+      this.loadRiskDetails(newId);
+      this.loadPrediction(newId);
+    }
+  }
+
+  private loadRiskDetails(engagementId: string): void {
+    this.engagementApi
+      .getRiskDetails(engagementId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (details) => {
+          this.riskDetailsMap.update((map) => {
+            const newMap = new Map(map);
+            newMap.set(engagementId, {
+              reasons: details.reasons,
+              suggestedActions: details.suggested_actions,
+              daysRemaining: details.days_remaining,
+              missingDocuments: details.missing_documents,
+            });
+            return newMap;
+          });
+        },
+      });
+  }
+
+  private loadPrediction(engagementId: string): void {
+    this.engagementApi
+      .getPrediction(engagementId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (prediction) => {
+          this.predictionsMap.update((map) => {
+            const newMap = new Map(map);
+            newMap.set(engagementId, prediction);
+            return newMap;
+          });
+        },
+      });
+  }
+
+  getRiskDetails(engagementId: string): RiskDetails | null {
+    return this.riskDetailsMap().get(engagementId) ?? null;
+  }
+
+  getPrediction(engagementId: string): PredictionResponse | null {
+    return this.predictionsMap().get(engagementId) ?? null;
+  }
+
+  getPredictionDisplay(engagementId: string): { text: string; color: string; icon: string } | null {
+    const prediction = this.getPrediction(engagementId);
+    if (!prediction) return null;
+    return this.engagementApi.formatPrediction(prediction);
   }
 
   isExpanded(id: string): boolean {
