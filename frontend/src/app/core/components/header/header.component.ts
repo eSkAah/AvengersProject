@@ -112,7 +112,7 @@ export class HeaderComponent {
     // Navigate based on notification content
     if (notification.documentId) {
       // Navigate to documents page with highlight
-      this.router.navigate(['/documents'], {
+      this.router.navigate(['/app/documents'], {
         queryParams: {
           engagement: notification.engagementId,
           highlight: notification.documentId,
@@ -121,7 +121,7 @@ export class HeaderComponent {
       });
     } else if (notification.engagementId) {
       // Navigate to home and expand the engagement
-      this.router.navigate(['/'], {
+      this.router.navigate(['/app'], {
         queryParams: {
           expand: notification.engagementId,
         },

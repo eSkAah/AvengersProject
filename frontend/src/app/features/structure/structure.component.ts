@@ -425,13 +425,13 @@ export class StructureComponent implements AfterViewInit {
   navigateToEntity(node: EntityNode): void {
     if (node.type === 'entity' && node.engagements?.length === 1) {
       // Single engagement: navigate directly
-      this.router.navigate(['/engagements', node.engagements[0].id]);
+      this.router.navigate(['/app/engagements', node.engagements[0].id]);
     }
     // Multiple engagements: user selects from details panel
   }
 
   navigateToEngagement(engagement: Engagement): void {
-    this.router.navigate(['/engagements', engagement.id]);
+    this.router.navigate(['/app/engagements', engagement.id]);
   }
 
   getStatusLabel(status: string): string {

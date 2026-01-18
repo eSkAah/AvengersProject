@@ -1,0 +1,53 @@
+<div class="landing-container">
+  <!-- Animated Background -->
+  <div class="animated-background">
+    <div class="gradient-layer"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <!-- EY Logo -->
+    <div class="logo-container" @logoReveal>
+      <svg
+        class="ey-logo"
+        viewBox="0 0 86 44"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="EY Logo"
+      >
+        <!-- EY Letters in White -->
+        <g class="letters">
+          <!-- E -->
+          <polygon class="letter" fill="#FFFFFF" points="0,0 28,0 28,7 8,7 8,17 26,17 26,24 8,24 8,36 28,36 28,44 0,44"/>
+          <!-- Y -->
+          <polygon class="letter" fill="#FFFFFF" points="40,0 52,0 63,16 74,0 86,0 68,24 68,44 58,44 58,24"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Tagline -->
+    <p class="tagline" @fadeInUp>Digital Engagement Platform</p>
+
+    <!-- Enter Button -->
+    <button
+      class="enter-button"
+      [class.navigating]="isNavigating()"
+      (click)="enterApp()"
+      @buttonReveal
+    >
+      <span class="button-text">Enter</span>
+      <span class="button-glow"></span>
+    </button>
+  </div>
+
+  <!-- POC Disclaimer - Outside content wrapper to avoid overlap -->
+  <p class="disclaimer" @disclaimerFade>
+    This is a proof of concept for demonstration purposes only.
+  </p>
+</div>

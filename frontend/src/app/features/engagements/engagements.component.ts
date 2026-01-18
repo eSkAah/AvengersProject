@@ -205,17 +205,17 @@ export class EngagementsComponent implements OnInit {
   }
 
   onViewDashboard(engagement: Engagement): void {
-    this.router.navigate(['/engagements', engagement.id]);
+    this.router.navigate(['/app/engagements', engagement.id]);
   }
 
   onUploadDocs(engagement: Engagement): void {
-    this.router.navigate(['/documents'], {
+    this.router.navigate(['/app/documents'], {
       queryParams: { engagement: engagement.id },
     });
   }
 
   onAskEve(engagement: Engagement): void {
-    this.router.navigate(['/eve'], {
+    this.router.navigate(['/app/eve'], {
       queryParams: { engagement: engagement.id },
     });
   }
@@ -224,7 +224,7 @@ export class EngagementsComponent implements OnInit {
    * Handle upload for a specific document type within an engagement
    */
   onUploadDocType(event: { engagement: Engagement; docType: DocumentType }): void {
-    this.router.navigate(['/documents'], {
+    this.router.navigate(['/app/documents'], {
       queryParams: {
         tab: 'upload',
         entity: event.engagement.entity,
@@ -237,7 +237,7 @@ export class EngagementsComponent implements OnInit {
    * Handle viewing documents by status (uploaded/validated)
    */
   onViewDocsByStatus(event: { engagement: Engagement; status: DocumentRequirementStatus; type: DocumentType }): void {
-    this.router.navigate(['/documents'], {
+    this.router.navigate(['/app/documents'], {
       queryParams: {
         entity: event.engagement.entity,
         type: event.type,

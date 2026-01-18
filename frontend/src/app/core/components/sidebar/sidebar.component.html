@@ -10,7 +10,7 @@
         class="sidebar__nav-item"
         [routerLink]="item.route"
         routerLinkActive="sidebar__nav-item--active"
-        [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+        [routerLinkActiveOptions]="{ exact: item.route === '/app' }"
       >
         <lucide-icon [name]="item.icon" class="sidebar__nav-icon" [size]="20"></lucide-icon>
         <span class="sidebar__nav-label" *ngIf="!collapsed">{{ item.label }}</span>
@@ -40,16 +40,16 @@
 
     <!-- Profile Menu Dropdown -->
     <div class="sidebar__profile-menu" *ngIf="showProfileMenu && !collapsed">
-      <a class="sidebar__profile-menu-item" routerLink="/profile">
+      <a class="sidebar__profile-menu-item" routerLink="/app/profile">
         <lucide-icon name="user" [size]="16"></lucide-icon>
         <span>Profile</span>
       </a>
-      <a class="sidebar__profile-menu-item" routerLink="/settings">
+      <a class="sidebar__profile-menu-item" routerLink="/app/settings">
         <lucide-icon name="settings" [size]="16"></lucide-icon>
         <span>Settings</span>
       </a>
       <div class="sidebar__profile-menu-divider"></div>
-      <button class="sidebar__profile-menu-item sidebar__profile-menu-item--logout">
+      <button class="sidebar__profile-menu-item sidebar__profile-menu-item--logout" (click)="logout()">
         <lucide-icon name="log-out" [size]="16"></lucide-icon>
         <span>Logout</span>
       </button>

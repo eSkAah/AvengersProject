@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 
 export interface NavItem {
@@ -24,16 +24,18 @@ export interface UserProfile {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
+  private router = inject(Router);
+
   @Input() collapsed = false;
   @Input() mobileOpen = false;
   @Output() collapsedChange = new EventEmitter<boolean>();
 
   // Navigation items with Structure page for entity relationships
   navItems: NavItem[] = [
-    { label: 'Command Center', icon: 'command', route: '/' },
-    { label: 'Engagements', icon: 'briefcase', route: '/engagements' },
-    { label: 'Structure', icon: 'git-branch', route: '/structure' },
-    { label: 'Documents', icon: 'file-text', route: '/documents' },
+    { label: 'Command Center', icon: 'command', route: '/app' },
+    { label: 'Engagements', icon: 'briefcase', route: '/app/engagements' },
+    { label: 'Structure', icon: 'git-branch', route: '/app/structure' },
+    { label: 'Documents', icon: 'file-text', route: '/app/documents' },
   ];
 
   // User profile
@@ -56,5 +58,10 @@ export class SidebarComponent {
 
   closeProfileMenu(): void {
     this.showProfileMenu = false;
+  }
+
+  logout(): void {
+    this.closeProfileMenu();
+    this.router.navigate(['/']);
   }
 }

@@ -154,7 +154,7 @@ export class EngagementDetailComponent implements OnInit {
   goToDocuments(): void {
     const id = this.engagementId();
     if (id) {
-      this.router.navigate(['/documents'], { queryParams: { engagement: id } });
+      this.router.navigate(['/app/documents'], { queryParams: { engagement: id } });
     }
   }
 
@@ -164,7 +164,7 @@ export class EngagementDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/app']);
   }
 
   getFileFormat(filename: string): string {
@@ -198,7 +198,7 @@ export class EngagementDetailComponent implements OnInit {
     const eng = this.engagement();
     if (eng) {
       // Navigate to documents page with upload context
-      this.router.navigate(['/documents'], {
+      this.router.navigate(['/app/documents'], {
         queryParams: {
           tab: 'upload',
           entity: eng.entity,
@@ -213,7 +213,7 @@ export class EngagementDetailComponent implements OnInit {
     const eng = this.engagement();
     if (eng) {
       // Navigate to document library filtered to this document
-      this.router.navigate(['/documents'], {
+      this.router.navigate(['/app/documents'], {
         queryParams: {
           entity: eng.entity,
           type: doc.type,

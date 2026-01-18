@@ -1,11 +1,16 @@
-<app-layout-shell>
-  <div class="route-container" [@routeAnimations]="prepareRoute(outlet)">
-    <router-outlet #outlet="outlet" />
-  </div>
-</app-layout-shell>
+@if (showLayout()) {
+  <app-layout-shell>
+    <div class="route-container" [@routeAnimations]="prepareRoute(outlet)">
+      <router-outlet #outlet="outlet" />
+    </div>
+  </app-layout-shell>
 
-<app-toast />
+  <app-toast />
 
-<!-- Eve AI Assistant -->
-<app-eve-fab />
-<app-eve-panel />
+  <!-- Eve AI Assistant -->
+  <app-eve-fab />
+  <app-eve-panel />
+} @else {
+  <!-- Landing page without layout -->
+  <router-outlet #outlet="outlet" />
+}

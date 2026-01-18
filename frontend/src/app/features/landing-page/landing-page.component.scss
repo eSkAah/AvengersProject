@@ -1,0 +1,347 @@
+// EY Brand Colors
+$ey-yellow: #FFE600;
+$ey-yellow-glow: rgba(255, 230, 0, 0.5);
+$ey-yellow-light: rgba(255, 230, 0, 0.3);
+
+// Background Colors
+$bg-dark: #0a0a0f;
+$bg-gradient-1: #1a1a2e;
+$bg-gradient-2: #16213e;
+$bg-gradient-3: #0f3460;
+
+// Glassmorphism
+$glass-bg: rgba(255, 255, 255, 0.08);
+$glass-border: rgba(255, 255, 255, 0.15);
+$glass-blur: 20px;
+
+// ========================================
+// Keyframe Animations
+// ========================================
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shapeDrift1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.15;
+  }
+  25% {
+    transform: translate(30px, -20px) rotate(90deg);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(0, -40px) rotate(180deg);
+    opacity: 0.15;
+  }
+  75% {
+    transform: translate(-30px, -20px) rotate(270deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes shapeDrift2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate(-40px, 20px) rotate(120deg) scale(1.1);
+  }
+  66% {
+    transform: translate(20px, 40px) rotate(240deg) scale(0.9);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px $ey-yellow-light,
+      0 0 40px rgba(255, 230, 0, 0.1),
+      inset 0 0 20px rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 30px $ey-yellow-glow,
+      0 0 60px rgba(255, 230, 0, 0.2),
+      inset 0 0 30px rgba(255, 255, 255, 0.1);
+  }
+}
+
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+// ========================================
+// Main Container
+// ========================================
+
+.landing-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: $bg-dark;
+}
+
+// ========================================
+// Animated Background
+// ========================================
+
+.animated-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.gradient-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    $bg-dark 0%,
+    $bg-gradient-1 25%,
+    $bg-gradient-2 50%,
+    $bg-gradient-3 75%,
+    $bg-gradient-1 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+}
+
+.floating-shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $ey-yellow-light, transparent);
+  opacity: 0.15;
+
+  &.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: 10%;
+    animation: shapeDrift1 25s ease-in-out infinite;
+  }
+
+  &.shape-2 {
+    width: 200px;
+    height: 200px;
+    top: 60%;
+    right: 15%;
+    animation: shapeDrift2 30s ease-in-out infinite;
+    animation-delay: -5s;
+  }
+
+  &.shape-3 {
+    width: 150px;
+    height: 150px;
+    bottom: 20%;
+    left: 20%;
+    animation: shapeDrift1 20s ease-in-out infinite;
+    animation-delay: -10s;
+  }
+
+  &.shape-4 {
+    width: 100px;
+    height: 100px;
+    top: 30%;
+    right: 30%;
+    animation: shapeDrift2 22s ease-in-out infinite;
+    animation-delay: -7s;
+  }
+
+  &.shape-5 {
+    width: 250px;
+    height: 250px;
+    bottom: 10%;
+    right: 5%;
+    animation: shapeDrift1 28s ease-in-out infinite;
+    animation-delay: -15s;
+  }
+}
+
+// ========================================
+// Content
+// ========================================
+
+.content-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  max-width: 100vw;
+}
+
+// ========================================
+// EY Logo
+// ========================================
+
+.logo-container {
+  margin-bottom: 2rem;
+  animation: subtleFloat 6s ease-in-out infinite;
+}
+
+.ey-logo {
+  width: clamp(180px, 40vw, 400px);
+  height: auto;
+}
+
+// ========================================
+// Tagline
+// ========================================
+
+.tagline {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+}
+
+// ========================================
+// Enter Button (Glassmorphism)
+// ========================================
+
+.enter-button {
+  position: relative;
+  padding: 1rem 3rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $ey-yellow;
+  background: $glass-bg;
+  border: 1px solid $glass-border;
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  transition: all 0.3s ease;
+  animation: glowPulse 3s ease-in-out infinite;
+
+  &:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 230, 0, 0.4);
+    box-shadow:
+      0 0 40px $ey-yellow-glow,
+      0 0 80px rgba(255, 230, 0, 0.15),
+      inset 0 0 30px rgba(255, 255, 255, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.navigating {
+    .button-glow {
+      animation: ripple 0.6s ease-out forwards;
+    }
+  }
+
+  .button-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .button-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, $ey-yellow-glow 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+  }
+}
+
+// ========================================
+// Disclaimer (positioned relative to landing-container)
+// ========================================
+
+.disclaimer {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.1em;
+  max-width: 90%;
+  text-align: center;
+  z-index: 1;
+  pointer-events: none; // Ensure it doesn't block clicks
+}
+
+// ========================================
+// Responsive Adjustments
+// ========================================
+
+@media (max-width: 768px) {
+  .tagline {
+    letter-spacing: 0.15em;
+    margin-bottom: 2rem;
+  }
+
+  .enter-button {
+    padding: 0.875rem 2.5rem;
+    font-size: 1rem;
+  }
+
+  .disclaimer {
+    bottom: 1.5rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shape {
+    display: none; // Hide shapes on very small screens for performance
+  }
+
+  .tagline {
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+  }
+}

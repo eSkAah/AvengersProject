@@ -210,17 +210,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   onViewDashboard(engagement: Engagement): void {
-    this.router.navigate(['/engagements', engagement.id]);
+    this.router.navigate(['/app/engagements', engagement.id]);
   }
 
   onUploadDocs(engagement: Engagement): void {
-    this.router.navigate(['/documents'], {
+    this.router.navigate(['/app/documents'], {
       queryParams: { engagement: engagement.id },
     });
   }
 
   onAskEve(engagement: Engagement): void {
-    this.router.navigate(['/eve'], {
+    this.router.navigate(['/app/eve'], {
       queryParams: { engagement: engagement.id },
     });
   }
@@ -231,7 +231,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     type: DocumentType;
   }): void {
     // Navigate to documents with filters for entity, status, and type
-    this.router.navigate(['/documents'], {
+    this.router.navigate(['/app/documents'], {
       queryParams: {
         engagement: event.engagement.id,
         entity: event.engagement.entity,
@@ -243,7 +243,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   onNotificationClick(notification: Notification): void {
     if (notification.engagementId) {
-      this.router.navigate(['/engagements', notification.engagementId]);
+      this.router.navigate(['/app/engagements', notification.engagementId]);
     }
   }
 
@@ -252,14 +252,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
     switch (action.type) {
       case 'upload':
         // Navigate to engagement detail page to see missing documents and upload them
-        this.router.navigate(['/engagements', action.engagementId]);
+        this.router.navigate(['/app/engagements', action.engagementId]);
         break;
       case 'review':
       case 'deadline':
-        this.router.navigate(['/engagements', action.engagementId]);
+        this.router.navigate(['/app/engagements', action.engagementId]);
         break;
       default:
-        this.router.navigate(['/engagements', action.engagementId]);
+        this.router.navigate(['/app/engagements', action.engagementId]);
     }
   }
 
@@ -280,24 +280,24 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   onKpiCardClick(filter: KpiFilter): void {
     if (filter === 'all') {
-      this.router.navigate(['/engagements']);
+      this.router.navigate(['/app/engagements']);
     } else if (filter === 'high-risk') {
-      this.router.navigate(['/engagements'], {
+      this.router.navigate(['/app/engagements'], {
         queryParams: { risk: 'high' },
       });
     } else if (filter === 'processing') {
-      this.router.navigate(['/engagements'], {
+      this.router.navigate(['/app/engagements'], {
         queryParams: { status: 'processing,received' },
       });
     } else if (filter === 'completed') {
-      this.router.navigate(['/engagements'], {
+      this.router.navigate(['/app/engagements'], {
         queryParams: { status: 'completed' },
       });
     }
   }
 
   onViewAllRiskEngagements(): void {
-    this.router.navigate(['/engagements']);
+    this.router.navigate(['/app/engagements']);
   }
 
   formatShortDate(dateStr: string): string {
