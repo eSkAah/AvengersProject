@@ -59,6 +59,7 @@ export interface PieClickEvent {
       } @else {
         <div class="chart-wrapper">
           <canvas #chartCanvas></canvas>
+          <div #tooltipEl class="chartjs-tooltip"></div>
           @if (data) {
             <div class="chart-center">
               <span class="chart-center__value">{{ formatCurrency(data.total) }}</span>
@@ -93,7 +94,7 @@ export interface PieClickEvent {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
     .pie-chart-container--loading {
@@ -127,15 +128,16 @@ export interface PieClickEvent {
     .chart-wrapper {
       position: relative;
       width: 100%;
-      height: 220px;
+      height: 200px;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     canvas {
-      max-width: 220px;
-      max-height: 220px;
+      max-width: 200px;
+      max-height: 200px;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
     }
 
     .chart-center {
@@ -145,47 +147,113 @@ export interface PieClickEvent {
       transform: translate(-50%, -50%);
       text-align: center;
       pointer-events: none;
+      z-index: 1;
+    }
+
+    .chart-wrapper canvas {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* External tooltip styling */
+    :host ::ng-deep .chartjs-tooltip {
+      position: absolute;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 12px 16px;
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: all 150ms ease;
+      opacity: 0;
+    }
+
+    :host ::ng-deep .chartjs-tooltip.active {
+      opacity: 1;
+    }
+
+    :host ::ng-deep .chartjs-tooltip-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1F2937;
+      margin-bottom: 4px;
+    }
+
+    :host ::ng-deep .chartjs-tooltip-body {
+      font-size: 12px;
+      color: #4B5563;
+    }
+
+    :host ::ng-deep .chartjs-tooltip-body-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    :host ::ng-deep .chartjs-tooltip-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    :host ::ng-deep .chartjs-tooltip-footer {
+      font-size: 11px;
+      color: #9CA3AF;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
     }
 
     .chart-center__value {
       display: block;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #2E2E38;
+      color: #1F2937;
+      letter-spacing: -0.02em;
     }
 
     .chart-center__label {
       display: block;
-      font-size: 12px;
-      color: #6B7280;
-      margin-top: 2px;
+      font-size: 11px;
+      color: #9CA3AF;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 500;
     }
 
     .chart-legend {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px;
-      border-radius: 6px;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 200ms ease-out;
+      transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
     }
 
     .legend-item:hover {
-      background: #F5F5F5;
+      background: linear-gradient(135deg, rgba(255, 230, 0, 0.06) 0%, rgba(255, 208, 0, 0.02) 100%);
+      border-color: rgba(255, 230, 0, 0.2);
+      transform: translateX(4px);
     }
 
     .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 4px;
       flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .legend-content {
@@ -193,33 +261,39 @@ export interface PieClickEvent {
       flex-direction: column;
       gap: 2px;
       min-width: 0;
+      flex: 1;
     }
 
     .legend-label {
       font-size: 12px;
-      color: #2E2E38;
+      font-weight: 500;
+      color: #374151;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .legend-value {
-      font-size: 11px;
-      color: #6B7280;
-      font-weight: 500;
+      font-size: 12px;
+      color: #9CA3AF;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
 
     .chart-source {
       font-size: 11px;
-      color: #9CA3AF;
-      font-style: italic;
+      color: #D1D5DB;
+      font-style: normal;
       text-align: right;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('tooltipEl') tooltipEl!: ElementRef<HTMLDivElement>;
 
   @Input() data: PieChartData | null = null;
   @Input() loading = false;
@@ -238,8 +312,19 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Handle data changes when canvas is ready
     if (changes['data'] && this.chartCanvas) {
       this.updateChart();
+    }
+
+    // When loading changes from true to false, canvas just appeared in DOM
+    // Need to wait for next tick for ViewChild to resolve
+    if (changes['loading'] && !this.loading && this.data) {
+      setTimeout(() => {
+        if (this.chartCanvas && !this.chart) {
+          this.createChart();
+        }
+      }, 0);
     }
   }
 
@@ -274,54 +359,100 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.segmentClick.emit(clickEvent);
   }
 
+  private externalTooltipHandler(context: { chart: Chart; tooltip: { opacity: number; dataPoints?: { dataIndex: number }[]; caretX: number; caretY: number } }): void {
+    const { chart, tooltip } = context;
+    const tooltipEl = this.tooltipEl?.nativeElement;
+
+    if (!tooltipEl) return;
+
+    // Hide if no tooltip
+    if (tooltip.opacity === 0) {
+      tooltipEl.classList.remove('active');
+      return;
+    }
+
+    // Set tooltip content
+    if (tooltip.dataPoints && tooltip.dataPoints.length > 0) {
+      const dataIndex = tooltip.dataPoints[0].dataIndex;
+      const item = this.data!.items[dataIndex];
+      const formatted = this.formatCurrency(item.value);
+
+      let html = `<div class="chartjs-tooltip-title">${item.label}</div>`;
+      html += `<div class="chartjs-tooltip-body">`;
+      html += `<div class="chartjs-tooltip-body-item">`;
+      html += `<span class="chartjs-tooltip-color" style="background-color: ${item.color}"></span>`;
+      html += `<span>${formatted} (${item.percentage.toFixed(1)}%)</span>`;
+      html += `</div></div>`;
+
+      if (this.cmdClickEnabled) {
+        html += `<div class="chartjs-tooltip-footer">⌘+Clic pour plus de détails</div>`;
+      }
+
+      tooltipEl.innerHTML = html;
+    }
+
+    // Position tooltip
+    const position = chart.canvas.getBoundingClientRect();
+    const tooltipWidth = tooltipEl.offsetWidth;
+    const tooltipHeight = tooltipEl.offsetHeight;
+
+    // Calculate position - center above the cursor
+    let left = tooltip.caretX - tooltipWidth / 2;
+    let top = tooltip.caretY - tooltipHeight - 15;
+
+    // Keep tooltip within bounds
+    if (left < 10) left = 10;
+    if (left + tooltipWidth > position.width - 10) left = position.width - tooltipWidth - 10;
+    if (top < 10) top = tooltip.caretY + 15; // Show below if no space above
+
+    tooltipEl.style.left = left + 'px';
+    tooltipEl.style.top = top + 'px';
+    tooltipEl.classList.add('active');
+  }
+
   private createChart(): void {
     if (!this.chartCanvas || !this.data) return;
 
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // Premium color palette with subtle variations
+    const premiumColors = [
+      { base: '#FFE600', hover: '#FFD000' },  // EY Yellow
+      { base: '#FFC107', hover: '#FFB300' },  // Amber
+      { base: '#3B82F6', hover: '#2563EB' },  // Blue
+      { base: '#8B5CF6', hover: '#7C3AED' },  // Purple
+      { base: '#10B981', hover: '#059669' },  // Green
+      { base: '#6B7280', hover: '#4B5563' },  // Gray
+    ];
+
+    // Map item colors to premium palette or use provided colors
+    const getColorPair = (color: string, index: number) => {
+      const preset = premiumColors.find(c => c.base.toLowerCase() === color.toLowerCase());
+      if (preset) return preset;
+      return premiumColors[index % premiumColors.length];
+    };
+
     const options: ChartOptions<'doughnut'> = {
       responsive: true,
       maintainAspectRatio: true,
-      cutout: '65%',
+      cutout: '70%',
       animation: {
-        duration: 300,
+        animateRotate: true,
+        animateScale: true,
+        duration: 1000,
         easing: 'easeOutQuart',
+      },
+      layout: {
+        padding: 20,
       },
       plugins: {
         legend: {
           display: false,
         },
         tooltip: {
-          backgroundColor: '#FFFFFF',
-          titleColor: '#2E2E38',
-          bodyColor: '#6B7280',
-          borderColor: '#E5E5E5',
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 8,
-          titleFont: {
-            family: 'Inter',
-            size: 13,
-            weight: 600,
-          },
-          bodyFont: {
-            family: 'Inter',
-            size: 12,
-          },
-          callbacks: {
-            label: (context) => {
-              const item = this.data!.items[context.dataIndex];
-              const formatted = this.formatCurrency(item.value);
-              return `${formatted} (${item.percentage.toFixed(1)}%)`;
-            },
-            afterLabel: () => {
-              if (this.cmdClickEnabled) {
-                return '⌘+Click pour demander à Eve';
-              }
-              return '';
-            },
-          },
+          enabled: false,
+          external: (context) => this.externalTooltipHandler(context),
         },
       },
       onClick: (event: ChartEvent, elements) => {
@@ -354,9 +485,19 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         datasets: [
           {
             data: this.data.items.map((i) => i.value),
-            backgroundColor: this.data.items.map((i) => i.color),
-            borderWidth: 0,
-            hoverOffset: 8,
+            backgroundColor: this.data.items.map((item, i) => {
+              const colorPair = getColorPair(item.color, i);
+              return colorPair.base;
+            }),
+            hoverBackgroundColor: this.data.items.map((item, i) => {
+              const colorPair = getColorPair(item.color, i);
+              return colorPair.hover;
+            }),
+            borderWidth: 3,
+            borderColor: '#FFFFFF',
+            hoverOffset: 12,
+            hoverBorderWidth: 3,
+            spacing: 2,
           },
         ],
       },

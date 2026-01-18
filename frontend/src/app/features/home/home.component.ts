@@ -58,7 +58,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   private activeFilter = signal<KpiFilter>('all');
-  private completedActionIds = signal<Set<string>>(new Set());
   readonly expandEngagementId = signal<string | null>(null);
 
   // Signal to trigger initial render - fixes OnPush change detection issue
@@ -89,68 +88,58 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // Status labels for display
   readonly statusLabels = STATUS_LABELS;
 
-  // Action items derived from engagements
+  // Action items derived from engagements - automatically updated when documents are uploaded
   readonly actionItems = computed<ActionItem[]>(() => {
     const engagements = this.mockData.engagements();
-    const completedIds = this.completedActionIds();
     const items: ActionItem[] = [];
 
     engagements.forEach(engagement => {
-      // Missing documents action
+      // Missing documents action - automatically disappears when all docs uploaded
       const missingDocs = engagement.documentsRequired.length - engagement.documentsUploaded.length;
       if (missingDocs > 0 && engagement.status !== 'completed') {
-        const actionId = `upload-${engagement.id}`;
-        if (!completedIds.has(actionId)) {
-          items.push({
-            id: actionId,
-            type: 'upload',
-            title: `Upload ${missingDocs} document(s)`,
-            description: `${engagement.entity} - ${missingDocs} document(s) manquant(s)`,
-            engagementId: engagement.id,
-            engagementName: engagement.entity,
-            priority:
-              engagement.riskLevel === 'high'
-                ? 'high'
-                : engagement.riskLevel === 'medium'
-                  ? 'medium'
-                  : 'low',
-            dueDate: engagement.dueDate,
-          });
-        }
+        items.push({
+          id: `upload-${engagement.id}`,
+          type: 'upload',
+          title: `Upload ${missingDocs} document(s)`,
+          description: `${engagement.entity} - ${missingDocs} document(s) manquant(s)`,
+          engagementId: engagement.id,
+          engagementName: engagement.entity,
+          priority:
+            engagement.riskLevel === 'high'
+              ? 'high'
+              : engagement.riskLevel === 'medium'
+                ? 'medium'
+                : 'low',
+          dueDate: engagement.dueDate,
+        });
       }
 
       // Deadline approaching (within 7 days)
       const daysUntilDue = this.getDaysUntilDue(engagement.dueDate);
       if (daysUntilDue <= 7 && daysUntilDue > 0 && engagement.status !== 'completed') {
-        const actionId = `deadline-${engagement.id}`;
-        if (!completedIds.has(actionId)) {
-          items.push({
-            id: actionId,
-            type: 'deadline',
-            title: `Deadline in ${daysUntilDue} day(s)`,
-            description: `${engagement.entity} - Complete before ${this.formatDate(engagement.dueDate)}`,
-            engagementId: engagement.id,
-            engagementName: engagement.entity,
-            priority: daysUntilDue <= 3 ? 'high' : 'medium',
-            dueDate: engagement.dueDate,
-          });
-        }
+        items.push({
+          id: `deadline-${engagement.id}`,
+          type: 'deadline',
+          title: `Deadline in ${daysUntilDue} day(s)`,
+          description: `${engagement.entity} - Complete before ${this.formatDate(engagement.dueDate)}`,
+          engagementId: engagement.id,
+          engagementName: engagement.entity,
+          priority: daysUntilDue <= 3 ? 'high' : 'medium',
+          dueDate: engagement.dueDate,
+        });
       }
 
       // Review needed (status is 'received')
       if (engagement.status === 'received') {
-        const actionId = `review-${engagement.id}`;
-        if (!completedIds.has(actionId)) {
-          items.push({
-            id: actionId,
-            type: 'review',
-            title: 'Review documents',
-            description: `${engagement.entity} - Documents received, pending review`,
-            engagementId: engagement.id,
-            engagementName: engagement.entity,
-            priority: engagement.riskLevel === 'high' ? 'high' : 'medium',
-          });
-        }
+        items.push({
+          id: `review-${engagement.id}`,
+          type: 'review',
+          title: 'Review documents',
+          description: `${engagement.entity} - Documents received, pending review`,
+          engagementId: engagement.id,
+          engagementName: engagement.entity,
+          priority: engagement.riskLevel === 'high' ? 'high' : 'medium',
+        });
       }
     });
 
@@ -183,9 +172,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   });
 
   ngOnInit(): void {
-    // Load completed actions from session storage
-    this.loadCompletedActions();
-
     // Check for expand query param (from notification deep-link)
     this.route.queryParams.subscribe(params => {
       const expandId = params['expand'];
@@ -277,16 +263,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  markActionComplete(action: ActionItem, event: Event): void {
-    event.stopPropagation();
-    this.completedActionIds.update(ids => {
-      const newIds = new Set(ids);
-      newIds.add(action.id);
-      return newIds;
-    });
-    this.saveCompletedActions();
-  }
-
   getActionIcon(type: ActionItem['type']): string {
     switch (type) {
       case 'upload':
@@ -345,26 +321,5 @@ export class HomeComponent implements OnInit, AfterViewInit {
       day: '2-digit',
       month: 'short',
     });
-  }
-
-  private saveCompletedActions(): void {
-    try {
-      const ids = Array.from(this.completedActionIds());
-      sessionStorage.setItem('avengers_completed_actions', JSON.stringify(ids));
-    } catch {
-      // Session storage not available
-    }
-  }
-
-  private loadCompletedActions(): void {
-    try {
-      const saved = sessionStorage.getItem('avengers_completed_actions');
-      if (saved) {
-        const ids = JSON.parse(saved) as string[];
-        this.completedActionIds.set(new Set(ids));
-      }
-    } catch {
-      // Session storage not available
-    }
   }
 }

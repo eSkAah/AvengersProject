@@ -7,6 +7,9 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
+  // Enable container queries for smooth sidebar collapse/expand
+  container-type: inline-size;
+  container-name: command-center;
 
   &__header {
     display: flex;
@@ -61,15 +64,27 @@
 }
 
 // Bento Grid Layout - Redesigned for better visibility
+// Uses container queries for smooth sidebar transitions
 .bento-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   grid-template-rows: auto auto auto auto;
   gap: $spacing-4;
+  // Smooth transition for grid changes
+  transition: gap 0.3s ease;
 
-  @media (max-width: 1024px) {
+  // Container query: responds to actual container width, not viewport
+  @container command-center (max-width: 700px) {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+  }
+
+  // Fallback media query for browsers without container query support
+  @supports not (container-type: inline-size) {
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
   }
 
   @media (max-width: 640px) {
@@ -94,8 +109,9 @@
   // Subtle border for definition
   border: 1px solid rgba($color-border, 0.4);
 
-  // Smooth transition for hover states
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  // Smooth transition for hover states only (not layout changes)
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     box-shadow:
@@ -124,7 +140,7 @@
     grid-row: 1;
     padding: $spacing-5;
 
-    @media (max-width: 1024px) {
+    @container command-center (max-width: 700px) {
       grid-column: 1;
     }
   }
@@ -136,12 +152,15 @@
     display: flex;
     flex-direction: column;
     padding: 0;
-    max-height: 480px;
+    // Allow card to shrink when notifications collapsed
+    align-self: start;
 
     // Remove inner card styling since notifications-zone has its own
     background: transparent;
     box-shadow: none;
     border: none;
+    // Disable hover transitions for this transparent card
+    transition: none;
 
     &:hover {
       box-shadow: none;
@@ -149,22 +168,13 @@
     }
 
     app-notifications-zone {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-
-      ::ng-deep .notifications-zone {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
+      display: block;
     }
 
-    @media (max-width: 1024px) {
+    @container command-center (max-width: 700px) {
       grid-column: 1;
       grid-row: auto;
-      max-height: 350px;
+      align-self: stretch;
     }
   }
 
@@ -174,7 +184,7 @@
     grid-row: 2;
     padding: $spacing-5;
 
-    @media (max-width: 1024px) {
+    @container command-center (max-width: 700px) {
       grid-column: 1;
       grid-row: auto;
     }
@@ -188,7 +198,7 @@
     display: flex;
     flex-direction: column;
 
-    @media (max-width: 1024px) {
+    @container command-center (max-width: 700px) {
       grid-column: 1;
       grid-row: auto;
     }
@@ -200,7 +210,7 @@
     grid-row: 4;
     padding: $spacing-5;
 
-    @media (max-width: 1024px) {
+    @container command-center (max-width: 700px) {
       grid-column: 1;
       grid-row: auto;
     }
@@ -414,8 +424,9 @@
     background: rgba($color-background, 0.8);
     transform: translateX(4px);
 
-    .action-item__complete {
+    .action-item__arrow {
       opacity: 1;
+      transform: translateX(2px);
     }
   }
 
@@ -469,25 +480,11 @@
     text-overflow: ellipsis;
   }
 
-  &__complete {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba($color-success, 0.1);
-    border: none;
-    border-radius: $radius-sm;
-    color: $color-success;
-    cursor: pointer;
+  &__arrow {
+    color: $color-text-muted;
     opacity: 0.5;
     transition: all 0.2s ease;
     flex-shrink: 0;
-
-    &:hover {
-      background: $color-success;
-      color: white;
-    }
   }
 }
 

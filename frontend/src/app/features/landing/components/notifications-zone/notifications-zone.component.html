@@ -1,4 +1,4 @@
-<div class="notifications-zone" *ngIf="notificationCount() > 0">
+<div class="notifications-zone" *ngIf="notificationCount() > 0" [class.notifications-zone--collapsed]="collapsed()">
   <div class="notifications-zone__header" (click)="toggleCollapse()">
     <div class="notifications-zone__title">
       <lucide-icon name="bell" [size]="18" class="notifications-zone__icon"></lucide-icon>
@@ -9,10 +9,11 @@
       [name]="collapsed() ? 'chevron-right' : 'chevron-down'"
       [size]="16"
       class="notifications-zone__toggle"
+      [class.notifications-zone__toggle--collapsed]="collapsed()"
     ></lucide-icon>
   </div>
 
-  <div class="notifications-zone__content" *ngIf="!collapsed()">
+  <div class="notifications-zone__content">
     <app-notification-item
       *ngFor="let notification of visibleNotifications(); trackBy: trackById"
       [notification]="notification"

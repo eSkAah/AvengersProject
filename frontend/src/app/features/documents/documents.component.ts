@@ -508,17 +508,23 @@ export class DocumentsComponent implements OnInit {
       // Simulate upload with metadata
       const response = await this.simulateUpload(file, metadata);
 
+      // Find engagement ID from entity name
+      const matchingEngagement = this.engagements().find(
+        e => e.entity === metadata.entity
+      );
+      const engagementIds = matchingEngagement ? [matchingEngagement.id] : [];
+
       // Create document in mock data
       const newDoc: Document = {
         id: crypto.randomUUID(),
         name: file.name,
         type: (metadata.type || 'general_ledger') as Document['type'],
-        engagementIds: [],
+        engagementIds,
         uploadedAt: new Date().toISOString(),
         status: 'analyzing',
         size: file.size,
         year: metadata.year || new Date().getFullYear(),
-        entityId: crypto.randomUUID(),
+        entityId: matchingEngagement?.id || crypto.randomUUID(),
         entityName: metadata.entity || 'Non classé',
       };
       this.mockData.addDocument(newDoc);

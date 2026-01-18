@@ -100,13 +100,7 @@
                 <span class="action-item__title">{{ action.title }}</span>
                 <span class="action-item__description">{{ action.description }}</span>
               </div>
-              <button
-                class="action-item__complete"
-                (click)="markActionComplete(action, $event)"
-                title="Marquer comme terminé"
-              >
-                <lucide-icon name="check" [size]="16"></lucide-icon>
-              </button>
+              <lucide-icon name="chevron-right" [size]="16" class="action-item__arrow"></lucide-icon>
             </div>
           }
         </div>
