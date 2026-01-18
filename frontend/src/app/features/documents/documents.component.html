@@ -2,8 +2,18 @@
   <!-- Sidebar with Document Tree (always visible) -->
   <aside class="documents-page__sidebar">
     <h3 class="documents-page__sidebar-title">Navigation</h3>
+    <!-- Entity Search Filter -->
+    <div class="documents-page__sidebar-search">
+      <app-entity-autocomplete
+        [entities]="entityOptions()"
+        [selectedEntity]="globalFilters().entity"
+        placeholder="Filtrer par entité..."
+        (entitySelect)="onGlobalEntityChange($event)"
+        (entityClear)="clearGlobalFilters()"
+      ></app-entity-autocomplete>
+    </div>
     <app-document-tree
-      [documents]="allDocuments()"
+      [documents]="filteredTreeDocuments()"
       (nodeSelect)="onTreeNodeSelect($event)"
     ></app-document-tree>
   </aside>
@@ -178,18 +188,6 @@
 
         <!-- Filter Dropdowns -->
         <div class="global-filters__dropdowns">
-          <!-- Entity -->
-          <select
-            class="global-filters__select"
-            [ngModel]="globalFilters().entity"
-            (ngModelChange)="onGlobalEntityChange($event)"
-          >
-            <option value="">Toutes les entités</option>
-            @for (entity of entityOptions(); track entity) {
-              <option [value]="entity">{{ entity }}</option>
-            }
-          </select>
-
           <!-- Year -->
           <select
             class="global-filters__select"

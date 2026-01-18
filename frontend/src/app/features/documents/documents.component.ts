@@ -29,6 +29,7 @@ import {
   ButtonComponent,
   DocumentPreviewModalComponent,
   FlyingDocumentComponent,
+  EntityAutocompleteComponent,
 } from '../../shared';
 import { PlacementAnimation } from '../../shared/components/flying-document/flying-document.component';
 import {
@@ -79,6 +80,7 @@ export interface PendingFile {
     DocumentPreviewModalComponent,
     FlyingDocumentComponent,
     ClassificationDialogComponent,
+    EntityAutocompleteComponent,
   ],
   templateUrl: './documents.component.html',
   styleUrl: './documents.component.scss',
@@ -196,6 +198,15 @@ export class DocumentsComponent implements OnInit {
     }
 
     return docs;
+  });
+
+  // Filtered documents for tree (only by entity filter)
+  filteredTreeDocuments = computed(() => {
+    const entityFilter = this.globalFilters().entity;
+    if (!entityFilter) {
+      return this.allDocuments();
+    }
+    return this.allDocuments().filter(d => d.entityName === entityFilter);
   });
 
   ngOnInit(): void {

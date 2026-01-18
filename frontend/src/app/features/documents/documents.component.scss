@@ -25,6 +25,16 @@
       letter-spacing: 0.5px;
       border-bottom: 1px solid $color-border;
     }
+
+    &-search {
+      padding: $spacing-3;
+      border-bottom: 1px solid $color-border;
+
+      app-entity-autocomplete {
+        display: block;
+        max-width: 100%;
+      }
+    }
   }
 
   &__main {

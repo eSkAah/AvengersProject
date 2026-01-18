@@ -1,0 +1,54 @@
+<div class="entity-autocomplete" [class.entity-autocomplete--open]="isOpen()" [class.entity-autocomplete--selected]="hasSelection()">
+  <div class="entity-autocomplete__input-wrapper">
+    <lucide-icon name="building-2" [size]="18" class="entity-autocomplete__icon"></lucide-icon>
+
+    <input
+      #inputElement
+      type="text"
+      class="entity-autocomplete__input"
+      [placeholder]="placeholder"
+      [value]="searchQuery()"
+      (input)="onInputChange($any($event.target).value)"
+      (focus)="onInputFocus()"
+      (keydown)="onKeydown($event)"
+      autocomplete="off"
+    />
+
+    @if (hasSelection()) {
+      <button
+        type="button"
+        class="entity-autocomplete__clear"
+        (click)="clearSelection()"
+        title="Effacer la sélection"
+      >
+        <lucide-icon name="x" [size]="16"></lucide-icon>
+      </button>
+    }
+  </div>
+
+  @if (isOpen() && filteredEntities().length > 0) {
+    <ul class="entity-autocomplete__dropdown" role="listbox">
+      @for (entity of filteredEntities(); track entity; let i = $index) {
+        <li
+          class="entity-autocomplete__option"
+          [class.entity-autocomplete__option--highlighted]="highlightedIndex() === i"
+          [class.entity-autocomplete__option--selected]="entity === searchQuery()"
+          role="option"
+          [attr.aria-selected]="entity === searchQuery()"
+          (click)="selectEntity(entity)"
+          (mouseenter)="highlightedIndex.set(i)"
+        >
+          <lucide-icon name="building" [size]="14" class="entity-autocomplete__option-icon"></lucide-icon>
+          <span [innerHTML]="highlightMatch(entity)"></span>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (isOpen() && searchQuery() && filteredEntities().length === 0) {
+    <div class="entity-autocomplete__no-results">
+      <lucide-icon name="search-x" [size]="16"></lucide-icon>
+      <span>Aucune entité trouvée</span>
+    </div>
+  }
+</div>

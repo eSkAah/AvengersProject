@@ -19,6 +19,7 @@ export * from './components/progress-ring/progress-ring.component';
 export * from './components/document-checklist/document-checklist.component';
 export * from './components/flying-document/flying-document.component';
 export * from './components/document-requirements-section/document-requirements-section.component';
+export * from './components/entity-autocomplete/entity-autocomplete.component';
 
 // Charts
 export * from './components/charts';
