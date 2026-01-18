@@ -47,8 +47,8 @@ export class StructureComponent implements AfterViewInit {
   readonly svgContainer = viewChild<ElementRef>('svgContainer');
 
   readonly breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Accueil', path: '/' },
-    { label: 'Structure des Entités' },
+    { label: 'Home', path: '/' },
+    { label: 'Entity Structure' },
   ];
 
   // View state
@@ -59,7 +59,7 @@ export class StructureComponent implements AfterViewInit {
   readonly isDragging = signal(false);
 
   // Expanded state - use a signal to track which nodes are expanded
-  readonly expandedNodes = signal<Set<string>>(new Set(['holding', 'region-Benelux', 'region-DACH', 'region-Europe de l\'Ouest', 'region-Autres']));
+  readonly expandedNodes = signal<Set<string>>(new Set(['holding', 'region-Benelux', 'region-DACH', 'region-Western Europe', 'region-Other']));
 
   // Search state
   readonly searchQuery = signal('');
@@ -241,13 +241,13 @@ export class StructureComponent implements AfterViewInit {
 
   private getRegionName(flag: string): string {
     const regions: Record<string, string> = {
-      '🇫🇷': 'Europe de l\'Ouest',
+      '🇫🇷': 'Western Europe',
       '🇩🇪': 'DACH',
       '🇳🇱': 'Benelux',
       '🇧🇪': 'Benelux',
       '🇱🇺': 'Benelux',
     };
-    return regions[flag] || 'Autres';
+    return regions[flag] || 'Other';
   }
 
   private calculateNodePositions(root: EntityNode): void {
@@ -436,10 +436,10 @@ export class StructureComponent implements AfterViewInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      waiting: 'En attente',
-      received: 'Reçu',
-      processing: 'En cours',
-      completed: 'Terminé',
+      waiting: 'Pending',
+      received: 'Received',
+      processing: 'In Progress',
+      completed: 'Completed',
     };
     return labels[status] || status;
   }
@@ -557,7 +557,7 @@ export class StructureComponent implements AfterViewInit {
 
   formatCurrency(value?: number): string {
     if (!value) return '';
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',

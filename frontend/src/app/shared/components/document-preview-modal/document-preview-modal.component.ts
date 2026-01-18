@@ -59,7 +59,7 @@ export interface DocumentPreviewData {
           <div class="modal-actions">
             <app-button variant="secondary" size="sm" (clicked)="download()">
               <lucide-icon name="download" [size]="16"></lucide-icon>
-              Télécharger
+              Download
             </app-button>
             <button class="close-button" (click)="close.emit()">
               <lucide-icon name="x" [size]="20"></lucide-icon>
@@ -78,7 +78,7 @@ export interface DocumentPreviewData {
               <lucide-icon name="alert-circle" [size]="48" class="error-icon"></lucide-icon>
               <p>{{ error() }}</p>
               <app-button variant="secondary" (clicked)="loadPreview()">
-                Réessayer
+                Retry
               </app-button>
             </div>
           } @else if (isTablePreview()) {
@@ -86,9 +86,9 @@ export interface DocumentPreviewData {
               <div class="table-info">
                 <span class="sheet-name">{{ previewData()?.table_data?.sheet_name }}</span>
                 <span class="row-count">
-                  {{ previewData()?.table_data?.preview_rows }} / {{ previewData()?.table_data?.total_rows }} lignes
+                  {{ previewData()?.table_data?.preview_rows }} / {{ previewData()?.table_data?.total_rows }} rows
                   @if (previewData()?.table_data?.truncated) {
-                    <span class="truncated-badge">(aperçu)</span>
+                    <span class="truncated-badge">(preview)</span>
                   }
                 </span>
               </div>
@@ -370,7 +370,7 @@ export class DocumentPreviewModalComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Preview error:', err);
           this.error.set(
-            err.error?.detail || 'Impossible de charger l\'aperçu du document.'
+            err.error?.detail || 'Unable to load document preview.'
           );
           this.loading.set(false);
         },
@@ -389,7 +389,7 @@ export class DocumentPreviewModalComponent implements OnInit, OnDestroy {
 
     if (typeof value === 'number') {
       // Format numbers with locale
-      return value.toLocaleString('fr-FR');
+      return value.toLocaleString('en-US');
     }
 
     return String(value);

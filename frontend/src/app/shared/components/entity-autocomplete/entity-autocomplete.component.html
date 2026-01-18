@@ -19,7 +19,7 @@
         type="button"
         class="entity-autocomplete__clear"
         (click)="clearSelection()"
-        title="Effacer la sélection"
+        title="Clear selection"
       >
         <lucide-icon name="x" [size]="16"></lucide-icon>
       </button>
@@ -48,7 +48,7 @@
   @if (isOpen() && searchQuery() && filteredEntities().length === 0) {
     <div class="entity-autocomplete__no-results">
       <lucide-icon name="search-x" [size]="16"></lucide-icon>
-      <span>Aucune entité trouvée</span>
+      <span>No entity found</span>
     </div>
   }
 </div>

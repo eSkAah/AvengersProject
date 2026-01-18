@@ -265,7 +265,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
             title: (items) => items[0]?.label || '',
             label: (context) => {
               const value = context.parsed.y ?? context.parsed.x ?? 0;
-              const formatted = new Intl.NumberFormat('fr-FR', {
+              const formatted = new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'EUR',
                 notation: 'compact',
@@ -275,7 +275,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
             },
             afterBody: () => {
               if (this.cmdClickEnabled) {
-                return ['\n⌘+Clic pour plus de détails'];
+                return ['\nCmd+Click for more details'];
               }
               return [];
             },
@@ -320,7 +320,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
             padding: 12,
             callback: (value) => {
               if (typeof value === 'number') {
-                return new Intl.NumberFormat('fr-FR', {
+                return new Intl.NumberFormat('en-US', {
                   notation: 'compact',
                   maximumFractionDigits: 1,
                 }).format(value);

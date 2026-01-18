@@ -66,7 +66,7 @@ export interface KpiClickEvent {
           </div>
           <div class="kpi-label">{{ metric.label }}</div>
           @if (showCmdHint) {
-            <div class="kpi-hint">⌘+Click pour demander à Eve</div>
+            <div class="kpi-hint">Cmd+Click to ask Eve</div>
           }
         </div>
       }
@@ -263,7 +263,7 @@ export class KpiMetricCardComponent {
   }
 
   formatValue(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',

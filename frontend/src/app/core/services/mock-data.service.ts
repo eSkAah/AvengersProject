@@ -134,7 +134,7 @@ export class MockDataService {
         notifications.push({
           id: `notif-urgent-${engagement.id}`,
           type: 'urgent',
-          message: `Documents requis pour ${engagement.entity} - Deadline: ${this.formatDate(engagement.dueDate)}`,
+          message: `Required documents for ${engagement.entity} - Deadline: ${this.formatDate(engagement.dueDate)}`,
           engagementId: engagement.id,
           timestamp: new Date(),
         });
@@ -146,7 +146,7 @@ export class MockDataService {
         notifications.push({
           id: `notif-docs-${engagement.id}`,
           type: 'warning',
-          message: `${missingDocs} document(s) manquant(s) pour ${engagement.entity}`,
+          message: `${missingDocs} missing document(s) for ${engagement.entity}`,
           engagementId: engagement.id,
           timestamp: new Date(),
         });
@@ -157,7 +157,7 @@ export class MockDataService {
         notifications.push({
           id: `notif-yoy-${engagement.id}`,
           type: 'info',
-          message: `Attention: Baisse de ${Math.abs(engagement.financialData.yoyChange)}% pour ${engagement.entity}`,
+          message: `Warning: ${Math.abs(engagement.financialData.yoyChange)}% decrease for ${engagement.entity}`,
           engagementId: engagement.id,
           timestamp: new Date(),
         });
@@ -169,7 +169,7 @@ export class MockDataService {
 
   private formatDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
     });

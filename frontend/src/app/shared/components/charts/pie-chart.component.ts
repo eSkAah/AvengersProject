@@ -333,7 +333,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',
@@ -385,7 +385,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
       html += `</div></div>`;
 
       if (this.cmdClickEnabled) {
-        html += `<div class="chartjs-tooltip-footer">⌘+Clic pour plus de détails</div>`;
+        html += `<div class="chartjs-tooltip-footer">Cmd+Click for more details</div>`;
       }
 
       tooltipEl.innerHTML = html;

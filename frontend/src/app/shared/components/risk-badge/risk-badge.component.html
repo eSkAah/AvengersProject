@@ -30,7 +30,7 @@
     <div class="risk-tooltip__header" [class]="'risk-tooltip__header--' + level">
       <lucide-icon [name]="currentConfig.icon" [size]="18"></lucide-icon>
       <span class="risk-tooltip__title">
-        Risque {{ level === 'high' ? 'Élevé' : level === 'medium' ? 'Modéré' : 'Faible' }}
+        {{ level === 'high' ? 'High' : level === 'medium' ? 'Medium' : 'Low' }} Risk
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <div class="risk-tooltip__section">
         <div class="risk-tooltip__section-title">
           <lucide-icon name="info" [size]="14"></lucide-icon>
-          Raisons
+          Reasons
         </div>
         <ul class="risk-tooltip__list">
           @for (reason of riskDetails.reasons; track reason) {
@@ -54,9 +54,9 @@
       <div class="risk-tooltip__meta">
         <lucide-icon name="calendar" [size]="14"></lucide-icon>
         @if (riskDetails.daysRemaining >= 0) {
-          {{ riskDetails.daysRemaining }} jour(s) restant(s)
+          {{ riskDetails.daysRemaining }} day(s) remaining
         } @else {
-          En retard de {{ -riskDetails.daysRemaining }} jour(s)
+          {{ -riskDetails.daysRemaining }} day(s) overdue
         }
       </div>
     }
@@ -66,14 +66,14 @@
       <div class="risk-tooltip__section">
         <div class="risk-tooltip__section-title">
           <lucide-icon name="file-x" [size]="14"></lucide-icon>
-          Documents manquants
+          Missing Documents
         </div>
         <ul class="risk-tooltip__list risk-tooltip__list--docs">
           @for (doc of riskDetails.missingDocuments.slice(0, 3); track doc) {
             <li>{{ doc }}</li>
           }
           @if (riskDetails.missingDocuments.length > 3) {
-            <li class="risk-tooltip__more">+{{ riskDetails.missingDocuments.length - 3 }} autres</li>
+            <li class="risk-tooltip__more">+{{ riskDetails.missingDocuments.length - 3 }} more</li>
           }
         </ul>
       </div>
@@ -84,7 +84,7 @@
       <div class="risk-tooltip__actions">
         <div class="risk-tooltip__section-title">
           <lucide-icon name="lightbulb" [size]="14"></lucide-icon>
-          Actions suggérées
+          Suggested Actions
         </div>
         @for (action of riskDetails.suggestedActions.slice(0, 2); track action) {
           <div class="risk-tooltip__action">{{ action }}</div>

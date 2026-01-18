@@ -76,7 +76,7 @@ export interface GanttChartData {
         <canvas #chartCanvas></canvas>
       } @else {
         <div class="empty-state">
-          <p>Aucun engagement à afficher</p>
+          <p>No engagements to display</p>
         </div>
       }
     </div>
@@ -263,10 +263,10 @@ export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy 
               const index = context.dataIndex;
               const item = this.data!.items[index];
               const lines = [
-                `Progression: ${item.completion_percent}%`,
-                `Risque: ${this.getRiskLabel(item.risk_level)}`,
-                `Début: ${this.formatDate(item.start_date)}`,
-                `Échéance: ${this.formatDate(item.due_date)}`,
+                `Progress: ${item.completion_percent}%`,
+                `Risk: ${this.getRiskLabel(item.risk_level)}`,
+                `Start: ${this.formatDate(item.start_date)}`,
+                `Due: ${this.formatDate(item.due_date)}`,
               ];
               return lines;
             },
@@ -289,7 +289,7 @@ export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy 
             callback: (value) => {
               // Convert days back to date
               const date = new Date(minDate + (value as number) * 24 * 60 * 60 * 1000);
-              return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+              return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
             },
           },
           title: {
@@ -366,16 +366,16 @@ export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   private getRiskLabel(risk: string): string {
     const labels: Record<string, string> = {
-      high: 'Élevé',
-      medium: 'Modéré',
-      low: 'Faible',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
     };
     return labels[risk] || risk;
   }
 
   private formatDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',

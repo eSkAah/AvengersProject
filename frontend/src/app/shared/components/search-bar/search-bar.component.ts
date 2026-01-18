@@ -19,7 +19,7 @@ import { LucideAngularModule } from 'lucide-angular';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchBarComponent {
-  @Input() placeholder = 'Rechercher...';
+  @Input() placeholder = 'Search...';
   @Input() value = '';
   @Input() debounceMs = 300;
 

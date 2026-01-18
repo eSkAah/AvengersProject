@@ -3,7 +3,7 @@
     <thead class="document-table__head">
       <tr>
         <th class="document-table__th sortable" (click)="onSort('name')">
-          Nom <lucide-icon [name]="getSortIcon('name')" [size]="14"></lucide-icon>
+          Name <lucide-icon [name]="getSortIcon('name')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th sortable" (click)="onSort('type')">
           Type <lucide-icon [name]="getSortIcon('type')" [size]="14"></lucide-icon>
@@ -16,7 +16,7 @@
           Date <lucide-icon [name]="getSortIcon('uploadedAt')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th sortable" (click)="onSort('size')">
-          Taille <lucide-icon [name]="getSortIcon('size')" [size]="14"></lucide-icon>
+          Size <lucide-icon [name]="getSortIcon('size')" [size]="14"></lucide-icon>
         </th>
         <th class="document-table__th">Actions</th>
       </tr>
@@ -43,14 +43,14 @@
           <button
             class="action-btn"
             (click)="download.emit(doc); $event.stopPropagation()"
-            title="Télécharger"
+            title="Download"
           >
             <lucide-icon name="download" [size]="16"></lucide-icon>
           </button>
           <button
             class="action-btn"
             (click)="preview.emit(doc); $event.stopPropagation()"
-            title="Prévisualiser"
+            title="Preview"
           >
             <lucide-icon name="eye" [size]="16"></lucide-icon>
           </button>
@@ -69,5 +69,5 @@
 
 <div class="document-list__empty" *ngIf="documents.length === 0">
   <lucide-icon name="folder-open" class="document-list__empty-icon" [size]="48"></lucide-icon>
-  <p>Aucun document trouvé</p>
+  <p>No documents found</p>
 </div>

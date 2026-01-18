@@ -126,7 +126,7 @@ export class DocumentTreeComponent {
 
     return {
       id: 'root',
-      label: 'Bibliothèque de Documents',
+      label: 'Document Library',
       icon: 'folder-open',
       isEmoji: false,
       type: 'library',
@@ -242,7 +242,7 @@ export class DocumentTreeComponent {
 
     return {
       id: 'root',
-      label: 'Bibliothèque de Documents',
+      label: 'Document Library',
       icon: 'folder-open',
       isEmoji: false,
       type: 'library',

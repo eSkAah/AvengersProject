@@ -4,7 +4,7 @@
     <div class="command-center__header">
       <div class="command-center__header-content">
         <h1>Command Center</h1>
-        <p>Vue d'ensemble de vos engagements</p>
+        <p>Overview of your engagements</p>
       </div>
       <div class="command-center__header-decoration">
         <lucide-icon name="command" [size]="48"></lucide-icon>
@@ -19,7 +19,7 @@
       <div class="section-header">
         <div class="section-header__title">
           <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
-          <h2>Indicateurs Clés</h2>
+          <h2>Key Indicators</h2>
         </div>
       </div>
       <div class="kpi-grid">
@@ -40,7 +40,7 @@
           </div>
           <div class="kpi-card__content">
             <span class="kpi-card__value">{{ kpiData().processing }}</span>
-            <span class="kpi-card__label">En cours</span>
+            <span class="kpi-card__label">In Progress</span>
           </div>
           <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
         </button>
@@ -51,7 +51,7 @@
           </div>
           <div class="kpi-card__content">
             <span class="kpi-card__value">{{ kpiData().highRisk }}</span>
-            <span class="kpi-card__label">Risque élevé</span>
+            <span class="kpi-card__label">High Risk</span>
           </div>
           <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
         </button>
@@ -62,7 +62,7 @@
           </div>
           <div class="kpi-card__content">
             <span class="kpi-card__value">{{ kpiData().completed }}</span>
-            <span class="kpi-card__label">Terminés</span>
+            <span class="kpi-card__label">Completed</span>
           </div>
           <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
         </button>
@@ -82,7 +82,7 @@
       @if (actionItems().length === 0) {
         <div class="action-center__empty">
           <lucide-icon name="check-circle-2" [size]="48"></lucide-icon>
-          <p>Aucune action en attente</p>
+          <p>No pending actions</p>
         </div>
       } @else {
         <div class="action-center__list">
@@ -120,13 +120,13 @@
       <div class="section-header">
         <div class="section-header__title">
           <lucide-icon name="alert-triangle" [size]="20"></lucide-icon>
-          <h2>Engagements à risque</h2>
+          <h2>At-Risk Engagements</h2>
         </div>
         <div class="section-header__actions">
           <span class="section-header__count">{{ atRiskEngagements().length }} engagement(s)</span>
           @if (atRiskEngagements().length > 4) {
             <button class="view-all-link" (click)="onViewAllRiskEngagements()">
-              Voir tout
+              View all
               <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
             </button>
           }
@@ -136,7 +136,7 @@
       @if (atRiskEngagements().length === 0) {
         <div class="risk-list__empty">
           <lucide-icon name="shield-check" [size]="48"></lucide-icon>
-          <p>Aucun engagement à risque</p>
+          <p>No at-risk engagements</p>
         </div>
       } @else {
         <div class="risk-card-grid">
@@ -198,7 +198,7 @@
       <div class="section-header">
         <div class="section-header__title">
           <lucide-icon name="coins" [size]="20"></lucide-icon>
-          <h2>Résumé Financier</h2>
+          <h2>Financial Summary</h2>
         </div>
       </div>
 
@@ -209,7 +209,7 @@
           </div>
           <div class="financial-metric__content">
             <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalAssets) }}</span>
-            <span class="financial-metric__label">Total Actifs</span>
+            <span class="financial-metric__label">Total Assets</span>
           </div>
         </div>
 
@@ -219,7 +219,7 @@
           </div>
           <div class="financial-metric__content">
             <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalLiabilities) }}</span>
-            <span class="financial-metric__label">Total Passifs</span>
+            <span class="financial-metric__label">Total Liabilities</span>
           </div>
         </div>
 
@@ -229,7 +229,7 @@
           </div>
           <div class="financial-metric__content">
             <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalRevenue) }}</span>
-            <span class="financial-metric__label">Chiffre d'affaires</span>
+            <span class="financial-metric__label">Revenue</span>
           </div>
         </div>
 
@@ -239,7 +239,7 @@
           </div>
           <div class="financial-metric__content">
             <span class="financial-metric__value">{{ financialTotals().avgCompletion }}%</span>
-            <span class="financial-metric__label">Avancement moyen</span>
+            <span class="financial-metric__label">Average Progress</span>
           </div>
         </div>
       </div>

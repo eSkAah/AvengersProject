@@ -117,7 +117,7 @@ export class EngagementApiService {
   } {
     if (!prediction.predicted_date) {
       return {
-        text: 'Prédiction non disponible',
+        text: 'Prediction unavailable',
         color: '#9CA3AF',
         icon: 'help-circle',
       };

@@ -159,7 +159,7 @@ export class DocumentsComponent implements OnInit {
   readonly statusOptions = ['pending', 'analyzing', 'analyzed', 'error'];
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => {
-    const items: BreadcrumbItem[] = [{ label: 'Bibliothèque', icon: '📁' }];
+    const items: BreadcrumbItem[] = [{ label: 'Library', icon: '📁' }];
     return items;
   });
 
@@ -325,7 +325,7 @@ export class DocumentsComponent implements OnInit {
   }
 
   onDownload(doc: Document): void {
-    this.toast.info(`Téléchargement de ${doc.name}...`);
+    this.toast.info(`Downloading ${doc.name}...`);
   }
 
   onPreview(doc: Document): void {
@@ -337,7 +337,7 @@ export class DocumentsComponent implements OnInit {
   }
 
   onAskEve(doc: Document): void {
-    this.toast.info(`Demander à Eve à propos de ${doc.name}`);
+    this.toast.info(`Ask Eve about ${doc.name}`);
   }
 
   // Upload handling
@@ -536,7 +536,7 @@ export class DocumentsComponent implements OnInit {
         size: file.size,
         year: metadata.year || new Date().getFullYear(),
         entityId: matchingEngagement?.id || crypto.randomUUID(),
-        entityName: metadata.entity || 'Non classé',
+        entityName: metadata.entity || 'Unclassified',
       };
       this.mockData.addDocument(newDoc);
 
@@ -546,9 +546,9 @@ export class DocumentsComponent implements OnInit {
       // Remove from pending
       this.pendingFiles.update(files => files.filter(f => f.file.id !== file.id));
 
-      this.toast.success(`${file.name} classé dans ${metadata.entity} / ${metadata.year}`);
+      this.toast.success(`${file.name} classified in ${metadata.entity} / ${metadata.year}`);
     } catch (error) {
-      this.toast.error(`Échec de l'upload: ${file.name}`);
+      this.toast.error(`Upload failed: ${file.name}`);
       this.pendingFiles.update(files =>
         files.map(f => f.file.id === file.id ? { ...f, isProcessing: false } : f)
       );
@@ -613,20 +613,20 @@ export class DocumentsComponent implements OnInit {
 
   getDocumentTypeLabel(type: string): string {
     const labels: Record<string, string> = {
-      general_ledger: 'Grand Livre',
-      trial_balance: 'Balance Générale',
-      tax_return: 'Déclaration Fiscale',
-      financial_statement: 'États Financiers',
+      general_ledger: 'General Ledger',
+      trial_balance: 'Trial Balance',
+      tax_return: 'Tax Return',
+      financial_statement: 'Financial Statement',
     };
     return labels[type] || type;
   }
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      pending: 'En attente',
-      analyzing: 'En analyse',
-      analyzed: 'Analysé',
-      error: 'Erreur',
+      pending: 'Pending',
+      analyzing: 'Analyzing',
+      analyzed: 'Analyzed',
+      error: 'Error',
     };
     return labels[status] || status;
   }
@@ -640,7 +640,7 @@ export class DocumentsComponent implements OnInit {
   }
 
   onUploadError(result: UploadResult): void {
-    this.toast.error(`Échec: ${result.file.name} - ${result.error}`);
+    this.toast.error(`Failed: ${result.file.name} - ${result.error}`);
   }
 
   onUploadComplete(results: UploadResult[]): void {

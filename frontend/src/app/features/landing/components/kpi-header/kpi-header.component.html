@@ -13,7 +13,7 @@
   <div class="kpi-card-wrapper">
     <app-kpi-card
       [value]="data.processing"
-      label="En cours"
+      label="In Progress"
       icon="clock"
       variant="warning"
       [active]="isActive('processing')"
@@ -24,7 +24,7 @@
   <div class="kpi-card-wrapper">
     <app-kpi-card
       [value]="data.highRisk"
-      label="À risque"
+      label="At Risk"
       icon="alert-triangle"
       variant="error"
       [active]="isActive('high-risk')"
@@ -35,7 +35,7 @@
   <div class="kpi-card-wrapper">
     <app-kpi-card
       [value]="data.completed"
-      label="Complétés"
+      label="Completed"
       icon="check-circle"
       variant="success"
       [active]="isActive('completed')"

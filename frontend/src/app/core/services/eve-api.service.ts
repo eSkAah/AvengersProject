@@ -293,13 +293,13 @@ export class EveApiService {
 
         // Better error messages based on error type
         if (error.status === 0) {
-          this.error.set('Impossible de se connecter au serveur. Vérifiez votre connexion.');
+          this.error.set('Unable to connect to server. Check your connection.');
         } else if (error.status === 503) {
-          this.error.set('Le service Eve est temporairement indisponible. Réessayez dans quelques instants.');
+          this.error.set('Eve service is temporarily unavailable. Please try again in a moment.');
         } else if (error.status === 429) {
-          this.error.set('Trop de requêtes. Veuillez patienter quelques secondes.');
+          this.error.set('Too many requests. Please wait a few seconds.');
         } else {
-          this.error.set('Impossible de contacter Eve. Veuillez réessayer.');
+          this.error.set('Unable to contact Eve. Please try again.');
         }
         return throwError(() => error);
       })
@@ -353,7 +353,7 @@ export class EveApiService {
         let formattedMessage = res.explanation;
 
         if (res.breakdown && res.breakdown.length > 0) {
-          formattedMessage += '\n\n**Détail:**';
+          formattedMessage += '\n\n**Details:**';
           res.breakdown.forEach((item) => {
             formattedMessage += `\n• ${item.label}: ${item.value}`;
           });
@@ -362,17 +362,17 @@ export class EveApiService {
         if (res.comparison) {
           const trend =
             res.comparison.trend === 'up'
-              ? '📈 en hausse'
+              ? '📈 up'
               : res.comparison.trend === 'down'
-                ? '📉 en baisse'
+                ? '📉 down'
                 : '➡️ stable';
-          formattedMessage += `\n\n**Comparaison N-1:** ${res.comparison.previous_value} (${res.comparison.variance_percent > 0 ? '+' : ''}${res.comparison.variance_percent.toFixed(1)}%, ${trend})`;
+          formattedMessage += `\n\n**YoY Comparison:** ${res.comparison.previous_value} (${res.comparison.variance_percent > 0 ? '+' : ''}${res.comparison.variance_percent.toFixed(1)}%, ${trend})`;
         }
 
         if (res.source_document) {
           formattedMessage += `\n\n📄 **Source:** ${res.source_document}`;
           if (res.source_line) {
-            formattedMessage += `, ligne ${res.source_line}`;
+            formattedMessage += `, line ${res.source_line}`;
           }
         }
 
@@ -406,7 +406,7 @@ export class EveApiService {
     // Add user's explain request as a message
     const userMessage: ConversationMessage = {
       role: 'user',
-      content: `Expliquez-moi la valeur "${label}: ${value}"`,
+      content: `Explain the value "${label}: ${value}"`,
       timestamp: new Date().toISOString(),
     };
     this.messages.update((msgs) => [...msgs, userMessage]);
@@ -430,7 +430,7 @@ export class EveApiService {
 
         // Add breakdown if present
         if (response.breakdown && response.breakdown.length > 0) {
-          formattedMessage += '\n\nDétail :';
+          formattedMessage += '\n\nDetails:';
           response.breakdown.forEach((item) => {
             formattedMessage += `\n- ${item.label}: ${item.value}`;
           });
@@ -440,18 +440,18 @@ export class EveApiService {
         if (response.comparison) {
           const trend =
             response.comparison.trend === 'up'
-              ? 'en hausse'
+              ? 'up'
               : response.comparison.trend === 'down'
-                ? 'en baisse'
+                ? 'down'
                 : 'stable';
-          formattedMessage += `\n\nComparaison N-1 : ${response.comparison.previous_value} (${response.comparison.variance_percent > 0 ? '+' : ''}${response.comparison.variance_percent.toFixed(1)}%, ${trend})`;
+          formattedMessage += `\n\nYoY Comparison: ${response.comparison.previous_value} (${response.comparison.variance_percent > 0 ? '+' : ''}${response.comparison.variance_percent.toFixed(1)}%, ${trend})`;
         }
 
         // Add source if present
         if (response.source_document) {
-          formattedMessage += `\n\nSource : ${response.source_document}`;
+          formattedMessage += `\n\nSource: ${response.source_document}`;
           if (response.source_line) {
-            formattedMessage += `, ligne ${response.source_line}`;
+            formattedMessage += `, line ${response.source_line}`;
           }
         }
 
@@ -471,7 +471,7 @@ export class EveApiService {
       catchError((error) => {
         console.error('Error explaining value:', error);
         this.isLoading.set(false);
-        this.error.set('Impossible d\'analyser cette valeur. Veuillez réessayer.');
+        this.error.set('Unable to analyze this value. Please try again.');
         return throwError(() => error);
       })
     );
@@ -551,7 +551,7 @@ export class EveApiService {
     // Context-aware responses
     if (engagement) {
       // Engagement-specific questions
-      if (lowerMessage.includes('document') || lowerMessage.includes('fichier') || lowerMessage.includes('manquant')) {
+      if (lowerMessage.includes('document') || lowerMessage.includes('file') || lowerMessage.includes('missing')) {
         return this.mockDocumentStatusResponse(engagement, docs);
       }
       if (lowerMessage.includes('risque') || lowerMessage.includes('risk')) {
@@ -566,13 +566,13 @@ export class EveApiService {
       if (lowerMessage.includes('chiffre') || lowerMessage.includes('revenue') || lowerMessage.includes('ca')) {
         return this.mockRevenueResponse(engagement, docs);
       }
-      if (lowerMessage.includes('deadline') || lowerMessage.includes('échéance') || lowerMessage.includes('date')) {
+      if (lowerMessage.includes('deadline') || lowerMessage.includes('due') || lowerMessage.includes('date')) {
         return this.mockDeadlineResponse(engagement);
       }
-      if (lowerMessage.includes('statut') || lowerMessage.includes('status') || lowerMessage.includes('avancement')) {
+      if (lowerMessage.includes('status') || lowerMessage.includes('progress')) {
         return this.mockStatusResponse(engagement, docs);
       }
-      if (lowerMessage.includes('variation') || lowerMessage.includes('n-1') || lowerMessage.includes('comparaison')) {
+      if (lowerMessage.includes('variation') || lowerMessage.includes('n-1') || lowerMessage.includes('comparison') || lowerMessage.includes('yoy')) {
         return this.mockVariationResponse(engagement, docs);
       }
 
@@ -581,10 +581,10 @@ export class EveApiService {
     }
 
     // Global context responses
-    if (lowerMessage.includes('engagement') || lowerMessage.includes('liste')) {
+    if (lowerMessage.includes('engagement') || lowerMessage.includes('list')) {
       return this.mockEngagementListResponse();
     }
-    if (lowerMessage.includes('risque') || lowerMessage.includes('critique') || lowerMessage.includes('urgence')) {
+    if (lowerMessage.includes('risk') || lowerMessage.includes('critical') || lowerMessage.includes('urgent')) {
       return this.mockGlobalRiskResponse();
     }
     if (lowerMessage.includes('bonjour') || lowerMessage.includes('hello') || lowerMessage.includes('salut')) {
@@ -597,15 +597,15 @@ export class EveApiService {
 
   private mockGreetingResponse(): ChatResponse {
     return {
-      message: `Bonjour, je suis Eve, votre assistante fiscale. Je peux vous aider à :
+      message: `Hello, I'm Eve, your tax assistant. I can help you:
 
-• Analyser vos engagements et leur statut
-• Comprendre les données financières de vos entités
-• Identifier les documents manquants
-• Expliquer les variations N/N-1
-• Évaluer les risques fiscaux
+- Analyze your engagements and their status
+- Understand the financial data of your entities
+- Identify missing documents
+- Explain YoY variations
+- Assess tax risks
 
-Comment puis-je vous aider aujourd'hui ?`,
+How can I help you today?`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'global',
@@ -617,19 +617,19 @@ Comment puis-je vous aider aujourd'hui ?`,
     const missing = requirements.filter(r => r.status === 'missing' && r.required);
     const uploaded = requirements.filter(r => r.status !== 'missing');
 
-    let message = `**Statut des documents pour ${engagement.entity}**\n\n`;
+    let message = `**Document Status for ${engagement.entity}**\n\n`;
 
     if (missing.length === 0) {
-      message += `✅ Tous les documents requis ont été téléchargés.\n\n`;
+      message += `All required documents have been uploaded.\n\n`;
     } else {
-      message += `⚠️ **${missing.length} document(s) manquant(s):**\n`;
+      message += `**${missing.length} missing document(s):**\n`;
       missing.forEach(m => {
-        message += `• ${m.label} (${m.fiscalYear})\n`;
+        message += `- ${m.label} (${m.fiscalYear})\n`;
       });
       message += '\n';
     }
 
-    message += `**Documents reçus (${uploaded.length}):**\n`;
+    message += `**Documents received (${uploaded.length}):**\n`;
     uploaded.forEach(u => {
       const doc = docs.find(d => d.type === u.type);
       const statusIcon = u.status === 'validated' ? '✅' : '🔄';
@@ -651,34 +651,34 @@ Comment puis-je vous aider aujourd'hui ?`,
 
   private mockRiskResponse(engagement: typeof MOCK_ENGAGEMENTS[0]): ChatResponse {
     const riskMessages: Record<string, string> = {
-      high: `⚠️ **Niveau de risque ÉLEVÉ** pour ${engagement.entity}
+      high: `**HIGH Risk Level** for ${engagement.entity}
 
-**Facteurs de risque identifiés:**
-• Échéance proche (${engagement.dueDate})
-• Complétion à ${engagement.completionPercent}% seulement
-• Documents requis manquants
+**Identified risk factors:**
+- Approaching deadline (${engagement.dueDate})
+- Only ${engagement.completionPercent}% complete
+- Required documents missing
 
-**Recommandations:**
-1. Prioriser l'upload des documents manquants
-2. Planifier une revue avec l'équipe
-3. Anticiper les délais de validation
+**Recommendations:**
+1. Prioritize uploading missing documents
+2. Schedule a review with the team
+3. Anticipate validation delays
 
-Je vous recommande de traiter cet engagement en priorité.`,
+I recommend treating this engagement as a priority.`,
 
-      medium: `⚡ **Niveau de risque MOYEN** pour ${engagement.entity}
+      medium: `**MEDIUM Risk Level** for ${engagement.entity}
 
-**Points d'attention:**
-• Avancement à ${engagement.completionPercent}%
-• Échéance le ${engagement.dueDate}
-• Quelques documents en attente de validation
+**Points of attention:**
+- Progress at ${engagement.completionPercent}%
+- Due date: ${engagement.dueDate}
+- Some documents awaiting validation
 
 **Situation:**
-L'engagement progresse correctement mais nécessite un suivi régulier pour garantir le respect des délais.`,
+The engagement is progressing well but requires regular monitoring to ensure deadlines are met.`,
 
-      low: `✅ **Niveau de risque FAIBLE** pour ${engagement.entity}
+      low: `**LOW Risk Level** for ${engagement.entity}
 
-L'engagement est en bonne voie avec ${engagement.completionPercent}% de complétion.
-Tous les indicateurs sont au vert.`,
+The engagement is on track with ${engagement.completionPercent}% completion.
+All indicators are green.`,
     };
 
     return {
@@ -693,21 +693,21 @@ Tous les indicateurs sont au vert.`,
     const fd = engagement.financialData;
     const prevAssets = fd.previousYear?.assets ?? 0;
     const variation = prevAssets > 0 ? ((fd.assets - prevAssets) / prevAssets * 100).toFixed(1) : 'N/A';
-    const trend = fd.assets > prevAssets ? '📈 hausse' : '📉 baisse';
+    const trend = fd.assets > prevAssets ? '📈 up' : '📉 down';
 
     const trialBalance = docs.find(d => d.type === 'trial_balance');
 
     return {
-      message: `**Actifs de ${engagement.entity}**
+      message: `**Assets for ${engagement.entity}**
 
-| Indicateur | Valeur |
-|------------|--------|
-| Total Actifs | ${this.formatEuro(fd.assets)} |
-| Actifs N-1 | ${this.formatEuro(prevAssets)} |
+| Indicator | Value |
+|-----------|-------|
+| Total Assets | ${this.formatEuro(fd.assets)} |
+| Assets PY | ${this.formatEuro(prevAssets)} |
 | Variation | ${variation}% (${trend}) |
 
-**Analyse:**
-Les actifs de ${engagement.entity} s'élèvent à ${this.formatEuro(fd.assets)}, représentant une variation de ${variation}% par rapport à l'exercice précédent.
+**Analysis:**
+The assets of ${engagement.entity} amount to ${this.formatEuro(fd.assets)}, representing a ${variation}% variation compared to the previous year.
 
 ${trialBalance ? `Source: ${trialBalance.name}` : ''}`,
       timestamp: new Date().toISOString(),
@@ -723,16 +723,16 @@ ${trialBalance ? `Source: ${trialBalance.name}` : ''}`,
     const variation = prevLiab > 0 ? ((fd.liabilities - prevLiab) / prevLiab * 100).toFixed(1) : 'N/A';
 
     return {
-      message: `**Passifs de ${engagement.entity}**
+      message: `**Liabilities for ${engagement.entity}**
 
-| Indicateur | Valeur |
-|------------|--------|
-| Total Passifs | ${this.formatEuro(fd.liabilities)} |
-| Passifs N-1 | ${this.formatEuro(prevLiab)} |
+| Indicator | Value |
+|-----------|-------|
+| Total Liabilities | ${this.formatEuro(fd.liabilities)} |
+| Liabilities PY | ${this.formatEuro(prevLiab)} |
 | Variation | ${variation}% |
-| Ratio D/E | ${(fd.liabilities / (fd.assets - fd.liabilities) * 100).toFixed(0)}% |
+| D/E Ratio | ${(fd.liabilities / (fd.assets - fd.liabilities) * 100).toFixed(0)}% |
 
-Le niveau d'endettement est ${fd.liabilities / fd.assets > 0.6 ? 'relativement élevé' : 'maîtrisé'}.`,
+The debt level is ${fd.liabilities / fd.assets > 0.6 ? 'relatively high' : 'under control'}.`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'engagement',
@@ -743,20 +743,20 @@ Le niveau d'endettement est ${fd.liabilities / fd.assets > 0.6 ? 'relativement �
     const fd = engagement.financialData;
     const prevRev = fd.previousYear?.revenue ?? 0;
     const variation = fd.yoyChange;
-    const trend = variation > 0 ? '📈 croissance' : '📉 décroissance';
+    const trend = variation > 0 ? '📈 growth' : '📉 decline';
 
     return {
-      message: `**Chiffre d'affaires de ${engagement.entity}**
+      message: `**Revenue for ${engagement.entity}**
 
-| Indicateur | Valeur |
-|------------|--------|
-| CA Exercice | ${this.formatEuro(fd.revenue)} |
-| CA N-1 | ${this.formatEuro(prevRev)} |
+| Indicator | Value |
+|-----------|-------|
+| Revenue FY | ${this.formatEuro(fd.revenue)} |
+| Revenue PY | ${this.formatEuro(prevRev)} |
 | Variation | ${variation > 0 ? '+' : ''}${variation.toFixed(1)}% |
 
-**Tendance:** ${trend}
+**Trend:** ${trend}
 
-${variation > 10 ? '🎯 Excellente performance par rapport à N-1.' : variation < -5 ? '⚠️ Attention: baisse significative du CA.' : 'Performance stable par rapport à l\'exercice précédent.'}`,
+${variation > 10 ? 'Excellent performance compared to PY.' : variation < -5 ? 'Warning: significant revenue decline.' : 'Stable performance compared to previous year.'}`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'engagement',
@@ -770,25 +770,25 @@ ${variation > 10 ? '🎯 Excellente performance par rapport à N-1.' : variation
 
     let status = '';
     if (daysRemaining < 0) {
-      status = '🔴 **ÉCHÉANCE DÉPASSÉE**';
+      status = '**DEADLINE PASSED**';
     } else if (daysRemaining <= 7) {
-      status = '🟠 **URGENT** - Moins d\'une semaine';
+      status = '**URGENT** - Less than a week';
     } else if (daysRemaining <= 14) {
-      status = '🟡 **À surveiller**';
+      status = '**To monitor**';
     } else {
-      status = '🟢 **Dans les temps**';
+      status = '**On track**';
     }
 
     return {
-      message: `**Échéance pour ${engagement.entity}**
+      message: `**Deadline for ${engagement.entity}**
 
-📅 Date limite: **${dueDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}**
-⏱️ Jours restants: **${daysRemaining > 0 ? daysRemaining : 'Dépassée'}**
+Due date: **${dueDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}**
+Days remaining: **${daysRemaining > 0 ? daysRemaining : 'Overdue'}**
 
 ${status}
 
-Complétion actuelle: ${engagement.completionPercent}%
-${engagement.predictedCompletion ? `Date de complétion prévue: ${new Date(engagement.predictedCompletion).toLocaleDateString('fr-FR')}` : 'Prévision non disponible'}`,
+Current completion: ${engagement.completionPercent}%
+${engagement.predictedCompletion ? `Predicted completion date: ${new Date(engagement.predictedCompletion).toLocaleDateString('en-US')}` : 'Prediction not available'}`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'engagement',
@@ -797,24 +797,24 @@ ${engagement.predictedCompletion ? `Date de complétion prévue: ${new Date(enga
 
   private mockStatusResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
     const statusLabels: Record<string, string> = {
-      waiting: '⏳ En attente de documents',
-      received: '📥 Documents reçus',
-      processing: '🔄 En cours de traitement',
-      completed: '✅ Terminé',
+      waiting: 'Awaiting documents',
+      received: 'Documents received',
+      processing: 'In progress',
+      completed: 'Completed',
     };
 
     return {
-      message: `**Statut de l'engagement ${engagement.entity}**
+      message: `**Engagement Status for ${engagement.entity}**
 
-| Élément | Valeur |
-|---------|--------|
-| Statut | ${statusLabels[engagement.status]} |
-| Avancement | ${engagement.completionPercent}% |
+| Element | Value |
+|---------|-------|
+| Status | ${statusLabels[engagement.status]} |
+| Progress | ${engagement.completionPercent}% |
 | Service | ${engagement.service} |
-| Exercice | ${engagement.fiscalYear} |
-| Documents | ${docs.length} téléchargés |
+| Fiscal Year | ${engagement.fiscalYear} |
+| Documents | ${docs.length} uploaded |
 
-${engagement.completionPercent === 100 ? '🎉 Engagement complété avec succès!' : `📊 Progression en cours - ${100 - engagement.completionPercent}% restant.`}`,
+${engagement.completionPercent === 100 ? 'Engagement completed successfully!' : `Progress ongoing - ${100 - engagement.completionPercent}% remaining.`}`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'engagement',
@@ -827,7 +827,7 @@ ${engagement.completionPercent === 100 ? '🎉 Engagement complété avec succè
 
     if (!py) {
       return {
-        message: `Les données N-1 ne sont pas disponibles pour ${engagement.entity}.`,
+        message: `Prior year data is not available for ${engagement.entity}.`,
         timestamp: new Date().toISOString(),
         response_type: 'text',
         mode: 'engagement',
@@ -839,16 +839,16 @@ ${engagement.completionPercent === 100 ? '🎉 Engagement complété avec succè
     const revVar = fd.yoyChange.toFixed(1);
 
     return {
-      message: `**Analyse des variations N/N-1 pour ${engagement.entity}**
+      message: `**YoY Variation Analysis for ${engagement.entity}**
 
-| Indicateur | N | N-1 | Variation |
-|------------|---|-----|-----------|
-| Actifs | ${this.formatEuro(fd.assets)} | ${this.formatEuro(py.assets)} | ${Number(assetVar) > 0 ? '+' : ''}${assetVar}% |
-| Passifs | ${this.formatEuro(fd.liabilities)} | ${this.formatEuro(py.liabilities)} | ${Number(liabVar) > 0 ? '+' : ''}${liabVar}% |
-| CA | ${this.formatEuro(fd.revenue)} | ${this.formatEuro(py.revenue)} | ${Number(revVar) > 0 ? '+' : ''}${revVar}% |
+| Indicator | CY | PY | Variation |
+|-----------|----|----|-----------|
+| Assets | ${this.formatEuro(fd.assets)} | ${this.formatEuro(py.assets)} | ${Number(assetVar) > 0 ? '+' : ''}${assetVar}% |
+| Liabilities | ${this.formatEuro(fd.liabilities)} | ${this.formatEuro(py.liabilities)} | ${Number(liabVar) > 0 ? '+' : ''}${liabVar}% |
+| Revenue | ${this.formatEuro(fd.revenue)} | ${this.formatEuro(py.revenue)} | ${Number(revVar) > 0 ? '+' : ''}${revVar}% |
 
-**Points clés:**
-${Number(assetVar) > 10 ? '• 📈 Forte croissance des actifs (+' + assetVar + '%)\n' : ''}${Number(revVar) < -5 ? '• ⚠️ Baisse du chiffre d\'affaires à surveiller\n' : ''}${Number(liabVar) > 15 ? '• 📊 Augmentation significative des passifs\n' : ''}`,
+**Key points:**
+${Number(assetVar) > 10 ? '- Strong asset growth (+' + assetVar + '%)\n' : ''}${Number(revVar) < -5 ? '- Revenue decline to monitor\n' : ''}${Number(liabVar) > 15 ? '- Significant increase in liabilities\n' : ''}`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'engagement',
@@ -858,22 +858,22 @@ ${Number(assetVar) > 10 ? '• 📈 Forte croissance des actifs (+' + assetVar +
 
   private mockDefaultEngagementResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
     return {
-      message: `Je suis Eve, votre assistante pour l'engagement **${engagement.entity}** (${engagement.service}).
+      message: `I'm Eve, your assistant for the **${engagement.entity}** engagement (${engagement.service}).
 
-**Résumé rapide:**
-• Statut: ${engagement.status === 'completed' ? '✅ Terminé' : '🔄 En cours'}
-• Avancement: ${engagement.completionPercent}%
-• Risque: ${engagement.riskLevel === 'high' ? '🔴 Élevé' : engagement.riskLevel === 'medium' ? '🟠 Moyen' : '🟢 Faible'}
-• Documents: ${docs.length} fichiers
+**Quick summary:**
+- Status: ${engagement.status === 'completed' ? 'Completed' : 'In progress'}
+- Progress: ${engagement.completionPercent}%
+- Risk: ${engagement.riskLevel === 'high' ? 'High' : engagement.riskLevel === 'medium' ? 'Medium' : 'Low'}
+- Documents: ${docs.length} files
 
-**Je peux vous aider avec:**
-• "Quels documents manquent ?"
-• "Quel est le niveau de risque ?"
-• "Montre-moi les actifs"
-• "Compare avec N-1"
-• "Quelle est l'échéance ?"
+**I can help you with:**
+- "What documents are missing?"
+- "What is the risk level?"
+- "Show me the assets"
+- "Compare with prior year"
+- "What is the deadline?"
 
-Posez-moi votre question !`,
+Ask me your question!`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'engagement',
@@ -884,21 +884,21 @@ Posez-moi votre question !`,
     const highRisk = MOCK_ENGAGEMENTS.filter(e => e.riskLevel === 'high');
     const inProgress = MOCK_ENGAGEMENTS.filter(e => e.status !== 'completed');
 
-    let message = `**Vue d'ensemble des engagements**\n\n`;
-    message += `📊 **${MOCK_ENGAGEMENTS.length} engagements** au total\n\n`;
+    let message = `**Engagements Overview**\n\n`;
+    message += `**${MOCK_ENGAGEMENTS.length} engagements** in total\n\n`;
 
     if (highRisk.length > 0) {
-      message += `🔴 **Engagements à risque élevé (${highRisk.length}):**\n`;
+      message += `**High risk engagements (${highRisk.length}):**\n`;
       highRisk.forEach(e => {
-        message += `• ${e.entity} (${e.service}) - ${e.completionPercent}%\n`;
+        message += `- ${e.entity} (${e.service}) - ${e.completionPercent}%\n`;
       });
       message += '\n';
     }
 
-    message += `🔄 **En cours (${inProgress.length}):**\n`;
+    message += `**In progress (${inProgress.length}):**\n`;
     inProgress.slice(0, 5).forEach(e => {
-      const risk = e.riskLevel === 'high' ? '🔴' : e.riskLevel === 'medium' ? '🟠' : '🟢';
-      message += `• ${risk} ${e.entity} - ${e.completionPercent}%\n`;
+      const risk = e.riskLevel === 'high' ? '[HIGH]' : e.riskLevel === 'medium' ? '[MED]' : '[LOW]';
+      message += `- ${risk} ${e.entity} - ${e.completionPercent}%\n`;
     });
 
     return {
@@ -912,21 +912,21 @@ Posez-moi votre question !`,
   private mockGlobalRiskResponse(): ChatResponse {
     const highRisk = MOCK_ENGAGEMENTS.filter(e => e.riskLevel === 'high');
 
-    let message = `**Analyse des risques globale**\n\n`;
+    let message = `**Global Risk Analysis**\n\n`;
 
     if (highRisk.length === 0) {
-      message += `✅ Aucun engagement à risque élevé.\n`;
+      message += `No high-risk engagements.\n`;
     } else {
-      message += `⚠️ **${highRisk.length} engagement(s) à risque élevé:**\n\n`;
+      message += `**${highRisk.length} high-risk engagement(s):**\n\n`;
       highRisk.forEach(e => {
         const dueDate = new Date(e.dueDate);
         const today = new Date();
         const daysRemaining = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
         message += `**${e.entity}** (${e.country})\n`;
-        message += `• Service: ${e.service}\n`;
-        message += `• Complétion: ${e.completionPercent}%\n`;
-        message += `• Échéance: ${daysRemaining > 0 ? daysRemaining + ' jours' : 'DÉPASSÉE'}\n\n`;
+        message += `- Service: ${e.service}\n`;
+        message += `- Completion: ${e.completionPercent}%\n`;
+        message += `- Deadline: ${daysRemaining > 0 ? daysRemaining + ' days' : 'OVERDUE'}\n\n`;
       });
     }
 
@@ -940,16 +940,16 @@ Posez-moi votre question !`,
 
   private mockDefaultGlobalResponse(): ChatResponse {
     return {
-      message: `Je suis Eve, votre assistante fiscale EY.
+      message: `I'm Eve, your EY tax assistant.
 
-**Je peux vous aider à:**
-• Voir la liste des engagements
-• Identifier les risques critiques
-• Analyser un engagement spécifique
+**I can help you:**
+- View the list of engagements
+- Identify critical risks
+- Analyze a specific engagement
 
-**Conseil:** Pour des informations détaillées sur un engagement, ouvrez-le depuis la page d'accueil et posez-moi vos questions.
+**Tip:** For detailed information on an engagement, open it from the home page and ask me your questions.
 
-Que souhaitez-vous savoir ?`,
+What would you like to know?`,
       timestamp: new Date().toISOString(),
       response_type: 'text',
       mode: 'global',
@@ -974,12 +974,12 @@ Que souhaitez-vous savoir ?`,
     let breakdown: EveBreakdownItem[] = [];
     let comparison: ComparisonData | undefined;
 
-    if (label.toLowerCase().includes('actif')) {
-      explanation = `Les actifs totaux de ${engagement?.entity ?? 'l\'entité'} s'élèvent à ${value}. Ce montant comprend les immobilisations, les créances clients et la trésorerie disponible.`;
+    if (label.toLowerCase().includes('actif') || label.toLowerCase().includes('asset')) {
+      explanation = `Total assets for ${engagement?.entity ?? 'the entity'} amount to ${value}. This includes fixed assets, receivables, and available cash.`;
       breakdown = [
-        { label: 'Immobilisations', value: this.formatEuro((fd?.assets ?? 0) * 0.6) },
-        { label: 'Créances', value: this.formatEuro((fd?.assets ?? 0) * 0.25) },
-        { label: 'Trésorerie', value: this.formatEuro((fd?.assets ?? 0) * 0.15) },
+        { label: 'Fixed Assets', value: this.formatEuro((fd?.assets ?? 0) * 0.6) },
+        { label: 'Receivables', value: this.formatEuro((fd?.assets ?? 0) * 0.25) },
+        { label: 'Cash', value: this.formatEuro((fd?.assets ?? 0) * 0.15) },
       ];
       if (py) {
         comparison = {
@@ -988,15 +988,15 @@ Que souhaitez-vous savoir ?`,
           trend: fd!.assets > py.assets ? 'up' : fd!.assets < py.assets ? 'down' : 'stable',
         };
       }
-    } else if (label.toLowerCase().includes('passif') || label.toLowerCase().includes('dette')) {
-      explanation = `Les passifs de ${engagement?.entity ?? 'l\'entité'} représentent ${value}. Ce montant inclut les dettes financières, les dettes fournisseurs et les provisions.`;
+    } else if (label.toLowerCase().includes('passif') || label.toLowerCase().includes('liabilit') || label.toLowerCase().includes('debt')) {
+      explanation = `Liabilities for ${engagement?.entity ?? 'the entity'} represent ${value}. This includes financial debt, accounts payable, and provisions.`;
       breakdown = [
-        { label: 'Dettes financières', value: this.formatEuro((fd?.liabilities ?? 0) * 0.5) },
-        { label: 'Dettes fournisseurs', value: this.formatEuro((fd?.liabilities ?? 0) * 0.35) },
+        { label: 'Financial Debt', value: this.formatEuro((fd?.liabilities ?? 0) * 0.5) },
+        { label: 'Accounts Payable', value: this.formatEuro((fd?.liabilities ?? 0) * 0.35) },
         { label: 'Provisions', value: this.formatEuro((fd?.liabilities ?? 0) * 0.15) },
       ];
     } else if (label.toLowerCase().includes('ca') || label.toLowerCase().includes('revenue') || label.toLowerCase().includes('chiffre')) {
-      explanation = `Le chiffre d'affaires de ${engagement?.entity ?? 'l\'entité'} atteint ${value} sur l'exercice ${engagement?.fiscalYear ?? 'en cours'}.`;
+      explanation = `Revenue for ${engagement?.entity ?? 'the entity'} reaches ${value} for fiscal year ${engagement?.fiscalYear ?? 'current'}.`;
       if (py) {
         comparison = {
           previous_value: this.formatEuro(py.revenue),
@@ -1005,7 +1005,7 @@ Que souhaitez-vous savoir ?`,
         };
       }
     } else {
-      explanation = `La valeur "${label}" de ${value} provient de l'analyse des documents comptables de ${engagement?.entity ?? 'l\'entité'}.`;
+      explanation = `The value "${label}" of ${value} comes from the analysis of accounting documents for ${engagement?.entity ?? 'the entity'}.`;
     }
 
     return {
@@ -1018,7 +1018,7 @@ Que souhaitez-vous savoir ?`,
   }
 
   private formatEuro(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',

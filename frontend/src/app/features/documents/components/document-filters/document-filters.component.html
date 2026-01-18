@@ -1,7 +1,7 @@
 <div class="document-filters">
   <div class="document-filters__search">
     <app-search-bar
-      placeholder="Rechercher un document..."
+      placeholder="Search documents..."
       [value]="filters().search"
       (search)="onSearchChange($event)"
     ></app-search-bar>
@@ -13,7 +13,7 @@
       [value]="filters().type || ''"
       (change)="onTypeChange($event)"
     >
-      <option value="">Tous les types</option>
+      <option value="">All types</option>
       <option *ngFor="let type of documentTypes" [value]="type.value">
         {{ type.label }}
       </option>
@@ -24,7 +24,7 @@
       [value]="filters().status || ''"
       (change)="onStatusChange($event)"
     >
-      <option value="">Tous les statuts</option>
+      <option value="">All statuses</option>
       <option *ngFor="let status of documentStatuses" [value]="status.value">
         {{ status.label }}
       </option>
@@ -35,7 +35,7 @@
       [value]="filters().engagementId || ''"
       (change)="onEngagementChange($event)"
     >
-      <option value="">Tous les engagements</option>
+      <option value="">All engagements</option>
       <option *ngFor="let eng of engagements" [value]="eng.id">
         {{ eng.countryFlag }} {{ eng.entity }}
       </option>
@@ -48,6 +48,6 @@
     size="sm"
     (clicked)="clearFilters()"
   >
-    ✕ Effacer filtres
+    Clear filters
   </app-button>
 </div>

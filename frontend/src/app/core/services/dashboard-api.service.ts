@@ -123,7 +123,7 @@ export class DashboardApiService {
         catchError((error) => {
           console.error('Error fetching engagement stats:', error);
           this.loadingStats.set(false);
-          this.error.set('Impossible de charger les statistiques. Veuillez réessayer.');
+          this.error.set('Unable to load statistics. Please try again.');
           throw error;
         })
       );
@@ -200,7 +200,7 @@ export class DashboardApiService {
       .catch((error) => {
         console.error('Error loading dashboard data:', error);
         this.loadingCharts.set(false);
-        this.error.set('Impossible de charger les données du tableau de bord. Veuillez réessayer.');
+        this.error.set('Unable to load dashboard data. Please try again.');
       });
   }
 
@@ -215,7 +215,7 @@ export class DashboardApiService {
    * Format currency for display
    */
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',
@@ -227,7 +227,7 @@ export class DashboardApiService {
    * Format currency with full precision
    */
   formatCurrencyFull(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,

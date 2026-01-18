@@ -217,7 +217,7 @@ export class DocumentApiService {
    * Handle upload-specific errors with user-friendly messages
    */
   private handleUploadError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Erreur lors du téléchargement';
+    let errorMessage = 'Error during upload';
 
     if (error.error) {
       const uploadError = error.error as UploadError | { detail: string };
@@ -225,16 +225,16 @@ export class DocumentApiService {
       if ('error_type' in uploadError) {
         switch (uploadError.error_type) {
           case 'invalid_format':
-            errorMessage = `Format non autorisé. Formats acceptés: ${uploadError.allowed_formats?.join(', ')}`;
+            errorMessage = `Format not allowed. Accepted formats: ${uploadError.allowed_formats?.join(', ')}`;
             break;
           case 'file_too_large':
             const maxMB = uploadError.max_size_bytes
               ? Math.round(uploadError.max_size_bytes / (1024 * 1024))
               : 10;
-            errorMessage = `Fichier trop volumineux. Taille max: ${maxMB} MB`;
+            errorMessage = `File too large. Max size: ${maxMB} MB`;
             break;
           case 'engagement_not_found':
-            errorMessage = 'Engagement non trouvé';
+            errorMessage = 'Engagement not found';
             break;
           default:
             errorMessage = uploadError.message || errorMessage;
@@ -243,9 +243,9 @@ export class DocumentApiService {
         errorMessage = uploadError.detail;
       }
     } else if (error.status === 0) {
-      errorMessage = 'Impossible de contacter le serveur';
+      errorMessage = 'Unable to contact server';
     } else if (error.status === 413) {
-      errorMessage = 'Fichier trop volumineux';
+      errorMessage = 'File too large';
     }
 
     return throwError(() => new Error(errorMessage));
@@ -255,7 +255,7 @@ export class DocumentApiService {
    * Generic error handler
    */
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Une erreur est survenue';
+    let errorMessage = 'An error occurred';
 
     if (error.error instanceof ErrorEvent) {
       // Client-side error

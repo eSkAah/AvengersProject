@@ -394,7 +394,7 @@ export class UploadZoneComponent {
   ): void {
     const classificationResult = docType
       ? this.getDocumentTypeLabel(docType)
-      : 'Non classé';
+      : 'Unclassified';
     this.selectedFiles.update(files =>
       files.map(f =>
         f.id === id
@@ -406,11 +406,11 @@ export class UploadZoneComponent {
 
   getDocumentTypeLabel(type: string): string {
     const labels: Record<string, string> = {
-      general_ledger: 'Grand Livre',
-      trial_balance: 'Balance Générale',
-      tax_return: 'Déclaration Fiscale',
-      financial_statement: 'États Financiers',
-      bank_statement: 'Relevé Bancaire',
+      general_ledger: 'General Ledger',
+      trial_balance: 'Trial Balance',
+      tax_return: 'Tax Return',
+      financial_statement: 'Financial Statement',
+      bank_statement: 'Bank Statement',
     };
     return labels[type] || type;
   }
@@ -426,14 +426,14 @@ export class UploadZoneComponent {
     if (!ALLOWED_EXTENSIONS.includes(extension.toLowerCase())) {
       return {
         isValid: false,
-        errorMessage: `Format non autorisé. Formats acceptés: ${ALLOWED_EXTENSIONS.join(', ')}`,
+        errorMessage: `Format not allowed. Accepted formats: ${ALLOWED_EXTENSIONS.join(', ')}`,
       };
     }
 
     if (file.size > MAX_FILE_SIZE) {
       return {
         isValid: false,
-        errorMessage: `Fichier trop volumineux. Taille max: 10 MB`,
+        errorMessage: `File too large. Max size: 10 MB`,
       };
     }
 

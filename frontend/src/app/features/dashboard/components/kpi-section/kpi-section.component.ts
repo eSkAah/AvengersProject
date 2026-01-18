@@ -33,10 +33,10 @@ import {
       <div class="kpi-section__header">
         <h2 class="kpi-section__title">
           <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
-          Indicateurs Clés
+          Key Indicators
         </h2>
         @if (stats()) {
-          <span class="kpi-section__period">Exercice {{ currentYear }}</span>
+          <span class="kpi-section__period">Fiscal Year {{ currentYear }}</span>
         }
       </div>
 
@@ -120,36 +120,36 @@ export class KpiSectionComponent implements OnInit, OnChanges {
 
     return [
       {
-        label: 'Total Actifs',
+        label: 'Total Assets',
         value: data.current_year.total_assets,
         previousValue: data.previous_year?.total_assets,
         variancePercent: data.variance_percent?.total_assets,
         icon: 'trending-up',
-        sourceDocument: 'Bilan comptable',
+        sourceDocument: 'Balance Sheet',
       },
       {
-        label: 'Total Passifs',
+        label: 'Total Liabilities',
         value: data.current_year.total_liabilities,
         previousValue: data.previous_year?.total_liabilities,
         variancePercent: data.variance_percent?.total_liabilities,
         icon: 'trending-down',
-        sourceDocument: 'Bilan comptable',
+        sourceDocument: 'Balance Sheet',
       },
       {
-        label: 'Capitaux Propres',
+        label: 'Equity',
         value: data.current_year.equity,
         previousValue: data.previous_year?.equity,
         variancePercent: data.variance_percent?.equity,
         icon: 'wallet',
-        sourceDocument: 'Bilan comptable',
+        sourceDocument: 'Balance Sheet',
       },
       {
-        label: 'Chiffre d\'Affaires',
+        label: 'Revenue',
         value: data.current_year.revenue,
         previousValue: data.previous_year?.revenue,
         variancePercent: data.variance_percent?.revenue,
         icon: 'coins',
-        sourceDocument: 'Compte de résultat',
+        sourceDocument: 'Income Statement',
       },
     ];
   });
@@ -175,16 +175,16 @@ export class KpiSectionComponent implements OnInit, OnChanges {
 
   private getEmptyKpis(): KpiMetric[] {
     return [
-      { label: 'Total Actifs', value: 0, icon: 'trending-up' },
-      { label: 'Total Passifs', value: 0, icon: 'trending-down' },
-      { label: 'Capitaux Propres', value: 0, icon: 'wallet' },
-      { label: 'Chiffre d\'Affaires', value: 0, icon: 'coins' },
+      { label: 'Total Assets', value: 0, icon: 'trending-up' },
+      { label: 'Total Liabilities', value: 0, icon: 'trending-down' },
+      { label: 'Equity', value: 0, icon: 'wallet' },
+      { label: 'Revenue', value: 0, icon: 'coins' },
     ];
   }
 
   getColorClass(kpi: KpiMetric): 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent' {
     if (kpi.variancePercent === undefined) return 'default';
-    if (kpi.label === 'Total Passifs') {
+    if (kpi.label === 'Total Liabilities') {
       // For liabilities, decrease is positive
       return kpi.variancePercent < 0 ? 'positive' : kpi.variancePercent > 0 ? 'negative' : 'default';
     }

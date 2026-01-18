@@ -7,7 +7,7 @@
       <app-entity-autocomplete
         [entities]="entityOptions()"
         [selectedEntity]="globalFilters().entity"
-        placeholder="Filtrer par entité..."
+        placeholder="Filter by entity..."
         (entitySelect)="onGlobalEntityChange($event)"
         (entityClear)="clearGlobalFilters()"
       ></app-entity-autocomplete>
@@ -29,7 +29,7 @@
           (click)="setActiveTab('library')"
         >
           <lucide-icon name="library" [size]="16"></lucide-icon>
-          <span>Bibliothèque</span>
+          <span>Library</span>
         </button>
         <button
           class="documents-page__tab"
@@ -56,10 +56,10 @@
     @if (activeTab() === 'upload') {
       <div class="documents-page__upload-content">
         <div class="upload-section">
-          <h2 class="upload-section__title">Télécharger des documents</h2>
+          <h2 class="upload-section__title">Upload Documents</h2>
           <p class="upload-section__description">
-            Déposez vos fichiers ci-dessous. L'application détectera automatiquement
-            l'entité, l'année et le type de document.
+            Drop your files below. The application will automatically detect
+            the entity, year, and document type.
           </p>
 
           <app-upload-zone
@@ -76,7 +76,7 @@
         @if (pendingFiles().length > 0) {
           <div class="pending-files">
             <h3 class="pending-files__title">
-              Fichiers en attente ({{ pendingFiles().length }})
+              Pending Files ({{ pendingFiles().length }})
             </h3>
 
             <div class="pending-files__list">
@@ -128,13 +128,13 @@
                       @case ('medium') {
                         <span class="confidence-badge confidence-badge--medium">
                           <lucide-icon name="alert-circle" [size]="14"></lucide-icon>
-                          Partiel
+                          Partial
                         </span>
                       }
                       @case ('low') {
                         <span class="confidence-badge confidence-badge--low">
                           <lucide-icon name="help-circle" [size]="14"></lucide-icon>
-                          Manuel
+                          Manual
                         </span>
                       }
                     }
@@ -144,7 +144,7 @@
                     <button
                       class="pending-file__remove"
                       (click)="removePendingFile(pf.file.id)"
-                      title="Retirer"
+                      title="Remove"
                     >
                       <lucide-icon name="x" [size]="16"></lucide-icon>
                     </button>
@@ -165,7 +165,7 @@
                 (clicked)="validateUploads()"
               >
                 <lucide-icon name="upload-cloud" [size]="16"></lucide-icon>
-                Valider l'upload
+                Validate Upload
               </app-button>
             </div>
           </div>
@@ -180,7 +180,7 @@
           <lucide-icon name="search" [size]="18"></lucide-icon>
           <input
             type="text"
-            placeholder="Rechercher par nom, type..."
+            placeholder="Search by name, type..."
             [ngModel]="globalFilters().search"
             (ngModelChange)="onGlobalSearchChange($event)"
           />
@@ -194,7 +194,7 @@
             [ngModel]="globalFilters().year"
             (ngModelChange)="onGlobalYearChange($event)"
           >
-            <option value="">Toutes les années</option>
+            <option value="">All Years</option>
             @for (year of yearOptions(); track year) {
               <option [value]="year">{{ year }}</option>
             }
@@ -206,7 +206,7 @@
             [ngModel]="globalFilters().type"
             (ngModelChange)="onGlobalTypeChange($event)"
           >
-            <option value="">Tous les types</option>
+            <option value="">All Types</option>
             @for (type of typeOptions; track type) {
               <option [value]="type">{{ getDocumentTypeLabel(type) }}</option>
             }
@@ -218,7 +218,7 @@
             [ngModel]="globalFilters().status"
             (ngModelChange)="onGlobalStatusChange($event)"
           >
-            <option value="">Tous les statuts</option>
+            <option value="">All Statuses</option>
             @for (status of statusOptions; track status) {
               <option [value]="status">{{ getStatusLabel(status) }}</option>
             }
@@ -227,7 +227,7 @@
           @if (hasActiveGlobalFilters()) {
             <button class="global-filters__clear" (click)="clearGlobalFilters()">
               <lucide-icon name="x" [size]="14"></lucide-icon>
-              Effacer
+              Clear
             </button>
           }
         </div>
@@ -243,10 +243,10 @@
         @if (filteredDocuments().length === 0) {
           <div class="documents-page__empty">
             <lucide-icon name="file-x" [size]="48"></lucide-icon>
-            <p>Aucun document trouvé</p>
+            <p>No documents found</p>
             @if (hasActiveGlobalFilters()) {
               <button class="documents-page__empty-action" (click)="clearGlobalFilters()">
-                Effacer les filtres
+                Clear filters
               </button>
             }
           </div>

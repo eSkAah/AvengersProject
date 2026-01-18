@@ -45,26 +45,26 @@
     <!-- Text content -->
     <div class="upload-zone__text">
       <p class="upload-zone__title" *ngIf="state() === 'default'">
-        Glissez-déposez vos fichiers ici
+        Drag and drop your files here
       </p>
       <p class="upload-zone__title" *ngIf="state() === 'dragover'">
-        Relâchez pour ajouter les fichiers
+        Release to add files
       </p>
       <p class="upload-zone__title" *ngIf="state() === 'uploading'">
-        Upload en cours...
+        Uploading...
       </p>
       <p class="upload-zone__title" *ngIf="state() === 'success'">
-        Upload terminé avec succès
+        Upload completed successfully
       </p>
       <p class="upload-zone__title" *ngIf="state() === 'error'">
-        Erreur lors de l'upload
+        Error during upload
       </p>
 
       <p class="upload-zone__subtitle" *ngIf="state() === 'default' || state() === 'dragover'">
-        ou <span class="upload-zone__link">cliquez pour sélectionner</span>
+        or <span class="upload-zone__link">click to select</span>
       </p>
       <p class="upload-zone__formats">
-        Formats acceptés: XLSX, XLS, PDF, CSV • Max 10 MB
+        Accepted formats: XLSX, XLS, PDF, CSV - Max 10 MB
       </p>
     </div>
   </div>
@@ -74,9 +74,9 @@
 <div class="upload-zone__files" *ngIf="hasFiles()">
   <div class="upload-zone__files-header">
     <span class="upload-zone__files-count">
-      {{ selectedFiles().length }} fichier(s) sélectionné(s)
+      {{ selectedFiles().length }} file(s) selected
       <span *ngIf="invalidFiles().length > 0" class="upload-zone__files-invalid">
-        ({{ invalidFiles().length }} invalide(s))
+        ({{ invalidFiles().length }} invalid)
       </span>
     </span>
     <button
@@ -85,7 +85,7 @@
       (click)="clearAllFiles()"
       [disabled]="state() === 'uploading'"
     >
-      Tout effacer
+      Clear all
     </button>
   </div>
 
@@ -117,7 +117,7 @@
             @if (preview.autoDetected.entity || preview.autoDetected.year || preview.autoDetected.type) {
               <span class="auto-detect__label">
                 <lucide-icon name="sparkles" [size]="12"></lucide-icon>
-                Détecté:
+                Detected:
               </span>
               @if (preview.autoDetected.entity) {
                 <span class="auto-detect__tag auto-detect__tag--entity">{{ preview.autoDetected.entity }}</span>
@@ -146,7 +146,7 @@
       <div
         *ngIf="preview.uploadStatus === 'uploading'"
         class="upload-zone__file-progress"
-        title="Téléchargement..."
+        title="Uploading..."
       >
         <div class="upload-zone__progress-spinner"></div>
       </div>
@@ -155,7 +155,7 @@
       <div
         *ngIf="preview.uploadStatus === 'classifying'"
         class="upload-zone__file-progress upload-zone__file-classifying"
-        title="Classification en cours..."
+        title="Classifying..."
       >
         <div class="upload-zone__classify-animation">
           <lucide-icon name="search" class="upload-zone__classify-icon" [size]="16"></lucide-icon>
@@ -163,7 +163,7 @@
       </div>
 
       <!-- Status icons -->
-      <span *ngIf="preview.uploadStatus === 'success'" class="upload-zone__file-status upload-zone__file-status--success" [title]="preview.classificationResult || 'Succès'">
+      <span *ngIf="preview.uploadStatus === 'success'" class="upload-zone__file-status upload-zone__file-status--success" [title]="preview.classificationResult || 'Success'">
         <lucide-icon name="check" [size]="14"></lucide-icon>
       </span>
       <span *ngIf="preview.uploadStatus === 'error'" class="upload-zone__file-status upload-zone__file-status--error">
@@ -180,7 +180,7 @@
         type="button"
         class="upload-zone__file-remove"
         (click)="removeFile(preview.id); $event.stopPropagation()"
-        title="Supprimer"
+        title="Remove"
       >
         <lucide-icon name="x" [size]="16"></lucide-icon>
       </button>
@@ -190,5 +190,5 @@
 
 <!-- No engagement warning -->
 <div *ngIf="engagementId === null && hasFiles()" class="upload-zone__warning">
-  Veuillez sélectionner un engagement avant de télécharger des fichiers.
+  Please select an engagement before uploading files.
 </div>

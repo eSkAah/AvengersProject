@@ -26,14 +26,14 @@
       <button
         class="document-card__action"
         (click)="download.emit(doc); $event.stopPropagation()"
-        title="Télécharger"
+        title="Download"
       >
         <lucide-icon name="download" [size]="16"></lucide-icon>
       </button>
       <button
         class="document-card__action"
         (click)="preview.emit(doc); $event.stopPropagation()"
-        title="Prévisualiser"
+        title="Preview"
       >
         <lucide-icon name="eye" [size]="16"></lucide-icon>
       </button>
@@ -50,5 +50,5 @@
 
 <div class="document-grid__empty" *ngIf="documents.length === 0">
   <lucide-icon name="folder-open" class="document-grid__empty-icon" [size]="48"></lucide-icon>
-  <p>Aucun document trouvé</p>
+  <p>No documents found</p>
 </div>

@@ -26,7 +26,7 @@
   <div class="detail-card detail-card--progress">
     <div class="progress-compact">
       <div class="progress-compact__bar">
-        <span class="progress-compact__label">Avancement</span>
+        <span class="progress-compact__label">Progress</span>
         <app-progress-bar
           [value]="engagement()!.completionPercent"
           [riskLevel]="engagement()!.riskLevel"
@@ -37,13 +37,13 @@
       </div>
       <div class="progress-compact__deadline">
         <lucide-icon name="calendar" [size]="16"></lucide-icon>
-        <span>Échéance: {{ formattedDueDate() }}</span>
+        <span>Due: {{ formattedDueDate() }}</span>
         <span
           class="progress-compact__days"
           [class.progress-compact__days--warning]="daysRemaining() <= 7 && daysRemaining() > 0"
           [class.progress-compact__days--danger]="daysRemaining() <= 0"
         >
-          ({{ daysRemaining() > 0 ? daysRemaining() + ' jours' : 'Échéance dépassée' }})
+          ({{ daysRemaining() > 0 ? daysRemaining() + ' days' : 'Overdue' }})
         </span>
       </div>
     </div>
@@ -67,10 +67,10 @@
     } @else {
       <div class="empty-state">
         <lucide-icon name="file-question" [size]="48"></lucide-icon>
-        <p>Aucun document requis pour cet engagement</p>
+        <p>No documents required for this engagement</p>
         <button class="btn btn--primary" (click)="goToDocuments()">
           <lucide-icon name="upload" [size]="18"></lucide-icon>
-          Télécharger des documents
+          Upload documents
         </button>
       </div>
     }
@@ -80,10 +80,10 @@
   <div class="detail-card detail-card--analysis">
     <div class="card-header">
       <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
-      <h2>Analyse Financière</h2>
+      <h2>Financial Analysis</h2>
       <span class="card-header__hint">
         <lucide-icon name="command" [size]="12"></lucide-icon>
-        + Clic pour demander à Eve
+        + Click to Ask Eve
       </span>
     </div>
 
@@ -106,16 +106,16 @@
   <div class="actions">
     <button class="btn btn--secondary" (click)="goBack()">
       <lucide-icon name="arrow-left" [size]="18"></lucide-icon>
-      Retour
+      Back
     </button>
     <div class="actions__right">
       <button class="btn btn--outline" (click)="goToDocuments()">
         <lucide-icon name="folder-open" [size]="18"></lucide-icon>
-        Gérer les documents
+        Manage Documents
       </button>
       <button class="btn btn--primary" (click)="askEve()">
         <lucide-icon name="message-circle" [size]="18"></lucide-icon>
-        Demander à Eve
+        Ask Eve
       </button>
     </div>
   </div>
@@ -131,10 +131,10 @@
 <ng-template #notFound>
   <div class="not-found">
     <lucide-icon name="search-x" [size]="64"></lucide-icon>
-    <h2>Engagement non trouvé</h2>
-    <p>L'engagement demandé n'existe pas ou a été supprimé.</p>
+    <h2>Engagement not found</h2>
+    <p>The requested engagement does not exist or has been deleted.</p>
     <button class="btn btn--primary" (click)="goBack()">
-      Retour à l'accueil
+      Back to Home
     </button>
   </div>
 </ng-template>

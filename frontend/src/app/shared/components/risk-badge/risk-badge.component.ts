@@ -48,19 +48,19 @@ export class RiskBadgeComponent implements OnDestroy {
     high: {
       color: '#EF4444',
       label: 'HIGH',
-      tooltip: 'Risque élevé: Action immédiate requise.',
+      tooltip: 'High risk: Immediate action required.',
       icon: 'alert-triangle',
     },
     medium: {
       color: '#F59E0B',
       label: 'MEDIUM',
-      tooltip: 'Risque modéré: Attention requise.',
+      tooltip: 'Medium risk: Attention required.',
       icon: 'alert-circle',
     },
     low: {
       color: '#10B981',
       label: 'LOW',
-      tooltip: 'Risque faible: Tout est sous contrôle.',
+      tooltip: 'Low risk: Everything under control.',
       icon: 'check-circle',
     },
   };

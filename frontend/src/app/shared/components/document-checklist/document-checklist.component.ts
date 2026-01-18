@@ -25,7 +25,7 @@ export interface DocumentStatusClickEvent {
   template: `
     <div class="document-checklist">
       <div class="checklist-header">
-        <span class="checklist-header__title">Documents requis</span>
+        <span class="checklist-header__title">Required Documents</span>
         <span class="checklist-header__count" [class]="'checklist-header__count--' + overallStatus()">
           {{ uploadedCount() }}/{{ totalCount() }}
         </span>
@@ -39,7 +39,7 @@ export interface DocumentStatusClickEvent {
             [class.checklist-item--required]="req.required"
             [class.checklist-item--clickable]="req.status !== 'missing'"
             (click)="onStatusClick(req.status, req.type)"
-            [title]="req.status !== 'missing' ? 'Voir dans la bibliothèque' : ''"
+            [title]="req.status !== 'missing' ? 'View in library' : ''"
           >
             <div class="checklist-item__icon">
               @switch (req.status) {
@@ -58,7 +58,7 @@ export interface DocumentStatusClickEvent {
             <span class="checklist-item__label">
               {{ req.label }}
               @if (!req.required) {
-                <span class="checklist-item__optional">(optionnel)</span>
+                <span class="checklist-item__optional">(optional)</span>
               }
             </span>
 
@@ -66,7 +66,7 @@ export interface DocumentStatusClickEvent {
               <button
                 class="checklist-item__upload-btn"
                 (click)="onUploadClick(req.type); $event.stopPropagation()"
-                title="Uploader ce document"
+                title="Upload this document"
               >
                 <lucide-icon name="upload" [size]="14"></lucide-icon>
               </button>

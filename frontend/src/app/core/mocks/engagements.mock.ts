@@ -40,13 +40,13 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Tax Return', 'Financial Statement'],
     documentsUploaded: ['DOC-FR-001', 'DOC-FR-002', 'DOC-FR-003'],
     documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'Grand Livre', required: true, status: 'uploaded', documentId: 'DOC-FR-001' },
-      { type: 'trial_balance', label: 'Balance Générale', required: true, status: 'validated', documentId: 'DOC-FR-002' },
-      { type: 'bank_statement', label: 'Relevé Bancaire', required: true, status: 'uploaded', documentId: 'DOC-FR-003' },
-      { type: 'tax_return', label: 'Déclaration Fiscale', required: true, status: 'missing' },
-      { type: 'financial_statement', label: 'États Financiers', required: false, status: 'missing' },
+      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'uploaded', documentId: 'DOC-FR-001' },
+      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'validated', documentId: 'DOC-FR-002' },
+      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'uploaded', documentId: 'DOC-FR-003' },
+      { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
+      { type: 'financial_statement', label: 'Financial Statement', required: false, status: 'missing' },
     ], 2025),
-    scenario: 'HERO - Upload démo',
+    scenario: 'HERO - Upload demo',
   },
   {
     id: 'ENG-DE-001',
@@ -74,11 +74,11 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement'],
     documentsUploaded: ['DOC-DE-001', 'DOC-DE-002'],
     documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'Grand Livre', required: true, status: 'uploaded', documentId: 'DOC-DE-001' },
-      { type: 'trial_balance', label: 'Balance Générale', required: true, status: 'uploaded', documentId: 'DOC-DE-002' },
-      { type: 'bank_statement', label: 'Relevé Bancaire', required: true, status: 'missing' },
+      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'uploaded', documentId: 'DOC-DE-001' },
+      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'uploaded', documentId: 'DOC-DE-002' },
+      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
     ], 2025),
-    scenario: 'En analyse',
+    scenario: 'In analysis',
   },
   {
     id: 'ENG-NL-001',
@@ -106,12 +106,12 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Tax Return'],
     documentsUploaded: ['DOC-NL-001', 'DOC-NL-002', 'DOC-NL-003', 'DOC-NL-004'],
     documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'Grand Livre', required: true, status: 'validated', documentId: 'DOC-NL-001' },
-      { type: 'trial_balance', label: 'Balance Générale', required: true, status: 'validated', documentId: 'DOC-NL-002' },
-      { type: 'bank_statement', label: 'Relevé Bancaire', required: true, status: 'validated', documentId: 'DOC-NL-003' },
-      { type: 'tax_return', label: 'Déclaration Fiscale', required: true, status: 'validated', documentId: 'DOC-NL-004' },
+      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-NL-001' },
+      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'validated', documentId: 'DOC-NL-002' },
+      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'validated', documentId: 'DOC-NL-003' },
+      { type: 'tax_return', label: 'Tax Return', required: true, status: 'validated', documentId: 'DOC-NL-004' },
     ], 2025),
-    scenario: 'Terminé',
+    scenario: 'Completed',
   },
   {
     id: 'ENG-BE-001',
@@ -139,11 +139,11 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     documentsRequired: ['General Ledger', 'Trial Balance', 'Tax Return'],
     documentsUploaded: ['DOC-BE-001'],
     documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'Grand Livre', required: true, status: 'validated', documentId: 'DOC-BE-001' },
-      { type: 'trial_balance', label: 'Balance Générale', required: true, status: 'missing' },
-      { type: 'tax_return', label: 'Déclaration Fiscale', required: true, status: 'missing' },
+      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-BE-001' },
+      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'missing' },
+      { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
     ], 2025),
-    scenario: 'Docs récents',
+    scenario: 'Recent docs',
   },
   {
     id: 'ENG-LU-001',
@@ -171,12 +171,12 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Financial Statement'],
     documentsUploaded: ['DOC-LU-001', 'DOC-LU-002'],
     documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'Grand Livre', required: true, status: 'validated', documentId: 'DOC-LU-001' },
-      { type: 'trial_balance', label: 'Balance Générale', required: true, status: 'missing' },
-      { type: 'bank_statement', label: 'Relevé Bancaire', required: true, status: 'missing' },
-      { type: 'financial_statement', label: 'États Financiers', required: true, status: 'validated', documentId: 'DOC-LU-002' },
+      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-LU-001' },
+      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'missing' },
+      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
+      { type: 'financial_statement', label: 'Financial Statement', required: true, status: 'validated', documentId: 'DOC-LU-002' },
     ], 2025),
-    scenario: 'Critique - démo alerte',
+    scenario: 'Critical - alert demo',
   },
   // Multiple engagements for France SPV (different services/years)
   {
@@ -204,7 +204,7 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['VAT Returns', 'Sales Ledger'],
     documentsUploaded: ['DOC-FR-VAT-001'],
-    scenario: 'Multi-engagement démo',
+    scenario: 'Multi-engagement demo',
   },
   {
     id: 'ENG-FR-003',
@@ -231,7 +231,7 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['TP Documentation', 'Intercompany Agreements'],
     documentsUploaded: ['DOC-FR-TP-001', 'DOC-FR-TP-002'],
-    scenario: 'Multi-engagement démo',
+    scenario: 'Multi-engagement demo',
   },
   // Multiple engagements for Germany PropCo
   {
@@ -259,6 +259,6 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['Property Valuations', 'Rental Contracts', 'Tax Assessment'],
     documentsUploaded: [],
-    scenario: 'Multi-engagement démo',
+    scenario: 'Multi-engagement demo',
   },
 ];

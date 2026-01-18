@@ -89,7 +89,7 @@ export class EngagementDetailComponent implements OnInit {
   readonly breadcrumbs = computed<BreadcrumbItem[]>(() => {
     const eng = this.engagement();
     return [
-      { label: 'Accueil', path: '/' },
+      { label: 'Home', path: '/' },
       { label: eng?.entity ?? 'Engagement' },
     ];
   });
@@ -99,10 +99,10 @@ export class EngagementDetailComponent implements OnInit {
     if (!eng) return { label: '', variant: 'neutral' as const, icon: 'circle' };
 
     const configs: Record<string, { label: string; variant: 'success' | 'warning' | 'error' | 'info'; icon: string }> = {
-      waiting: { label: 'En attente', variant: 'warning', icon: 'clock' },
-      received: { label: 'Reçu', variant: 'info', icon: 'inbox' },
-      processing: { label: 'En cours', variant: 'info', icon: 'loader' },
-      completed: { label: 'Terminé', variant: 'success', icon: 'check-circle' },
+      waiting: { label: 'Pending', variant: 'warning', icon: 'clock' },
+      received: { label: 'Received', variant: 'info', icon: 'inbox' },
+      processing: { label: 'In Progress', variant: 'info', icon: 'loader' },
+      completed: { label: 'Completed', variant: 'success', icon: 'check-circle' },
     };
 
     return configs[eng.status] ?? { label: eng.status, variant: 'info' as const, icon: 'circle' };
@@ -120,7 +120,7 @@ export class EngagementDetailComponent implements OnInit {
   readonly formattedDueDate = computed(() => {
     const eng = this.engagement();
     if (!eng) return '';
-    return new Date(eng.dueDate).toLocaleDateString('fr-FR', {
+    return new Date(eng.dueDate).toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -143,7 +143,7 @@ export class EngagementDetailComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',
@@ -231,7 +231,7 @@ export class EngagementDetailComponent implements OnInit {
       sourceDocument: metric.sourceDocument,
       details: [
         ...(metric.previousValue !== undefined
-          ? [{ label: 'Valeur N-1', value: metric.previousValue, type: 'currency' as const }]
+          ? [{ label: 'Previous Year Value', value: metric.previousValue, type: 'currency' as const }]
           : []),
         ...(metric.variancePercent !== undefined
           ? [{ label: 'Variation', value: metric.variancePercent, type: 'percentage' as const, highlight: true }]
@@ -263,7 +263,7 @@ export class EngagementDetailComponent implements OnInit {
       title: event.label,
       value: event.value,
       details: [
-        { label: 'Type de graphique', value: event.chartType, type: 'text' as const },
+        { label: 'Chart Type', value: event.chartType, type: 'text' as const },
       ],
       context: event.additionalData,
     });
@@ -298,7 +298,7 @@ export class EngagementDetailComponent implements OnInit {
     if (!engagementId) return;
 
     this.eveService.openPanel();
-    const question = `Peux-tu m'expliquer ${data.title} (${this.formatCurrency(data.value)}) ?`;
+    const question = `Can you explain ${data.title} (${this.formatCurrency(data.value)})?`;
     this.eveService.sendMessage(question).subscribe();
     this.closeDrillDown();
   }

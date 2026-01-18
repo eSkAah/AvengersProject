@@ -35,7 +35,7 @@ export interface DrillDownDetail {
         <div class="modal-container" role="dialog" aria-modal="true">
           <div class="modal-header">
             <h2 class="modal-title">{{ data?.title }}</h2>
-            <button class="modal-close" (click)="close()" aria-label="Fermer">
+            <button class="modal-close" (click)="close()" aria-label="Close">
               <lucide-icon name="x" [size]="20"></lucide-icon>
             </button>
           </div>
@@ -77,11 +77,11 @@ export interface DrillDownDetail {
 
           <div class="modal-footer">
             <button class="btn btn--outline" (click)="close()">
-              Fermer
+              Close
             </button>
             <button class="btn btn--primary" (click)="askEve()">
               <lucide-icon name="message-circle" [size]="18"></lucide-icon>
-              Demander à Eve
+              Ask Eve
             </button>
           </div>
         </div>
@@ -299,7 +299,7 @@ export class DrillDownModalComponent {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,

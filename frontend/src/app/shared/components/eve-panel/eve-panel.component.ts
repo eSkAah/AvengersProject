@@ -19,10 +19,10 @@ import { EveMessageComponent } from '../eve-message/eve-message.component';
 
 /** Predefined prompts for quick actions */
 const QUICK_PROMPTS = [
-  { label: 'Documents manquants', message: 'Quels documents manquent pour cet engagement ?' },
-  { label: 'Statut engagement', message: 'Quel est le statut actuel de l\'engagement ?' },
-  { label: 'Prochaines étapes', message: 'Quelles sont les prochaines étapes ?' },
-  { label: 'Risques identifiés', message: 'Quels sont les risques identifiés ?' },
+  { label: 'Missing documents', message: 'What documents are missing for this engagement?' },
+  { label: 'Engagement status', message: 'What is the current status of this engagement?' },
+  { label: 'Next steps', message: 'What are the next steps?' },
+  { label: 'Identified risks', message: 'What are the identified risks?' },
 ];
 
 /**
@@ -68,7 +68,7 @@ const QUICK_PROMPTS = [
               @if (eveService.currentEngagementName()) {
                 {{ eveService.currentEngagementName() }}
               } @else {
-                Assistante IA contextuelle
+                AI Contextual Assistant
               }
             </p>
           </div>
@@ -78,7 +78,7 @@ const QUICK_PROMPTS = [
             <button
               class="eve-panel__action-btn"
               (click)="clearConversation()"
-              title="Effacer la conversation"
+              title="Clear conversation"
             >
               <lucide-icon name="trash-2" [size]="18"></lucide-icon>
             </button>
@@ -86,7 +86,7 @@ const QUICK_PROMPTS = [
           <button
             class="eve-panel__action-btn"
             (click)="closePanel()"
-            title="Fermer"
+            title="Close"
           >
             <lucide-icon name="x" [size]="20"></lucide-icon>
           </button>
@@ -101,8 +101,8 @@ const QUICK_PROMPTS = [
             <div class="eve-panel__welcome-icon">
               <lucide-icon name="message-circle" [size]="48"></lucide-icon>
             </div>
-            <h3>Comment puis-je vous aider ?</h3>
-            <p>Posez-moi une question sur vos données, documents ou engagements.</p>
+            <h3>How can I help you?</h3>
+            <p>Ask me a question about your data, documents, or engagements.</p>
 
             <!-- Quick Prompts -->
             <div class="eve-panel__quick-prompts">
@@ -155,7 +155,7 @@ const QUICK_PROMPTS = [
           type="text"
           [(ngModel)]="inputMessage"
           (keyup.enter)="sendMessage()"
-          placeholder="Posez votre question..."
+          placeholder="Ask your question..."
           [disabled]="eveService.isLoading()"
           class="eve-panel__input-field"
           #inputField
@@ -164,7 +164,7 @@ const QUICK_PROMPTS = [
           class="eve-panel__send-btn"
           (click)="sendMessage()"
           [disabled]="!canSend()"
-          title="Envoyer"
+          title="Send"
         >
           <lucide-icon name="send" [size]="18"></lucide-icon>
         </button>

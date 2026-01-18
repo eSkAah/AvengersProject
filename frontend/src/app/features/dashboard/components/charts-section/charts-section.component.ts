@@ -53,7 +53,7 @@ export interface DrillDownEvent {
           <div class="chart-card__header">
             <h3 class="chart-card__title">
               <lucide-icon name="bar-chart-2" [size]="18"></lucide-icon>
-              Répartition des Actifs
+              Assets Breakdown
             </h3>
           </div>
           <div class="chart-card__content">
@@ -73,7 +73,7 @@ export interface DrillDownEvent {
           <div class="chart-card__header">
             <h3 class="chart-card__title">
               <lucide-icon name="git-compare" [size]="18"></lucide-icon>
-              Comparaison N / N-1
+              YoY Comparison
             </h3>
           </div>
           <div class="chart-card__content">
@@ -92,7 +92,7 @@ export interface DrillDownEvent {
           <div class="chart-card__header">
             <h3 class="chart-card__title">
               <lucide-icon name="pie-chart" [size]="18"></lucide-icon>
-              {{ breakdownChart()?.title ?? 'Répartition' }}
+              {{ breakdownChart()?.title ?? 'Breakdown' }}
             </h3>
           </div>
           <div class="chart-card__content">

@@ -43,13 +43,13 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
     <div class="document-requirements">
       <div class="requirements-header">
         <span class="requirements-header__title">
-          Documents Requis (Exercice {{ fiscalYear }})
+          Required Documents (Fiscal Year {{ fiscalYear }})
         </span>
         <span
           class="requirements-header__count"
           [class]="'requirements-header__count--' + overallStatus()"
         >
-          {{ validatedCount() }}/{{ requiredCount() }} validés
+          {{ validatedCount() }}/{{ requiredCount() }} validated
         </span>
       </div>
 
@@ -111,12 +111,12 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                 <span class="requirement-item__label">
                   {{ item.label }} {{ item.fiscalYear }}
                   @if (!item.required) {
-                    <span class="requirement-item__optional">(optionnel)</span>
+                    <span class="requirement-item__optional">(optional)</span>
                   }
                 </span>
                 @if (item.status === 'year_mismatch') {
                   <app-badge variant="warning" size="sm">
-                    Besoin {{ item.fiscalYear }}
+                    Need {{ item.fiscalYear }}
                   </app-badge>
                 }
               </div>
@@ -125,7 +125,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
               @if (item.status === 'year_mismatch' && item.matchedDocument) {
                 <!-- Year mismatch: show found document + upload zone -->
                 <div class="requirement-item__found-doc">
-                  <span class="found-doc__label">Document similaire trouvé :</span>
+                  <span class="found-doc__label">Similar document found:</span>
                   <div
                     class="found-doc__info"
                     (click)="onDocumentClick(item.matchedDocument!)"
@@ -151,7 +151,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                   (drop)="onDrop($event, item)"
                 >
                   <lucide-icon name="upload" [size]="16"></lucide-icon>
-                  <span>Uploader la version {{ item.fiscalYear }}</span>
+                  <span>Upload {{ item.fiscalYear }} version</span>
                 </div>
                 <input
                   #fileInput
@@ -199,7 +199,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                   (drop)="onDrop($event, item)"
                 >
                   <lucide-icon name="upload" [size]="16"></lucide-icon>
-                  <span>Déposer ou cliquer pour uploader</span>
+                  <span>Drop or click to upload</span>
                 </div>
                 <input
                   #fileInput

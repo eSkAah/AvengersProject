@@ -35,7 +35,7 @@ import { EveApiService } from '../../core/services/eve-api.service';
               @if (eveService.currentEngagementName()) {
                 {{ eveService.currentEngagementName() }}
               } @else {
-                Votre assistante IA contextuelle
+                Your AI contextual assistant
               }
             </p>
           </div>
@@ -48,7 +48,7 @@ import { EveApiService } from '../../core/services/eve-api.service';
         @if (eveService.lastContextSwitch()) {
           <div class="eve-context-switch">
             <lucide-icon name="arrow-right-left" [size]="14"></lucide-icon>
-            <span>Contexte basculé vers {{ eveService.lastContextSwitch()?.engagement }}</span>
+            <span>Context switched to {{ eveService.lastContextSwitch()?.engagement }}</span>
             <button (click)="eveService.clearContextSwitch()">
               <lucide-icon name="x" [size]="12"></lucide-icon>
             </button>
@@ -59,8 +59,8 @@ import { EveApiService } from '../../core/services/eve-api.service';
           @if (!eveService.hasMessages()) {
             <div class="eve-welcome">
               <lucide-icon name="message-circle" [size]="64"></lucide-icon>
-              <h2>Comment puis-je vous aider ?</h2>
-              <p>Posez-moi une question sur vos données financières, documents ou engagements.</p>
+              <h2>How can I help you?</h2>
+              <p>Ask me a question about your financial data, documents, or engagements.</p>
             </div>
           } @else {
             @for (message of eveService.messages(); track message.timestamp) {
@@ -95,7 +95,7 @@ import { EveApiService } from '../../core/services/eve-api.service';
         <div class="eve-input">
           <input
             type="text"
-            placeholder="Posez votre question à Eve..."
+            placeholder="Ask Eve your question..."
             [value]="inputValue()"
             (input)="onInputChange($event)"
             (keyup.enter)="onSend()"
@@ -110,7 +110,7 @@ import { EveApiService } from '../../core/services/eve-api.service';
 
       <button class="btn btn--outline back-btn" (click)="goBack()">
         <lucide-icon name="arrow-left" [size]="18"></lucide-icon>
-        Retour
+        Back
       </button>
     </div>
   `,
@@ -459,7 +459,7 @@ export class EveComponent implements OnInit, AfterViewChecked {
   @ViewChild('inputField') inputField!: ElementRef<HTMLInputElement>;
 
   readonly breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Accueil', path: '/' },
+    { label: 'Home', path: '/' },
     { label: 'Eve' },
   ];
 

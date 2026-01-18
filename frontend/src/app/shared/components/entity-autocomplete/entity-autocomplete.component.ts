@@ -28,7 +28,7 @@ export class EntityAutocompleteComponent {
   @Input() set entities(value: string[]) {
     this._entities.set(value);
   }
-  @Input() placeholder = 'Rechercher une entité...';
+  @Input() placeholder = 'Search for an entity...';
   @Input() set selectedEntity(value: string) {
     this._selectedEntity.set(value);
     if (value) {

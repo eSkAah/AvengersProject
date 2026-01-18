@@ -28,7 +28,7 @@ export interface ClassificationResult {
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog__header">
           <lucide-icon name="file-question" [size]="24"></lucide-icon>
-          <h3>Confirmer la classification</h3>
+          <h3>Confirm Classification</h3>
           <button class="dialog__close" (click)="cancel.emit()">
             <lucide-icon name="x" [size]="20"></lucide-icon>
           </button>
@@ -46,32 +46,32 @@ export interface ClassificationResult {
           </div>
 
           <p class="dialog__message">
-            L'application n'a pas pu identifier automatiquement toutes les informations.
-            Veuillez compléter ou corriger la classification.
+            The application could not automatically identify all information.
+            Please complete or correct the classification.
           </p>
 
           <div class="dialog__form">
             <!-- Entity -->
             <div class="dialog__field">
-              <label for="entity">Entité</label>
+              <label for="entity">Entity</label>
               <select
                 id="entity"
                 [(ngModel)]="selectedEntity"
                 [class.dialog__field--missing]="!selectedEntity()"
               >
-                <option value="">-- Sélectionner --</option>
+                <option value="">-- Select --</option>
                 @for (entity of entities; track entity) {
                   <option [value]="entity">{{ entity }}</option>
                 }
               </select>
               @if (!selectedEntity()) {
-                <span class="dialog__field-hint">Requis</span>
+                <span class="dialog__field-hint">Required</span>
               }
             </div>
 
             <!-- Year -->
             <div class="dialog__field">
-              <label for="year">Année fiscale</label>
+              <label for="year">Fiscal Year</label>
               <input
                 id="year"
                 type="number"
@@ -81,25 +81,25 @@ export interface ClassificationResult {
                 [class.dialog__field--missing]="!selectedYear()"
               />
               @if (!selectedYear()) {
-                <span class="dialog__field-hint">Requis</span>
+                <span class="dialog__field-hint">Required</span>
               }
             </div>
 
             <!-- Type -->
             <div class="dialog__field">
-              <label for="type">Type de document</label>
+              <label for="type">Document Type</label>
               <select
                 id="type"
                 [(ngModel)]="selectedType"
                 [class.dialog__field--missing]="!selectedType()"
               >
-                <option value="">-- Sélectionner --</option>
+                <option value="">-- Select --</option>
                 @for (type of documentTypes; track type) {
                   <option [value]="type">{{ getTypeLabel(type) }}</option>
                 }
               </select>
               @if (!selectedType()) {
-                <span class="dialog__field-hint">Requis</span>
+                <span class="dialog__field-hint">Required</span>
               }
             </div>
           </div>
@@ -107,7 +107,7 @@ export interface ClassificationResult {
 
         <div class="dialog__actions">
           <app-button variant="secondary" (clicked)="cancel.emit()">
-            Annuler
+            Cancel
           </app-button>
           <app-button
             variant="primary"
@@ -115,7 +115,7 @@ export interface ClassificationResult {
             (clicked)="onConfirm()"
           >
             <lucide-icon name="check" [size]="16"></lucide-icon>
-            Confirmer
+            Confirm
           </app-button>
         </div>
       </div>
@@ -176,10 +176,10 @@ export class ClassificationDialogComponent implements OnInit {
 
   getTypeLabel(type: string): string {
     const labels: Record<string, string> = {
-      general_ledger: 'Grand Livre',
-      trial_balance: 'Balance Générale',
-      tax_return: 'Déclaration Fiscale',
-      financial_statement: 'États Financiers',
+      general_ledger: 'General Ledger',
+      trial_balance: 'Trial Balance',
+      tax_return: 'Tax Return',
+      financial_statement: 'Financial Statement',
     };
     return labels[type] || type;
   }

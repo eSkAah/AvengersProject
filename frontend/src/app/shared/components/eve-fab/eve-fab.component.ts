@@ -25,7 +25,7 @@ import { EveApiService } from '../../../core/services/eve-api.service';
       class="eve-fab"
       [class.eve-fab--active]="eveService.isPanelOpen()"
       (click)="togglePanel()"
-      [attr.aria-label]="eveService.isPanelOpen() ? 'Fermer Eve' : 'Ouvrir Eve'"
+      [attr.aria-label]="eveService.isPanelOpen() ? 'Close Eve' : 'Open Eve'"
       [attr.aria-expanded]="eveService.isPanelOpen()"
     >
       <!-- Eve Icon or Close Icon based on state -->

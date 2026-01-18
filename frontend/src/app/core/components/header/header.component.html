@@ -30,7 +30,7 @@
             <h3>Notifications</h3>
             @if (unreadCount() > 0) {
               <button class="notification-dropdown__mark-all" (click)="markAllAsRead()">
-                Tout marquer comme lu
+                Mark all as read
               </button>
             }
           </div>
@@ -39,7 +39,7 @@
             @if (recentNotifications().length === 0) {
               <div class="notification-dropdown__empty">
                 <lucide-icon name="bell-off" [size]="32"></lucide-icon>
-                <p>Aucune notification</p>
+                <p>No notifications</p>
               </div>
             } @else {
               @for (notification of recentNotifications(); track notification.id) {
@@ -63,7 +63,7 @@
                     <button
                       class="notification-item__mark-read"
                       (click)="markAsRead(notification, $event)"
-                      title="Marquer comme lu"
+                      title="Mark as read"
                     >
                       <lucide-icon name="check" [size]="14"></lucide-icon>
                     </button>
@@ -75,7 +75,7 @@
 
           @if (notifications().length > 5) {
             <div class="notification-dropdown__footer">
-              <span>{{ notifications().length - 5 }} autres notifications</span>
+              <span>{{ notifications().length - 5 }} more notifications</span>
             </div>
           }
         </div>

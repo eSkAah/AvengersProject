@@ -159,10 +159,10 @@ export class EngagementListComponent implements OnChanges {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      waiting: 'En attente',
-      received: 'Reçu',
-      processing: 'En cours',
-      completed: 'Terminé',
+      waiting: 'Pending',
+      received: 'Received',
+      processing: 'In Progress',
+      completed: 'Completed',
     };
     return labels[status] || status;
   }
@@ -179,7 +179,7 @@ export class EngagementListComponent implements OnChanges {
 
   formatDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -187,7 +187,7 @@ export class EngagementListComponent implements OnChanges {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,
@@ -216,7 +216,7 @@ export class EngagementListComponent implements OnChanges {
       return `${v.metric_label} ${direction}${Math.abs(v.variance_percent).toFixed(0)}%`;
     }
 
-    return `${alerts.length} variances N-1 détectées`;
+    return `${alerts.length} YoY variances detected`;
   }
 
   trackById(index: number, engagement: Engagement): string {

@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
           id: `upload-${engagement.id}`,
           type: 'upload',
           title: `Upload ${missingDocs} document(s)`,
-          description: `${engagement.entity} - ${missingDocs} document(s) manquant(s)`,
+          description: `${engagement.entity} - ${missingDocs} missing document(s)`,
           engagementId: engagement.id,
           engagementName: engagement.entity,
           priority:
@@ -197,7 +197,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR',
       notation: 'compact',
@@ -302,7 +302,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   formatShortDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
     });
@@ -317,7 +317,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   private formatDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
     });

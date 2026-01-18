@@ -39,17 +39,17 @@ export class DocumentFiltersComponent {
   });
 
   readonly documentTypes: { value: DocumentType; label: string }[] = [
-    { value: 'general_ledger', label: 'Grand Livre' },
-    { value: 'trial_balance', label: 'Balance Générale' },
-    { value: 'bank_statement', label: 'Relevé Bancaire' },
-    { value: 'tax_return', label: 'Déclaration Fiscale' },
+    { value: 'general_ledger', label: 'General Ledger' },
+    { value: 'trial_balance', label: 'Trial Balance' },
+    { value: 'bank_statement', label: 'Bank Statement' },
+    { value: 'tax_return', label: 'Tax Return' },
   ];
 
   readonly documentStatuses: { value: DocumentStatus; label: string }[] = [
-    { value: 'pending', label: 'En attente' },
-    { value: 'analyzing', label: 'Analyse en cours' },
-    { value: 'analyzed', label: 'Analysé' },
-    { value: 'error', label: 'Erreur' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'analyzing', label: 'Analyzing' },
+    { value: 'analyzed', label: 'Analyzed' },
+    { value: 'error', label: 'Error' },
   ];
 
   onSearchChange(value: string): void {

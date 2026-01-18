@@ -21,7 +21,7 @@
       </div>
 
       <div class="engagement-item__due-date">
-        <span class="engagement-item__due-label">Echéance</span>
+        <span class="engagement-item__due-label">Deadline</span>
         <span class="engagement-item__due-value">{{ formatDate(engagement.dueDate) }}</span>
       </div>
 
@@ -58,10 +58,10 @@
             <div class="prediction-card" [class.on-track]="getPrediction(engagement.id)?.is_on_track" [class.late]="!getPrediction(engagement.id)?.is_on_track">
               <div class="prediction-card__header">
                 <lucide-icon name="brain" [size]="18" class="prediction-card__ai-icon"></lucide-icon>
-                <span class="prediction-card__title">Prédiction IA</span>
+                <span class="prediction-card__title">AI Prediction</span>
                 @if (getPrediction(engagement.id); as prediction) {
                   <span class="prediction-card__confidence" [class]="'confidence--' + prediction.confidence">
-                    {{ prediction.confidence === 'high' ? 'Haute fiabilité' : prediction.confidence === 'medium' ? 'Fiabilité moyenne' : 'Estimation' }}
+                    {{ prediction.confidence === 'high' ? 'High confidence' : prediction.confidence === 'medium' ? 'Medium confidence' : 'Estimate' }}
                   </span>
                 }
               </div>
@@ -78,12 +78,12 @@
             <div class="prediction-card">
               <div class="prediction-card__header">
                 <lucide-icon name="brain" [size]="18" class="prediction-card__ai-icon"></lucide-icon>
-                <span class="prediction-card__title">Prédiction</span>
+                <span class="prediction-card__title">Prediction</span>
               </div>
               <div class="prediction-card__content">
                 <lucide-icon name="clock" class="prediction-card__icon" [size]="24"></lucide-icon>
                 <span class="prediction-card__text">
-                  Complétion estimée: {{ formatDate(engagement.predictedCompletion) }}
+                  Estimated completion: {{ formatDate(engagement.predictedCompletion) }}
                 </span>
               </div>
             </div>
@@ -95,7 +95,7 @@
           <div class="engagement-item__section engagement-item__section--variance-chips">
             <h4>
               <lucide-icon name="alert-triangle" [size]="14" class="text-amber-500"></lucide-icon>
-              Alertes N-1
+              YoY Alerts
             </h4>
             <div class="variance-chips">
               @for (v of engagement.varianceAlerts?.slice(0, 3); track v.metric) {
@@ -138,7 +138,7 @@
                 @if (getMissingDocsCount(engagement) > 0) {
                   <div class="docs-simple__missing">
                     <lucide-icon name="alert-circle" [size]="14"></lucide-icon>
-                    {{ getMissingDocsCount(engagement) }} manquant(s)
+                    {{ getMissingDocsCount(engagement) }} missing
                   </div>
                 }
               </div>
@@ -166,5 +166,5 @@
 <!-- Empty state -->
 <div class="engagement-list__empty" *ngIf="engagements.length === 0">
   <lucide-icon name="clipboard-list" class="engagement-list__empty-icon" [size]="48"></lucide-icon>
-  <p>Aucun engagement trouvé</p>
+  <p>No engagement found</p>
 </div>

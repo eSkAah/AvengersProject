@@ -5,8 +5,8 @@
 
     <div class="structure-page__title">
       <div class="structure-page__title-content">
-        <h1>Structure des Entités</h1>
-        <p>Visualisation de la hiérarchie des entités du groupe</p>
+        <h1>Entity Structure</h1>
+        <p>Visualization of the group's entity hierarchy</p>
       </div>
       <lucide-icon name="network" [size]="48" class="structure-page__title-icon"></lucide-icon>
     </div>
@@ -19,7 +19,7 @@
       <lucide-icon name="search" [size]="18"></lucide-icon>
       <input
         type="text"
-        placeholder="Rechercher une entité..."
+        placeholder="Search for an entity..."
         [value]="searchQuery()"
         (input)="onSearchInput($any($event.target).value)"
         (focus)="onSearchFocus()"
@@ -46,25 +46,25 @@
     </div>
 
     <div class="toolbar__controls">
-      <button class="toolbar__btn" (click)="collapseAll()" title="Tout réduire">
+      <button class="toolbar__btn" (click)="collapseAll()" title="Collapse All">
         <lucide-icon name="minimize-2" [size]="18"></lucide-icon>
       </button>
-      <button class="toolbar__btn" (click)="expandAll()" title="Tout développer">
+      <button class="toolbar__btn" (click)="expandAll()" title="Expand All">
         <lucide-icon name="maximize-2" [size]="18"></lucide-icon>
       </button>
       <div class="toolbar__separator"></div>
-      <button class="toolbar__btn" (click)="zoomOut()" title="Zoom arrière">
+      <button class="toolbar__btn" (click)="zoomOut()" title="Zoom Out">
         <lucide-icon name="zoom-out" [size]="18"></lucide-icon>
       </button>
       <span class="toolbar__zoom-level">{{ (zoom() * 100) | number: '1.0-0' }}%</span>
-      <button class="toolbar__btn" (click)="zoomIn()" title="Zoom avant">
+      <button class="toolbar__btn" (click)="zoomIn()" title="Zoom In">
         <lucide-icon name="zoom-in" [size]="18"></lucide-icon>
       </button>
       <div class="toolbar__separator"></div>
-      <button class="toolbar__btn" (click)="fitToScreen()" title="Ajuster à l'écran">
+      <button class="toolbar__btn" (click)="fitToScreen()" title="Fit to Screen">
         <lucide-icon name="maximize" [size]="18"></lucide-icon>
       </button>
-      <button class="toolbar__btn" (click)="resetView()" title="Réinitialiser la vue">
+      <button class="toolbar__btn" (click)="resetView()" title="Reset View">
         <lucide-icon name="rotate-ccw" [size]="18"></lucide-icon>
       </button>
     </div>
@@ -76,19 +76,19 @@
       </div>
       <div class="legend-item">
         <span class="legend-dot legend-dot--region"></span>
-        <span>Région</span>
+        <span>Region</span>
       </div>
       <div class="legend-item">
         <span class="legend-dot legend-dot--low"></span>
-        <span>Risque faible</span>
+        <span>Low Risk</span>
       </div>
       <div class="legend-item">
         <span class="legend-dot legend-dot--medium"></span>
-        <span>Risque moyen</span>
+        <span>Medium Risk</span>
       </div>
       <div class="legend-item">
         <span class="legend-dot legend-dot--high"></span>
-        <span>Risque élevé</span>
+        <span>High Risk</span>
       </div>
     </div>
   </div>
@@ -147,15 +147,15 @@
               @if (node.type === 'holding') {
                 <text class="node__icon" x="90" y="28">🏢</text>
                 <text class="node__name" x="90" y="50">{{ node.name }}</text>
-                <text class="node__subtitle" x="90" y="68">Groupe Principal</text>
+                <text class="node__subtitle" x="90" y="68">Main Group</text>
               } @else if (node.type === 'region') {
                 <text class="node__icon" x="90" y="28">🌍</text>
                 <text class="node__name" x="90" y="50">{{ node.name }}</text>
-                <text class="node__subtitle" x="90" y="68">{{ node.children.length }} entité(s)</text>
+                <text class="node__subtitle" x="90" y="68">{{ node.children.length }} entity(ies)</text>
               } @else {
                 <text class="node__flag" x="20" y="45">{{ node.countryFlag }}</text>
                 <text class="node__name node__name--left" x="45" y="35">{{ node.name }}</text>
-                <text class="node__detail" x="45" y="52">{{ node.completion }}% complété</text>
+                <text class="node__detail" x="45" y="52">{{ node.completion }}% complete</text>
                 <text class="node__detail" x="45" y="68">{{ formatCurrency(node.revenue) }}</text>
 
                 <!-- Risk indicator -->
@@ -200,7 +200,7 @@
     <!-- Instructions -->
     <div class="structure-page__instructions">
       <lucide-icon name="mouse-pointer" [size]="14"></lucide-icon>
-      <span>Cliquez et faites glisser pour naviguer • Molette pour zoomer • Double-clic sur une entité pour voir les détails</span>
+      <span>Click and drag to navigate - Scroll to zoom - Double-click on an entity to view details</span>
     </div>
   </div>
 
@@ -217,21 +217,21 @@
       <div class="details__content">
         @if (selectedNode()!.type === 'entity') {
           <div class="details__row">
-            <span class="details__label">Pays</span>
+            <span class="details__label">Country</span>
             <span class="details__value">{{ selectedNode()!.countryFlag }} {{ selectedNode()!.country }}</span>
           </div>
           <div class="details__row">
-            <span class="details__label">Niveau de risque</span>
+            <span class="details__label">Risk Level</span>
             <span class="details__value details__value--risk" [ngClass]="'risk-' + selectedNode()!.riskLevel">
               {{ selectedNode()!.riskLevel | titlecase }}
             </span>
           </div>
           <div class="details__row">
-            <span class="details__label">Avancement moyen</span>
+            <span class="details__label">Average Progress</span>
             <span class="details__value">{{ selectedNode()!.completion }}%</span>
           </div>
           <div class="details__row">
-            <span class="details__label">CA total</span>
+            <span class="details__label">Total Revenue</span>
             <span class="details__value">{{ formatCurrency(selectedNode()!.revenue) }}</span>
           </div>
 
@@ -280,19 +280,19 @@
         } @else if (selectedNode()!.type === 'region') {
           <div class="details__row">
             <span class="details__label">Type</span>
-            <span class="details__value">Région géographique</span>
+            <span class="details__value">Geographic Region</span>
           </div>
           <div class="details__row">
-            <span class="details__label">Entités</span>
+            <span class="details__label">Entities</span>
             <span class="details__value">{{ selectedNode()!.children.length }}</span>
           </div>
         } @else {
           <div class="details__row">
             <span class="details__label">Type</span>
-            <span class="details__value">Holding principal</span>
+            <span class="details__value">Main Holding</span>
           </div>
           <div class="details__row">
-            <span class="details__label">Régions</span>
+            <span class="details__label">Regions</span>
             <span class="details__value">{{ selectedNode()!.children.length }}</span>
           </div>
         }

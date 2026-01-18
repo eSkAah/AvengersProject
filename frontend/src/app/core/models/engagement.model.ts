@@ -58,16 +58,16 @@ export interface Engagement {
 }
 
 export const STATUS_LABELS: Record<EngagementStatus, string> = {
-  waiting: 'En attente',
-  received: 'Reçu',
-  processing: 'En cours',
-  completed: 'Terminé',
+  waiting: 'Pending',
+  received: 'Received',
+  processing: 'In Progress',
+  completed: 'Completed',
 };
 
 export const RISK_LABELS: Record<RiskLevel, string> = {
-  high: 'Élevé',
-  medium: 'Moyen',
-  low: 'Faible',
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
 };
 
 export const COUNTRY_FLAGS: Record<CountryCode, string> = {

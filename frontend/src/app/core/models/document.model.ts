@@ -29,17 +29,17 @@ export interface Document {
 }
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
-  general_ledger: 'Grand Livre',
-  trial_balance: 'Balance Générale',
-  bank_statement: 'Relevé Bancaire',
-  tax_return: 'Déclaration Fiscale',
-  financial_statement: 'États Financiers',
+  general_ledger: 'General Ledger',
+  trial_balance: 'Trial Balance',
+  bank_statement: 'Bank Statement',
+  tax_return: 'Tax Return',
+  financial_statement: 'Financial Statement',
 };
 
 export const DOCUMENT_CATEGORY_LABELS: Record<DocumentCategory, string> = {
-  accounting: 'Comptabilité',
-  tax: 'Fiscal',
-  financial: 'Financier',
+  accounting: 'Accounting',
+  tax: 'Tax',
+  financial: 'Financial',
 };
 
 export const DOCUMENT_TYPE_CATEGORIES: Record<DocumentType, DocumentCategory> = {
@@ -51,11 +51,11 @@ export const DOCUMENT_TYPE_CATEGORIES: Record<DocumentType, DocumentCategory> = 
 };
 
 export const DOCUMENT_STATUS_LABELS: Record<DocumentStatus, string> = {
-  pending: 'En attente',
-  uploaded: 'Téléchargé',
-  analyzing: 'Analyse en cours',
-  analyzed: 'Analysé',
-  error: 'Erreur',
+  pending: 'Pending',
+  uploaded: 'Uploaded',
+  analyzing: 'Analyzing',
+  analyzed: 'Analyzed',
+  error: 'Error',
 };
 
 export interface DocumentTypeGroup {
