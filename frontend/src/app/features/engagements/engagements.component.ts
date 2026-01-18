@@ -1,9 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MockDataService, Engagement } from '../../core';
+import { MockDataService, Engagement, DocumentType, DocumentRequirementStatus } from '../../core';
 import { EngagementListComponent } from '../landing';
 
 export interface EngagementFilters {
@@ -11,6 +11,7 @@ export interface EngagementFilters {
   status: string[];
   year: string;
   service: string[];
+  riskLevel: string[];
 }
 
 const FILTERS_STORAGE_KEY = 'avengers_engagement_filters';
@@ -26,6 +27,7 @@ const FILTERS_STORAGE_KEY = 'avengers_engagement_filters';
 export class EngagementsComponent implements OnInit {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   // Filter state
   readonly filters = signal<EngagementFilters>({
@@ -33,12 +35,14 @@ export class EngagementsComponent implements OnInit {
     status: [],
     year: '',
     service: [],
+    riskLevel: [],
   });
 
   // Filter options
   readonly statusOptions = ['waiting', 'received', 'processing', 'completed'];
   readonly serviceOptions = ['Corporate Tax', 'VAT', 'CTR'];
   readonly yearOptions = ['2024', '2023', '2022'];
+  readonly riskLevelOptions = ['high', 'medium', 'low'];
 
   // Unique entities from data
   readonly entityOptions = computed(() => {
@@ -72,6 +76,11 @@ export class EngagementsComponent implements OnInit {
         return false;
       }
 
+      // Risk level filter (multi-select)
+      if (currentFilters.riskLevel.length > 0 && !currentFilters.riskLevel.includes(engagement.riskLevel)) {
+        return false;
+      }
+
       return true;
     });
   });
@@ -80,11 +89,34 @@ export class EngagementsComponent implements OnInit {
   readonly filteredCount = computed(() => this.filteredEngagements().length);
   readonly hasActiveFilters = computed(() => {
     const f = this.filters();
-    return f.entity !== '' || f.status.length > 0 || f.year !== '' || f.service.length > 0;
+    return f.entity !== '' || f.status.length > 0 || f.year !== '' || f.service.length > 0 || f.riskLevel.length > 0;
   });
 
   ngOnInit(): void {
-    this.loadFiltersFromSession();
+    // Check for query params first (takes priority over session storage)
+    const params = this.route.snapshot.queryParams;
+    const hasQueryFilters = params['status'] || params['risk'];
+
+    if (hasQueryFilters) {
+      // Apply filters from query params
+      const newFilters: EngagementFilters = {
+        entity: '',
+        status: params['status'] ? params['status'].split(',') : [],
+        year: '',
+        service: [],
+        riskLevel: params['risk'] ? [params['risk']] : [],
+      };
+      this.filters.set(newFilters);
+      this.saveFiltersToSession();
+
+      // Clear query params from URL to keep it clean
+      this.router.navigate([], {
+        queryParams: {},
+        replaceUrl: true,
+      });
+    } else {
+      this.loadFiltersFromSession();
+    }
   }
 
   // Entity search
@@ -122,6 +154,7 @@ export class EngagementsComponent implements OnInit {
       status: [],
       year: '',
       service: [],
+      riskLevel: [],
     });
     this.saveFiltersToSession();
   }
@@ -132,6 +165,19 @@ export class EngagementsComponent implements OnInit {
 
   isServiceSelected(service: string): boolean {
     return this.filters().service.includes(service);
+  }
+
+  // Risk level toggle
+  toggleRiskLevel(riskLevel: string): void {
+    const current = this.filters().riskLevel;
+    const updated = current.includes(riskLevel)
+      ? current.filter(r => r !== riskLevel)
+      : [...current, riskLevel];
+    this.updateFilter('riskLevel', updated);
+  }
+
+  isRiskLevelSelected(riskLevel: string): boolean {
+    return this.filters().riskLevel.includes(riskLevel);
   }
 
   private updateFilter<K extends keyof EngagementFilters>(key: K, value: EngagementFilters[K]): void {
@@ -159,7 +205,7 @@ export class EngagementsComponent implements OnInit {
   }
 
   onViewDashboard(engagement: Engagement): void {
-    this.router.navigate(['/engagements', engagement.id, 'dashboard']);
+    this.router.navigate(['/engagements', engagement.id]);
   }
 
   onUploadDocs(engagement: Engagement): void {
@@ -171,6 +217,32 @@ export class EngagementsComponent implements OnInit {
   onAskEve(engagement: Engagement): void {
     this.router.navigate(['/eve'], {
       queryParams: { engagement: engagement.id },
+    });
+  }
+
+  /**
+   * Handle upload for a specific document type within an engagement
+   */
+  onUploadDocType(event: { engagement: Engagement; docType: DocumentType }): void {
+    this.router.navigate(['/documents'], {
+      queryParams: {
+        tab: 'upload',
+        entity: event.engagement.entity,
+        type: event.docType,
+      },
+    });
+  }
+
+  /**
+   * Handle viewing documents by status (uploaded/validated)
+   */
+  onViewDocsByStatus(event: { engagement: Engagement; status: DocumentRequirementStatus; type: DocumentType }): void {
+    this.router.navigate(['/documents'], {
+      queryParams: {
+        entity: event.engagement.entity,
+        type: event.type,
+        status: event.status === 'validated' ? 'analyzed' : 'analyzing',
+      },
     });
   }
 }

@@ -2,11 +2,14 @@
 
 import os
 import re
+import logging
 from datetime import datetime
 from typing import Optional
 
+from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.schemas.eve import (
     ChatRequest,
     ChatResponse,
@@ -19,6 +22,26 @@ from app.schemas.eve import (
 from app.services.dashboard_service import get_gantt_data
 from app.services.engagement_service import get_engagement_by_id
 from app.services.variance_service import check_engagement_variances, get_variance_context_for_eve
+
+logger = logging.getLogger(__name__)
+
+# =============================================================================
+# OpenAI Client
+# =============================================================================
+
+_openai_client: Optional[AsyncOpenAI] = None
+
+
+def get_openai_client() -> AsyncOpenAI:
+    """Get or create OpenAI client singleton."""
+    global _openai_client
+    if _openai_client is None:
+        if not settings.openai_api_key:
+            raise ValueError(
+                "OPENAI_API_KEY not configured. Please set it in your .env file."
+            )
+        _openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
+    return _openai_client
 
 # =============================================================================
 # Eve System Prompts
@@ -123,12 +146,12 @@ async def process_chat(
     db: AsyncSession, request: ChatRequest
 ) -> ChatResponse:
     """
-    Process a chat message and generate Eve's response.
+    Process a chat message and generate Eve's response using OpenAI.
 
-    For POC, uses pattern matching. In production, would integrate with
-    Factory AI / Blackwell / OpenAI.
+    Uses the OpenAI API with conversation history and engagement context
+    to generate contextual, intelligent responses.
     """
-    message = request.message.lower().strip()
+    message_lower = request.message.lower().strip()
     engagement = None
     sources = None
 
@@ -136,8 +159,12 @@ async def process_chat(
     if request.engagement_id:
         engagement = await get_engagement_by_id(db, request.engagement_id)
 
-    # Check for Gantt chart intent
-    if is_gantt_intent(message):
+    # Get conversation history
+    conversation_key = request.engagement_id or "global"
+    conversation = get_conversation(conversation_key)
+
+    # Check for Gantt chart intent (special handling for visualization)
+    if is_gantt_intent(message_lower):
         gantt_data = await get_gantt_data(db)
         response_text = (
             "Voici le planning de vos engagements sous forme de diagramme de Gantt. "
@@ -146,9 +173,8 @@ async def process_chat(
         )
 
         # Add to conversation history
-        if request.engagement_id:
-            add_message(request.engagement_id, "user", request.message)
-            add_message(request.engagement_id, "assistant", response_text, sources)
+        add_message(conversation_key, "user", request.message)
+        add_message(conversation_key, "assistant", response_text, sources)
 
         return ChatResponse(
             message=response_text,
@@ -158,13 +184,18 @@ async def process_chat(
             data=gantt_data.model_dump(),
         )
 
-    # Generate response based on message patterns
-    response_text = await generate_chat_response(message, engagement)
+    # Add user message to history before generating response
+    add_message(conversation_key, "user", request.message)
 
-    # Add to conversation history
-    if request.engagement_id:
-        add_message(request.engagement_id, "user", request.message)
-        add_message(request.engagement_id, "assistant", response_text, sources)
+    # Generate response using OpenAI
+    response_text = await generate_chat_response(
+        request.message,
+        engagement,
+        conversation.messages[:-1]  # Exclude the message we just added
+    )
+
+    # Add Eve's response to history
+    add_message(conversation_key, "assistant", response_text, sources)
 
     return ChatResponse(
         message=response_text,
@@ -255,164 +286,129 @@ def get_variance_proactive_message(engagement) -> str:
     )
 
 
-async def generate_chat_response(message: str, engagement=None) -> str:
-    """
-    Generate Eve's response based on message content.
+def build_engagement_context(engagement) -> str:
+    """Build context string from engagement data for the system prompt."""
+    parts = [
+        f"- Entité: {engagement.entity_name}",
+        f"- Pays: {engagement.country_code}",
+        f"- Service: {engagement.service_type}",
+        f"- Statut: {engagement.status}",
+        f"- Progression: {engagement.completion_percent}%",
+        f"- Niveau de risque: {engagement.risk_level}",
+    ]
 
-    This is a simplified pattern-matching implementation for POC.
-    In production, would use Factory AI or similar.
-    """
-    # Check for variance-related questions
-    if any(word in message for word in ["variance", "écart", "variation", "différence", "n-1", "comparaison"]):
-        if engagement and engagement.financial_data:
-            variances = check_engagement_variances(engagement.financial_data)
-            if variances:
-                response = f"Voici les variances significatives détectées pour {engagement.entity_name} :\n\n"
-                for v in variances:
-                    direction = "augmentation" if v.variance_type.value == "increase" else "diminution"
-                    arrow = "↑" if v.variance_type.value == "increase" else "↓"
-                    response += (
-                        f"**{v.metric_label}** : {arrow} {abs(v.variance_percent):.1f}%\n"
-                        f"  - N : {v.current_value:,.0f} €\n"
-                        f"  - N-1 : {v.previous_value:,.0f} €\n\n"
-                    )
-                response += "Ces variations méritent une analyse approfondie pour comprendre les facteurs sous-jacents."
-                return response
-            else:
-                return (
-                    f"Aucune variance significative (>15%) n'a été détectée pour {engagement.entity_name}. "
-                    f"Les données financières sont stables par rapport à l'exercice précédent."
+    if engagement.due_date:
+        parts.append(f"- Date d'échéance: {engagement.due_date.strftime('%d/%m/%Y')}")
+
+    # Add documents info
+    if engagement.documents_required:
+        parts.append(f"- Documents requis: {', '.join(engagement.documents_required)}")
+    if engagement.documents_uploaded:
+        parts.append(f"- Documents uploadés: {', '.join(engagement.documents_uploaded)}")
+
+    # Add financial data if available
+    if engagement.financial_data:
+        fd = engagement.financial_data
+        current = fd.get("current_year", fd)
+        previous = fd.get("previous_year", {})
+
+        parts.append("\nDonnées financières (année en cours):")
+        if "total_assets" in current:
+            parts.append(f"- Total Actifs: {current['total_assets']:,.0f} €")
+        if "total_liabilities" in current:
+            parts.append(f"- Total Passifs: {current['total_liabilities']:,.0f} €")
+        if "equity" in current:
+            parts.append(f"- Capitaux Propres: {current['equity']:,.0f} €")
+        if "revenue" in current:
+            parts.append(f"- Chiffre d'affaires: {current['revenue']:,.0f} €")
+
+        if previous:
+            parts.append("\nDonnées N-1:")
+            if "total_assets" in previous:
+                parts.append(f"- Total Actifs N-1: {previous['total_assets']:,.0f} €")
+            if "total_liabilities" in previous:
+                parts.append(f"- Total Passifs N-1: {previous['total_liabilities']:,.0f} €")
+            if "revenue" in previous:
+                parts.append(f"- Chiffre d'affaires N-1: {previous['revenue']:,.0f} €")
+
+        # Add variance info
+        variances = check_engagement_variances(engagement.financial_data)
+        if variances:
+            parts.append("\nVariances significatives détectées:")
+            for v in variances:
+                direction = "augmentation" if v.variance_type.value == "increase" else "diminution"
+                parts.append(
+                    f"- {v.metric_label}: {direction} de {abs(v.variance_percent):.1f}% "
+                    f"(N: {v.current_value:,.0f} € → N-1: {v.previous_value:,.0f} €)"
                 )
-        return "Pour analyser les variances, veuillez sélectionner un engagement disposant de données financières N et N-1."
 
-    # Greeting patterns
-    if any(word in message for word in ["bonjour", "salut", "hello", "hi"]):
-        if engagement:
-            return (
-                f"Bonjour, je suis Eve, votre assistante IA spécialisée dans l'audit financier. "
-                f"Je suis actuellement connectée à l'engagement {engagement.entity_name}. "
-                f"Comment puis-je vous aider ?"
-            )
+    return "\n".join(parts)
+
+
+async def generate_chat_response(
+    message: str,
+    engagement=None,
+    conversation_history: list = None
+) -> str:
+    """
+    Generate Eve's response using OpenAI API.
+
+    Args:
+        message: User's message
+        engagement: Optional engagement context
+        conversation_history: Previous messages in conversation
+
+    Returns:
+        Eve's response text
+    """
+    try:
+        client = get_openai_client()
+    except ValueError as e:
+        logger.error(f"OpenAI client not configured: {e}")
         return (
-            "Bonjour, je suis Eve, votre assistante IA spécialisée dans l'audit financier. "
-            "Comment puis-je vous aider aujourd'hui ?"
+            "Je ne suis pas encore configurée pour répondre. "
+            "Veuillez vérifier que la clé API OpenAI est correctement configurée."
         )
 
-    # Documents manquants
-    if any(word in message for word in ["document", "manque", "manquant", "requis"]):
-        if engagement:
-            # Get required vs uploaded docs
-            required = engagement.documents_required or ["General Ledger", "Trial Balance"]
-            # For POC, assume some docs are missing
-            missing = ["Trial Balance"] if "france" in engagement.entity_name.lower() else []
+    # Build messages array for OpenAI
+    messages = []
 
-            if missing:
-                return (
-                    f"Pour l'engagement {engagement.entity_name} ({engagement.service_type}), "
-                    f"les documents suivants sont encore requis :\n"
-                    f"- {chr(10).join('- ' + doc for doc in missing)}\n\n"
-                    f"Une fois ces documents uploadés, l'analyse pourra être finalisée."
-                )
-            return (
-                f"Tous les documents requis pour l'engagement {engagement.entity_name} "
-                f"ont été reçus. L'analyse est en cours."
-            )
-        return (
-            "Pour vérifier les documents manquants, veuillez d'abord sélectionner "
-            "un engagement spécifique."
-        )
+    # 1. System prompt with Eve's personality
+    system_content = EVE_SYSTEM_PROMPT
 
-    # Status / progression
-    if any(word in message for word in ["status", "statut", "progression", "avancement"]):
-        if engagement:
-            return (
-                f"L'engagement {engagement.entity_name} est actuellement en statut "
-                f"'{engagement.status}' avec une progression de {engagement.completion_percent}%.\n\n"
-                f"- Date d'échéance : {engagement.due_date.strftime('%d %B %Y') if engagement.due_date else 'Non définie'}\n"
-                f"- Niveau de risque : {engagement.risk_level.upper()}"
-            )
-        return (
-            "Pour consulter le statut, veuillez sélectionner un engagement spécifique "
-            "ou naviguer vers le tableau de bord."
-        )
-
-    # Financial data / KPIs
-    if any(word in message for word in ["actif", "passif", "assets", "liabilities", "kpi", "financ"]):
-        if engagement and engagement.financial_data:
-            fd = engagement.financial_data
-            current = fd.get("current_year", fd)
-            previous = fd.get("previous_year", {})
-
-            assets = current.get("total_assets", 0)
-            liabilities = current.get("total_liabilities", 0)
-            equity = current.get("equity", assets - liabilities)
-
-            response = (
-                f"Voici les principaux indicateurs financiers pour {engagement.entity_name} :\n\n"
-                f"- Total Actifs : {assets:,.0f} €\n"
-                f"- Total Passifs : {liabilities:,.0f} €\n"
-                f"- Capitaux Propres : {equity:,.0f} €\n"
-            )
-
-            if previous:
-                prev_assets = previous.get("total_assets", 0)
-                if prev_assets > 0:
-                    var = ((assets - prev_assets) / prev_assets) * 100
-                    response += f"\nVariation des actifs vs N-1 : {var:+.1f}%"
-
-            response += f"\n\nSource : Données financières de l'engagement"
-            return response
-        return (
-            "Pour consulter les données financières, veuillez sélectionner un engagement "
-            "disposant de données comptables."
-        )
-
-    # Risk / deadline
-    if any(word in message for word in ["risque", "risk", "deadline", "échéance", "retard"]):
-        if engagement:
-            risk_explanations = {
-                "high": "élevé - action urgente requise",
-                "medium": "modéré - surveillance recommandée",
-                "low": "faible - dans les délais prévus",
-            }
-            explanation = risk_explanations.get(engagement.risk_level, "non évalué")
-
-            return (
-                f"Le niveau de risque pour {engagement.entity_name} est {explanation}.\n\n"
-                f"- Date d'échéance : {engagement.due_date.strftime('%d %B %Y') if engagement.due_date else 'Non définie'}\n"
-                f"- Progression : {engagement.completion_percent}%\n"
-                f"- Statut : {engagement.status}"
-            )
-        return (
-            "Pour évaluer le risque, veuillez sélectionner un engagement spécifique."
-        )
-
-    # Help / capabilities
-    if any(word in message for word in ["aide", "help", "capacité", "peux-tu", "peux tu", "faire"]):
-        return (
-            "Je peux vous aider avec les tâches suivantes :\n\n"
-            "- Consulter les documents financiers de vos engagements\n"
-            "- Expliquer les données, KPIs et tendances\n"
-            "- Vous guider avec des recommandations personnalisées\n"
-            "- Comparer les données entre exercices (N vs N-1)\n"
-            "- Identifier les documents manquants\n"
-            "- Analyser le niveau de risque\n\n"
-            "Posez-moi simplement votre question !"
-        )
-
-    # Default response
+    # 2. Add engagement context if available
     if engagement:
-        return (
-            f"Je suis connectée à l'engagement {engagement.entity_name}. "
-            f"Pourriez-vous préciser votre question ? Je peux vous aider avec "
-            f"les documents, les données financières, le statut ou les risques."
-        )
+        context = build_engagement_context(engagement)
+        system_content += f"\n\nCONTEXTE DE L'ENGAGEMENT ACTUEL:\n{context}"
 
-    return (
-        "Je n'ai pas compris votre demande. Pourriez-vous reformuler votre question ? "
-        "Je peux vous aider à consulter vos documents, analyser vos données financières, "
-        "ou répondre à des questions sur vos engagements."
-    )
+    messages.append({"role": "system", "content": system_content})
+
+    # 3. Add conversation history (last 10 messages to avoid token overflow)
+    if conversation_history:
+        for msg in conversation_history[-10:]:
+            messages.append({
+                "role": msg.role,
+                "content": msg.content
+            })
+
+    # 4. Add current user message
+    messages.append({"role": "user", "content": message})
+
+    # 5. Call OpenAI API
+    try:
+        response = await client.chat.completions.create(
+            model=settings.openai_model,
+            messages=messages,
+            max_tokens=settings.openai_max_tokens,
+            temperature=settings.openai_temperature,
+        )
+        return response.choices[0].message.content or "Je n'ai pas pu générer de réponse."
+    except Exception as e:
+        logger.error(f"OpenAI API error: {e}")
+        return (
+            "Une erreur technique s'est produite lors de la génération "
+            "de ma réponse. Veuillez réessayer dans quelques instants."
+        )
 
 
 # =============================================================================

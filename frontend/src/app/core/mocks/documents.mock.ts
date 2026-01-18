@@ -12,6 +12,9 @@ export const MOCK_DOCUMENTS: Document[] = [
     status: 'analyzing',
     size: 4567890,
     aiSummary: 'Grand livre comptable pour France SPV, exercice 2026. Contient 2,134 écritures. Analyse en cours.',
+    year: 2026,
+    entityId: 'ENG-FR-001',
+    entityName: 'France SPV',
   },
   {
     id: 'DOC-FR-002',
@@ -28,6 +31,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       liabilities: 5200000,
       equity: 3300000,
     },
+    year: 2025,
+    entityId: 'ENG-FR-001',
+    entityName: 'France SPV',
   },
   {
     id: 'DOC-FR-003',
@@ -39,6 +45,9 @@ export const MOCK_DOCUMENTS: Document[] = [
     status: 'pending',
     size: 345678,
     aiSummary: 'Relevé bancaire décembre 2025 en attente d\'analyse.',
+    year: 2025,
+    entityId: 'ENG-FR-001',
+    entityName: 'France SPV',
   },
 
   // Germany PropCo documents
@@ -52,6 +61,9 @@ export const MOCK_DOCUMENTS: Document[] = [
     status: 'analyzing',
     size: 2456789,
     aiSummary: 'Grand livre comptable pour Germany PropCo, exercice 2026. Contient 1,247 écritures.',
+    year: 2026,
+    entityId: 'ENG-DE-001',
+    entityName: 'Germany PropCo',
   },
   {
     id: 'DOC-DE-002',
@@ -63,6 +75,9 @@ export const MOCK_DOCUMENTS: Document[] = [
     status: 'analyzing',
     size: 567890,
     aiSummary: 'Balance générale Q4 2025 pour Germany PropCo. Total actifs: 5,200,000€.',
+    year: 2025,
+    entityId: 'ENG-DE-001',
+    entityName: 'Germany PropCo',
   },
 
   // Netherlands BV documents (all analyzed - completed engagement)
@@ -82,6 +97,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       totalCredits: 2100000,
       balanced: true,
     },
+    year: 2026,
+    entityId: 'ENG-NL-001',
+    entityName: 'Netherlands BV',
   },
   {
     id: 'DOC-NL-002',
@@ -98,6 +116,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       liabilities: 890000,
       equity: 1210000,
     },
+    year: 2025,
+    entityId: 'ENG-NL-001',
+    entityName: 'Netherlands BV',
   },
   {
     id: 'DOC-NL-003',
@@ -114,6 +135,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       totalCredits: 156000,
       totalDebits: 142000,
     },
+    year: 2025,
+    entityId: 'ENG-NL-001',
+    entityName: 'Netherlands BV',
   },
   {
     id: 'DOC-NL-004',
@@ -130,6 +154,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       taxDue: 124500,
       taxRate: 0.25,
     },
+    year: 2025,
+    entityId: 'ENG-NL-001',
+    entityName: 'Netherlands BV',
   },
 
   // Belgium HoldCo documents
@@ -150,6 +177,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       balanced: true,
       alerts: ['Revenue decline detected: -3.4% YoY'],
     },
+    year: 2026,
+    entityId: 'ENG-BE-001',
+    entityName: 'Belgium HoldCo',
   },
   {
     id: 'DOC-BE-002',
@@ -161,6 +191,9 @@ export const MOCK_DOCUMENTS: Document[] = [
     status: 'pending',
     size: 567234,
     aiSummary: 'Déclaration fiscale Belgium HoldCo en attente d\'analyse.',
+    year: 2025,
+    entityId: 'ENG-BE-001',
+    entityName: 'Belgium HoldCo',
   },
 
   // Luxembourg Fund documents
@@ -180,6 +213,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       totalCredits: 12500000,
       balanced: true,
     },
+    year: 2026,
+    entityId: 'ENG-LU-001',
+    entityName: 'Luxembourg Fund',
   },
   {
     id: 'DOC-LU-002',
@@ -196,6 +232,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       performance: 12.3,
       expenses: 1250000,
     },
+    year: 2025,
+    entityId: 'ENG-LU-001',
+    entityName: 'Luxembourg Fund',
   },
 
   // SHARED DOCUMENTS - Linked to multiple engagements (many-to-many demo)
@@ -214,6 +253,9 @@ export const MOCK_DOCUMENTS: Document[] = [
       entities: 5,
       jurisdictions: ['FR', 'DE', 'NL', 'BE', 'LU'],
     },
+    year: 2025,
+    entityId: 'ENG-FR-001',
+    entityName: 'France SPV',  // Primary entity
   },
   {
     id: 'DOC-SHARED-002',
@@ -230,5 +272,8 @@ export const MOCK_DOCUMENTS: Document[] = [
       transactionsCount: 156,
       entities: ['France SPV', 'Luxembourg Fund'],
     },
+    year: 2025,
+    entityId: 'ENG-FR-001',
+    entityName: 'France SPV',  // Primary entity
   },
 ];

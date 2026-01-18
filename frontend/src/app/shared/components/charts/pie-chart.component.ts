@@ -69,7 +69,7 @@ export interface PieClickEvent {
         @if (data) {
           <div class="chart-legend">
             @for (item of data.items; track item.label) {
-              <div class="legend-item" (click)="onLegendClick(item, $index)">
+              <div class="legend-item" (click)="onLegendClick(item, $index, $event)">
                 <div class="legend-color" [style.backgroundColor]="item.color"></div>
                 <div class="legend-content">
                   <span class="legend-label">{{ item.label }}</span>
@@ -256,14 +256,22 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     }).format(value);
   }
 
-  onLegendClick(item: PieChartItem, index: number): void {
-    const event: PieClickEvent = {
+  onLegendClick(item: PieChartItem, index: number, event: MouseEvent): void {
+    const clickEvent: PieClickEvent = {
       label: item.label,
       value: item.value,
       percentage: item.percentage,
       index,
     };
-    this.segmentClick.emit(event);
+
+    if (event.metaKey || event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.cmdClick.emit(clickEvent);
+      return;
+    }
+
+    this.segmentClick.emit(clickEvent);
   }
 
   private createChart(): void {

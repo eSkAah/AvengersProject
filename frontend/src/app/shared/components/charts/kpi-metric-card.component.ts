@@ -282,12 +282,15 @@ export class KpiMetricCardComponent {
     const isCmdClick = event.metaKey || event.altKey;
 
     if (isCmdClick) {
+      event.preventDefault();
+      event.stopPropagation();
       this.cmdClick.emit(this.metric);
+      return; // Don't emit kpiClick when CMD+Click is used
     }
 
     this.kpiClick.emit({
       metric: this.metric,
-      isCmdClick,
+      isCmdClick: false,
     });
   }
 }

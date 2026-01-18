@@ -1,13 +1,28 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MockDataService, Engagement } from '../../core';
+import {
+  DocumentRequirementStatus,
+  DocumentType,
+  Engagement,
+  MockDataService,
+  STATUS_LABELS,
+} from '../../core';
 import { Notification } from '../../shared';
 import {
-  KpiHeaderComponent,
-  KpiFilter,
   EngagementListComponent,
+  KpiFilter,
+  KpiHeaderComponent,
   NotificationsZoneComponent,
 } from '../landing';
 
@@ -36,26 +51,43 @@ export interface ActionItem {
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private activeFilter = signal<KpiFilter>('all');
   private completedActionIds = signal<Set<string>>(new Set());
+  readonly expandEngagementId = signal<string | null>(null);
+
+  // Signal to trigger initial render - fixes OnPush change detection issue
+  private readonly isInitialized = signal(false);
 
   readonly kpiData = computed(() => ({
     total: this.mockData.totalEngagements(),
-    processing: this.mockData.engagementsByStatus().processing + this.mockData.engagementsByStatus().received,
+    processing:
+      this.mockData.engagementsByStatus().processing + this.mockData.engagementsByStatus().received,
     highRisk: this.mockData.engagementsByRisk().high,
     completed: this.mockData.engagementsByStatus().completed,
   }));
 
   // At-risk engagements: only HIGH and MEDIUM risk
   readonly atRiskEngagements = computed(() => {
-    return this.mockData.engagements().filter(
-      (e) => e.riskLevel === 'high' || e.riskLevel === 'medium'
-    );
+    // Include isInitialized to ensure re-computation after init
+    this.isInitialized();
+    return this.mockData
+      .engagements()
+      .filter(e => e.riskLevel === 'high' || e.riskLevel === 'medium');
   });
+
+  // Displayed risk engagements (limited to 4 for compact view)
+  readonly displayedRiskEngagements = computed(() => {
+    return this.atRiskEngagements().slice(0, 4);
+  });
+
+  // Status labels for display
+  readonly statusLabels = STATUS_LABELS;
 
   // Action items derived from engagements
   readonly actionItems = computed<ActionItem[]>(() => {
@@ -63,7 +95,7 @@ export class HomeComponent implements OnInit {
     const completedIds = this.completedActionIds();
     const items: ActionItem[] = [];
 
-    engagements.forEach((engagement) => {
+    engagements.forEach(engagement => {
       // Missing documents action
       const missingDocs = engagement.documentsRequired.length - engagement.documentsUploaded.length;
       if (missingDocs > 0 && engagement.status !== 'completed') {
@@ -76,7 +108,12 @@ export class HomeComponent implements OnInit {
             description: `${engagement.entity} - ${missingDocs} document(s) manquant(s)`,
             engagementId: engagement.id,
             engagementName: engagement.entity,
-            priority: engagement.riskLevel === 'high' ? 'high' : engagement.riskLevel === 'medium' ? 'medium' : 'low',
+            priority:
+              engagement.riskLevel === 'high'
+                ? 'high'
+                : engagement.riskLevel === 'medium'
+                  ? 'medium'
+                  : 'low',
             dueDate: engagement.dueDate,
           });
         }
@@ -148,6 +185,29 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     // Load completed actions from session storage
     this.loadCompletedActions();
+
+    // Check for expand query param (from notification deep-link)
+    this.route.queryParams.subscribe(params => {
+      const expandId = params['expand'];
+      if (expandId) {
+        this.expandEngagementId.set(expandId);
+        // Clear the query param after handling
+        this.router.navigate([], {
+          queryParams: { expand: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Force change detection after view init to ensure computed signals render
+    // This fixes an issue with OnPush where service signals don't trigger initial render
+    setTimeout(() => {
+      this.isInitialized.set(true);
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   formatCurrency(value: number): string {
@@ -164,7 +224,7 @@ export class HomeComponent implements OnInit {
   }
 
   onViewDashboard(engagement: Engagement): void {
-    this.router.navigate(['/engagements', engagement.id, 'dashboard']);
+    this.router.navigate(['/engagements', engagement.id]);
   }
 
   onUploadDocs(engagement: Engagement): void {
@@ -179,6 +239,22 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  onViewDocsByStatus(event: {
+    engagement: Engagement;
+    status: DocumentRequirementStatus;
+    type: DocumentType;
+  }): void {
+    // Navigate to documents with filters for entity, status, and type
+    this.router.navigate(['/documents'], {
+      queryParams: {
+        engagement: event.engagement.id,
+        entity: event.engagement.entity,
+        status: event.status,
+        type: event.type,
+      },
+    });
+  }
+
   onNotificationClick(notification: Notification): void {
     if (notification.engagementId) {
       this.router.navigate(['/engagements', notification.engagementId]);
@@ -189,13 +265,12 @@ export class HomeComponent implements OnInit {
   onActionClick(action: ActionItem): void {
     switch (action.type) {
       case 'upload':
-        this.router.navigate(['/documents'], {
-          queryParams: { engagement: action.engagementId },
-        });
+        // Navigate to engagement detail page to see missing documents and upload them
+        this.router.navigate(['/engagements', action.engagementId]);
         break;
       case 'review':
       case 'deadline':
-        this.router.navigate(['/engagements', action.engagementId, 'dashboard']);
+        this.router.navigate(['/engagements', action.engagementId]);
         break;
       default:
         this.router.navigate(['/engagements', action.engagementId]);
@@ -204,7 +279,7 @@ export class HomeComponent implements OnInit {
 
   markActionComplete(action: ActionItem, event: Event): void {
     event.stopPropagation();
-    this.completedActionIds.update((ids) => {
+    this.completedActionIds.update(ids => {
       const newIds = new Set(ids);
       newIds.add(action.id);
       return newIds;
@@ -231,11 +306,30 @@ export class HomeComponent implements OnInit {
     if (filter === 'all') {
       this.router.navigate(['/engagements']);
     } else if (filter === 'high-risk') {
-      // Navigate to engagements with high-risk pre-filter
-      this.router.navigate(['/engagements']);
-    } else {
-      this.router.navigate(['/engagements']);
+      this.router.navigate(['/engagements'], {
+        queryParams: { risk: 'high' },
+      });
+    } else if (filter === 'processing') {
+      this.router.navigate(['/engagements'], {
+        queryParams: { status: 'processing,received' },
+      });
+    } else if (filter === 'completed') {
+      this.router.navigate(['/engagements'], {
+        queryParams: { status: 'completed' },
+      });
     }
+  }
+
+  onViewAllRiskEngagements(): void {
+    this.router.navigate(['/engagements']);
+  }
+
+  formatShortDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: 'short',
+    });
   }
 
   private getDaysUntilDue(dueDate: string): number {

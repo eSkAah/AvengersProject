@@ -18,18 +18,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'engagements/:id/dashboard',
-    loadComponent: () =>
-      import('./features/dashboard/engagement-dashboard/engagement-dashboard.component').then(
-        m => m.EngagementDashboardComponent
-      ),
-  },
-  {
-    path: 'dashboard',
-    loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-  },
-  {
     path: 'structure',
     loadComponent: () =>
       import('./features/structure/structure.component').then(m => m.StructureComponent),

@@ -34,7 +34,6 @@ export class SidebarComponent {
     { label: 'Engagements', icon: 'briefcase', route: '/engagements' },
     { label: 'Structure', icon: 'git-branch', route: '/structure' },
     { label: 'Documents', icon: 'file-text', route: '/documents' },
-    { label: 'Dashboard', icon: 'bar-chart-2', route: '/dashboard' },
   ];
 
   // User profile

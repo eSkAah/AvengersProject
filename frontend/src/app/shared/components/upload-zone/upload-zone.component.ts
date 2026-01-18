@@ -15,6 +15,13 @@ import { BadgeComponent } from '../badge/badge.component';
 
 export type UploadState = 'default' | 'dragover' | 'uploading' | 'success' | 'error';
 
+export interface AutoDetectedInfo {
+  year?: number;
+  entity?: string;
+  type?: string;
+  confidence: 'high' | 'medium' | 'low';
+}
+
 export interface FilePreview {
   id: string;
   file: File;
@@ -24,8 +31,19 @@ export interface FilePreview {
   isValid: boolean;
   errorMessage?: string;
   uploadProgress?: number;
-  uploadStatus?: 'pending' | 'uploading' | 'classifying' | 'success' | 'error';
+  uploadStatus?: 'pending' | 'uploading' | 'classifying' | 'placing' | 'success' | 'error';
   classificationResult?: string;
+  classificationData?: {
+    type: string;
+    entityName: string;
+    year: number;
+  };
+  autoDetected?: AutoDetectedInfo;
+  manualOverride?: {
+    year?: number;
+    entity?: string;
+    type?: string;
+  };
 }
 
 export interface UploadResult {
@@ -57,6 +75,11 @@ export class UploadZoneComponent {
   @Output() uploadError = new EventEmitter<UploadResult>();
   @Output() uploadComplete = new EventEmitter<UploadResult[]>();
   @Output() filesSelected = new EventEmitter<FilePreview[]>();
+  @Output() placementReady = new EventEmitter<{
+    preview: FilePreview;
+    sourceElement: HTMLElement;
+    response: Record<string, unknown>;
+  }>();
 
   state = signal<UploadState>('default');
   selectedFiles = signal<FilePreview[]>([]);
@@ -135,6 +158,7 @@ export class UploadZoneComponent {
     const newPreviews: FilePreview[] = files.map(file => {
       const extension = this.getFileExtension(file.name);
       const validation = this.validateFile(file, extension);
+      const autoDetected = this.autoDetectFromFilename(file.name);
 
       return {
         id: this.generateId(),
@@ -146,11 +170,96 @@ export class UploadZoneComponent {
         errorMessage: validation.errorMessage,
         uploadProgress: 0,
         uploadStatus: 'pending',
+        autoDetected,
       };
     });
 
     this.selectedFiles.update(current => [...current, ...newPreviews]);
     this.filesSelected.emit(this.selectedFiles());
+  }
+
+  /**
+   * Auto-detect year, entity, and type from filename
+   */
+  private autoDetectFromFilename(filename: string): AutoDetectedInfo {
+    const result: AutoDetectedInfo = { confidence: 'low' };
+    const lowerName = filename.toLowerCase();
+    let confidenceScore = 0;
+
+    // Detect year (2020-2029)
+    const yearMatch = filename.match(/20(2[0-9])/);
+    if (yearMatch) {
+      result.year = parseInt(`20${yearMatch[1]}`, 10);
+      confidenceScore++;
+    }
+
+    // Detect entity from common patterns
+    const entityPatterns: Record<string, RegExp> = {
+      'France SPV': /france|fr[-_\s]?spv|spv[-_\s]?france/i,
+      'Germany PropCo': /germany|de[-_\s]?propco|propco[-_\s]?germany|allemagne/i,
+      'Netherlands BV': /netherlands|nl[-_\s]?bv|bv[-_\s]?netherlands|pays[-_\s]?bas/i,
+      'Belgium HoldCo': /belgium|be[-_\s]?holdco|holdco[-_\s]?belgium|belgique/i,
+      'Luxembourg Fund': /luxembourg|lu[-_\s]?fund|fund[-_\s]?luxembourg/i,
+    };
+
+    for (const [entity, pattern] of Object.entries(entityPatterns)) {
+      if (pattern.test(lowerName)) {
+        result.entity = entity;
+        confidenceScore++;
+        break;
+      }
+    }
+
+    // Detect document type from common patterns
+    const typePatterns: Record<string, RegExp> = {
+      general_ledger: /grand[-_\s]?livre|general[-_\s]?ledger|gl[-_\s]?\d|comptabilite[-_\s]?generale/i,
+      trial_balance: /balance|trial[-_\s]?balance|tb[-_\s]?\d/i,
+      tax_return: /declaration[-_\s]?fiscal|tax[-_\s]?return|impot|liasse[-_\s]?fiscal/i,
+      financial_statement: /etats[-_\s]?financ|financial[-_\s]?statement|bilan|compte[-_\s]?de[-_\s]?resultat/i,
+      bank_statement: /releve[-_\s]?banc|bank[-_\s]?statement|extrait[-_\s]?de[-_\s]?compte/i,
+    };
+
+    for (const [type, pattern] of Object.entries(typePatterns)) {
+      if (pattern.test(lowerName)) {
+        result.type = type;
+        confidenceScore++;
+        break;
+      }
+    }
+
+    // Set confidence level
+    if (confidenceScore >= 3) {
+      result.confidence = 'high';
+    } else if (confidenceScore >= 2) {
+      result.confidence = 'medium';
+    }
+
+    return result;
+  }
+
+  /**
+   * Update manual override for a file
+   */
+  updateFileOverride(fileId: string, override: { year?: number; entity?: string; type?: string }): void {
+    this.selectedFiles.update(files =>
+      files.map(f =>
+        f.id === fileId
+          ? { ...f, manualOverride: { ...f.manualOverride, ...override } }
+          : f
+      )
+    );
+  }
+
+  /**
+   * Get the effective detection (manual override or auto-detected)
+   */
+  getEffectiveDetection(file: FilePreview): AutoDetectedInfo {
+    return {
+      year: file.manualOverride?.year ?? file.autoDetected?.year,
+      entity: file.manualOverride?.entity ?? file.autoDetected?.entity,
+      type: file.manualOverride?.type ?? file.autoDetected?.type,
+      confidence: file.manualOverride ? 'high' : (file.autoDetected?.confidence ?? 'low'),
+    };
   }
 
   removeFile(id: string): void {
@@ -166,7 +275,10 @@ export class UploadZoneComponent {
   }
 
   // Called by parent to trigger upload
-  async startUpload(uploadFn: (file: File, engagementId: string) => Promise<unknown>): Promise<UploadResult[]> {
+  async startUpload(
+    uploadFn: (file: File, engagementId: string) => Promise<unknown>,
+    options?: { skipPlacementAnimation?: boolean }
+  ): Promise<UploadResult[]> {
     if (!this.canUpload() || !this.engagementId) return [];
 
     const results: UploadResult[] = [];
@@ -192,8 +304,28 @@ export class UploadZoneComponent {
         // Extract classification result from response
         const responseData = response as Record<string, unknown>;
         const docType = responseData?.['type'] as string | undefined;
-        const aiSummary = responseData?.['ai_summary'] as string | undefined;
-        this.updateFileStatusWithClassification(preview.id, 'success', 100, docType, aiSummary);
+        const entityName = responseData?.['entity_name'] as string | undefined;
+        const year = responseData?.['year'] as number | undefined;
+
+        // If we have placement animation enabled and classification data
+        if (!options?.skipPlacementAnimation && docType && entityName && year) {
+          // Set placing status and emit placement event
+          this.updateFileStatusForPlacement(preview.id, docType, entityName, year);
+
+          // Get the file preview element for animation source
+          const fileElement = document.querySelector(`[data-file-id="${preview.id}"]`) as HTMLElement;
+          if (fileElement) {
+            this.placementReady.emit({
+              preview: this.selectedFiles().find(f => f.id === preview.id)!,
+              sourceElement: fileElement,
+              response: responseData,
+            });
+            // Wait for placement animation to complete
+            await this.delay(1000);
+          }
+        }
+
+        this.updateFileStatusWithClassification(preview.id, 'success', 100, docType);
         this.uploadSuccess.emit(result);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Upload failed';
@@ -219,9 +351,29 @@ export class UploadZoneComponent {
     return results;
   }
 
+  private updateFileStatusForPlacement(
+    id: string,
+    docType: string,
+    entityName: string,
+    year: number
+  ): void {
+    this.selectedFiles.update(files =>
+      files.map(f =>
+        f.id === id
+          ? {
+              ...f,
+              uploadStatus: 'placing' as const,
+              uploadProgress: 90,
+              classificationData: { type: docType, entityName, year }
+            }
+          : f
+      )
+    );
+  }
+
   private updateFileStatus(
     id: string,
-    status: 'pending' | 'uploading' | 'classifying' | 'success' | 'error',
+    status: 'pending' | 'uploading' | 'classifying' | 'placing' | 'success' | 'error',
     progress: number
   ): void {
     this.selectedFiles.update(files =>
@@ -252,7 +404,7 @@ export class UploadZoneComponent {
     );
   }
 
-  private getDocumentTypeLabel(type: string): string {
+  getDocumentTypeLabel(type: string): string {
     const labels: Record<string, string> = {
       general_ledger: 'Grand Livre',
       trial_balance: 'Balance Générale',

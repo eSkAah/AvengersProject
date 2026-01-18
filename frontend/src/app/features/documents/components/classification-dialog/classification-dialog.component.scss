@@ -1,0 +1,180 @@
+@use 'styles/variables' as *;
+
+.dialog-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 480px;
+  background: $color-surface;
+  border-radius: $radius-xl;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-5;
+    border-bottom: 1px solid $color-border;
+
+    lucide-icon {
+      color: $ey-yellow;
+    }
+
+    h3 {
+      flex: 1;
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+    }
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: $color-text-secondary;
+    background: transparent;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      color: $color-text-primary;
+      background: $color-background;
+    }
+  }
+
+  &__content {
+    padding: $spacing-5;
+  }
+
+  &__file-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-4;
+    background: $color-background;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-4;
+
+    lucide-icon {
+      color: $color-text-secondary;
+    }
+  }
+
+  &__file-details {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+  }
+
+  &__file-name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  &__file-size {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__message {
+    margin: 0 0 $spacing-4 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: 1.5;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+
+    label {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+    }
+
+    select,
+    input {
+      padding: $spacing-3;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+      background: $color-background;
+      border: 1px solid $color-border;
+      border-radius: $radius-sm;
+      transition: all $transition-fast;
+
+      &:focus {
+        outline: none;
+        border-color: $ey-yellow;
+        box-shadow: 0 0 0 3px rgba($ey-yellow, 0.2);
+      }
+
+      &--missing {
+        border-color: $color-error;
+        background: rgba($color-error, 0.05);
+      }
+    }
+
+    &-hint {
+      font-size: $font-size-xs;
+      color: $color-error;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-3;
+    padding: $spacing-5;
+    border-top: 1px solid $color-border;
+    background: $color-background;
+    border-radius: 0 0 $radius-xl $radius-xl;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

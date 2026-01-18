@@ -81,6 +81,25 @@
       </div>
     </div>
 
+    <!-- Risk Level Multi-Select -->
+    <div class="filter-group">
+      <label class="filter-group__label">
+        <lucide-icon name="alert-triangle" [size]="14"></lucide-icon>
+        Risk
+      </label>
+      <div class="filter-group__chips">
+        @for (riskLevel of riskLevelOptions; track riskLevel) {
+          <button
+            class="filter-chip"
+            [class.filter-chip--active]="isRiskLevelSelected(riskLevel)"
+            (click)="toggleRiskLevel(riskLevel)"
+          >
+            {{ riskLevel }}
+          </button>
+        }
+      </div>
+    </div>
+
     <!-- Clear Filters -->
     @if (hasActiveFilters()) {
       <button class="clear-filters-btn" (click)="clearFilters()">
@@ -103,6 +122,8 @@
         [engagements]="filteredEngagements()"
         (viewDashboard)="onViewDashboard($event)"
         (uploadDocs)="onUploadDocs($event)"
+        (uploadDocType)="onUploadDocType($event)"
+        (viewDocsByStatus)="onViewDocsByStatus($event)"
         (askEve)="onAskEve($event)"
       />
     }

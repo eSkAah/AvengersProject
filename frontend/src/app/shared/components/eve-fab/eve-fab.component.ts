@@ -7,7 +7,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { EveApiService } from '../../../core/services/eve-api.service';
-import { NotificationService } from '../../../core/services/notification.service';
 
 /**
  * Eve Floating Action Button (FAB)
@@ -181,22 +180,21 @@ import { NotificationService } from '../../../core/services/notification.service
 })
 export class EveFabComponent {
   protected readonly eveService = inject(EveApiService);
-  protected readonly notificationService = inject(NotificationService);
 
-  /** Total badge count (unread messages + notifications) */
-  protected readonly totalBadgeCount = computed(
-    () => this.eveService.unreadCount() + this.notificationService.unreadCount()
-  );
+  /** Total badge count (unread messages only - notifications are in header) */
+  protected readonly totalBadgeCount = computed(() => {
+    // Only count Eve's unread messages, not notification service
+    // Notification service is already shown in the header bell icon
+    return this.eveService.unreadCount();
+  });
 
-  /** Show badge only when there are unread items and panel is closed */
+  /** Show badge only when there are unread Eve messages and panel is closed */
   protected readonly showBadge = computed(
     () => this.totalBadgeCount() > 0 && !this.eveService.isPanelOpen()
   );
 
-  /** Check if there are high priority notifications */
-  protected readonly hasHighPriorityNotifications = computed(
-    () => this.notificationService.highPriorityCount() > 0
-  );
+  /** Check if there are high priority notifications (not used for Eve badge anymore) */
+  protected readonly hasHighPriorityNotifications = computed(() => false);
 
   togglePanel(): void {
     this.eveService.togglePanel();

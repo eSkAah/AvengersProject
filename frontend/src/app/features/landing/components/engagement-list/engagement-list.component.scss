@@ -97,47 +97,45 @@
   // Expanded content
   &__content {
     padding: $spacing-4;
-    padding-top: 0;
+    padding-top: $spacing-4;
     border-top: 1px solid $color-border;
     animation: slideDown 0.2s ease-out;
   }
 
   &__details {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: $spacing-6;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-5;
     margin-bottom: $spacing-4;
   }
 
   &__section {
     h4 {
-      font-size: $font-size-sm;
+      font-size: $font-size-xs;
       font-weight: $font-weight-semibold;
       color: $color-text-secondary;
-      margin-bottom: $spacing-3;
+      margin-bottom: $spacing-2;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: $spacing-1;
     }
-  }
 
-  &__financials {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-2;
-  }
+    // Prediction section spans full width
+    &--prediction {
+      grid-column: 1 / -1;
+    }
 
-  &__docs {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-2;
-  }
+    // Variance chips section
+    &--variance-chips {
+      grid-column: 1 / -1;
+    }
 
-  &__prediction {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    font-size: $font-size-sm;
-    color: $color-text-primary;
+    // Docs section
+    &--docs {
+      grid-column: 1 / -1;
+    }
   }
 
   &__actions {
@@ -162,132 +160,43 @@
   }
 }
 
-.financial-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+// Prediction Card - Primary focus
+.prediction-card {
+  background: linear-gradient(135deg, rgba($ey-yellow, 0.08) 0%, rgba($ey-yellow, 0.02) 100%);
+  border: 1px solid rgba($ey-yellow, 0.2);
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  transition: all 0.2s ease;
 
-  &__label {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+  &:hover {
+    border-color: rgba($ey-yellow, 0.4);
   }
 
-  &__value {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
-
-    &.positive {
-      color: $color-success;
-    }
-
-    &.negative {
-      color: $color-error;
-    }
-  }
-}
-
-.docs-status {
-  display: flex;
-  align-items: baseline;
-  gap: $spacing-2;
-
-  &__count {
-    font-size: $font-size-2xl;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
+  &.on-track {
+    background: linear-gradient(135deg, rgba($color-success, 0.08) 0%, rgba($color-success, 0.02) 100%);
+    border-color: rgba($color-success, 0.2);
   }
 
-  &__label {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-}
-
-.docs-missing {
-  display: flex;
-  align-items: center;
-  gap: $spacing-2;
-  padding: $spacing-2;
-  background: rgba($color-warning, 0.1);
-  border-radius: $radius-sm;
-
-  &__icon {
-    font-size: $font-size-sm;
+  &.late {
+    background: linear-gradient(135deg, rgba($color-error, 0.08) 0%, rgba($color-error, 0.02) 100%);
+    border-color: rgba($color-error, 0.2);
   }
 
-  &__text {
-    font-size: $font-size-xs;
-    color: darken($color-warning, 20%);
-  }
-}
-
-// Variance Alerts Section
-.engagement-item__section--variance {
-  h4 {
+  &__header {
     display: flex;
     align-items: center;
     gap: $spacing-2;
-  }
-}
-
-.engagement-item__variance-list {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-2;
-}
-
-.variance-alert {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: $spacing-2;
-  padding: $spacing-2 $spacing-3;
-  border-radius: $radius-md;
-  font-size: $font-size-sm;
-  background: rgba($color-warning, 0.08);
-  border-left: 3px solid $color-warning;
-
-  &--increase {
-    .variance-alert__direction {
-      color: $color-success;
-    }
+    margin-bottom: $spacing-3;
   }
 
-  &--decrease {
-    .variance-alert__direction {
-      color: $color-error;
-    }
+  &__ai-icon {
+    color: $ey-yellow;
   }
 
-  &__metric {
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
-    min-width: 120px;
-  }
-
-  &__direction {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-weight: $font-weight-semibold;
-  }
-
-  &__values {
-    color: $color-text-secondary;
-    font-size: $font-size-xs;
-    margin-left: auto;
-  }
-}
-
-.prediction {
-  &__icon {
-    font-size: $font-size-lg;
-  }
-
-  &__text {
+  &__title {
     font-size: $font-size-sm;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
   }
 
   &__confidence {
@@ -296,36 +205,114 @@
     border-radius: $radius-full;
     margin-left: auto;
 
-    &--high {
-      background: rgba($color-success, 0.1);
-      color: $color-success;
+    &.confidence--high {
+      background: rgba($color-success, 0.15);
+      color: darken($color-success, 10%);
     }
 
-    &--medium {
-      background: rgba($color-warning, 0.1);
-      color: $color-warning;
+    &.confidence--medium {
+      background: rgba($color-warning, 0.15);
+      color: darken($color-warning, 15%);
     }
 
-    &--low {
-      background: rgba($color-text-secondary, 0.1);
+    &.confidence--low {
+      background: rgba($color-text-secondary, 0.15);
       color: $color-text-secondary;
     }
   }
-}
 
-.engagement-item__prediction {
-  display: flex;
-  align-items: center;
-  gap: $spacing-2;
-  padding: $spacing-2 $spacing-3;
-  border-radius: $radius-md;
-
-  &.on-track {
-    background: rgba($color-success, 0.05);
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
   }
 
-  &.late {
-    background: rgba($color-error, 0.05);
+  &__icon {
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// Variance Chips - Condensed display
+.variance-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+}
+
+.variance-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+
+  &--increase {
+    background: rgba($color-success, 0.1);
+    color: darken($color-success, 10%);
+  }
+
+  &--decrease {
+    background: rgba($color-error, 0.1);
+    color: darken($color-error, 5%);
+  }
+
+  &--more {
+    background: $color-background;
+    color: $color-text-secondary;
+    font-weight: $font-weight-normal;
+  }
+}
+
+// Documents Visual - Progress Ring + Checklist
+.docs-visual {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-4;
+
+  app-progress-ring {
+    flex-shrink: 0;
+  }
+
+  app-document-checklist {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.docs-simple {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+
+  &__status {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-1;
+  }
+
+  &__count {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__missing {
+    display: flex;
+    align-items: center;
+    gap: $spacing-1;
+    font-size: $font-size-xs;
+    color: $color-error;
   }
 }
 
@@ -357,5 +344,10 @@
     &__details {
       grid-template-columns: 1fr;
     }
+  }
+
+  .docs-visual {
+    flex-direction: column;
+    align-items: center;
   }
 }

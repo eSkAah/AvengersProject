@@ -164,7 +164,103 @@
   }
 }
 
-// Progress Section
+// Compact Progress Section
+.detail-card--progress {
+  padding: $spacing-3 $spacing-5;
+}
+
+.progress-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-6;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-3;
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex: 1;
+    min-width: 200px;
+
+    app-progress-bar {
+      flex: 1;
+      max-width: 300px;
+    }
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    white-space: nowrap;
+  }
+
+  &__value {
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    white-space: nowrap;
+  }
+
+  &__deadline {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+
+    lucide-icon {
+      color: $color-text-muted;
+    }
+  }
+
+  &__days {
+    font-weight: $font-weight-medium;
+
+    &--warning {
+      color: $color-warning;
+    }
+
+    &--danger {
+      color: $color-error;
+      font-weight: $font-weight-bold;
+    }
+  }
+}
+
+// Analysis Section
+.detail-card--analysis {
+  background: linear-gradient(
+    180deg,
+    $color-surface 0%,
+    rgba($color-background, 0.3) 100%
+  );
+
+  .card-header__hint {
+    display: flex;
+    align-items: center;
+    gap: $spacing-1;
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    background: rgba($ey-black, 0.04);
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    margin-left: auto;
+
+    lucide-icon {
+      color: $color-text-muted;
+    }
+  }
+}
+
+// Legacy styles (keep for backwards compatibility)
 .progress-section {
   margin-bottom: $spacing-4;
 }
@@ -187,7 +283,6 @@
   }
 }
 
-// Deadline Section
 .deadline-section {
   display: flex;
   flex-direction: column;
@@ -246,6 +341,14 @@
       color: $color-error;
     }
   }
+}
+
+// Document Checklist Section
+.document-checklist-section {
+  margin-bottom: $spacing-4;
+  padding: $spacing-4;
+  background: rgba($color-background, 0.5);
+  border-radius: $radius-md;
 }
 
 // Documents Grid

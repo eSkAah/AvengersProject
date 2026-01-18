@@ -22,121 +22,84 @@
     </div>
   </div>
 
-  <!-- Main Content Grid -->
-  <div class="content-grid">
-    <!-- Left Column - Financial Data -->
-    <div class="detail-card">
-      <div class="card-header">
-        <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
-        <h2>Données Financières</h2>
-      </div>
-
-      <div class="financial-grid">
-        <div class="financial-item">
-          <span class="financial-item__label">Actifs</span>
-          <span class="financial-item__value">{{ formatCurrency(engagement()!.financialData.assets) }}</span>
-        </div>
-        <div class="financial-item">
-          <span class="financial-item__label">Passifs</span>
-          <span class="financial-item__value">{{ formatCurrency(engagement()!.financialData.liabilities) }}</span>
-        </div>
-        <div class="financial-item">
-          <span class="financial-item__label">Chiffre d'affaires</span>
-          <span class="financial-item__value">{{ formatCurrency(engagement()!.financialData.revenue) }}</span>
-        </div>
-        <div class="financial-item financial-item--highlight">
-          <span class="financial-item__label">Variation N/N-1</span>
-          <span
-            class="financial-item__value"
-            [class.financial-item__value--positive]="engagement()!.financialData.yoyChange > 0"
-            [class.financial-item__value--negative]="engagement()!.financialData.yoyChange < 0"
-          >
-            <lucide-icon
-              [name]="engagement()!.financialData.yoyChange >= 0 ? 'trending-up' : 'trending-down'"
-              [size]="18"
-            ></lucide-icon>
-            {{ engagement()!.financialData.yoyChange > 0 ? '+' : '' }}{{ engagement()!.financialData.yoyChange }}%
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column - Progress & Deadline -->
-    <div class="detail-card">
-      <div class="card-header">
-        <lucide-icon name="clock" [size]="20"></lucide-icon>
-        <h2>Progression</h2>
-      </div>
-
-      <div class="progress-section">
-        <div class="progress-info">
-          <span class="progress-info__label">Avancement global</span>
-          <span class="progress-info__value">{{ engagement()!.completionPercent }}%</span>
-        </div>
+  <!-- Compact Progress & Deadline -->
+  <div class="detail-card detail-card--progress">
+    <div class="progress-compact">
+      <div class="progress-compact__bar">
+        <span class="progress-compact__label">Avancement</span>
         <app-progress-bar
           [value]="engagement()!.completionPercent"
           [riskLevel]="engagement()!.riskLevel"
           [showLabel]="false"
-          height="lg"
+          height="sm"
         ></app-progress-bar>
+        <span class="progress-compact__value">{{ engagement()!.completionPercent }}%</span>
       </div>
-
-      <div class="deadline-section">
-        <div class="deadline-item">
-          <lucide-icon name="calendar" [size]="18"></lucide-icon>
-          <div class="deadline-item__content">
-            <span class="deadline-item__label">Date limite</span>
-            <span class="deadline-item__value">{{ formattedDueDate() }}</span>
-          </div>
-        </div>
-        <div
-          class="deadline-item"
-          [class.deadline-item--warning]="daysRemaining() <= 7 && daysRemaining() > 0"
-          [class.deadline-item--danger]="daysRemaining() <= 0"
+      <div class="progress-compact__deadline">
+        <lucide-icon name="calendar" [size]="16"></lucide-icon>
+        <span>Échéance: {{ formattedDueDate() }}</span>
+        <span
+          class="progress-compact__days"
+          [class.progress-compact__days--warning]="daysRemaining() <= 7 && daysRemaining() > 0"
+          [class.progress-compact__days--danger]="daysRemaining() <= 0"
         >
-          <lucide-icon name="hourglass" [size]="18"></lucide-icon>
-          <div class="deadline-item__content">
-            <span class="deadline-item__label">Jours restants</span>
-            <span class="deadline-item__value">
-              {{ daysRemaining() > 0 ? daysRemaining() + ' jours' : 'Échéance dépassée' }}
-            </span>
-          </div>
-        </div>
+          ({{ daysRemaining() > 0 ? daysRemaining() + ' jours' : 'Échéance dépassée' }})
+        </span>
       </div>
     </div>
   </div>
 
-  <!-- Documents Section -->
+  <!-- Documents Section - Unified Requirements + Files -->
   <div class="detail-card">
     <div class="card-header">
       <lucide-icon name="folder-open" [size]="20"></lucide-icon>
       <h2>Documents</h2>
-      <span class="card-header__count">{{ documents().length }} / {{ engagement()!.documentsRequired.length }}</span>
     </div>
 
-    <div class="documents-grid" *ngIf="documents().length > 0; else noDocuments">
-      <div class="document-item" *ngFor="let doc of documents()">
-        <lucide-icon [name]="getDocumentIcon(doc.name)" [size]="24" class="document-item__icon"></lucide-icon>
-        <div class="document-item__info">
-          <span class="document-item__name">{{ doc.name }}</span>
-          <span class="document-item__meta">{{ getFileFormat(doc.name).toUpperCase() }} • {{ doc.type || 'Non classifié' }}</span>
-        </div>
-        <app-badge [variant]="getStatusBadgeVariant(doc.status)" size="sm">
-          {{ doc.status }}
-        </app-badge>
-      </div>
-    </div>
-
-    <ng-template #noDocuments>
+    @if (documentRequirements().length > 0) {
+      <app-document-requirements-section
+        [requirements]="documentRequirements()"
+        [documents]="documents()"
+        [fiscalYear]="engagement()!.fiscalYear"
+        (uploadFile)="onDocumentUpload($event)"
+        (documentClick)="onDocumentClick($event)"
+      ></app-document-requirements-section>
+    } @else {
       <div class="empty-state">
         <lucide-icon name="file-question" [size]="48"></lucide-icon>
-        <p>Aucun document téléchargé</p>
+        <p>Aucun document requis pour cet engagement</p>
         <button class="btn btn--primary" (click)="goToDocuments()">
           <lucide-icon name="upload" [size]="18"></lucide-icon>
           Télécharger des documents
         </button>
       </div>
-    </ng-template>
+    }
+  </div>
+
+  <!-- Analysis Section with Interactive Charts -->
+  <div class="detail-card detail-card--analysis">
+    <div class="card-header">
+      <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
+      <h2>Analyse Financière</h2>
+      <span class="card-header__hint">
+        <lucide-icon name="command" [size]="12"></lucide-icon>
+        + Clic pour demander à Eve
+      </span>
+    </div>
+
+    <!-- KPIs Section -->
+    <app-kpi-section
+      [engagementId]="engagementId()"
+      (kpiClick)="onKpiClick($event)"
+      (cmdClick)="onKpiCmdClick($event)"
+    ></app-kpi-section>
+
+    <!-- Charts Section -->
+    <app-charts-section
+      [engagementId]="engagementId()"
+      (drillDown)="onDrillDown($event)"
+      (cmdClick)="onChartCmdClick($event)"
+    ></app-charts-section>
   </div>
 
   <!-- Actions -->
@@ -157,6 +120,13 @@
     </div>
   </div>
 </div>
+
+<!-- Drill-Down Modal -->
+<app-drill-down-modal
+  [data]="drillDownData()"
+  (closeModal)="closeDrillDown()"
+  (askEveClick)="onDrillDownAskEve($event)"
+></app-drill-down-modal>
 
 <ng-template #notFound>
   <div class="not-found">

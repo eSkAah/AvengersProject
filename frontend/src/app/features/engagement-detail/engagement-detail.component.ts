@@ -6,12 +6,13 @@ import {
   signal,
   OnInit,
   DestroyRef,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
-import { MockDataService, Engagement, Document } from '../../core';
+import { MockDataService, Engagement, Document, DocumentType } from '../../core';
 import { EveApiService } from '../../core/services/eve-api.service';
 import {
   RiskBadgeComponent,
@@ -20,7 +21,21 @@ import {
   BadgeComponent,
   BreadcrumbComponent,
   BreadcrumbItem,
+  DocumentRequirementsSectionComponent,
+  DocumentUploadEvent,
+  DrillDownModalComponent,
+  DrillDownData,
 } from '../../shared';
+import { Document as DocumentModel } from '../../core/models/document.model';
+import { KpiSectionComponent } from '../dashboard/components/kpi-section/kpi-section.component';
+import {
+  KpiMetric,
+  KpiClickEvent,
+} from '../../shared/components/charts/kpi-metric-card.component';
+import {
+  ChartsSectionComponent,
+  DrillDownEvent,
+} from '../dashboard/components/charts-section/charts-section.component';
 
 @Component({
   selector: 'app-engagement-detail',
@@ -33,6 +48,10 @@ import {
     KpiCardComponent,
     BadgeComponent,
     BreadcrumbComponent,
+    DocumentRequirementsSectionComponent,
+    KpiSectionComponent,
+    ChartsSectionComponent,
+    DrillDownModalComponent,
   ],
   templateUrl: './engagement-detail.component.html',
   styleUrl: './engagement-detail.component.scss',
@@ -45,7 +64,10 @@ export class EngagementDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly eveService = inject(EveApiService);
 
-  private engagementId = signal<string | null>(null);
+  @ViewChild(DrillDownModalComponent) drillDownModal!: DrillDownModalComponent;
+
+  readonly engagementId = signal<string | null>(null);
+  readonly drillDownData = signal<DrillDownData | null>(null);
 
   readonly engagement = computed(() => {
     const id = this.engagementId();
@@ -57,6 +79,11 @@ export class EngagementDetailComponent implements OnInit {
     const id = this.engagementId();
     if (!id) return [];
     return this.mockData.documents().filter((d) => d.engagementIds.includes(id));
+  });
+
+  readonly documentRequirements = computed(() => {
+    const eng = this.engagement();
+    return eng?.documentRequirements ?? [];
   });
 
   readonly breadcrumbs = computed<BreadcrumbItem[]>(() => {
@@ -165,5 +192,114 @@ export class EngagementDetailComponent implements OnInit {
       error: 'error',
     };
     return variants[status] ?? 'info';
+  }
+
+  onDocumentUpload(event: DocumentUploadEvent): void {
+    const eng = this.engagement();
+    if (eng) {
+      // Navigate to documents page with upload context
+      this.router.navigate(['/documents'], {
+        queryParams: {
+          tab: 'upload',
+          entity: eng.entity,
+          type: event.type,
+          year: event.fiscalYear,
+        },
+      });
+    }
+  }
+
+  onDocumentClick(doc: DocumentModel): void {
+    const eng = this.engagement();
+    if (eng) {
+      // Navigate to document library filtered to this document
+      this.router.navigate(['/documents'], {
+        queryParams: {
+          entity: eng.entity,
+          type: doc.type,
+        },
+      });
+    }
+  }
+
+  // KPI Section handlers
+  onKpiClick(event: KpiClickEvent): void {
+    const metric = event.metric;
+    this.drillDownData.set({
+      title: metric.label,
+      value: metric.value,
+      sourceDocument: metric.sourceDocument,
+      details: [
+        ...(metric.previousValue !== undefined
+          ? [{ label: 'Valeur N-1', value: metric.previousValue, type: 'currency' as const }]
+          : []),
+        ...(metric.variancePercent !== undefined
+          ? [{ label: 'Variation', value: metric.variancePercent, type: 'percentage' as const, highlight: true }]
+          : []),
+      ],
+    });
+    this.drillDownModal?.open();
+  }
+
+  onKpiCmdClick(metric: KpiMetric): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    this.eveService.openPanel();
+    this.eveService
+      .explainValue(
+        this.formatCurrency(metric.value),
+        metric.label,
+        engagementId,
+        { sourceDocument: metric.sourceDocument }
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+  }
+
+  // Charts Section handlers
+  onDrillDown(event: DrillDownEvent): void {
+    this.drillDownData.set({
+      title: event.label,
+      value: event.value,
+      details: [
+        { label: 'Type de graphique', value: event.chartType, type: 'text' as const },
+      ],
+      context: event.additionalData,
+    });
+    this.drillDownModal?.open();
+  }
+
+  onChartCmdClick(event: DrillDownEvent): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    this.eveService.openPanel();
+    this.eveService
+      .explainValue(
+        this.formatCurrency(event.value),
+        event.label,
+        engagementId,
+        {
+          chartType: event.chartType,
+          ...event.additionalData,
+        }
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+  }
+
+  closeDrillDown(): void {
+    this.drillDownData.set(null);
+  }
+
+  onDrillDownAskEve(data: DrillDownData): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    this.eveService.openPanel();
+    const question = `Peux-tu m'expliquer ${data.title} (${this.formatCurrency(data.value)}) ?`;
+    this.eveService.sendMessage(question).subscribe();
+    this.closeDrillDown();
   }
 }

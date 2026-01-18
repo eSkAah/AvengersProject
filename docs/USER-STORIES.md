@@ -20,6 +20,7 @@
 | E8 | Polish & Démo | Must-Have | J9-J10 |
 | E9 | Features Bonus | Should-Have | Si temps |
 | E10 | Platform v2.0 - Navigation & AI | Must-Have | Post-MVP |
+| E11 | UX Polish & Bug Fixes | Must-Have | Post-MVP |
 
 ---
 
@@ -964,6 +965,134 @@ pip install fastapi uvicorn sqlalchemy pydantic python-dotenv
 
 ---
 
+### E10-S7: Command Center Document Status Deep-Linking
+**En tant qu'** utilisateur
+**Je veux** cliquer sur un statut de document dans le Command Center et être redirigé vers la bibliothèque avec les filtres actifs
+**Afin de** voir immédiatement les documents correspondants
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Clickable Status:** Les statuts (missing, uploaded, validated) sont cliquables
+- [ ] **AC2 - Navigation avec Filtres:** Redirection vers `/documents` avec query params
+- [ ] **AC3 - Filtres Actifs:** Entité + Année + Statut pré-sélectionnés
+- [ ] **AC4 - Visual Feedback:** Cursor pointer et highlight au hover
+
+**FRs:** FR-V2-10
+
+---
+
+### E10-S8: Notification Deep-Linking to Engagement/Document
+**En tant qu'** utilisateur
+**Je veux** cliquer sur une notification et être redirigé vers l'engagement ou le document concerné
+**Afin de** traiter rapidement les alertes
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Entity Redirect:** Notification d'engagement → ouvre l'engagement dans le Command Center
+- [ ] **AC2 - Document Redirect:** Notification de document → ouvre `/documents` avec doc sélectionné
+- [ ] **AC3 - Auto-Expand:** L'engagement concerné s'expand automatiquement
+- [ ] **AC4 - Highlight:** Le document concerné est highlight temporairement (2s)
+
+**FRs:** FR-V2-11
+
+---
+
+### E10-S9: Entity Tree Navigation to Documents
+**En tant qu'** utilisateur
+**Je veux** cliquer sur une entité dans l'arborescence et voir ses engagements puis ses documents
+**Afin de** naviguer intuitivement vers les documents d'un engagement spécifique
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Entity Click:** Clic sur entité → expand les engagements associés
+- [ ] **AC2 - Engagement Click:** Clic sur engagement → affiche documents de cet engagement
+- [ ] **AC3 - Breadcrumb Update:** Fil d'Ariane mis à jour (Entity > Engagement > Documents)
+- [ ] **AC4 - Context Persistence:** Le contexte d'engagement est conservé pour Eve
+
+**FRs:** FR-V2-12
+
+---
+
+### E10-S10: Dashboard Removal & Command Center Layout
+**En tant qu'** équipe produit
+**Je veux** supprimer le Dashboard standalone et améliorer le layout du Command Center
+**Afin de** simplifier la navigation et concentrer l'attention sur les actions
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Remove Dashboard Route:** Suppression de `/dashboard` et lien sidebar
+- [ ] **AC2 - KPIs in Command Center:** Intégration des KPIs essentiels dans le Command Center
+- [ ] **AC3 - Clean Layout:** Amélioration de la mise en page (grille responsive)
+- [ ] **AC4 - Charts Optional:** Les graphiques sont optionnels (expandable section)
+
+**FRs:** FR-V2-13
+
+---
+
+### E10-S11: Bulk Document Upload with Auto-Detection
+**En tant qu'** utilisateur
+**Je veux** uploader plusieurs documents en masse avec détection automatique de l'année, entité et type
+**Afin de** gagner du temps lors d'uploads volumineux
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Bulk Drop Zone:** Zone de drop supportant 10+ fichiers simultanément
+- [ ] **AC2 - Auto Year Detection:** Détection de l'année fiscale dans le nom ou contenu
+- [ ] **AC3 - Auto Entity Detection:** Détection de l'entité (France SPV, Germany PropCo, etc.)
+- [ ] **AC4 - Auto Type Detection:** Détection du type de document (Grand Livre, Balance, etc.)
+- [ ] **AC5 - Preview Before Confirm:** Prévisualisation des détections avant confirmation
+- [ ] **AC6 - Manual Override:** Possibilité de corriger les détections manuellement
+
+**FRs:** FR-V2-14
+
+---
+
+## Epic 11: UX Polish & Bug Fixes (Post-MVP)
+
+**Goal:** Améliorer l'expérience utilisateur et corriger les bugs identifiés.
+
+### E11-S1: Eve OpenAI Integration
+**En tant qu'** utilisateur
+**Je veux** qu'Eve soit connectée à OpenAI et réponde avec intelligence contextuelle
+**Afin d'** obtenir des réponses pertinentes sur l'application et les données
+
+**Critères d'acceptation:**
+- [ ] **AC1 - OpenAI Connection:** Backend connecté à l'API OpenAI (GPT-4o)
+- [ ] **AC2 - Context Injection:** Eve reçoit le contexte de l'engagement actif
+- [ ] **AC3 - App Awareness:** Eve peut répondre sur les fonctionnalités de l'app
+- [ ] **AC4 - Document Awareness:** Eve peut analyser les documents uploadés
+- [ ] **AC5 - Error Handling:** Message gracieux si API indisponible
+
+**FRs:** FR-V2-15
+
+---
+
+### E11-S2: Eve Notification Badge Fix
+**En tant qu'** utilisateur
+**Je veux** que le badge de notification d'Eve n'affiche pas "2" quand il n'y a rien
+**Afin de** ne pas être induit en erreur par de fausses notifications
+
+**Critères d'acceptation:**
+- [ ] **AC1 - No False Positives:** Badge affiché uniquement si vraies notifications
+- [ ] **AC2 - Reset on Read:** Badge disparaît après lecture des messages
+- [ ] **AC3 - Accurate Count:** Compteur reflète exactement les messages non lus
+- [ ] **AC4 - Init State:** Badge à 0 au chargement initial
+
+**FRs:** FR-V2-16
+
+---
+
+### E11-S3: Drawer Close on Outside Click
+**En tant qu'** utilisateur
+**Je veux** que les tiroirs (drawers) se ferment quand je clique à l'extérieur
+**Afin de** fermer facilement les panels sans chercher le bouton X
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Eve Panel:** Clic hors du panel Eve → ferme le panel
+- [ ] **AC2 - Notification Panel:** Clic hors du dropdown → ferme le dropdown
+- [ ] **AC3 - Engagement Accordion:** Clic hors de l'accordéon → ferme l'accordéon
+- [ ] **AC4 - Exception:** Clic sur un élément interactif (bouton, lien) ne ferme pas
+- [ ] **AC5 - Escape Key:** Touche Escape ferme aussi les panels
+
+**FRs:** FR-V2-17
+
+---
+
 ## Résumé Story Points
 
 | Epic | Stories | Estimation |
@@ -978,4 +1107,5 @@ pip install fastapi uvicorn sqlalchemy pydantic python-dotenv
 | E8 - Polish | 4 | J9-J10 |
 | **Total Must-Have** | **47** | **10 jours** |
 | E9 - Bonus | 4 | Si temps |
-| **E10 - Platform v2.0** | **6** | **Post-MVP** |
+| **E10 - Platform v2.0** | **11** | **Post-MVP** |
+| **E11 - UX Polish** | **3** | **Post-MVP** |

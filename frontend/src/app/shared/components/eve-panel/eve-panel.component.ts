@@ -8,6 +8,7 @@ import {
   ElementRef,
   AfterViewChecked,
   DestroyRef,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -518,6 +519,13 @@ export class EvePanelComponent implements AfterViewChecked {
     if (this.shouldScrollToBottom) {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.eveService.isPanelOpen()) {
+      this.closePanel();
     }
   }
 

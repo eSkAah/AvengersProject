@@ -1,6 +1,9 @@
+import { DocumentType } from './document.model';
+
 export type EngagementStatus = 'waiting' | 'received' | 'processing' | 'completed';
 export type RiskLevel = 'high' | 'medium' | 'low';
 export type CountryCode = 'FR' | 'DE' | 'NL' | 'BE' | 'LU';
+export type DocumentRequirementStatus = 'missing' | 'uploaded' | 'validated' | 'year_mismatch';
 
 export interface FinancialData {
   assets: number;
@@ -24,6 +27,15 @@ export interface VarianceAlert {
   insight_message: string;
 }
 
+export interface DocumentRequirement {
+  type: DocumentType;
+  label: string;
+  required: boolean;
+  status: DocumentRequirementStatus;
+  documentId?: string;
+  fiscalYear: number;  // Required fiscal year (e.g., 2025)
+}
+
 export interface Engagement {
   id: string;
   entity: string;
@@ -34,10 +46,12 @@ export interface Engagement {
   riskLevel: RiskLevel;
   completionPercent: number;
   dueDate: string;
+  fiscalYear: number;  // Target fiscal year (e.g., 2025)
   predictedCompletion?: string;
   financialData: FinancialData;
   documentsRequired: string[];
   documentsUploaded: string[];
+  documentRequirements?: DocumentRequirement[];  // Structured requirements with status
   scenario?: string;
   varianceAlerts?: VarianceAlert[];
   aiInsights?: string[];

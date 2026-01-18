@@ -6,6 +6,9 @@
   <div
     class="tree-node"
     [class.tree-node--selected]="isSelected(node.id)"
+    [class.tree-node--highlighted]="isHighlighted(node.id)"
+    [class.tree-node--entity]="node.type === 'entity'"
+    [class.tree-node--year]="node.type === 'year'"
     [style.padding-left.px]="level * 16"
   >
     <div class="tree-node__content" (click)="selectNode(node)">

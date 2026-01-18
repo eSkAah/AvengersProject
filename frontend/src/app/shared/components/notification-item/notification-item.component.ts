@@ -15,6 +15,9 @@ export interface Notification {
   type: NotificationType;
   message: string;
   engagementId?: string;
+  documentId?: string;
+  documentType?: string;
+  entityName?: string;
   timestamp: Date;
 }
 

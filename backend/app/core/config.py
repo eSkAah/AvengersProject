@@ -26,5 +26,11 @@ class Settings(BaseSettings):
     max_upload_size: int = 10 * 1024 * 1024  # 10MB
     allowed_extensions: List[str] = ["xlsx", "xls", "pdf", "csv"]
 
+    # OpenAI Configuration
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"  # Cost-effective and fast
+    openai_max_tokens: int = 500  # Concise responses per Eve's personality
+    openai_temperature: float = 0.7  # Balanced creativity
+
 
 settings = Settings()

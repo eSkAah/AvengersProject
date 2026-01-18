@@ -112,31 +112,6 @@ export class DocumentApiService {
   }
 
   /**
-   * Upload multiple documents sequentially
-   */
-  async uploadMultipleDocuments(
-    files: File[],
-    engagementId: string
-  ): Promise<{ successful: DocumentUploadResponse[]; failed: { file: File; error: string }[] }> {
-    const successful: DocumentUploadResponse[] = [];
-    const failed: { file: File; error: string }[] = [];
-
-    for (const file of files) {
-      try {
-        const response = await this.uploadDocument(file, engagementId).toPromise();
-        if (response) {
-          successful.push(response);
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-        failed.push({ file, error: errorMessage });
-      }
-    }
-
-    return { successful, failed };
-  }
-
-  /**
    * Get all documents (optionally filtered by engagement)
    */
   getDocuments(engagementId?: string): Observable<Document[]> {
@@ -193,46 +168,6 @@ export class DocumentApiService {
   }
 
   /**
-   * Unlink a document from an engagement
-   */
-  unlinkDocument(documentId: string, engagementId: string): Observable<DocumentLinkResponse> {
-    return this.http.request<DocumentLinkResponse>('DELETE', `${this.apiUrl}/link`, {
-      body: {
-        document_id: documentId,
-        engagement_id: engagementId,
-      },
-    }).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  /**
-   * Get documents available for linking to an engagement
-   */
-  getAvailableDocuments(engagementId: string): Observable<Document[]> {
-    return this.http.get<Record<string, unknown>>(`${this.apiUrl}/available/${engagementId}`).pipe(
-      map(response => {
-        const docs = (response['documents'] as Record<string, unknown>[]) ?? [];
-        return docs.map(doc => this.mapDocumentResponse(doc));
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  /**
-   * Get documents linked to an engagement
-   */
-  getEngagementDocuments(engagementId: string): Observable<Document[]> {
-    return this.http.get<Record<string, unknown>>(`${this.apiUrl}/engagement/${engagementId}`).pipe(
-      map(response => {
-        const docs = (response['documents'] as Record<string, unknown>[]) ?? [];
-        return docs.map(doc => this.mapDocumentResponse(doc));
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  /**
    * Map backend response to frontend Document model
    */
   private mapDocumentResponse(doc: Record<string, unknown>): Document {
@@ -248,6 +183,9 @@ export class DocumentApiService {
       aiSummary: doc['ai_summary'] as string | undefined,
       extractedData: doc['extracted_data'] as Record<string, unknown> | undefined,
       filePath: doc['file_path'] as string | undefined,
+      year: (doc['year'] ?? new Date().getFullYear()) as number,
+      entityId: (doc['entity_id'] ?? ((doc['engagement_ids'] as string[] | undefined)?.[0]) ?? '') as string,
+      entityName: (doc['entity_name'] ?? '') as string,
     };
   }
 

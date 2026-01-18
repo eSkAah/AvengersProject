@@ -1,146 +1,169 @@
 <div class="documents-page">
-  <!-- Sidebar with Tree or Engagement Selector -->
+  <!-- Sidebar with Document Tree (always visible) -->
   <aside class="documents-page__sidebar">
-    <!-- Mode Toggle -->
-    <div class="mode-toggle">
-      <button
-        class="mode-toggle__btn"
-        [class.mode-toggle__btn--active]="libraryMode() === 'global'"
-        (click)="setLibraryMode('global')"
-      >
-        <lucide-icon name="library" [size]="16"></lucide-icon>
-        <span>Bibliothèque</span>
-      </button>
-      <button
-        class="mode-toggle__btn"
-        [class.mode-toggle__btn--active]="libraryMode() === 'engagement'"
-        (click)="setLibraryMode('engagement')"
-      >
-        <lucide-icon name="briefcase" [size]="16"></lucide-icon>
-        <span>Engagement</span>
-      </button>
-    </div>
-
-    @if (libraryMode() === 'engagement') {
-      <!-- Engagement Selector -->
-      <div class="engagement-selector">
-        <h3 class="engagement-selector__title">Sélectionner un engagement</h3>
-        <div class="engagement-selector__list">
-          @for (eng of engagements(); track eng.id) {
-            <button
-              class="engagement-selector__item"
-              [class.engagement-selector__item--active]="selectedEngagementId() === eng.id"
-              (click)="onEngagementSelect(eng.id)"
-            >
-              <span class="engagement-selector__flag">{{ eng.countryFlag }}</span>
-              <span class="engagement-selector__name">{{ eng.entity }}</span>
-              <span class="engagement-selector__count">
-                {{ engagementDocStats().uploaded.length }} docs
-              </span>
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- Engagement Doc Stats -->
-      @if (selectedEngagement()) {
-        <div class="doc-stats">
-          <h4 class="doc-stats__title">{{ selectedEngagement()?.entity }}</h4>
-          <div class="doc-stats__grid">
-            <div class="doc-stats__item doc-stats__item--required">
-              <span class="doc-stats__value">{{ engagementDocStats().required.length }}</span>
-              <span class="doc-stats__label">Requis</span>
-            </div>
-            <div class="doc-stats__item doc-stats__item--uploaded">
-              <span class="doc-stats__value">{{ engagementDocStats().uploaded.length }}</span>
-              <span class="doc-stats__label">Uploadés</span>
-            </div>
-            <div class="doc-stats__item doc-stats__item--missing">
-              <span class="doc-stats__value">{{ engagementDocStats().missing.length }}</span>
-              <span class="doc-stats__label">Manquants</span>
-            </div>
-          </div>
-
-          @if (engagementDocStats().missing.length > 0) {
-            <div class="doc-stats__missing-list">
-              <h5>Documents manquants:</h5>
-              <ul>
-                @for (type of engagementDocStats().missing; track type) {
-                  <li>{{ getDocumentTypeLabel(type) }}</li>
-                }
-              </ul>
-            </div>
-          }
-        </div>
-      }
-    } @else {
-      <!-- Document Tree for Global Mode -->
-      <h3 class="documents-page__sidebar-title">Navigation</h3>
-      <app-document-tree
-        [documents]="allDocuments()"
-        (nodeSelect)="onTreeNodeSelect($event)"
-      ></app-document-tree>
-    }
+    <h3 class="documents-page__sidebar-title">Navigation</h3>
+    <app-document-tree
+      [documents]="allDocuments()"
+      (nodeSelect)="onTreeNodeSelect($event)"
+    ></app-document-tree>
   </aside>
 
   <!-- Main content -->
   <main class="documents-page__main">
-    <!-- Header -->
+    <!-- Header with tabs -->
     <header class="documents-page__header">
-      <app-breadcrumb
-        [items]="breadcrumbItems()"
-        (navigate)="onBreadcrumbNavigate($event)"
-        (homeClick)="onBreadcrumbHome()"
-      ></app-breadcrumb>
+      <div class="documents-page__tabs">
+        <button
+          class="documents-page__tab"
+          [class.documents-page__tab--active]="activeTab() === 'library'"
+          (click)="setActiveTab('library')"
+        >
+          <lucide-icon name="library" [size]="16"></lucide-icon>
+          <span>Bibliothèque</span>
+        </button>
+        <button
+          class="documents-page__tab"
+          [class.documents-page__tab--active]="activeTab() === 'upload'"
+          (click)="setActiveTab('upload')"
+        >
+          <lucide-icon name="upload" [size]="16"></lucide-icon>
+          <span>Upload</span>
+        </button>
+      </div>
 
       <div class="documents-page__header-actions">
-        @if (libraryMode() === 'engagement' && selectedEngagementId()) {
-          <app-button
-            variant="primary"
-            size="sm"
-            (clicked)="toggleUploadZone()"
-          >
-            {{ showUploadZone() ? 'Masquer' : 'Télécharger' }}
-          </app-button>
+        @if (activeTab() === 'library') {
+          <app-view-toggle
+            [mode]="viewMode()"
+            persistKey="documents"
+            (modeChange)="onViewModeChange($event)"
+          ></app-view-toggle>
         }
-
-        <app-view-toggle
-          [mode]="viewMode()"
-          persistKey="documents"
-          (modeChange)="onViewModeChange($event)"
-        ></app-view-toggle>
       </div>
     </header>
 
-    <!-- Upload Zone (Engagement mode only) -->
-    @if (showUploadZone() && libraryMode() === 'engagement') {
-      <div class="documents-page__upload">
-        <app-upload-zone
-          [engagementId]="selectedEngagementId()"
-          [disabled]="isUploading()"
-          (filesSelected)="onFilesSelected($event)"
-          (uploadStart)="onUploadStart($event)"
-          (uploadSuccess)="onUploadSuccess($event)"
-          (uploadError)="onUploadError($event)"
-          (uploadComplete)="onUploadComplete($event)"
-        ></app-upload-zone>
+    <!-- Upload Tab Content -->
+    @if (activeTab() === 'upload') {
+      <div class="documents-page__upload-content">
+        <div class="upload-section">
+          <h2 class="upload-section__title">Télécharger des documents</h2>
+          <p class="upload-section__description">
+            Déposez vos fichiers ci-dessous. L'application détectera automatiquement
+            l'entité, l'année et le type de document.
+          </p>
 
-        @if (uploadZone?.canUpload()) {
-          <div class="documents-page__upload-actions">
-            <app-button
-              variant="primary"
-              [loading]="isUploading()"
-              (clicked)="triggerUpload()"
-            >
-              Confirmer le téléchargement
-            </app-button>
+          <app-upload-zone
+            [disabled]="isUploading()"
+            (filesSelected)="onFilesSelected($event)"
+            (uploadStart)="onUploadStart($event)"
+            (uploadSuccess)="onUploadSuccess($event)"
+            (uploadError)="onUploadError($event)"
+            (uploadComplete)="onUploadComplete($event)"
+          ></app-upload-zone>
+        </div>
+
+        <!-- Pending Files List -->
+        @if (pendingFiles().length > 0) {
+          <div class="pending-files">
+            <h3 class="pending-files__title">
+              Fichiers en attente ({{ pendingFiles().length }})
+            </h3>
+
+            <div class="pending-files__list">
+              @for (pf of pendingFiles(); track pf.file.id) {
+                <div
+                  class="pending-file"
+                  [class.pending-file--processing]="pf.isProcessing"
+                  [class.pending-file--low-confidence]="pf.metadata.confidence === 'low'"
+                  [class.pending-file--medium-confidence]="pf.metadata.confidence === 'medium'"
+                  [class.pending-file--high-confidence]="pf.metadata.confidence === 'high'"
+                >
+                  <div class="pending-file__icon">
+                    <lucide-icon name="file-text" [size]="24"></lucide-icon>
+                  </div>
+
+                  <div class="pending-file__info">
+                    <span class="pending-file__name">{{ pf.file.name }}</span>
+                    <span class="pending-file__size">
+                      {{ (pf.file.size / 1024 / 1024).toFixed(2) }} MB
+                    </span>
+                  </div>
+
+                  <div class="pending-file__metadata">
+                    @if (pf.metadata.entity) {
+                      <span class="pending-file__tag pending-file__tag--entity">
+                        {{ pf.metadata.entity }}
+                      </span>
+                    }
+                    @if (pf.metadata.year) {
+                      <span class="pending-file__tag pending-file__tag--year">
+                        {{ pf.metadata.year }}
+                      </span>
+                    }
+                    @if (pf.metadata.type) {
+                      <span class="pending-file__tag pending-file__tag--type">
+                        {{ getDocumentTypeLabel(pf.metadata.type) }}
+                      </span>
+                    }
+                  </div>
+
+                  <div class="pending-file__confidence">
+                    @switch (pf.metadata.confidence) {
+                      @case ('high') {
+                        <span class="confidence-badge confidence-badge--high">
+                          <lucide-icon name="check-circle" [size]="14"></lucide-icon>
+                          Auto
+                        </span>
+                      }
+                      @case ('medium') {
+                        <span class="confidence-badge confidence-badge--medium">
+                          <lucide-icon name="alert-circle" [size]="14"></lucide-icon>
+                          Partiel
+                        </span>
+                      }
+                      @case ('low') {
+                        <span class="confidence-badge confidence-badge--low">
+                          <lucide-icon name="help-circle" [size]="14"></lucide-icon>
+                          Manuel
+                        </span>
+                      }
+                    }
+                  </div>
+
+                  @if (!pf.isProcessing) {
+                    <button
+                      class="pending-file__remove"
+                      (click)="removePendingFile(pf.file.id)"
+                      title="Retirer"
+                    >
+                      <lucide-icon name="x" [size]="16"></lucide-icon>
+                    </button>
+                  } @else {
+                    <div class="pending-file__spinner">
+                      <lucide-icon name="loader-2" [size]="16"></lucide-icon>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="pending-files__actions">
+              <app-button
+                variant="primary"
+                [loading]="isUploading()"
+                [disabled]="pendingFiles().length === 0"
+                (clicked)="validateUploads()"
+              >
+                <lucide-icon name="upload-cloud" [size]="16"></lucide-icon>
+                Valider l'upload
+              </app-button>
+            </div>
           </div>
         }
       </div>
-    }
-
-    <!-- Global Filters (Global mode only) -->
-    @if (libraryMode() === 'global') {
+    } @else {
+      <!-- Library Tab Content -->
+      <!-- Global Filters -->
       <div class="global-filters">
         <!-- Search -->
         <div class="global-filters__search">
@@ -211,57 +234,46 @@
           }
         </div>
       </div>
-    } @else {
-      <!-- Engagement Filters -->
-      <app-document-filters
-        [engagements]="engagements()"
-        (filtersChange)="onFiltersChange($event)"
-      ></app-document-filters>
-    }
 
-    <!-- Documents count -->
-    <div class="documents-page__count">
-      {{ filteredDocuments().length }} document(s)
-      @if (libraryMode() === 'engagement' && selectedEngagement()) {
-        <span class="documents-page__count-context">
-          pour {{ selectedEngagement()?.entity }}
-        </span>
-      }
-    </div>
+      <!-- Documents count -->
+      <div class="documents-page__count">
+        {{ filteredDocuments().length }} document(s)
+      </div>
 
-    <!-- Document views -->
-    <div class="documents-page__content">
-      @if (filteredDocuments().length === 0) {
-        <div class="documents-page__empty">
-          <lucide-icon name="file-x" [size]="48"></lucide-icon>
-          <p>Aucun document trouvé</p>
-          @if (libraryMode() === 'global' && hasActiveGlobalFilters()) {
-            <button class="documents-page__empty-action" (click)="clearGlobalFilters()">
-              Effacer les filtres
-            </button>
-          }
-        </div>
-      } @else {
-        @if (viewMode() === 'grid') {
-          <app-document-grid
-            [documents]="filteredDocuments()"
-            (documentClick)="onDocumentClick($event)"
-            (download)="onDownload($event)"
-            (preview)="onPreview($event)"
-            (askEve)="onAskEve($event)"
-          ></app-document-grid>
+      <!-- Document views -->
+      <div class="documents-page__content">
+        @if (filteredDocuments().length === 0) {
+          <div class="documents-page__empty">
+            <lucide-icon name="file-x" [size]="48"></lucide-icon>
+            <p>Aucun document trouvé</p>
+            @if (hasActiveGlobalFilters()) {
+              <button class="documents-page__empty-action" (click)="clearGlobalFilters()">
+                Effacer les filtres
+              </button>
+            }
+          </div>
         } @else {
-          <app-document-list
-            [documents]="filteredDocuments()"
-            [engagements]="engagements()"
-            (documentClick)="onDocumentClick($event)"
-            (download)="onDownload($event)"
-            (preview)="onPreview($event)"
-            (askEve)="onAskEve($event)"
-          ></app-document-list>
+          @if (viewMode() === 'grid') {
+            <app-document-grid
+              [documents]="filteredDocuments()"
+              (documentClick)="onDocumentClick($event)"
+              (download)="onDownload($event)"
+              (preview)="onPreview($event)"
+              (askEve)="onAskEve($event)"
+            ></app-document-grid>
+          } @else {
+            <app-document-list
+              [documents]="filteredDocuments()"
+              [engagements]="engagements()"
+              (documentClick)="onDocumentClick($event)"
+              (download)="onDownload($event)"
+              (preview)="onPreview($event)"
+              (askEve)="onAskEve($event)"
+            ></app-document-list>
+          }
         }
-      }
-    </div>
+      </div>
+    }
   </main>
 </div>
 
@@ -273,4 +285,24 @@
     [documentFormat]="previewDocument()!.type"
     (close)="closePreview()"
   ></app-document-preview-modal>
+}
+
+<!-- Flying Document Animation -->
+@if (activeAnimation()) {
+  <app-flying-document
+    [animation]="activeAnimation()"
+    [targetPosition]="animationTargetPosition()"
+  ></app-flying-document>
+}
+
+<!-- Classification Dialog -->
+@if (showClassificationDialog() && fileNeedingClassification()) {
+  <app-classification-dialog
+    [file]="fileNeedingClassification()!.file"
+    [suggestedMetadata]="fileNeedingClassification()!.metadata"
+    [entities]="entityOptions()"
+    [documentTypes]="typeOptions"
+    (confirm)="onClassificationConfirm($event)"
+    (cancel)="onClassificationCancel()"
+  ></app-classification-dialog>
 }

@@ -537,7 +537,7 @@ export class EveComponent implements OnInit, AfterViewChecked {
 
   goBack(): void {
     if (this.engagementId) {
-      this.router.navigate(['/engagements', this.engagementId, 'dashboard']);
+      this.router.navigate(['/engagements', this.engagementId]);
     } else {
       this.router.navigate(['/']);
     }

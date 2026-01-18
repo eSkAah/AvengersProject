@@ -111,6 +111,29 @@
             • {{ preview.errorMessage }}
           </span>
         </span>
+        <!-- Auto-detected info -->
+        @if (preview.autoDetected && preview.uploadStatus === 'pending' && preview.isValid) {
+          <div class="upload-zone__auto-detect">
+            @if (preview.autoDetected.entity || preview.autoDetected.year || preview.autoDetected.type) {
+              <span class="auto-detect__label">
+                <lucide-icon name="sparkles" [size]="12"></lucide-icon>
+                Détecté:
+              </span>
+              @if (preview.autoDetected.entity) {
+                <span class="auto-detect__tag auto-detect__tag--entity">{{ preview.autoDetected.entity }}</span>
+              }
+              @if (preview.autoDetected.year) {
+                <span class="auto-detect__tag auto-detect__tag--year">{{ preview.autoDetected.year }}</span>
+              }
+              @if (preview.autoDetected.type) {
+                <span class="auto-detect__tag auto-detect__tag--type">{{ getDocumentTypeLabel(preview.autoDetected.type) }}</span>
+              }
+              <span class="auto-detect__confidence" [class]="'auto-detect__confidence--' + preview.autoDetected.confidence">
+                {{ preview.autoDetected.confidence === 'high' ? '✓' : preview.autoDetected.confidence === 'medium' ? '~' : '?' }}
+              </span>
+            }
+          </div>
+        }
       </div>
 
       <app-badge

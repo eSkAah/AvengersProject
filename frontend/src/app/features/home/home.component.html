@@ -121,14 +121,22 @@
       ></app-notifications-zone>
     </div>
 
-    <!-- At-Risk Engagements -->
+    <!-- At-Risk Engagements - Compact Cards -->
     <div class="bento-card bento-card--risk-list">
       <div class="section-header">
         <div class="section-header__title">
           <lucide-icon name="alert-triangle" [size]="20"></lucide-icon>
           <h2>Engagements à risque</h2>
         </div>
-        <span class="section-header__count">{{ atRiskEngagements().length }} engagement(s)</span>
+        <div class="section-header__actions">
+          <span class="section-header__count">{{ atRiskEngagements().length }} engagement(s)</span>
+          @if (atRiskEngagements().length > 4) {
+            <button class="view-all-link" (click)="onViewAllRiskEngagements()">
+              Voir tout
+              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
+            </button>
+          }
+        </div>
       </div>
 
       @if (atRiskEngagements().length === 0) {
@@ -137,12 +145,57 @@
           <p>Aucun engagement à risque</p>
         </div>
       } @else {
-        <app-engagement-list
-          [engagements]="atRiskEngagements()"
-          (viewDashboard)="onViewDashboard($event)"
-          (uploadDocs)="onUploadDocs($event)"
-          (askEve)="onAskEve($event)"
-        ></app-engagement-list>
+        <div class="risk-card-grid">
+          @for (engagement of displayedRiskEngagements(); track engagement.id) {
+            <div
+              class="risk-card"
+              [class.risk-card--high]="engagement.riskLevel === 'high'"
+              [class.risk-card--medium]="engagement.riskLevel === 'medium'"
+              (click)="onViewDashboard(engagement)"
+            >
+              <div class="risk-card__header">
+                <div class="risk-card__entity">
+                  <span class="risk-card__flag">{{ engagement.countryFlag }}</span>
+                  <span class="risk-card__name">{{ engagement.entity }}</span>
+                </div>
+                <span
+                  class="risk-card__status"
+                  [class.status--waiting]="engagement.status === 'waiting'"
+                  [class.status--received]="engagement.status === 'received'"
+                  [class.status--processing]="engagement.status === 'processing'"
+                  [class.status--completed]="engagement.status === 'completed'"
+                >
+                  {{ statusLabels[engagement.status] }}
+                </span>
+              </div>
+              <div class="risk-card__body">
+                <div class="risk-card__service">{{ engagement.service }}</div>
+                <div class="risk-card__due">
+                  <lucide-icon name="calendar" [size]="12"></lucide-icon>
+                  {{ formatShortDate(engagement.dueDate) }}
+                </div>
+              </div>
+              <div class="risk-card__footer">
+                <div class="risk-card__progress">
+                  <div class="risk-card__progress-bar">
+                    <div
+                      class="risk-card__progress-fill"
+                      [style.width.%]="engagement.completionPercent"
+                    ></div>
+                  </div>
+                  <span class="risk-card__progress-text">{{ engagement.completionPercent }}%</span>
+                </div>
+                <div
+                  class="risk-card__risk-badge"
+                  [class.risk-badge--high]="engagement.riskLevel === 'high'"
+                  [class.risk-badge--medium]="engagement.riskLevel === 'medium'"
+                >
+                  <lucide-icon name="alert-triangle" [size]="12"></lucide-icon>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
       }
     </div>
 

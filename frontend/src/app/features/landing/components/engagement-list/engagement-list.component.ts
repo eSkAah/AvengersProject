@@ -7,12 +7,14 @@ import {
   signal,
   inject,
   DestroyRef,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Engagement } from '../../../../core';
+import { Engagement, DocumentType, DocumentRequirementStatus } from '../../../../core';
 import {
   EngagementApiService,
   RiskDetailsResponse,
@@ -24,6 +26,9 @@ import {
   ProgressBarComponent,
   ButtonComponent,
   BadgeComponent,
+  ProgressRingComponent,
+  DocumentChecklistComponent,
+  DocumentStatusClickEvent,
 } from '../../../../shared';
 
 @Component({
@@ -36,6 +41,8 @@ import {
     ProgressBarComponent,
     ButtonComponent,
     BadgeComponent,
+    ProgressRingComponent,
+    DocumentChecklistComponent,
   ],
   templateUrl: './engagement-list.component.html',
   styleUrl: './engagement-list.component.scss',
@@ -60,19 +67,31 @@ import {
     ]),
   ],
 })
-export class EngagementListComponent {
+export class EngagementListComponent implements OnChanges {
   private readonly engagementApi = inject(EngagementApiService);
   private readonly destroyRef = inject(DestroyRef);
 
   @Input({ required: true }) engagements: Engagement[] = [];
+  @Input() expandEngagementId: string | null = null;
 
   @Output() viewDashboard = new EventEmitter<Engagement>();
   @Output() uploadDocs = new EventEmitter<Engagement>();
+  @Output() uploadDocType = new EventEmitter<{ engagement: Engagement; docType: DocumentType }>();
   @Output() askEve = new EventEmitter<Engagement>();
+  @Output() viewDocsByStatus = new EventEmitter<{ engagement: Engagement; status: DocumentRequirementStatus; type: DocumentType }>();
 
   expandedId = signal<string | null>(null);
   readonly riskDetailsMap = signal<Map<string, RiskDetails>>(new Map());
   readonly predictionsMap = signal<Map<string, PredictionResponse>>(new Map());
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['expandEngagementId'] && this.expandEngagementId) {
+      // Auto-expand the specified engagement
+      this.expandedId.set(this.expandEngagementId);
+      this.loadRiskDetails(this.expandEngagementId);
+      this.loadPrediction(this.expandEngagementId);
+    }
+  }
 
   toggleExpand(id: string): void {
     const newId = this.expandedId() === id ? null : id;
@@ -202,5 +221,24 @@ export class EngagementListComponent {
 
   trackById(index: number, engagement: Engagement): string {
     return engagement.id;
+  }
+
+  onDocTypeUpload(engagement: Engagement, docType: DocumentType): void {
+    this.uploadDocType.emit({ engagement, docType });
+  }
+
+  onDocStatusClick(engagement: Engagement, event: DocumentStatusClickEvent): void {
+    this.viewDocsByStatus.emit({ engagement, status: event.status, type: event.type });
+  }
+
+  getDocsUploaded(engagement: Engagement): number {
+    return engagement.documentRequirements?.filter(
+      r => r.required && (r.status === 'uploaded' || r.status === 'validated')
+    ).length ?? engagement.documentsUploaded.length;
+  }
+
+  getDocsTotal(engagement: Engagement): number {
+    return engagement.documentRequirements?.filter(r => r.required).length
+      ?? engagement.documentsRequired.length;
   }
 }

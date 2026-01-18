@@ -9,6 +9,9 @@ export interface HeaderNotification {
   type: 'info' | 'warning' | 'success' | 'urgent';
   message: string;
   engagementId?: string;
+  documentId?: string;
+  documentType?: string;
+  entityName?: string;
   timestamp: Date;
   read: boolean;
 }
@@ -44,6 +47,9 @@ export class HeaderComponent {
       type: n.type as HeaderNotification['type'],
       message: n.message,
       engagementId: n.engagementId,
+      documentId: (n as { documentId?: string }).documentId,
+      documentType: (n as { documentType?: string }).documentType,
+      entityName: (n as { entityName?: string }).entityName,
       timestamp: n.timestamp,
       read: readIds.has(n.id),
     }));
@@ -103,9 +109,23 @@ export class HeaderComponent {
     });
     this.saveReadNotifications();
 
-    // Navigate to engagement if available
-    if (notification.engagementId) {
-      this.router.navigate(['/engagements', notification.engagementId, 'dashboard']);
+    // Navigate based on notification content
+    if (notification.documentId) {
+      // Navigate to documents page with highlight
+      this.router.navigate(['/documents'], {
+        queryParams: {
+          engagement: notification.engagementId,
+          highlight: notification.documentId,
+          type: notification.documentType,
+        },
+      });
+    } else if (notification.engagementId) {
+      // Navigate to home and expand the engagement
+      this.router.navigate(['/'], {
+        queryParams: {
+          expand: notification.engagementId,
+        },
+      });
     }
 
     this.closeNotificationDropdown();

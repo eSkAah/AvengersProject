@@ -1,3 +1,2 @@
 // Shared directives barrel exports
-export * from './cmd-click.directive';
-export * from './tooltip.directive';
+// All directives have been removed - file kept for future directives

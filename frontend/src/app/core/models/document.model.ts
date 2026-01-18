@@ -21,6 +21,11 @@ export interface Document {
   aiSummary?: string;
   extractedData?: Record<string, unknown>;
   filePath?: string;
+  year: number;              // Fiscal year (2024, 2025, 2026)
+  entityId: string;          // Primary entity ID
+  entityName: string;        // e.g., "France SPV"
+  subsidiaryId?: string;     // Optional for multi-subsidiary
+  subsidiaryName?: string;
 }
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {

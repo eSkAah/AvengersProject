@@ -368,6 +368,76 @@
     border-radius: $radius-full;
     white-space: nowrap;
   }
+
+  &__auto-detect {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+  }
+}
+
+// Auto-detect styling (outside main block for clarity)
+.auto-detect {
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #8b5cf6;
+    font-weight: 500;
+  }
+
+  &__tag {
+    display: inline-block;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 4px;
+
+    &--entity {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    &--year {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+
+    &--type {
+      background-color: #fef3c7;
+      color: #d97706;
+    }
+  }
+
+  &__confidence {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 50%;
+    margin-left: 4px;
+
+    &--high {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+
+    &--medium {
+      background-color: #fef3c7;
+      color: #d97706;
+    }
+
+    &--low {
+      background-color: #f3f4f6;
+      color: #6b7280;
+    }
+  }
 }
 
 @keyframes spin {
