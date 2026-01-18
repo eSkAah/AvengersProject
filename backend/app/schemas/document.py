@@ -155,3 +155,32 @@ class AvailableDocumentsResponse(BaseModel):
 
     documents: List[DocumentResponse] = Field(..., description="Documents not yet linked to the engagement")
     total: int = Field(..., description="Total available documents")
+
+
+# =============================================================================
+# Document Preview schemas (Story 9-3)
+# =============================================================================
+
+
+class ExcelPreviewResponse(BaseModel):
+    """Response for Excel file preview as JSON."""
+
+    document_id: str = Field(..., description="Document ID")
+    document_name: str = Field(..., description="Document name")
+    sheet_name: str = Field(..., description="Name of the sheet being previewed")
+    headers: List[str] = Field(..., description="Column headers")
+    rows: List[Dict] = Field(..., description="Data rows as list of dictionaries")
+    total_rows: int = Field(..., description="Total number of rows in the sheet")
+    preview_rows: int = Field(..., description="Number of rows in this preview")
+    truncated: bool = Field(..., description="Whether the preview was truncated")
+
+
+class DocumentPreviewResponse(BaseModel):
+    """Generic document preview response."""
+
+    document_id: str = Field(..., description="Document ID")
+    document_name: str = Field(..., description="Document name")
+    format: str = Field(..., description="File format (xlsx, pdf, csv)")
+    preview_type: str = Field(..., description="Type of preview: table, pdf, text")
+    content_url: Optional[str] = Field(None, description="URL to fetch content for PDF viewer")
+    table_data: Optional[ExcelPreviewResponse] = Field(None, description="Table data for Excel/CSV")

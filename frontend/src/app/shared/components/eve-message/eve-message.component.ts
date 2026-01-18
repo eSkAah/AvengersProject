@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, output, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { ConversationMessage } from '../../../core/services/eve-api.service';
+import { GanttChartComponent, GanttChartData, GanttItem } from '../gantt-chart/gantt-chart.component';
 
 /**
  * Eve Message Bubble Component
@@ -15,7 +16,7 @@ import { ConversationMessage } from '../../../core/services/eve-api.service';
 @Component({
   selector: 'app-eve-message',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, DatePipe],
+  imports: [CommonModule, LucideAngularModule, DatePipe, GanttChartComponent],
   template: `
     <div
       class="message"
@@ -30,8 +31,23 @@ import { ConversationMessage } from '../../../core/services/eve-api.service';
       }
 
       <!-- Message Content -->
-      <div class="message__bubble">
+      <div class="message__bubble" [class.message__bubble--wide]="isGanttMessage()">
         <div class="message__content" [innerHTML]="formattedContent()"></div>
+
+        <!-- Gantt Chart (if applicable) -->
+        @if (isGanttMessage() && ganttData()) {
+          <div class="message__chart">
+            <app-gantt-chart
+              [data]="ganttData()"
+              (barClick)="onGanttBarClick($event)"
+            ></app-gantt-chart>
+            <button class="message__export-btn" (click)="requestExport()">
+              <lucide-icon name="download" [size]="14"></lucide-icon>
+              Exporter en PNG
+            </button>
+          </div>
+        }
+
         <span class="message__time">{{ message().timestamp | date:'HH:mm' }}</span>
       </div>
     </div>
@@ -124,6 +140,39 @@ import { ConversationMessage } from '../../../core/services/eve-api.service';
       }
     }
 
+    /* Gantt Chart in Message */
+    .message__bubble--wide {
+      max-width: 100% !important;
+      width: 100%;
+    }
+
+    .message__chart {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .message__export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #2E2E38;
+      background: #FFFFFF;
+      border: 1px solid #E5E5E5;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 200ms ease-out;
+    }
+
+    .message__export-btn:hover {
+      background: #FFE600;
+      border-color: #FFE600;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .message__bubble {
@@ -140,9 +189,52 @@ import { ConversationMessage } from '../../../core/services/eve-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EveMessageComponent {
+  @ViewChild(GanttChartComponent) ganttChart?: GanttChartComponent;
+
   readonly message = input.required<ConversationMessage>();
 
+  /** Event emitter for gantt bar clicks */
+  readonly ganttBarClick = output<GanttItem>();
+
+  /** Event emitter for export requests */
+  readonly exportRequest = output<void>();
+
   readonly isUser = computed(() => this.message().role === 'user');
+
+  /** Check if this message contains gantt chart data */
+  readonly isGanttMessage = computed(() => this.message().response_type === 'gantt');
+
+  /** Extract gantt data from message */
+  readonly ganttData = computed<GanttChartData | null>(() => {
+    if (!this.isGanttMessage() || !this.message().data) {
+      return null;
+    }
+    return this.message().data as GanttChartData;
+  });
+
+  /** Handle gantt bar click */
+  onGanttBarClick(item: GanttItem): void {
+    this.ganttBarClick.emit(item);
+  }
+
+  /** Export the Gantt chart as PNG and trigger download */
+  requestExport(): void {
+    if (!this.ganttChart) return;
+
+    const base64Image = this.ganttChart.exportToPng();
+    if (!base64Image) return;
+
+    // Create download link
+    const link = document.createElement('a');
+    link.href = base64Image;
+    link.download = `planning-engagements-${new Date().toISOString().split('T')[0]}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Also emit event for parent component if needed
+    this.exportRequest.emit();
+  }
 
   /** Format content with line breaks and basic formatting */
   readonly formattedContent = computed(() => {

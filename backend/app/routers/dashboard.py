@@ -9,12 +9,14 @@ from app.schemas.dashboard import (
     BreakdownChartResponse,
     ComparisonChartResponse,
     EngagementStatsResponse,
+    GanttChartResponse,
 )
 from app.services.dashboard_service import (
     get_assets_chart,
     get_breakdown_chart,
     get_comparison_chart,
     get_engagement_stats,
+    get_gantt_data,
 )
 
 router = APIRouter(tags=["Dashboard"])
@@ -198,3 +200,58 @@ async def get_breakdown_chart_data(
             detail=f"Engagement not found: {engagement_id}",
         )
     return chart
+
+
+# =============================================================================
+# Gantt Chart Endpoint
+# =============================================================================
+
+
+@router.get(
+    "/gantt",
+    response_model=GanttChartResponse,
+    summary="Get Gantt chart data for all engagements",
+    description="Retrieve timeline data for all engagements to display in a Gantt chart visualization.",
+    responses={
+        200: {
+            "description": "Gantt chart data retrieved successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "items": [
+                            {
+                                "engagement_id": "ENG-FR-001",
+                                "entity_name": "France SPV",
+                                "start_date": "2026-01-15",
+                                "due_date": "2026-02-29",
+                                "completion_percent": 67,
+                                "risk_level": "high",
+                                "status": "processing",
+                                "color": "#EF4444",
+                            }
+                        ],
+                        "min_date": "2026-01-08",
+                        "max_date": "2026-03-22",
+                        "total_engagements": 5,
+                    }
+                }
+            },
+        }
+    },
+)
+async def get_gantt_chart_data(
+    db: AsyncSession = Depends(get_db),
+) -> GanttChartResponse:
+    """
+    Get Gantt chart data for all engagements.
+
+    Returns timeline data including:
+    - All engagement timelines with start/end dates
+    - Risk level coloring (red=high, orange=medium, green=low)
+    - Completion percentages
+    - Timeline bounds for chart scaling
+
+    This endpoint is used by Eve to generate planning visualizations
+    when users request "Génère le planning des obligations".
+    """
+    return await get_gantt_data(db)

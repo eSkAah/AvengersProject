@@ -179,6 +179,27 @@ export class EngagementListComponent {
     return engagement.documentsRequired.length - engagement.documentsUploaded.length;
   }
 
+  hasVarianceAlerts(engagement: Engagement): boolean {
+    return (engagement.varianceAlerts?.length ?? 0) > 0;
+  }
+
+  getVarianceCount(engagement: Engagement): number {
+    return engagement.varianceAlerts?.length ?? 0;
+  }
+
+  getVarianceSummary(engagement: Engagement): string {
+    const alerts = engagement.varianceAlerts ?? [];
+    if (alerts.length === 0) return '';
+
+    if (alerts.length === 1) {
+      const v = alerts[0];
+      const direction = v.variance_type === 'increase' ? '↑' : '↓';
+      return `${v.metric_label} ${direction}${Math.abs(v.variance_percent).toFixed(0)}%`;
+    }
+
+    return `${alerts.length} variances N-1 détectées`;
+  }
+
   trackById(index: number, engagement: Engagement): string {
     return engagement.id;
   }

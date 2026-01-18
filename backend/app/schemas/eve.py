@@ -1,7 +1,7 @@
 """Pydantic schemas for Eve AI assistant endpoints."""
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -61,6 +61,14 @@ class ChatResponse(BaseModel):
     )
     timestamp: datetime = Field(
         default_factory=datetime.utcnow, description="Response timestamp"
+    )
+    response_type: Literal["text", "gantt", "chart"] = Field(
+        default="text",
+        description="Response type: text for normal messages, gantt for timeline chart, chart for other visualizations",
+    )
+    data: Optional[Any] = Field(
+        None,
+        description="Structured data for non-text responses (e.g., gantt chart data)",
     )
 
 

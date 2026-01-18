@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.core.database import engine, Base, async_session_maker
 from app.core.seed import seed_demo_engagements, seed_demo_documents
 from app.routers import health_router, engagements_router, documents_router, dashboard_router, eve_router
+from app.routers.notifications import router as notifications_router
 
 # Import models to register them with Base.metadata before create_all()
 from app.models import Engagement, Document  # noqa: F401
@@ -87,5 +88,11 @@ app.include_router(documents_router, prefix="/api/documents")
 # Dashboard API (stats endpoint at /api/engagements/{id}/stats)
 app.include_router(dashboard_router, prefix="/api/engagements", tags=["Dashboard"])
 
+# Dashboard global endpoints (gantt chart at /api/dashboard/gantt)
+app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
+
 # Eve AI Assistant API (chat and explain endpoints at /api/eve)
 app.include_router(eve_router, prefix="/api")
+
+# Notifications API (proactive alerts at /api/notifications)
+app.include_router(notifications_router, prefix="/api/notifications")

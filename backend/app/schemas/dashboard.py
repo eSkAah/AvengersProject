@@ -281,3 +281,69 @@ class BreakdownChartResponse(BaseModel):
             }
         }
     )
+
+
+# =============================================================================
+# Gantt Chart Schemas
+# =============================================================================
+
+
+class GanttItem(BaseModel):
+    """Schema for a single Gantt chart item representing an engagement timeline."""
+
+    engagement_id: str = Field(..., description="Unique engagement identifier")
+    entity_name: str = Field(..., description="Name of the client entity")
+    start_date: str = Field(..., description="Estimated start date (YYYY-MM-DD)")
+    due_date: str = Field(..., description="Due date / deadline (YYYY-MM-DD)")
+    completion_percent: int = Field(
+        ..., ge=0, le=100, description="Completion percentage (0-100)"
+    )
+    risk_level: str = Field(..., description="Risk level (high, medium, low)")
+    status: str = Field(..., description="Current status")
+    color: str = Field(..., description="Bar color based on risk level")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "engagement_id": "ENG-FR-001",
+                "entity_name": "France SPV",
+                "start_date": "2026-01-15",
+                "due_date": "2026-02-29",
+                "completion_percent": 67,
+                "risk_level": "high",
+                "status": "processing",
+                "color": "#EF4444",
+            }
+        }
+    )
+
+
+class GanttChartResponse(BaseModel):
+    """Schema for Gantt chart data response."""
+
+    items: List[GanttItem] = Field(..., description="List of Gantt chart items")
+    min_date: str = Field(..., description="Earliest date in timeline (YYYY-MM-DD)")
+    max_date: str = Field(..., description="Latest date in timeline (YYYY-MM-DD)")
+    total_engagements: int = Field(..., description="Total number of engagements")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "items": [
+                    {
+                        "engagement_id": "ENG-FR-001",
+                        "entity_name": "France SPV",
+                        "start_date": "2026-01-15",
+                        "due_date": "2026-02-29",
+                        "completion_percent": 67,
+                        "risk_level": "high",
+                        "status": "processing",
+                        "color": "#EF4444",
+                    }
+                ],
+                "min_date": "2026-01-15",
+                "max_date": "2026-03-15",
+                "total_engagements": 5,
+            }
+        }
+    )

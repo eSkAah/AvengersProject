@@ -21,6 +21,7 @@ export * from './components/drill-down-modal/drill-down-modal.component';
 export * from './components/empty-state/empty-state.component';
 export * from './components/error-state/error-state.component';
 export * from './components/loading-state/loading-state.component';
+export * from './components/document-preview-modal/document-preview-modal.component';
 
 // Charts
 export * from './components/charts';

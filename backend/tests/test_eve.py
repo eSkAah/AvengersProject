@@ -485,3 +485,151 @@ class TestEveIntegration:
             response = await client.get(f"/api/eve/conversations/{engagement_id}")
             data = response.json()
             assert len(data["messages"]) >= 4  # At least 2 from explain + 2 from chat
+
+
+# =============================================================================
+# Gantt Chart Intent Tests
+# =============================================================================
+
+
+class TestGanttIntent:
+    """Tests for Gantt chart intent detection and response."""
+
+    @pytest.mark.asyncio
+    async def test_gantt_intent_with_gantt_keyword(self):
+        """Test that 'gantt' keyword triggers gantt response."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Génère un diagramme de Gantt"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["response_type"] == "gantt"
+        assert data["data"] is not None
+        assert "items" in data["data"]
+
+    @pytest.mark.asyncio
+    async def test_gantt_intent_with_planning_keyword(self):
+        """Test that 'génère le planning' triggers gantt response."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Génère le planning des obligations"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["response_type"] == "gantt"
+        assert data["data"] is not None
+
+    @pytest.mark.asyncio
+    async def test_gantt_intent_with_visualiser_planning(self):
+        """Test that 'visualiser le planning' triggers gantt response."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Visualise le planning"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["response_type"] == "gantt"
+
+    @pytest.mark.asyncio
+    async def test_gantt_response_has_correct_structure(self):
+        """Test that gantt response has all required fields."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Affiche le diagramme gantt"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["response_type"] == "gantt"
+
+        gantt_data = data["data"]
+        assert "items" in gantt_data
+        assert "min_date" in gantt_data
+        assert "max_date" in gantt_data
+        assert "total_engagements" in gantt_data
+
+    @pytest.mark.asyncio
+    async def test_gantt_response_includes_all_engagements(self):
+        """Test that gantt response includes all demo engagements."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Génère le Gantt"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        gantt_data = data["data"]
+
+        assert gantt_data["total_engagements"] == 5
+        engagement_ids = [item["engagement_id"] for item in gantt_data["items"]]
+        assert "ENG-FR-001" in engagement_ids
+
+    @pytest.mark.asyncio
+    async def test_gantt_message_describes_chart(self):
+        """Test that gantt response message describes the chart."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Montre le planning"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "planning" in data["message"].lower() or "gantt" in data["message"].lower()
+        assert "engagement" in data["message"].lower()
+
+    @pytest.mark.asyncio
+    async def test_non_gantt_message_returns_text_type(self):
+        """Test that regular messages return text response type."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={"message": "Bonjour Eve"},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["response_type"] == "text"
+        assert data.get("data") is None
+
+    @pytest.mark.asyncio
+    async def test_gantt_with_engagement_context(self):
+        """Test gantt request with engagement context still works."""
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post(
+                "/api/eve/chat",
+                json={
+                    "message": "Génère le planning des engagements",
+                    "engagement_id": "ENG-FR-001",
+                },
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["response_type"] == "gantt"
+        assert data["engagement_id"] == "ENG-FR-001"

@@ -133,9 +133,9 @@ development_status:
   # ============================================
   # Epic 9: Features Bonus (Should-Have)
   # ============================================
-  epic-9: backlog
-  9-1-gantt-chart-generation: backlog
-  9-2-comparison-n1-auto: backlog
-  9-3-document-preview-inline: backlog
-  9-4-eve-proactive-notifications: backlog
+  epic-9: in-progress
+  9-1-gantt-chart-generation: done
+  9-2-comparison-n1-auto: ready-for-dev
+  9-3-document-preview-inline: ready-for-dev
+  9-4-eve-proactive-notifications: ready-for-dev
   epic-9-retrospective: optional

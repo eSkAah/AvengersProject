@@ -7,6 +7,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { EveApiService } from '../../../core/services/eve-api.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 /**
  * Eve Floating Action Button (FAB)
@@ -35,10 +36,14 @@ import { EveApiService } from '../../../core/services/eve-api.service';
         <lucide-icon name="bot" [size]="24"></lucide-icon>
       }
 
-      <!-- Unread badge -->
+      <!-- Unread badge (includes notifications) -->
       @if (showBadge()) {
-        <span class="eve-fab__badge" aria-live="polite">
-          {{ eveService.unreadCount() }}
+        <span
+          class="eve-fab__badge"
+          [class.eve-fab__badge--alert]="hasHighPriorityNotifications()"
+          aria-live="polite"
+        >
+          {{ totalBadgeCount() }}
         </span>
       }
 
@@ -99,7 +104,7 @@ import { EveApiService } from '../../../core/services/eve-api.service';
       height: 20px;
       padding: 0 6px;
       border-radius: 10px;
-      background: #EF4444;
+      background: #F59E0B;
       color: #FFFFFF;
       font-size: 11px;
       font-weight: 600;
@@ -108,6 +113,11 @@ import { EveApiService } from '../../../core/services/eve-api.service';
       justify-content: center;
       border: 2px solid #FFFFFF;
       animation: badgeBounce 300ms ease-out;
+    }
+
+    .eve-fab__badge--alert {
+      background: #EF4444;
+      animation: badgeBounce 300ms ease-out, alertPulse 1s ease-in-out infinite;
     }
 
     .eve-fab__pulse {
@@ -143,6 +153,15 @@ import { EveApiService } from '../../../core/services/eve-api.service';
       }
     }
 
+    @keyframes alertPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .eve-fab {
@@ -162,10 +181,21 @@ import { EveApiService } from '../../../core/services/eve-api.service';
 })
 export class EveFabComponent {
   protected readonly eveService = inject(EveApiService);
+  protected readonly notificationService = inject(NotificationService);
 
-  /** Show badge only when there are unread messages and panel is closed */
+  /** Total badge count (unread messages + notifications) */
+  protected readonly totalBadgeCount = computed(
+    () => this.eveService.unreadCount() + this.notificationService.unreadCount()
+  );
+
+  /** Show badge only when there are unread items and panel is closed */
   protected readonly showBadge = computed(
-    () => this.eveService.unreadCount() > 0 && !this.eveService.isPanelOpen()
+    () => this.totalBadgeCount() > 0 && !this.eveService.isPanelOpen()
+  );
+
+  /** Check if there are high priority notifications */
+  protected readonly hasHighPriorityNotifications = computed(
+    () => this.notificationService.highPriorityCount() > 0
   );
 
   togglePanel(): void {

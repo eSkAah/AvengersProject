@@ -463,3 +463,118 @@ async def test_chart_endpoints_work_for_all_engagements(client):
         # Test breakdown chart
         response = await client.get(f"/api/engagements/{eng_id}/charts/breakdown")
         assert response.status_code == 200, f"Breakdown chart failed for {eng_id}"
+
+
+# =============================================================================
+# Gantt Chart API Endpoint Tests
+# =============================================================================
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_returns_200(client):
+    """Test that GET /api/dashboard/gantt returns 200."""
+    response = await client.get("/api/dashboard/gantt")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_has_correct_structure(client):
+    """Test that Gantt chart response has correct structure."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    assert "items" in data
+    assert "min_date" in data
+    assert "max_date" in data
+    assert "total_engagements" in data
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_has_all_engagements(client):
+    """Test that Gantt chart includes all 5 demo engagements."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    assert data["total_engagements"] == 5
+    assert len(data["items"]) == 5
+
+    # Check all engagement IDs are present
+    engagement_ids = [item["engagement_id"] for item in data["items"]]
+    assert "ENG-FR-001" in engagement_ids
+    assert "ENG-DE-001" in engagement_ids
+    assert "ENG-NL-001" in engagement_ids
+    assert "ENG-BE-001" in engagement_ids
+    assert "ENG-LU-001" in engagement_ids
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_items_have_required_fields(client):
+    """Test that Gantt chart items have all required fields."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    for item in data["items"]:
+        assert "engagement_id" in item
+        assert "entity_name" in item
+        assert "start_date" in item
+        assert "due_date" in item
+        assert "completion_percent" in item
+        assert "risk_level" in item
+        assert "status" in item
+        assert "color" in item
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_dates_are_valid_format(client):
+    """Test that Gantt chart dates are in YYYY-MM-DD format."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    import re
+    date_pattern = r"^\d{4}-\d{2}-\d{2}$"
+
+    assert re.match(date_pattern, data["min_date"])
+    assert re.match(date_pattern, data["max_date"])
+
+    for item in data["items"]:
+        assert re.match(date_pattern, item["start_date"])
+        assert re.match(date_pattern, item["due_date"])
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_risk_colors_are_correct(client):
+    """Test that Gantt chart uses correct colors for risk levels."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    risk_colors = {
+        "high": "#EF4444",
+        "medium": "#F59E0B",
+        "low": "#10B981",
+    }
+
+    for item in data["items"]:
+        expected_color = risk_colors.get(item["risk_level"])
+        if expected_color:
+            assert item["color"] == expected_color, f"Wrong color for {item['risk_level']}"
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_completion_percent_is_valid(client):
+    """Test that completion percentages are between 0 and 100."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    for item in data["items"]:
+        assert 0 <= item["completion_percent"] <= 100
+
+
+@pytest.mark.asyncio
+async def test_get_gantt_chart_items_sorted_by_start_date(client):
+    """Test that Gantt chart items are sorted by start date."""
+    response = await client.get("/api/dashboard/gantt")
+    data = response.json()
+
+    if len(data["items"]) > 1:
+        for i in range(len(data["items"]) - 1):
+            assert data["items"][i]["start_date"] <= data["items"][i + 1]["start_date"]

@@ -1,6 +1,6 @@
 """Dashboard service for calculating engagement statistics and KPIs."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,9 +15,11 @@ from app.schemas.dashboard import (
     ComparisonDataset,
     EngagementStatsResponse,
     FinancialMetrics,
+    GanttChartResponse,
+    GanttItem,
     VariancePercent,
 )
-from app.services.engagement_service import get_engagement_by_id
+from app.services.engagement_service import get_all_engagements, get_engagement_by_id
 
 # EY Brand Colors
 EY_COLORS = {
@@ -354,4 +356,118 @@ async def get_breakdown_chart(
         total=total_assets,
         items=items,
         source_document=f"Grand_Livre_{engagement.country_code}_2025.xlsx",
+    )
+
+
+# =============================================================================
+# Gantt Chart Data Functions
+# =============================================================================
+
+
+def get_risk_color(risk_level: str) -> str:
+    """
+    Get the color code for a risk level.
+
+    Args:
+        risk_level: The risk level (high, medium, low)
+
+    Returns:
+        Hex color code for the risk level
+    """
+    colors = {
+        "high": EY_COLORS["error"],  # Red
+        "medium": EY_COLORS["warning"],  # Orange
+        "low": EY_COLORS["success"],  # Green
+    }
+    return colors.get(risk_level, EY_COLORS["gray"])
+
+
+async def get_gantt_data(db: AsyncSession) -> GanttChartResponse:
+    """
+    Get Gantt chart data for all engagements.
+
+    Retrieves all engagements and formats them for Gantt chart display
+    with timeline information, risk coloring, and completion status.
+
+    Args:
+        db: Database session
+
+    Returns:
+        GanttChartResponse with all engagement timeline data
+    """
+    engagements = await get_all_engagements(db)
+
+    if not engagements:
+        # Return empty response
+        today = datetime.now().strftime("%Y-%m-%d")
+        return GanttChartResponse(
+            items=[],
+            min_date=today,
+            max_date=today,
+            total_engagements=0,
+        )
+
+    items = []
+    min_date = None
+    max_date = None
+
+    for engagement in engagements:
+        # Calculate estimated start date
+        # Use created_at as start date, or 30 days before due_date if not available
+        if engagement.created_at:
+            start_date = engagement.created_at.date()
+        elif engagement.due_date:
+            start_date = engagement.due_date - timedelta(days=30)
+        else:
+            start_date = datetime.now().date()
+
+        due_date = engagement.due_date or (datetime.now().date() + timedelta(days=30))
+
+        # Track min/max dates for timeline bounds
+        if min_date is None or start_date < min_date:
+            min_date = start_date
+        if max_date is None or due_date > max_date:
+            max_date = due_date
+
+        # Get risk level as string
+        risk_level_str = (
+            engagement.risk_level.value
+            if hasattr(engagement.risk_level, "value")
+            else str(engagement.risk_level)
+        )
+
+        # Get status as string
+        status_str = (
+            engagement.status.value
+            if hasattr(engagement.status, "value")
+            else str(engagement.status)
+        )
+
+        items.append(
+            GanttItem(
+                engagement_id=engagement.id,
+                entity_name=engagement.entity_name,
+                start_date=start_date.strftime("%Y-%m-%d"),
+                due_date=due_date.strftime("%Y-%m-%d"),
+                completion_percent=engagement.completion_percent or 0,
+                risk_level=risk_level_str,
+                status=status_str,
+                color=get_risk_color(risk_level_str),
+            )
+        )
+
+    # Sort items by start_date
+    items.sort(key=lambda x: x.start_date)
+
+    # Add some padding to the timeline (7 days before and after)
+    if min_date:
+        min_date = min_date - timedelta(days=7)
+    if max_date:
+        max_date = max_date + timedelta(days=7)
+
+    return GanttChartResponse(
+        items=items,
+        min_date=min_date.strftime("%Y-%m-%d") if min_date else datetime.now().strftime("%Y-%m-%d"),
+        max_date=max_date.strftime("%Y-%m-%d") if max_date else datetime.now().strftime("%Y-%m-%d"),
+        total_engagements=len(items),
     )

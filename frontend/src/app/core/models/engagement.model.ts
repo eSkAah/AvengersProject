@@ -14,6 +14,16 @@ export interface FinancialData {
   };
 }
 
+export interface VarianceAlert {
+  metric: string;
+  metric_label: string;
+  current_value: number;
+  previous_value: number;
+  variance_percent: number;
+  variance_type: 'increase' | 'decrease';
+  insight_message: string;
+}
+
 export interface Engagement {
   id: string;
   entity: string;
@@ -29,6 +39,8 @@ export interface Engagement {
   documentsRequired: string[];
   documentsUploaded: string[];
   scenario?: string;
+  varianceAlerts?: VarianceAlert[];
+  aiInsights?: string[];
 }
 
 export const STATUS_LABELS: Record<EngagementStatus, string> = {

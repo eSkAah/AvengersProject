@@ -81,6 +81,34 @@
           </div>
         </div>
 
+        <!-- Variance Alerts -->
+        @if (hasVarianceAlerts(engagement)) {
+          <div class="engagement-item__section engagement-item__section--variance">
+            <h4>
+              <lucide-icon name="alert-triangle" [size]="16" class="text-amber-500"></lucide-icon>
+              Alertes Variance N-1
+            </h4>
+            <div class="engagement-item__variance-list">
+              @for (variance of engagement.varianceAlerts; track variance.metric) {
+                <div class="variance-alert" [class.variance-alert--increase]="variance.variance_type === 'increase'" [class.variance-alert--decrease]="variance.variance_type === 'decrease'">
+                  <span class="variance-alert__metric">{{ variance.metric_label }}</span>
+                  <span class="variance-alert__direction">
+                    @if (variance.variance_type === 'increase') {
+                      <lucide-icon name="trending-up" [size]="14"></lucide-icon>
+                    } @else {
+                      <lucide-icon name="trending-down" [size]="14"></lucide-icon>
+                    }
+                    {{ variance.variance_percent > 0 ? '+' : '' }}{{ variance.variance_percent | number:'1.1-1' }}%
+                  </span>
+                  <span class="variance-alert__values">
+                    {{ formatCurrency(variance.previous_value) }} → {{ formatCurrency(variance.current_value) }}
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
         <!-- Documents -->
         <div class="engagement-item__section">
           <h4>Documents</h4>

@@ -1,6 +1,7 @@
 """Engagements API router for Avengers Project platform."""
 
 from datetime import date
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +12,7 @@ from app.schemas.engagement import (
     EngagementListResponse,
     RiskDetailsResponse,
     PredictionResponse,
+    VarianceAlert as VarianceAlertSchema,
 )
 from app.services.engagement_service import (
     get_all_engagements,
@@ -18,8 +20,60 @@ from app.services.engagement_service import (
     get_engagement_risk_details,
     get_engagement_prediction,
 )
+from app.services.variance_service import check_engagement_variances
 
 router = APIRouter(tags=["Engagements"])
+
+
+def enrich_with_variance(engagement) -> Dict[str, Any]:
+    """
+    Enrich engagement data with variance alerts.
+
+    Args:
+        engagement: Engagement model object
+
+    Returns:
+        Dictionary with engagement data and variance_alerts
+    """
+    data = {
+        "id": engagement.id,
+        "entity_name": engagement.entity_name,
+        "country_code": engagement.country_code,
+        "country_name": engagement.country_name,
+        "service_type": engagement.service_type,
+        "status": engagement.status,
+        "risk_level": engagement.risk_level,
+        "due_date": engagement.due_date,
+        "predicted_completion": engagement.predicted_completion,
+        "completion_percent": engagement.completion_percent,
+        "documents_required": engagement.documents_required or [],
+        "financial_data": engagement.financial_data or {},
+        "ai_insights": engagement.ai_insights or [],
+        "created_at": engagement.created_at,
+        "updated_at": engagement.updated_at,
+    }
+
+    # Detect variances and add to response
+    variances = check_engagement_variances(engagement.financial_data)
+    data["variance_alerts"] = [
+        VarianceAlertSchema(
+            metric=v.metric,
+            metric_label=v.metric_label,
+            current_value=v.current_value,
+            previous_value=v.previous_value,
+            variance_percent=v.variance_percent,
+            variance_type=v.variance_type.value,
+            insight_message=v.insight_message,
+        )
+        for v in variances
+    ]
+
+    # Add variance insights to ai_insights if not already present
+    for v in variances:
+        if v.insight_message not in data["ai_insights"]:
+            data["ai_insights"].append(v.insight_message)
+
+    return data
 
 
 @router.get(
@@ -75,11 +129,13 @@ async def list_engagements(
     - Current status and calculated risk level
     - Progress tracking (completion percentage, predicted completion)
     - Financial data and AI insights
+    - Variance alerts for significant N vs N-1 changes (>15%)
     """
     engagements = await get_all_engagements(db)
+    enriched = [enrich_with_variance(e) for e in engagements]
     return EngagementListResponse(
         total=len(engagements),
-        engagements=[EngagementResponse.model_validate(e) for e in engagements],
+        engagements=[EngagementResponse.model_validate(e) for e in enriched],
     )
 
 
@@ -113,7 +169,7 @@ async def get_engagement(
         engagement_id: Unique engagement identifier (e.g., ENG-FR-001)
 
     Returns:
-        Complete engagement data including financial information
+        Complete engagement data including financial information and variance alerts
 
     Raises:
         HTTPException: 404 if engagement is not found
@@ -124,7 +180,8 @@ async def get_engagement(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Engagement not found: {engagement_id}",
         )
-    return EngagementResponse.model_validate(engagement)
+    enriched = enrich_with_variance(engagement)
+    return EngagementResponse.model_validate(enriched)
 
 
 @router.get(

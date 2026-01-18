@@ -16,7 +16,9 @@ from app.schemas.eve import (
     Message,
     ConversationHistory,
 )
+from app.services.dashboard_service import get_gantt_data
 from app.services.engagement_service import get_engagement_by_id
+from app.services.variance_service import check_engagement_variances, get_variance_context_for_eve
 
 # =============================================================================
 # Eve System Prompts
@@ -47,6 +49,17 @@ RÈGLES DE RÉPONSE:
 4. Si vous ne comprenez pas: "Je n'ai pas compris votre demande. Pourriez-vous reformuler votre question ?"
 5. Si erreur technique: "Une erreur technique s'est produite. Veuillez réessayer dans quelques instants."
 6. Si hors périmètre: "Cette action n'est pas disponible. Je peux uniquement consulter et analyser les données."
+"""
+
+EVE_GANTT_PROMPT = """Tu es Eve, assistante IA pour EY. L'utilisateur souhaite visualiser le planning des engagements sous forme de diagramme de Gantt.
+
+INSTRUCTIONS:
+1. Générer un graphique Gantt montrant tous les engagements actifs
+2. Afficher les dates de début et d'échéance de chaque engagement
+3. Colorer les barres selon le niveau de risque (rouge=high, orange=medium, vert=low)
+4. Montrer le pourcentage d'avancement de chaque engagement
+
+Je vais générer le diagramme de Gantt avec les données de tous vos engagements.
 """
 
 EVE_EXPLAIN_PROMPT = """Tu es Eve, assistante IA pour EY. L'utilisateur a cliqué sur une valeur financière et souhaite une explication.
@@ -123,6 +136,28 @@ async def process_chat(
     if request.engagement_id:
         engagement = await get_engagement_by_id(db, request.engagement_id)
 
+    # Check for Gantt chart intent
+    if is_gantt_intent(message):
+        gantt_data = await get_gantt_data(db)
+        response_text = (
+            "Voici le planning de vos engagements sous forme de diagramme de Gantt. "
+            f"Vous avez actuellement {gantt_data.total_engagements} engagement(s) en cours. "
+            "Les barres sont colorées selon le niveau de risque : rouge (élevé), orange (modéré), vert (faible)."
+        )
+
+        # Add to conversation history
+        if request.engagement_id:
+            add_message(request.engagement_id, "user", request.message)
+            add_message(request.engagement_id, "assistant", response_text, sources)
+
+        return ChatResponse(
+            message=response_text,
+            sources=sources,
+            engagement_id=request.engagement_id,
+            response_type="gantt",
+            data=gantt_data.model_dump(),
+        )
+
     # Generate response based on message patterns
     response_text = await generate_chat_response(message, engagement)
 
@@ -135,6 +170,88 @@ async def process_chat(
         message=response_text,
         sources=sources,
         engagement_id=request.engagement_id,
+        response_type="text",
+    )
+
+
+def is_gantt_intent(message: str) -> bool:
+    """
+    Detect if the message is requesting a Gantt chart visualization.
+
+    Args:
+        message: Lowercased user message
+
+    Returns:
+        True if the message is a gantt chart request
+    """
+    # Gantt-specific keywords
+    gantt_keywords = ["gantt", "diagramme de gantt", "gantt chart"]
+
+    # Planning/timeline keywords that should trigger gantt
+    planning_keywords = [
+        "planning",
+        "timeline",
+        "calendrier",
+        "échéancier",
+    ]
+
+    # Obligation/engagement timeline keywords
+    obligation_keywords = [
+        "obligations",
+        "planning des obligations",
+        "planning des engagements",
+        "visualiser le planning",
+        "afficher le planning",
+        "génère le planning",
+        "genere le planning",
+        "montre le planning",
+    ]
+
+    # Check for gantt-specific keywords
+    if any(kw in message for kw in gantt_keywords):
+        return True
+
+    # Check for planning + visualization intent
+    visualization_words = ["génère", "genere", "montre", "affiche", "visualise", "voir"]
+    if any(viz in message for viz in visualization_words):
+        if any(planning in message for planning in planning_keywords):
+            return True
+
+    # Check for specific obligation planning phrases
+    if any(phrase in message for phrase in obligation_keywords):
+        return True
+
+    return False
+
+
+def get_variance_proactive_message(engagement) -> str:
+    """
+    Generate proactive message about significant variances if any exist.
+
+    Args:
+        engagement: Engagement object with financial_data
+
+    Returns:
+        Message about variances, or empty string if none
+    """
+    if not engagement or not engagement.financial_data:
+        return ""
+
+    variances = check_engagement_variances(engagement.financial_data)
+    if not variances:
+        return ""
+
+    messages = []
+    for v in variances:
+        direction = "augmentation" if v.variance_type.value == "increase" else "diminution"
+        messages.append(
+            f"- {v.metric_label}: {direction} de {abs(v.variance_percent):.1f}% vs N-1"
+        )
+
+    return (
+        f"\n\nJe note des variances significatives pour cet engagement :\n"
+        + "\n".join(messages)
+        + "\n\nSouhaitez-vous que je vous explique ces variations en détail ?"
     )
 
 
@@ -145,6 +262,29 @@ async def generate_chat_response(message: str, engagement=None) -> str:
     This is a simplified pattern-matching implementation for POC.
     In production, would use Factory AI or similar.
     """
+    # Check for variance-related questions
+    if any(word in message for word in ["variance", "écart", "variation", "différence", "n-1", "comparaison"]):
+        if engagement and engagement.financial_data:
+            variances = check_engagement_variances(engagement.financial_data)
+            if variances:
+                response = f"Voici les variances significatives détectées pour {engagement.entity_name} :\n\n"
+                for v in variances:
+                    direction = "augmentation" if v.variance_type.value == "increase" else "diminution"
+                    arrow = "↑" if v.variance_type.value == "increase" else "↓"
+                    response += (
+                        f"**{v.metric_label}** : {arrow} {abs(v.variance_percent):.1f}%\n"
+                        f"  - N : {v.current_value:,.0f} €\n"
+                        f"  - N-1 : {v.previous_value:,.0f} €\n\n"
+                    )
+                response += "Ces variations méritent une analyse approfondie pour comprendre les facteurs sous-jacents."
+                return response
+            else:
+                return (
+                    f"Aucune variance significative (>15%) n'a été détectée pour {engagement.entity_name}. "
+                    f"Les données financières sont stables par rapport à l'exercice précédent."
+                )
+        return "Pour analyser les variances, veuillez sélectionner un engagement disposant de données financières N et N-1."
+
     # Greeting patterns
     if any(word in message for word in ["bonjour", "salut", "hello", "hi"]):
         if engagement:

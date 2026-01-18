@@ -20,6 +20,8 @@ from app.schemas.document import (
     DocumentCategoryGroup,
     DocumentTypeGroup,
     AvailableDocumentsResponse,
+    DocumentPreviewResponse,
+    ExcelPreviewResponse,
 )
 from app.services.document_service import (
     get_all_documents,
@@ -229,6 +231,115 @@ async def get_document_content_endpoint(
         media_type=media_type,
         filename=document.name,
     )
+
+
+@router.get(
+    "/{document_id}/preview",
+    response_model=DocumentPreviewResponse,
+    summary="Preview document content",
+    description="Get preview data for a document. For Excel/CSV, returns JSON table data. For PDF, returns URL for iframe.",
+    responses={
+        200: {
+            "description": "Preview data retrieved successfully",
+        },
+        404: {
+            "description": "Document not found",
+        },
+        422: {
+            "description": "Preview not available for this file type",
+        },
+    },
+)
+async def get_document_preview(
+    document_id: str,
+    max_rows: int = Query(100, ge=1, le=500, description="Maximum rows to preview for table data"),
+    db: AsyncSession = Depends(get_db),
+) -> DocumentPreviewResponse:
+    """
+    Get preview data for a document.
+
+    For Excel (.xlsx, .xls) and CSV files:
+    - Returns parsed table data as JSON with headers and rows
+    - Limited to max_rows for performance (default 100)
+
+    For PDF files:
+    - Returns content_url pointing to the /content endpoint
+    - Frontend should use iframe or pdf.js to display
+
+    Args:
+        document_id: Unique document identifier
+        max_rows: Maximum rows to return for table preview (1-500)
+
+    Returns:
+        DocumentPreviewResponse with preview data based on file type
+    """
+    from app.services.excel_service import get_preview_for_document
+    from pathlib import Path
+
+    document = await get_document_by_id(db, document_id)
+    if document is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Document not found: {document_id}",
+        )
+
+    # Get file path
+    file_path, _ = get_document_content(document)
+    if file_path is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"File not found for document: {document_id}",
+        )
+
+    # Get preview based on format
+    preview_type, preview_data = get_preview_for_document(
+        Path(file_path),
+        document.format,
+        max_rows,
+    )
+
+    # Build response based on preview type
+    if preview_type == "table" and preview_data:
+        table_data = ExcelPreviewResponse(
+            document_id=document_id,
+            document_name=document.name,
+            sheet_name=preview_data.get("sheet_name", ""),
+            headers=preview_data.get("headers", []),
+            rows=preview_data.get("rows", []),
+            total_rows=preview_data.get("total_rows", 0),
+            preview_rows=preview_data.get("preview_rows", 0),
+            truncated=preview_data.get("truncated", False),
+        )
+        return DocumentPreviewResponse(
+            document_id=document_id,
+            document_name=document.name,
+            format=document.format,
+            preview_type="table",
+            table_data=table_data,
+        )
+
+    elif preview_type == "pdf":
+        content_url = f"/api/documents/{document_id}/content"
+        return DocumentPreviewResponse(
+            document_id=document_id,
+            document_name=document.name,
+            format=document.format,
+            preview_type="pdf",
+            content_url=content_url,
+        )
+
+    elif preview_type == "error":
+        error_msg = preview_data.get("error", "Unknown error") if preview_data else "Unknown error"
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Preview error: {error_msg}",
+        )
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Preview not available for format: {document.format}",
+        )
 
 
 @router.post(

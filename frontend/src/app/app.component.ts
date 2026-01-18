@@ -7,13 +7,7 @@ import { routeAnimations } from './core/animations';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    LayoutShellComponent,
-    ToastComponent,
-    EveFabComponent,
-    EvePanelComponent,
-  ],
+  imports: [RouterOutlet, LayoutShellComponent, ToastComponent, EveFabComponent, EvePanelComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

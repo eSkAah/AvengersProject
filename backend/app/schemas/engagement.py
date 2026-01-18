@@ -77,6 +77,7 @@ class EngagementResponse(BaseModel):
         default_factory=dict, description="Financial metrics"
     )
     ai_insights: List[str] = Field(default_factory=list, description="AI-generated insights")
+    variance_alerts: List["VarianceAlert"] = Field(default_factory=list, description="Significant N vs N-1 variances")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 
@@ -132,3 +133,15 @@ class PredictionResponse(BaseModel):
     confidence: str = Field(..., description="Prediction confidence: high, medium, low")
     due_date: date = Field(..., description="Original deadline")
     formatted_prediction: str = Field(..., description="Human-readable prediction")
+
+
+class VarianceAlert(BaseModel):
+    """Schema for significant N vs N-1 variance alerts."""
+
+    metric: str = Field(..., description="Financial metric name (e.g., total_assets)")
+    metric_label: str = Field(..., description="Human-readable metric label")
+    current_value: float = Field(..., description="Current year value")
+    previous_value: float = Field(..., description="Previous year value")
+    variance_percent: float = Field(..., description="Variance percentage (e.g., 23.5 for +23.5%)")
+    variance_type: str = Field(..., description="Type: increase or decrease")
+    insight_message: str = Field(..., description="Human-readable insight message")

@@ -24,6 +24,8 @@ export interface ChatResponse {
   sources?: SourceReference[];
   engagement_id?: string;
   timestamp: string;
+  response_type?: 'text' | 'gantt' | 'chart';
+  data?: unknown;
 }
 
 export interface ExplainRequest {
@@ -56,6 +58,8 @@ export interface ConversationMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  response_type?: 'text' | 'gantt' | 'chart';
+  data?: unknown;
 }
 
 export interface ConversationHistory {
@@ -159,11 +163,13 @@ export class EveApiService {
 
     return this.http.post<ChatResponse>(`${this.baseUrl}/eve/chat`, request).pipe(
       tap((response) => {
-        // Add Eve's response
+        // Add Eve's response with optional gantt/chart data
         const eveMessage: ConversationMessage = {
           role: 'assistant',
           content: response.message,
           timestamp: response.timestamp,
+          response_type: response.response_type,
+          data: response.data,
         };
         this.messages.update((msgs) => [...msgs, eveMessage]);
         this.isLoading.set(false);
