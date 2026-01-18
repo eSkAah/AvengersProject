@@ -2,7 +2,7 @@
 
 .documents-page {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: $spacing-6;
   height: 100%;
   min-height: calc(100vh - 200px);
@@ -12,6 +12,8 @@
     border: 1px solid $color-border;
     border-radius: $radius-lg;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
     &-title {
       padding: $spacing-4;
@@ -61,10 +63,313 @@
   &__count {
     font-size: $font-size-sm;
     color: $color-text-secondary;
+
+    &-context {
+      color: $ey-black;
+      font-weight: $font-weight-medium;
+    }
   }
 
   &__content {
     flex: 1;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-3;
+    padding: $spacing-12;
+    color: $color-text-secondary;
+
+    p {
+      margin: 0;
+      font-size: $font-size-lg;
+    }
+
+    &-action {
+      padding: $spacing-2 $spacing-4;
+      font-size: $font-size-sm;
+      color: $ey-black;
+      background: $ey-yellow;
+      border: none;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &:hover {
+        background: $ey-yellow-hover;
+      }
+    }
+  }
+}
+
+// Mode Toggle
+.mode-toggle {
+  display: flex;
+  gap: $spacing-1;
+  padding: $spacing-3;
+  background: $color-background;
+  border-bottom: 1px solid $color-border;
+
+  &__btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      color: $color-text-primary;
+      background: $color-surface;
+    }
+
+    &--active {
+      color: $ey-black;
+      background: $color-surface;
+      border-color: $ey-yellow;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+// Engagement Selector
+.engagement-selector {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__title {
+    padding: $spacing-3 $spacing-4;
+    margin: 0;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-2;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    width: 100%;
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    background: transparent;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+    text-align: left;
+
+    &:hover {
+      background: $color-background;
+    }
+
+    &--active {
+      background: $ey-yellow-light;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  &__flag {
+    font-size: $font-size-lg;
+  }
+
+  &__name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__count {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    background: $color-background;
+    padding: 2px $spacing-2;
+    border-radius: $radius-full;
+  }
+}
+
+// Document Stats
+.doc-stats {
+  padding: $spacing-4;
+  border-top: 1px solid $color-border;
+  background: linear-gradient(180deg, transparent 0%, rgba($ey-yellow, 0.03) 100%);
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-3 0;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-2;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $spacing-2;
+    background: $color-surface;
+    border-radius: $radius-sm;
+    border: 1px solid $color-border-light;
+
+    &--required {
+      border-left: 3px solid $color-info;
+    }
+
+    &--uploaded {
+      border-left: 3px solid $color-success;
+    }
+
+    &--missing {
+      border-left: 3px solid $color-error;
+    }
+  }
+
+  &__value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__missing-list {
+    margin-top: $spacing-3;
+    padding-top: $spacing-3;
+    border-top: 1px solid $color-border-light;
+
+    h5 {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      color: $color-error;
+      margin: 0 0 $spacing-2 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: $spacing-4;
+
+      li {
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        margin-bottom: $spacing-1;
+      }
+    }
+  }
+}
+
+// Global Filters
+.global-filters {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  padding: $spacing-4;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-3;
+    background: $color-background;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+
+    lucide-icon {
+      color: $color-text-secondary;
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+
+      &::placeholder {
+        color: $color-text-secondary;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  &__dropdowns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-3;
+    align-items: center;
+  }
+
+  &__select {
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    background: $color-background;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+    min-width: 150px;
+
+    &:focus {
+      outline: none;
+      border-color: $ey-yellow;
+      box-shadow: 0 0 0 3px rgba($ey-yellow, 0.2);
+    }
+  }
+
+  &__clear {
+    display: flex;
+    align-items: center;
+    gap: $spacing-1;
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    color: $color-error;
+    background: transparent;
+    border: 1px solid $color-error;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: rgba($color-error, 0.1);
+    }
   }
 }
 
@@ -73,7 +378,7 @@
     grid-template-columns: 1fr;
 
     &__sidebar {
-      display: none; // Hide tree on mobile, could add a drawer
+      display: none;
     }
   }
 }

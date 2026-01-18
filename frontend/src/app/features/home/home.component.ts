@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -10,6 +10,17 @@ import {
   EngagementListComponent,
   NotificationsZoneComponent,
 } from '../landing';
+
+export interface ActionItem {
+  id: string;
+  type: 'upload' | 'review' | 'deadline' | 'approval';
+  title: string;
+  description: string;
+  engagementId: string;
+  engagementName: string;
+  priority: 'high' | 'medium' | 'low';
+  dueDate?: string;
+}
 
 @Component({
   selector: 'app-home',
@@ -25,11 +36,12 @@ import {
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
 
   private activeFilter = signal<KpiFilter>('all');
+  private completedActionIds = signal<Set<string>>(new Set());
 
   readonly kpiData = computed(() => ({
     total: this.mockData.totalEngagements(),
@@ -38,20 +50,84 @@ export class HomeComponent {
     completed: this.mockData.engagementsByStatus().completed,
   }));
 
-  readonly filteredEngagements = computed(() => {
-    const filter = this.activeFilter();
-    const engagements = this.mockData.engagements();
+  // At-risk engagements: only HIGH and MEDIUM risk
+  readonly atRiskEngagements = computed(() => {
+    return this.mockData.engagements().filter(
+      (e) => e.riskLevel === 'high' || e.riskLevel === 'medium'
+    );
+  });
 
-    switch (filter) {
-      case 'processing':
-        return engagements.filter((e) => e.status === 'processing' || e.status === 'received');
-      case 'high-risk':
-        return engagements.filter((e) => e.riskLevel === 'high');
-      case 'completed':
-        return engagements.filter((e) => e.status === 'completed');
-      default:
-        return engagements;
-    }
+  // Action items derived from engagements
+  readonly actionItems = computed<ActionItem[]>(() => {
+    const engagements = this.mockData.engagements();
+    const completedIds = this.completedActionIds();
+    const items: ActionItem[] = [];
+
+    engagements.forEach((engagement) => {
+      // Missing documents action
+      const missingDocs = engagement.documentsRequired.length - engagement.documentsUploaded.length;
+      if (missingDocs > 0 && engagement.status !== 'completed') {
+        const actionId = `upload-${engagement.id}`;
+        if (!completedIds.has(actionId)) {
+          items.push({
+            id: actionId,
+            type: 'upload',
+            title: `Upload ${missingDocs} document(s)`,
+            description: `${engagement.entity} - ${missingDocs} document(s) manquant(s)`,
+            engagementId: engagement.id,
+            engagementName: engagement.entity,
+            priority: engagement.riskLevel === 'high' ? 'high' : engagement.riskLevel === 'medium' ? 'medium' : 'low',
+            dueDate: engagement.dueDate,
+          });
+        }
+      }
+
+      // Deadline approaching (within 7 days)
+      const daysUntilDue = this.getDaysUntilDue(engagement.dueDate);
+      if (daysUntilDue <= 7 && daysUntilDue > 0 && engagement.status !== 'completed') {
+        const actionId = `deadline-${engagement.id}`;
+        if (!completedIds.has(actionId)) {
+          items.push({
+            id: actionId,
+            type: 'deadline',
+            title: `Deadline in ${daysUntilDue} day(s)`,
+            description: `${engagement.entity} - Complete before ${this.formatDate(engagement.dueDate)}`,
+            engagementId: engagement.id,
+            engagementName: engagement.entity,
+            priority: daysUntilDue <= 3 ? 'high' : 'medium',
+            dueDate: engagement.dueDate,
+          });
+        }
+      }
+
+      // Review needed (status is 'received')
+      if (engagement.status === 'received') {
+        const actionId = `review-${engagement.id}`;
+        if (!completedIds.has(actionId)) {
+          items.push({
+            id: actionId,
+            type: 'review',
+            title: 'Review documents',
+            description: `${engagement.entity} - Documents received, pending review`,
+            engagementId: engagement.id,
+            engagementName: engagement.entity,
+            priority: engagement.riskLevel === 'high' ? 'high' : 'medium',
+          });
+        }
+      }
+    });
+
+    // Sort by priority (high first) then by due date
+    return items.sort((a, b) => {
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
+      if (a.dueDate && b.dueDate) {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+      return 0;
+    });
   });
 
   readonly notifications = this.mockData.notifications;
@@ -69,6 +145,11 @@ export class HomeComponent {
     };
   });
 
+  ngOnInit(): void {
+    // Load completed actions from session storage
+    this.loadCompletedActions();
+  }
+
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -83,7 +164,6 @@ export class HomeComponent {
   }
 
   onViewDashboard(engagement: Engagement): void {
-    // Navigate to engagement dashboard page
     this.router.navigate(['/engagements', engagement.id, 'dashboard']);
   }
 
@@ -94,7 +174,6 @@ export class HomeComponent {
   }
 
   onAskEve(engagement: Engagement): void {
-    // Open Eve chat with engagement context
     this.router.navigate(['/eve'], {
       queryParams: { engagement: engagement.id },
     });
@@ -102,8 +181,96 @@ export class HomeComponent {
 
   onNotificationClick(notification: Notification): void {
     if (notification.engagementId) {
-      // Navigate to engagement detail page
       this.router.navigate(['/engagements', notification.engagementId]);
+    }
+  }
+
+  // Action Center methods
+  onActionClick(action: ActionItem): void {
+    switch (action.type) {
+      case 'upload':
+        this.router.navigate(['/documents'], {
+          queryParams: { engagement: action.engagementId },
+        });
+        break;
+      case 'review':
+      case 'deadline':
+        this.router.navigate(['/engagements', action.engagementId, 'dashboard']);
+        break;
+      default:
+        this.router.navigate(['/engagements', action.engagementId]);
+    }
+  }
+
+  markActionComplete(action: ActionItem, event: Event): void {
+    event.stopPropagation();
+    this.completedActionIds.update((ids) => {
+      const newIds = new Set(ids);
+      newIds.add(action.id);
+      return newIds;
+    });
+    this.saveCompletedActions();
+  }
+
+  getActionIcon(type: ActionItem['type']): string {
+    switch (type) {
+      case 'upload':
+        return 'upload';
+      case 'review':
+        return 'file-check';
+      case 'deadline':
+        return 'clock';
+      case 'approval':
+        return 'check-circle';
+      default:
+        return 'circle';
+    }
+  }
+
+  onKpiCardClick(filter: KpiFilter): void {
+    if (filter === 'all') {
+      this.router.navigate(['/engagements']);
+    } else if (filter === 'high-risk') {
+      // Navigate to engagements with high-risk pre-filter
+      this.router.navigate(['/engagements']);
+    } else {
+      this.router.navigate(['/engagements']);
+    }
+  }
+
+  private getDaysUntilDue(dueDate: string): number {
+    const due = new Date(dueDate);
+    const now = new Date();
+    const diffTime = due.getTime() - now.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  private formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: 'short',
+    });
+  }
+
+  private saveCompletedActions(): void {
+    try {
+      const ids = Array.from(this.completedActionIds());
+      sessionStorage.setItem('avengers_completed_actions', JSON.stringify(ids));
+    } catch {
+      // Session storage not available
+    }
+  }
+
+  private loadCompletedActions(): void {
+    try {
+      const saved = sessionStorage.getItem('avengers_completed_actions');
+      if (saved) {
+        const ids = JSON.parse(saved) as string[];
+        this.completedActionIds.set(new Set(ids));
+      }
+    } catch {
+      // Session storage not available
     }
   }
 }

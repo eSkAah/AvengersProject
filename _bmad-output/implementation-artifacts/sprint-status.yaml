@@ -135,7 +135,19 @@ development_status:
   # ============================================
   epic-9: in-progress
   9-1-gantt-chart-generation: done
-  9-2-comparison-n1-auto: ready-for-dev
-  9-3-document-preview-inline: ready-for-dev
+  9-2-comparison-n1-auto: done
+  9-3-document-preview-inline: done  # Modal wired up, API preview endpoint ready
   9-4-eve-proactive-notifications: ready-for-dev
   epic-9-retrospective: optional
+
+  # ============================================
+  # Epic 10: Platform v2.0 - Navigation & AI (Post-MVP)
+  # ============================================
+  epic-10: done
+  10-1-command-center-home-redesign: done
+  10-2-engagements-page-with-filters: done
+  10-3-notifications-system: done
+  10-4-document-library-hybrid-mode: done
+  10-5-eve-openai-integration-rag: done
+  10-6-sidebar-navigation-update: done
+  epic-10-retrospective: optional

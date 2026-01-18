@@ -6,6 +6,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
   },
   {
+    path: 'engagements',
+    loadComponent: () =>
+      import('./features/engagements/engagements.component').then(m => m.EngagementsComponent),
+  },
+  {
     path: 'engagements/:id',
     loadComponent: () =>
       import('./features/engagement-detail/engagement-detail.component').then(
@@ -23,6 +28,11 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+  },
+  {
+    path: 'structure',
+    loadComponent: () =>
+      import('./features/structure/structure.component').then(m => m.StructureComponent),
   },
   {
     path: 'documents',

@@ -13,19 +13,26 @@ export interface SourceReference {
   line?: number;
 }
 
+export type EveContextMode = 'global' | 'engagement';
+
 export interface ChatRequest {
   message: string;
   engagement_id?: string;
   context?: Record<string, unknown>;
+  mode?: EveContextMode;
 }
 
 export interface ChatResponse {
   message: string;
   sources?: SourceReference[];
   engagement_id?: string;
+  engagement_name?: string;
   timestamp: string;
   response_type?: 'text' | 'gantt' | 'chart';
   data?: unknown;
+  mode?: EveContextMode;
+  context_switched?: boolean;
+  switched_from?: EveContextMode;
 }
 
 export interface ExplainRequest {
@@ -60,6 +67,9 @@ export interface ConversationMessage {
   timestamp: string;
   response_type?: 'text' | 'gantt' | 'chart';
   data?: unknown;
+  sources?: SourceReference[];
+  context_switched?: boolean;
+  switched_to_engagement?: string;
 }
 
 export interface ConversationHistory {
@@ -83,9 +93,15 @@ export class EveApiService {
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
 
+  // Context mode (global vs engagement)
+  readonly contextMode = signal<EveContextMode>('global');
+
   // Current engagement context
   readonly currentEngagementId = signal<string | null>(null);
   readonly currentEngagementName = signal<string | null>(null);
+
+  // Context switch notification
+  readonly lastContextSwitch = signal<{ from: EveContextMode; to: EveContextMode; engagement?: string } | null>(null);
 
   // Messages
   readonly messages = signal<ConversationMessage[]>([]);
@@ -135,10 +151,36 @@ export class EveApiService {
     this.currentEngagementId.set(engagementId);
     this.currentEngagementName.set(engagementName ?? null);
 
+    // Update context mode
+    if (engagementId) {
+      this.contextMode.set('engagement');
+    } else {
+      this.contextMode.set('global');
+    }
+
     // Clear messages if engagement changed
     if (previousId !== engagementId) {
       this.messages.set([]);
+      this.lastContextSwitch.set(null);
     }
+  }
+
+  /**
+   * Set global context mode (no engagement)
+   */
+  setGlobalContext(): void {
+    this.currentEngagementId.set(null);
+    this.currentEngagementName.set(null);
+    this.contextMode.set('global');
+    this.messages.set([]);
+    this.lastContextSwitch.set(null);
+  }
+
+  /**
+   * Clear context switch notification
+   */
+  clearContextSwitch(): void {
+    this.lastContextSwitch.set(null);
   }
 
   /**
@@ -151,6 +193,7 @@ export class EveApiService {
     const request: ChatRequest = {
       message,
       engagement_id: this.currentEngagementId() ?? undefined,
+      mode: this.contextMode(),
     };
 
     // Add user message immediately
@@ -163,13 +206,29 @@ export class EveApiService {
 
     return this.http.post<ChatResponse>(`${this.baseUrl}/eve/chat`, request).pipe(
       tap((response) => {
-        // Add Eve's response with optional gantt/chart data
+        // Handle context switch from backend (auto-switch)
+        if (response.context_switched && response.mode === 'engagement') {
+          this.lastContextSwitch.set({
+            from: 'global',
+            to: 'engagement',
+            engagement: response.engagement_name,
+          });
+          // Update context
+          this.currentEngagementId.set(response.engagement_id ?? null);
+          this.currentEngagementName.set(response.engagement_name ?? null);
+          this.contextMode.set('engagement');
+        }
+
+        // Add Eve's response with sources and context info
         const eveMessage: ConversationMessage = {
           role: 'assistant',
           content: response.message,
           timestamp: response.timestamp,
           response_type: response.response_type,
           data: response.data,
+          sources: response.sources,
+          context_switched: response.context_switched,
+          switched_to_engagement: response.engagement_name,
         };
         this.messages.update((msgs) => [...msgs, eveMessage]);
         this.isLoading.set(false);
@@ -182,7 +241,17 @@ export class EveApiService {
       catchError((error) => {
         console.error('Error sending message to Eve:', error);
         this.isLoading.set(false);
-        this.error.set('Impossible de contacter Eve. Veuillez réessayer.');
+
+        // Better error messages based on error type
+        if (error.status === 0) {
+          this.error.set('Impossible de se connecter au serveur. Vérifiez votre connexion.');
+        } else if (error.status === 503) {
+          this.error.set('Le service Eve est temporairement indisponible. Réessayez dans quelques instants.');
+        } else if (error.status === 429) {
+          this.error.set('Trop de requêtes. Veuillez patienter quelques secondes.');
+        } else {
+          this.error.set('Impossible de contacter Eve. Veuillez réessayer.');
+        }
         return throwError(() => error);
       })
     );

@@ -50,12 +50,11 @@ $sidebar-collapsed-width: 72px;
   }
 
   &__nav {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: $spacing-1;
     padding: $spacing-3;
-    overflow-y: auto;
+    flex: 1;
   }
 
   &__nav-item {
@@ -117,10 +116,128 @@ $sidebar-collapsed-width: 72px;
       font-size: 1rem;
     }
   }
+
+  // Footer section with user profile
+  &__footer {
+    margin-top: auto;
+    padding: $spacing-3;
+  }
+
+  &__divider {
+    height: 1px;
+    background-color: $color-border-light;
+    margin-bottom: $spacing-3;
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-3;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: $color-background;
+    }
+
+    &-avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      background-color: $ey-yellow-light;
+      border: 2px solid $ey-yellow;
+      border-radius: $radius-full;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $ey-black;
+    }
+
+    &-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    &-name {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &-role {
+      font-size: $font-size-xs;
+      color: $color-text-secondary;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &-chevron {
+      color: $color-text-secondary;
+      transition: transform $transition-fast;
+    }
+  }
+
+  &__profile-menu {
+    display: flex;
+    flex-direction: column;
+    padding: $spacing-2;
+    margin-top: $spacing-2;
+    background-color: $color-surface;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-sm;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      padding: $spacing-2 $spacing-3;
+      border-radius: $radius-sm;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &:hover {
+        background-color: $color-background;
+        color: $color-text-primary;
+      }
+
+      &--logout {
+        color: $color-error;
+        width: 100%;
+
+        &:hover {
+          background-color: rgba($color-error, 0.1);
+          color: $color-error;
+        }
+      }
+    }
+
+    &-divider {
+      height: 1px;
+      background-color: $color-border-light;
+      margin: $spacing-2 0;
+    }
+  }
 }
 
-// Responsive
-@media (max-width: 768px) {
+// Responsive - Tablet
+@media (max-width: 1024px) {
   .sidebar {
     width: $sidebar-collapsed-width;
 
@@ -136,8 +253,40 @@ $sidebar-collapsed-width: 72px;
 
     .sidebar__nav-label,
     .sidebar__logo-text,
-    .sidebar__toggle {
+    .sidebar__toggle,
+    .sidebar__profile-info,
+    .sidebar__profile-chevron {
       display: none;
+    }
+  }
+}
+
+// Responsive - Mobile
+@media (max-width: 640px) {
+  .sidebar {
+    width: 0;
+    border-right: none;
+    overflow: hidden;
+
+    &--mobile-open {
+      width: $sidebar-width;
+      border-right: 1px solid $color-border-light;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+
+      .sidebar__nav-item {
+        justify-content: flex-start;
+        padding: $spacing-3 $spacing-4;
+      }
+
+      .sidebar__logo {
+        justify-content: flex-start;
+        padding: $spacing-4;
+      }
+
+      .sidebar__nav-label,
+      .sidebar__logo-text {
+        display: block;
+      }
     }
   }
 }

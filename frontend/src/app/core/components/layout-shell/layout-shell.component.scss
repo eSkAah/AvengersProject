@@ -8,6 +8,14 @@ $header-height: 64px;
   min-height: 100vh;
   background-color: $color-background;
 
+  &__backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: $z-index-fixed - 1;
+  }
+
   &__main {
     margin-left: $sidebar-width;
     margin-top: $header-height;
@@ -23,12 +31,32 @@ $header-height: 64px;
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
+// Responsive - Tablet
+@media (max-width: 1024px) {
   .layout {
     &__main {
       margin-left: $sidebar-collapsed-width;
       padding: $spacing-4;
+    }
+  }
+}
+
+// Responsive - Mobile
+@media (max-width: 640px) {
+  .layout {
+    &__backdrop {
+      display: block;
+    }
+
+    &__main {
+      margin-left: 0;
+      padding: $spacing-3;
+    }
+
+    &--sidebar-collapsed {
+      .layout__main {
+        margin-left: 0;
+      }
     }
   }
 }

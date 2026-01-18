@@ -50,6 +50,27 @@
     color: $ey-yellow;
     opacity: 0.8;
   }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    app-button {
+      lucide-icon {
+        margin-right: $spacing-1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: stretch;
+
+      app-button {
+        width: 100%;
+      }
+    }
+  }
 }
 
 // KPI Grid

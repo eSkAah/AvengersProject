@@ -1,0 +1,302 @@
+<div class="structure-page">
+  <!-- Header -->
+  <header class="structure-page__header">
+    <app-breadcrumb [items]="breadcrumbs"></app-breadcrumb>
+
+    <div class="structure-page__title">
+      <div class="structure-page__title-content">
+        <h1>Structure des Entités</h1>
+        <p>Visualisation de la hiérarchie des entités du groupe</p>
+      </div>
+      <lucide-icon name="network" [size]="48" class="structure-page__title-icon"></lucide-icon>
+    </div>
+  </header>
+
+  <!-- Toolbar -->
+  <div class="structure-page__toolbar">
+    <!-- Search -->
+    <div class="toolbar__search">
+      <lucide-icon name="search" [size]="18"></lucide-icon>
+      <input
+        type="text"
+        placeholder="Rechercher une entité..."
+        [value]="searchQuery()"
+        (input)="onSearchInput($any($event.target).value)"
+        (focus)="onSearchFocus()"
+        (blur)="onSearchBlur()"
+      />
+      @if (searchQuery()) {
+        <button class="toolbar__search-clear" (click)="searchQuery.set('')">
+          <lucide-icon name="x" [size]="14"></lucide-icon>
+        </button>
+      }
+
+      <!-- Search Results Dropdown -->
+      @if (showSearchResults() && searchResults().length > 0) {
+        <div class="toolbar__search-results">
+          @for (entity of searchResults(); track entity.id) {
+            <button class="toolbar__search-result" (mousedown)="selectSearchResult(entity)">
+              <span class="toolbar__search-result-flag">{{ entity.countryFlag }}</span>
+              <span class="toolbar__search-result-name">{{ entity.name }}</span>
+              <span class="toolbar__search-result-country">{{ entity.country }}</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="toolbar__controls">
+      <button class="toolbar__btn" (click)="collapseAll()" title="Tout réduire">
+        <lucide-icon name="minimize-2" [size]="18"></lucide-icon>
+      </button>
+      <button class="toolbar__btn" (click)="expandAll()" title="Tout développer">
+        <lucide-icon name="maximize-2" [size]="18"></lucide-icon>
+      </button>
+      <div class="toolbar__separator"></div>
+      <button class="toolbar__btn" (click)="zoomOut()" title="Zoom arrière">
+        <lucide-icon name="zoom-out" [size]="18"></lucide-icon>
+      </button>
+      <span class="toolbar__zoom-level">{{ (zoom() * 100) | number: '1.0-0' }}%</span>
+      <button class="toolbar__btn" (click)="zoomIn()" title="Zoom avant">
+        <lucide-icon name="zoom-in" [size]="18"></lucide-icon>
+      </button>
+      <div class="toolbar__separator"></div>
+      <button class="toolbar__btn" (click)="fitToScreen()" title="Ajuster à l'écran">
+        <lucide-icon name="maximize" [size]="18"></lucide-icon>
+      </button>
+      <button class="toolbar__btn" (click)="resetView()" title="Réinitialiser la vue">
+        <lucide-icon name="rotate-ccw" [size]="18"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="toolbar__legend">
+      <div class="legend-item">
+        <span class="legend-dot legend-dot--holding"></span>
+        <span>Holding</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot--region"></span>
+        <span>Région</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot--low"></span>
+        <span>Risque faible</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot--medium"></span>
+        <span>Risque moyen</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot--high"></span>
+        <span>Risque élevé</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Container -->
+  <div
+    class="structure-page__canvas"
+    #svgContainer
+    (wheel)="onWheel($event)"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseLeave()"
+    [class.structure-page__canvas--dragging]="isDragging()"
+  >
+    <div class="chart-wrapper" [style.transform]="getTransform()">
+      <svg
+        [attr.width]="chartWidth()"
+        [attr.height]="chartHeight()"
+        class="org-chart"
+      >
+        <!-- Connections -->
+        <g class="connections">
+          @for (link of connections(); track link.from.id + link.to.id) {
+            <path
+              [attr.d]="getNodePath(link.from, link.to)"
+              class="connection-line"
+            />
+          }
+        </g>
+
+        <!-- Nodes -->
+        <g class="nodes">
+          @for (node of visibleNodes(); track node.id) {
+            <g
+              class="node"
+              [class.node--holding]="node.type === 'holding'"
+              [class.node--region]="node.type === 'region'"
+              [class.node--entity]="node.type === 'entity'"
+              [class.node--selected]="selectedNode()?.id === node.id"
+              [ngClass]="getRiskClass(node.riskLevel)"
+              [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
+              (click)="selectNode(node)"
+              (dblclick)="navigateToEntity(node)"
+            >
+              <!-- Node background -->
+              <rect
+                class="node__bg"
+                [attr.width]="180"
+                [attr.height]="80"
+                rx="8"
+                ry="8"
+              />
+
+              <!-- Node content -->
+              @if (node.type === 'holding') {
+                <text class="node__icon" x="90" y="28">🏢</text>
+                <text class="node__name" x="90" y="50">{{ node.name }}</text>
+                <text class="node__subtitle" x="90" y="68">Groupe Principal</text>
+              } @else if (node.type === 'region') {
+                <text class="node__icon" x="90" y="28">🌍</text>
+                <text class="node__name" x="90" y="50">{{ node.name }}</text>
+                <text class="node__subtitle" x="90" y="68">{{ node.children.length }} entité(s)</text>
+              } @else {
+                <text class="node__flag" x="20" y="45">{{ node.countryFlag }}</text>
+                <text class="node__name node__name--left" x="45" y="35">{{ node.name }}</text>
+                <text class="node__detail" x="45" y="52">{{ node.completion }}% complété</text>
+                <text class="node__detail" x="45" y="68">{{ formatCurrency(node.revenue) }}</text>
+
+                <!-- Risk indicator -->
+                <circle
+                  class="node__risk-indicator"
+                  [class.node__risk-indicator--high]="node.riskLevel === 'high'"
+                  [class.node__risk-indicator--medium]="node.riskLevel === 'medium'"
+                  [class.node__risk-indicator--low]="node.riskLevel === 'low'"
+                  cx="165"
+                  cy="15"
+                  r="6"
+                />
+
+                <!-- Engagement count badge -->
+                @if (node.engagementCount && node.engagementCount > 1) {
+                  <g class="node__badge" transform="translate(165, 65)">
+                    <rect x="-16" y="-10" width="32" height="18" rx="9" class="node__badge-bg" />
+                    <text x="0" y="4" class="node__badge-text">{{ node.engagementCount }}</text>
+                  </g>
+                }
+              }
+
+              <!-- Expand/Collapse button for nodes with children -->
+              @if (node.children.length > 0) {
+                <g
+                  class="node__toggle"
+                  [attr.transform]="'translate(90, 80)'"
+                  (click)="toggleNode(node, $event)"
+                >
+                  <circle cx="0" cy="0" r="10" class="node__toggle-bg" />
+                  <text x="0" y="4" class="node__toggle-icon">
+                    {{ isExpanded(node.id) ? '−' : '+' }}
+                  </text>
+                </g>
+              }
+            </g>
+          }
+        </g>
+      </svg>
+    </div>
+
+    <!-- Instructions -->
+    <div class="structure-page__instructions">
+      <lucide-icon name="mouse-pointer" [size]="14"></lucide-icon>
+      <span>Cliquez et faites glisser pour naviguer • Molette pour zoomer • Double-clic sur une entité pour voir les détails</span>
+    </div>
+  </div>
+
+  <!-- Selected Node Details Panel -->
+  @if (selectedNode()) {
+    <aside class="structure-page__details">
+      <div class="details__header">
+        <h3>{{ selectedNode()!.name }}</h3>
+        <button class="details__close" (click)="selectedNode.set(null)">
+          <lucide-icon name="x" [size]="18"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="details__content">
+        @if (selectedNode()!.type === 'entity') {
+          <div class="details__row">
+            <span class="details__label">Pays</span>
+            <span class="details__value">{{ selectedNode()!.countryFlag }} {{ selectedNode()!.country }}</span>
+          </div>
+          <div class="details__row">
+            <span class="details__label">Niveau de risque</span>
+            <span class="details__value details__value--risk" [ngClass]="'risk-' + selectedNode()!.riskLevel">
+              {{ selectedNode()!.riskLevel | titlecase }}
+            </span>
+          </div>
+          <div class="details__row">
+            <span class="details__label">Avancement moyen</span>
+            <span class="details__value">{{ selectedNode()!.completion }}%</span>
+          </div>
+          <div class="details__row">
+            <span class="details__label">CA total</span>
+            <span class="details__value">{{ formatCurrency(selectedNode()!.revenue) }}</span>
+          </div>
+
+          <!-- Engagement list -->
+          @if (selectedNode()!.engagements && selectedNode()!.engagements!.length > 0) {
+            <div class="details__engagements">
+              <h4 class="details__engagements-title">
+                Engagements ({{ selectedNode()!.engagements!.length }})
+              </h4>
+              <div class="details__engagements-list">
+                @for (eng of selectedNode()!.engagements; track eng.id) {
+                  <button
+                    class="engagement-card"
+                    [class.engagement-card--high]="eng.riskLevel === 'high'"
+                    [class.engagement-card--medium]="eng.riskLevel === 'medium'"
+                    [class.engagement-card--low]="eng.riskLevel === 'low'"
+                    (click)="navigateToEngagement(eng)"
+                  >
+                    <div class="engagement-card__header">
+                      <span class="engagement-card__service">{{ eng.service }}</span>
+                      <span class="engagement-card__status" [ngClass]="getStatusClass(eng.status)">
+                        {{ getStatusLabel(eng.status) }}
+                      </span>
+                    </div>
+                    <div class="engagement-card__progress">
+                      <div class="engagement-card__progress-bar">
+                        <div
+                          class="engagement-card__progress-fill"
+                          [style.width.%]="eng.completionPercent"
+                        ></div>
+                      </div>
+                      <span class="engagement-card__progress-text">{{ eng.completionPercent }}%</span>
+                    </div>
+                    <div class="engagement-card__footer">
+                      <span class="engagement-card__due">
+                        <lucide-icon name="calendar" [size]="12"></lucide-icon>
+                        {{ eng.dueDate | date:'dd/MM/yyyy' }}
+                      </span>
+                      <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
+                    </div>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        } @else if (selectedNode()!.type === 'region') {
+          <div class="details__row">
+            <span class="details__label">Type</span>
+            <span class="details__value">Région géographique</span>
+          </div>
+          <div class="details__row">
+            <span class="details__label">Entités</span>
+            <span class="details__value">{{ selectedNode()!.children.length }}</span>
+          </div>
+        } @else {
+          <div class="details__row">
+            <span class="details__label">Type</span>
+            <span class="details__value">Holding principal</span>
+          </div>
+          <div class="details__row">
+            <span class="details__label">Régions</span>
+            <span class="details__value">{{ selectedNode()!.children.length }}</span>
+          </div>
+        }
+      </div>
+    </aside>
+  }
+</div>

@@ -1,4 +1,4 @@
-<aside class="sidebar" [class.sidebar--collapsed]="collapsed">
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed" [class.sidebar--mobile-open]="mobileOpen">
   <div class="sidebar__logo">
     <lucide-icon name="zap" class="sidebar__logo-icon" [size]="20"></lucide-icon>
     <span class="sidebar__logo-text" *ngIf="!collapsed">Avengers</span>
@@ -18,7 +18,45 @@
     }
   </nav>
 
-  <button class="sidebar__toggle" (click)="toggleCollapse()" [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-    <lucide-icon [name]="collapsed ? 'chevron-right' : 'chevron-left'" class="sidebar__toggle-icon" [size]="16"></lucide-icon>
-  </button>
+  <!-- User Profile Section -->
+  <div class="sidebar__footer">
+    <div class="sidebar__divider"></div>
+
+    <div class="sidebar__profile" (click)="toggleProfileMenu()">
+      <div class="sidebar__profile-avatar">
+        {{ userProfile.initials }}
+      </div>
+      <div class="sidebar__profile-info" *ngIf="!collapsed">
+        <span class="sidebar__profile-name">{{ userProfile.name }}</span>
+        <span class="sidebar__profile-role">{{ userProfile.role }}</span>
+      </div>
+      <lucide-icon
+        *ngIf="!collapsed"
+        [name]="showProfileMenu ? 'chevron-up' : 'chevron-down'"
+        class="sidebar__profile-chevron"
+        [size]="16"
+      ></lucide-icon>
+    </div>
+
+    <!-- Profile Menu Dropdown -->
+    <div class="sidebar__profile-menu" *ngIf="showProfileMenu && !collapsed">
+      <a class="sidebar__profile-menu-item" routerLink="/profile">
+        <lucide-icon name="user" [size]="16"></lucide-icon>
+        <span>Profile</span>
+      </a>
+      <a class="sidebar__profile-menu-item" routerLink="/settings">
+        <lucide-icon name="settings" [size]="16"></lucide-icon>
+        <span>Settings</span>
+      </a>
+      <div class="sidebar__profile-menu-divider"></div>
+      <button class="sidebar__profile-menu-item sidebar__profile-menu-item--logout">
+        <lucide-icon name="log-out" [size]="16"></lucide-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+
+    <button class="sidebar__toggle" (click)="toggleCollapse()" [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      <lucide-icon [name]="collapsed ? 'chevron-right' : 'chevron-left'" class="sidebar__toggle-icon" [size]="16"></lucide-icon>
+    </button>
+  </div>
 </aside>

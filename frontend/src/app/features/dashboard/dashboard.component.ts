@@ -3,16 +3,20 @@ import {
   ChangeDetectionStrategy,
   inject,
   computed,
+  signal,
+  ElementRef,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MockDataService } from '../../core';
+import { MockDataService, PdfExportService } from '../../core';
 import {
   KpiCardComponent,
   ProgressBarComponent,
   BreadcrumbComponent,
   BreadcrumbItem,
+  ButtonComponent,
 } from '../../shared';
 
 @Component({
@@ -24,6 +28,7 @@ import {
     KpiCardComponent,
     ProgressBarComponent,
     BreadcrumbComponent,
+    ButtonComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -32,6 +37,10 @@ import {
 export class DashboardComponent {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
+  private readonly pdfExport = inject(PdfExportService);
+
+  readonly dashboardContent = viewChild<ElementRef>('dashboardContent');
+  readonly isExporting = signal(false);
 
   readonly breadcrumbs: BreadcrumbItem[] = [
     { label: 'Accueil', path: '/' },
@@ -102,5 +111,33 @@ export class DashboardComponent {
 
   goToEngagement(id: string): void {
     this.router.navigate(['/engagements', id]);
+  }
+
+  async exportToPdf(): Promise<void> {
+    this.isExporting.set(true);
+    try {
+      await this.pdfExport.exportDashboardReport({
+        title: 'Tableau de Bord - Rapport',
+        filename: 'avengers-dashboard-rapport',
+      });
+    } finally {
+      this.isExporting.set(false);
+    }
+  }
+
+  async exportVisualToPdf(): Promise<void> {
+    const contentRef = this.dashboardContent();
+    if (!contentRef) return;
+
+    this.isExporting.set(true);
+    try {
+      await this.pdfExport.exportElementToPdf(contentRef.nativeElement, {
+        title: 'Tableau de Bord - Capture',
+        filename: 'avengers-dashboard-visual',
+        orientation: 'landscape',
+      });
+    } finally {
+      this.isExporting.set(false);
+    }
   }
 }

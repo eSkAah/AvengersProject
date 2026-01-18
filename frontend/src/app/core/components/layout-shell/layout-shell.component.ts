@@ -14,8 +14,17 @@ import { HeaderComponent } from '../header/header.component';
 })
 export class LayoutShellComponent {
   sidebarCollapsed = signal(false);
+  mobileMenuOpen = signal(false);
 
   onSidebarCollapsedChange(collapsed: boolean): void {
     this.sidebarCollapsed.set(collapsed);
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update(v => !v);
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 }

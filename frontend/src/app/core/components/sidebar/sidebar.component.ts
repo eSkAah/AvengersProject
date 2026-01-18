@@ -9,6 +9,12 @@ export interface NavItem {
   route: string;
 }
 
+export interface UserProfile {
+  name: string;
+  initials: string;
+  role: string;
+}
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -19,15 +25,37 @@ export interface NavItem {
 })
 export class SidebarComponent {
   @Input() collapsed = false;
+  @Input() mobileOpen = false;
   @Output() collapsedChange = new EventEmitter<boolean>();
 
+  // Navigation items with Structure page for entity relationships
   navItems: NavItem[] = [
-    { label: 'Home', icon: 'home', route: '/' },
+    { label: 'Command Center', icon: 'command', route: '/' },
+    { label: 'Engagements', icon: 'briefcase', route: '/engagements' },
+    { label: 'Structure', icon: 'git-branch', route: '/structure' },
     { label: 'Documents', icon: 'file-text', route: '/documents' },
+    { label: 'Dashboard', icon: 'bar-chart-2', route: '/dashboard' },
   ];
+
+  // User profile
+  userProfile: UserProfile = {
+    name: 'Avengers User',
+    initials: 'AV',
+    role: 'Consultant',
+  };
+
+  showProfileMenu = false;
 
   toggleCollapse(): void {
     this.collapsed = !this.collapsed;
     this.collapsedChange.emit(this.collapsed);
+  }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+  }
+
+  closeProfileMenu(): void {
+    this.showProfileMenu = false;
   }
 }

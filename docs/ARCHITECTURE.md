@@ -1,8 +1,8 @@
 # Architecture Technique - Avengers Project
 
-**Version:** 1.0
-**Date:** 2026-01-17
-**Stack:** Angular 19 + FastAPI + Factory AI
+**Version:** 2.0
+**Date:** 2026-01-18
+**Stack:** Angular 19 + FastAPI + OpenAI GPT-4o
 
 ---
 
@@ -20,7 +20,7 @@
 | **Icons** | Lucide Icons | Moderne, léger, cohérent |
 | **Backend** | FastAPI | Rapide à dev, async natif, auto-docs |
 | **Database** | SQLite + SQLAlchemy | Persistant, queries faciles, zero config |
-| **AI Integration** | Factory AI / Blackwell | Via API REST, prompts structurés |
+| **AI Integration** | OpenAI GPT-4o | Via API REST (clé dans .env), context-aware, RAG-ready |
 
 ---
 
@@ -33,14 +33,21 @@
 │  ┌─────────────────────────────────────────────────────────────┐ │
 │  │                    ANGULAR 19 SPA                            │ │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │ │
-│  │  │  Home    │ │  Docs    │ │Dashboard │ │   Eve    │        │ │
-│  │  │  Page    │ │ Library  │ │  Charts  │ │  Chat    │        │ │
+│  │  │ Command  │ │Engagements│ │  Docs    │ │Dashboard │        │ │
+│  │  │ Center   │ │   Page   │ │ Library  │ │  Charts  │        │ │
 │  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │ │
-│  │                      │                                       │ │
-│  │              ┌───────┴───────┐                               │ │
-│  │              │   Services    │                               │ │
-│  │              │  (Signals)    │                               │ │
-│  │              └───────────────┘                               │ │
+│  │       │            │            │            │               │ │
+│  │       └────────────┴────────────┴────────────┘               │ │
+│  │                         │                                    │ │
+│  │              ┌──────────┴──────────┐                         │ │
+│  │              │     Services        │                         │ │
+│  │              │  (Signals + State)  │                         │ │
+│  │              └─────────────────────┘                         │ │
+│  │                         │                                    │ │
+│  │  ┌──────────┐    ┌──────────┐    ┌──────────┐               │ │
+│  │  │   Eve    │    │  Action  │    │  Notif   │               │ │
+│  │  │  Panel   │    │  Center  │    │  System  │               │ │
+│  │  └──────────┘    └──────────┘    └──────────┘               │ │
 │  └─────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -61,8 +68,8 @@
 │         ┌────────────┼────────────┐                              │
 │         ▼            ▼            ▼                              │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐                         │
-│  │  SQLite  │ │ Factory  │ │  File    │                         │
-│  │    DB    │ │    AI    │ │ Storage  │                         │
+│  │  SQLite  │ │  OpenAI  │ │  File    │                         │
+│  │    DB    │ │  GPT-4o  │ │ Storage  │                         │
 │  └──────────┘ └──────────┘ └──────────┘                         │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -114,20 +121,36 @@ frontend/
 │   │   │       ├── currency-ey.pipe.ts      # Format € EY style
 │   │   │       └── relative-date.pipe.ts
 │   │   │
-│   │   ├── features/                  # Feature modules
-│   │   │   ├── home/
-│   │   │   │   ├── home.component.ts
-│   │   │   │   ├── home.component.html
+│   │   ├── features/                  # Feature modules (lazy-loaded)
+│   │   │   │
+│   │   │   ├── command-center/        # Home = Command Center (KPIs, Actions, At-Risk)
+│   │   │   │   ├── command-center.component.ts
+│   │   │   │   ├── command-center.component.html
+│   │   │   │   ├── components/
+│   │   │   │   │   ├── kpi-summary/
+│   │   │   │   │   │   └── kpi-summary.component.ts
+│   │   │   │   │   ├── action-center/
+│   │   │   │   │   │   └── action-center.component.ts    # Active to-dos
+│   │   │   │   │   ├── at-risk-panel/
+│   │   │   │   │   │   └── at-risk-panel.component.ts
+│   │   │   │   │   └── recent-activity/
+│   │   │   │   │       └── recent-activity.component.ts
+│   │   │   │   └── command-center.routes.ts
+│   │   │   │
+│   │   │   ├── engagements/           # Dedicated Engagements page with filters
+│   │   │   │   ├── engagements.component.ts
 │   │   │   │   ├── components/
 │   │   │   │   │   ├── engagement-list/
 │   │   │   │   │   │   └── engagement-list.component.ts
 │   │   │   │   │   ├── engagement-accordion/
 │   │   │   │   │   │   └── engagement-accordion.component.ts
-│   │   │   │   │   └── kpi-header/
-│   │   │   │   │       └── kpi-header.component.ts
-│   │   │   │   └── home.routes.ts
+│   │   │   │   │   ├── engagement-filters/
+│   │   │   │   │   │   └── engagement-filters.component.ts
+│   │   │   │   │   └── engagement-search/
+│   │   │   │   │       └── engagement-search.component.ts
+│   │   │   │   └── engagements.routes.ts
 │   │   │   │
-│   │   │   ├── documents/
+│   │   │   ├── documents/             # Hybrid Document Library
 │   │   │   │   ├── documents.component.ts
 │   │   │   │   ├── components/
 │   │   │   │   │   ├── document-tree/
@@ -138,8 +161,10 @@ frontend/
 │   │   │   │   │   │   └── document-list.component.ts
 │   │   │   │   │   ├── upload-zone/
 │   │   │   │   │   │   └── upload-zone.component.ts
-│   │   │   │   │   └── view-toggle/
-│   │   │   │   │       └── view-toggle.component.ts
+│   │   │   │   │   ├── view-toggle/
+│   │   │   │   │   │   └── view-toggle.component.ts
+│   │   │   │   │   └── global-search/             # NEW: Global library search
+│   │   │   │   │       └── global-search.component.ts
 │   │   │   │   └── documents.routes.ts
 │   │   │   │
 │   │   │   ├── dashboard/
@@ -162,7 +187,7 @@ frontend/
 │   │   │       │   └── eve-fab.component.ts      # Floating button
 │   │   │       ├── message-bubble/
 │   │   │       │   └── message-bubble.component.ts
-│   │   │       └── eve.service.ts
+│   │   │       └── eve.service.ts                # Context-aware (engagement vs global)
 │   │   │
 │   │   ├── app.component.ts
 │   │   ├── app.config.ts
@@ -469,18 +494,20 @@ class Engagement(Base):
     conversations = relationship("Conversation", back_populates="engagement")
 ```
 
-### 4.4 Eve Service (Factory AI Integration)
+### 4.4 Eve Service (OpenAI GPT-4o Integration)
 
 ```python
 # app/services/eve_service.py
-from app.ai.client import FactoryAIClient
+from openai import AsyncOpenAI
 from app.ai.prompts import EVE_SYSTEM_PROMPT, EXPLAIN_PROMPT
 from app.models.engagement import Engagement
 from app.models.document import Document
+from app.config import settings
 
 class EveService:
     def __init__(self):
-        self.ai_client = FactoryAIClient()
+        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self.model = "gpt-4o"
 
     async def chat(
         self,
@@ -488,22 +515,38 @@ class EveService:
         engagement_id: str | None = None,
         context: dict | None = None
     ) -> dict:
-        """Process chat message with Eve"""
+        """Process chat message with Eve - Context-Aware"""
 
-        # Build context from engagement and documents
-        system_context = self._build_context(engagement_id)
+        # Determine context mode
+        if engagement_id:
+            system_context = self._build_engagement_context(engagement_id)
+            mode = "engagement"
+        else:
+            system_context = self._build_global_context()
+            mode = "global"
 
-        # Call Factory AI
-        response = await self.ai_client.complete(
-            system_prompt=EVE_SYSTEM_PROMPT,
-            user_message=message,
-            context=system_context
+        # Auto-switch: detect if user mentions specific entity
+        detected_entity = self._detect_entity_mention(message)
+        if detected_entity and mode == "global":
+            engagement_id = detected_entity
+            system_context = self._build_engagement_context(engagement_id)
+            mode = "engagement"
+
+        # Call OpenAI GPT-4o
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": EVE_SYSTEM_PROMPT + "\n\n" + system_context},
+                {"role": "user", "content": message}
+            ],
+            temperature=0.3
         )
 
         return {
-            "message": response.content,
-            "sources": response.sources,
-            "engagement_id": engagement_id
+            "message": response.choices[0].message.content,
+            "sources": self._extract_sources(response),
+            "engagement_id": engagement_id,
+            "context_mode": mode
         }
 
     async def explain_value(
@@ -512,41 +555,60 @@ class EveService:
         context: str,
         engagement_id: str
     ) -> dict:
-        """Explain a specific value (CMD+Click feature)"""
+        """Explain a specific value (CMD+Click feature) with RAG"""
+
+        # Get relevant document content (RAG)
+        docs = self._get_engagement_documents(engagement_id)
+        doc_content = self._extract_relevant_content(docs, value, context)
 
         prompt = EXPLAIN_PROMPT.format(
             value=value,
-            context=context
+            context=context,
+            document_content=doc_content
         )
 
-        # Get relevant documents for source citation
-        docs = self._get_engagement_documents(engagement_id)
-
-        response = await self.ai_client.complete(
-            system_prompt=EVE_SYSTEM_PROMPT,
-            user_message=prompt,
-            context={"documents": docs}
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": EVE_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.2
         )
 
         return {
-            "explanation": response.content,
-            "source_document": response.source_doc,
-            "source_line": response.source_line
+            "explanation": response.choices[0].message.content,
+            "source_document": self._find_source_doc(docs, value),
+            "source_line": self._find_source_line(docs, value)
         }
 
-    def _build_context(self, engagement_id: str | None) -> dict:
-        """Build context from engagement data"""
-        if not engagement_id:
-            return {}
-
+    def _build_engagement_context(self, engagement_id: str) -> str:
+        """Build rich context from engagement data for RAG"""
         engagement = self._get_engagement(engagement_id)
         documents = self._get_engagement_documents(engagement_id)
 
-        return {
-            "engagement": engagement.to_dict(),
-            "documents": [d.to_dict() for d in documents],
-            "financial_data": engagement.financial_data
-        }
+        return f"""
+CONTEXTE ENGAGEMENT:
+- Entité: {engagement.entity_name}
+- Pays: {engagement.country_name}
+- Statut: {engagement.status}
+- Risque: {engagement.risk_level}
+- Documents: {len(documents)} fichiers
+- Données financières: {engagement.financial_data}
+"""
+
+    def _build_global_context(self) -> str:
+        """Build global context (no specific engagement)"""
+        return "Mode global: répondez de manière générale sur la plateforme."
+
+    def _detect_entity_mention(self, message: str) -> str | None:
+        """Detect if user mentions a specific entity name"""
+        # Check against known entity names
+        entities = self._get_all_entity_names()
+        for entity_id, name in entities.items():
+            if name.lower() in message.lower():
+                return entity_id
+        return None
 ```
 
 ### 4.5 Classification Service
@@ -600,10 +662,20 @@ class ClassificationService:
         return None
 
     async def _ai_classify(self, filename: str, content: str) -> str:
-        """Use Factory AI for classification"""
-        client = FactoryAIClient()
-        result = await client.classify_document(filename, content)
-        return result.document_type
+        """Use OpenAI GPT-4o for classification"""
+        from openai import AsyncOpenAI
+        from app.config import settings
+
+        client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": CLASSIFICATION_PROMPT},
+                {"role": "user", "content": f"Filename: {filename}\nContent: {content[:500]}"}
+            ],
+            temperature=0
+        )
+        return response.choices[0].message.content.strip()
 ```
 
 ### 4.6 Prompts Templates
@@ -797,9 +869,9 @@ export interface DashboardKPIs {
 
 ```
 ┌─────────┐     ┌─────────────┐     ┌─────────────┐     ┌──────────┐
-│  User   │────▶│  Directive  │────▶│   FastAPI   │────▶│ Factory  │
-│CMD+Click│     │  cmdClick   │POST │ /eve/explain│     │    AI    │
-│ on 3.3M │     │             │     │             │     │          │
+│  User   │────▶│  Directive  │────▶│   FastAPI   │────▶│  OpenAI  │
+│CMD+Click│     │  cmdClick   │POST │ /eve/explain│     │  GPT-4o  │
+│ on 3.3M │     │             │     │             │     │   +RAG   │
 └─────────┘     └─────────────┘     └─────────────┘     └──────────┘
                                            │                  │
                                            │   explanation    │
@@ -815,6 +887,92 @@ export interface DashboardKPIs {
 
 ---
 
+## 6b. Nouvelles Architectures (v2.0)
+
+### 6b.1 Navigation Structure
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         SIDEBAR                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐                                            │
+│  │  Command Center │  ← Home (KPIs, Actions, At-Risk)          │
+│  └─────────────────┘                                            │
+│  ┌─────────────────┐                                            │
+│  │   Engagements   │  ← Dedicated page with filters             │
+│  └─────────────────┘                                            │
+│  ┌─────────────────┐                                            │
+│  │   Documents     │  ← Hybrid Library                          │
+│  └─────────────────┘                                            │
+│  ┌─────────────────┐                                            │
+│  │   Dashboard     │  ← Charts & Analytics                      │
+│  └─────────────────┘                                            │
+│                                                                  │
+│  ─────────────────────────────────────────                      │
+│  ┌─────────────────┐                                            │
+│  │  Avatar/Profile │  ← Moved from header to sidebar bottom    │
+│  └─────────────────┘                                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 6b.2 Document Library - Hybrid Architecture
+
+**Primary Flow (90%): Engagement-Centric View**
+```
+User clicks Engagement → Documents filtered to that engagement only
+```
+
+**Secondary Flow (10%): Global Library Search**
+```
+User clicks "All Documents" → Full library with filters (entity, type, date)
+```
+
+| Mode | Use Case | Filter By |
+|------|----------|-----------|
+| Engagement View | Working on specific entity | Auto-filtered |
+| Global Library | Cross-entity search | Entity, Type, Date, Status |
+
+### 6b.3 Action Center vs Notifications
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    HEADER                                        │
+│                                               🔔 Notifications   │
+│                                               (passive alerts)   │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                COMMAND CENTER                                    │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │              ACTION CENTER                                   ││
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐                        ││
+│  │  │ To-Do 1 │ │ To-Do 2 │ │ To-Do 3 │  ← Active, clickable   ││
+│  │  └─────────┘ └─────────┘ └─────────┘                        ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Component | Type | Examples |
+|-----------|------|----------|
+| **Notifications** (🔔) | Passive | "Document uploaded", "Analysis complete" |
+| **Action Center** | Active | "Upload missing doc", "Review deadline", "Complete task" |
+
+### 6b.4 Eve Context Logic
+
+| User Location | Context Mode | Eve Behavior |
+|---------------|--------------|--------------|
+| Command Center | Global | General platform help |
+| Engagements Page | Global | General platform help |
+| Engagement Detail | Engagement | Specific to that entity |
+| Dashboard (with engagement) | Engagement | Specific to that entity |
+| Documents (engagement view) | Engagement | Specific to that entity |
+
+**Auto-Switch Logic:**
+- If user mentions entity name in global mode → switch to engagement context
+- If user explicitly asks about different entity → switch context
+
+---
+
 ## 7. Configuration & Environnement
 
 ### 7.1 Variables d'environnement Backend
@@ -822,8 +980,8 @@ export interface DashboardKPIs {
 ```bash
 # .env
 DATABASE_URL=sqlite:///./data/avengers_project.db
-FACTORY_AI_URL=https://factory-ai.ey.com/api
-FACTORY_AI_KEY=your-api-key
+OPENAI_API_KEY=sk-your-openai-api-key
+OPENAI_MODEL=gpt-4o
 UPLOAD_DIR=./uploads
 MAX_UPLOAD_SIZE=10485760  # 10MB
 CORS_ORIGINS=http://localhost:4200
@@ -868,6 +1026,8 @@ pydantic==2.5.3
 python-multipart==0.0.6
 httpx==0.26.0
 python-dotenv==1.0.0
+openai==1.12.0              # OpenAI GPT-4o integration
+tiktoken==0.5.2             # Token counting for context management
 ```
 
 ### 8.3 Commandes de lancement
@@ -891,21 +1051,31 @@ ng serve --open
 ## 9. Checklist Technique
 
 ### Avant de coder:
-- [ ] Setup projet Angular avec Tailwind
-- [ ] Setup projet FastAPI avec SQLite
-- [ ] Configurer CORS
-- [ ] Créer les modèles DB
-- [ ] Seed les données de démo
-- [ ] Tester connexion Factory AI
+- [x] Setup projet Angular avec Tailwind
+- [x] Setup projet FastAPI avec SQLite
+- [x] Configurer CORS
+- [x] Créer les modèles DB
+- [x] Seed les données de démo
+- [ ] Tester connexion OpenAI GPT-4o
+
+### V2.0 - Nouvelles Features:
+- [ ] Command Center (remplace Home)
+- [ ] Page Engagements dédiée avec filtres
+- [ ] Document Library hybride (engagement + global)
+- [ ] Action Center (to-dos actifs)
+- [ ] Notifications système (bell icon)
+- [ ] Avatar déplacé dans sidebar
+- [ ] Eve context-aware (engagement vs global)
+- [ ] Eve RAG (lecture contenu documents)
 
 ### Pendant le dev:
 - [ ] Design System components first
 - [ ] API endpoints + Swagger docs
-- [ ] Feature par feature (Home → Docs → Dashboard → Eve)
-- [ ] Intégration progressive IA
+- [ ] Feature par feature (Command Center → Engagements → Docs → Dashboard → Eve)
+- [ ] Intégration progressive OpenAI
 
 ### Avant la démo:
 - [ ] Script de démo testé 10x
 - [ ] Données de démo prêtes
-- [ ] Fallbacks si IA lente
+- [ ] Fallbacks si IA lente (rate limits)
 - [ ] Polish animations

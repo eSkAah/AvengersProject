@@ -1,12 +1,21 @@
 <div class="layout" [class.layout--sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Mobile backdrop -->
+  @if (mobileMenuOpen()) {
+    <div class="layout__backdrop" (click)="closeMobileMenu()"></div>
+  }
+
   <app-sidebar
     [collapsed]="sidebarCollapsed()"
+    [mobileOpen]="mobileMenuOpen()"
     (collapsedChange)="onSidebarCollapsedChange($event)"
   ></app-sidebar>
 
-  <app-header [sidebarCollapsed]="sidebarCollapsed()"></app-header>
+  <app-header
+    [sidebarCollapsed]="sidebarCollapsed()"
+    (menuToggle)="toggleMobileMenu()"
+  ></app-header>
 
-  <main class="layout__main">
+  <main class="layout__main" (click)="closeMobileMenu()">
     <ng-content></ng-content>
   </main>
 </div>

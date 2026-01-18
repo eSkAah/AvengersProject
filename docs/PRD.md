@@ -89,30 +89,129 @@ Info               #3B82F6  (bleu)
 
 ## 5. Spécifications Fonctionnelles (Par Module)
 
-### 5.1 Landing Page (Tableau de Bord Global)
+### 5.1 Home - Command Center
 
-**Objectif :** Vue synthétique premium des engagements avec indicateurs intelligents.
+**Objectif :** Répondre à "Qu'est-ce qui requiert mon attention MAINTENANT?"
+
+**Principe :** Page d'accueil focalisée sur l'urgent et l'actionnable. Pas de liste complète - c'est sur la page Engagements.
+
+#### 5.1.1 Structure Command Center
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  GLOBAL KPIs (santé en un coup d'œil)                       │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
+│  │  📊 47   │ │  ⏳ 12   │ │  🔴 5    │ │  ✅ 30   │        │
+│  │  Total   │ │ Actifs   │ │ À Risque │ │ Complétés│        │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
+├─────────────────────────────────────────────────────────────┤
+│  🎯 ACTION CENTER (3 en attente)                            │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ ⚠️ Uploader Trial Balance - France SPV   [Uploader] │    │
+│  │ ⚠️ Revoir anomalie - Germany PropCo      [Revoir]   │    │
+│  │ ⚠️ Approuver classification - Belgium    [Approuver]│    │
+│  └─────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────┤
+│  🔴 ENGAGEMENTS À RISQUE (urgents uniquement)               │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ 🔴 France SPV - 67% - Échéance dans 5j    [Ouvrir]  │    │
+│  │ 🔴 Luxembourg Fund - 20% - Échéance 8j    [Ouvrir]  │    │
+│  └─────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────┤
+│  🕐 ACTIVITÉ RÉCENTE                                        │
+│  │ Document uploadé: Germany_Ledger.xlsx - il y a 2h   │    │
+│  │ Analyse terminée: Netherlands - il y a 4h           │    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 5.1.2 Features
 
 | Feature | Description | Priorité |
 |---------|-------------|----------|
-| Liste des Engagements | Affichage moderne avec cards ou table premium | Must-Have |
-| Risk Badges | Badges visuels rouge/orange/vert avec prédiction de risque retard | Must-Have |
-| Notifications Intelligentes | Zone affichant alertes proactives ("Documents requis pour France") | Must-Have |
+| KPIs Globaux | Métriques clés cliquables (filtre vers Engagements) | Must-Have |
+| Action Center | Tâches nécessitant action utilisateur (disparaissent une fois faites) | Must-Have |
+| Engagements À Risque | Seulement 🔴 HIGH + 🟠 MEDIUM, pas la liste complète | Must-Have |
+| Activité Récente | Feed des événements récents (informatif) | Should-Have |
 | Prédiction Deadline | "À ce rythme, France sera prêt le 25" | Must-Have |
-| KPIs Globaux | Métriques clés animées en haut de page | Must-Have |
 
-### 5.2 Document Library Premium
+### 5.1b Page Engagements (Liste Complète)
 
-**Objectif :** Gestion documentaire moderne, style 2026 (pas SharePoint).
+**Objectif :** Trouver et accéder rapidement à n'importe quel engagement parmi 100+ entités.
+
+**Accès :** Menu sidebar "Engagements"
+
+#### 5.1b.1 Filtres
+
+| Filtre | Type | Exemple |
+|--------|------|---------|
+| Entité | Dropdown searchable | "France SPV", "Germany PropCo" |
+| Statut | Multi-select | Actif, Complété, À Risque, En Attente |
+| Année | Dropdown | 2024, 2023, 2022 |
+| Service | Multi-select | Corporate Tax, CTR, VAT |
+
+#### 5.1b.2 Features
 
 | Feature | Description | Priorité |
 |---------|-------------|----------|
-| Tree Navigation | Arborescence dossiers/engagements collapsible | Must-Have |
+| Liste Filtrée | Tous les engagements avec filtres multi-critères | Must-Have |
+| Risk Badges | Badges visuels rouge/orange/vert | Must-Have |
+| Barre de Progression | % complétion visuel | Must-Have |
+| Actions Rapides | Ouvrir, Voir Documents, Ask Eve | Must-Have |
+| Tri | Par date d'échéance, risque, entité, statut | Should-Have |
+| Persistence Filtres | Filtres conservés dans la session | Should-Have |
+
+### 5.1c Action Center vs Notifications
+
+**Distinction importante :**
+
+| Concept | Type | Localisation | Comportement |
+|---------|------|--------------|--------------|
+| **Notifications (🔔)** | Passif/Informatif | Icône cloche header | Événements passés → accusé/dismiss |
+| **Action Center** | Actif/To-Do | Section Home + dédié | Tâches à faire → disparaissent quand faites |
+
+**Exemples Notifications :** "Document uploadé", "Analyse terminée", "Risque changé"
+**Exemples Actions :** "Uploader doc manquant", "Revoir anomalie", "Approuver classification"
+
+### 5.2 Document Library - Architecture Hybride
+
+**Objectif :** Gestion documentaire scalable pour 100+ entités, style 2026 (pas SharePoint).
+
+#### 5.2.1 Deux Modes de Navigation
+
+| Mode | Contexte | Contenu Affiché |
+|------|----------|-----------------|
+| **Vue Engagement** | Dans un engagement | Uniquement les documents de CET engagement (requis, uploadés, manquants) |
+| **Vue Bibliothèque** | Menu Library global | Bibliothèque complète avec hiérarchie Entité → Année → Type + filtres |
+
+**Principe :** La Vue Engagement couvre 90% des cas d'usage (travail sur un dossier). La Vue Bibliothèque couvre 10% (recherche cross-entités, audits).
+
+#### 5.2.2 Vue Engagement (Dans un Engagement)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Documents - France SPV (Corporate Tax 2024)                 │
+├─────────────────────────────────────────────────────────────┤
+│ Documents Requis:                                           │
+│  ✅ General Ledger      [Voir] [Remplacer] [💬 Ask Eve]     │
+│  ❌ Trial Balance       [Uploader]                          │
+│  ❌ Tax Return          [Uploader]                          │
+├─────────────────────────────────────────────────────────────┤
+│ Documents Additionnels:                                     │
+│  📄 Notes_Comptables.pdf   [Voir] [Supprimer]               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 5.2.3 Vue Bibliothèque (Menu Global)
+
+| Feature | Description | Priorité |
+|---------|-------------|----------|
+| Filtres Multi-Critères | Entité (dropdown searchable), Année, Type doc, Statut | Must-Have |
+| Hiérarchie Entité→Année→Type | Navigation par arborescence pour 100+ entités | Must-Have |
 | Toggle Grid/List View | Switch entre vue grille et vue liste | Must-Have |
-| Search & Filter | Recherche rapide avec filtres par type, date, engagement | Must-Have |
+| Search Global | Recherche rapide dans toute la bibliothèque | Must-Have |
 | Preview Inline | Aperçu du document sans quitter la page | Should-Have |
 | Document Status Badges | "Analysé", "En attente", "Anomalie détectée" | Must-Have |
-| Quick Actions on Hover | Download, Preview, Ask AI, Delete | Should-Have |
+| Quick Actions on Hover | Download, Preview, Ask Eve, Delete | Should-Have |
 | Breadcrumb Navigation | Navigation contextuelle moderne | Must-Have |
 | Tags Auto-générées | Métadonnées extraites par IA | Should-Have |
 
@@ -145,15 +244,40 @@ Info               #3B82F6  (bleu)
 | Toggle Chart Types | Switch bar/pie/line | Should-Have |
 | Export Chart | PNG/SVG direct | Nice-to-Have |
 
-### 5.5 Assistant IA "Eve" - Chatbot Contextuel
+### 5.5 Assistant IA "Eve" - Chatbot Contextuel (OpenAI GPT-4o)
 
 **Objectif :** "Je demande, Eve sait de quoi je parle" - IA contextuelle par engagement.
+
+**Moteur IA :** OpenAI GPT-4o (clé API dans fichier .env)
+
+#### 5.5.1 Logique de Contexte
+
+| Contexte | Données Accessibles | Exemples de Questions |
+|----------|---------------------|----------------------|
+| **Dans un Engagement** | Détails engagement, documents uploadés, données financières, deadlines, niveau de risque | "Quels documents manquent?", "Explique les €3.3M d'actifs", "Pourquoi le risque est élevé?" |
+| **Vue Globale (Home)** | Liste des engagements, KPIs agrégés, aide générale | "Combien d'engagements à risque?", "Quel est le taux de complétion global?" |
+
+**Comportement Auto-Switch :** Si l'utilisateur pose une question sur un engagement spécifique depuis la vue globale (ex: "Quels documents manquent pour France?"), Eve bascule automatiquement le contexte vers cet engagement et répond.
+
+**CMD+Click :** Le clic CMD sur une valeur dans un dashboard définit automatiquement le contexte de l'engagement correspondant.
+
+#### 5.5.2 Lecture du Contenu des Documents (RAG)
+
+Eve peut lire le contenu complet des documents uploadés :
+- Extraction de texte depuis Excel, PDF, CSV
+- Indexation du contenu pour recherche
+- Inclusion du contenu pertinent dans le prompt Eve
+- Citations avec numéros de ligne/cellule
+
+#### 5.5.3 Features
 
 | Feature | Description | Priorité |
 |---------|-------------|----------|
 | Chat Panel Sliding | Panneau latéral élégant, accessible partout | Must-Have |
 | Contexte Engagement Auto | Eve connaît l'engagement actif et ses documents | Must-Have |
-| Réponses avec Sources | Citations des documents avec liens directs | Must-Have |
+| Lecture Contenu Documents | Eve lit et analyse le contenu des fichiers uploadés | Must-Have |
+| Auto-Switch Contexte | Bascule automatique vers engagement mentionné | Must-Have |
+| Réponses avec Sources | Citations des documents avec liens directs (ligne, cellule) | Must-Have |
 | **Cmd+Click "Ask Eve"** | CMD (Mac) / ALT (Win) + Click sur chiffre = auto-prompt Eve | Must-Have |
 | Tooltip "Hold CMD" | Indication au hover sur éléments cliquables | Must-Have |
 | Explain Data | Explication détaillée de tout chiffre/KPI | Must-Have |
@@ -185,10 +309,10 @@ Info               #3B82F6  (bleu)
 
 ### 6.1 Stack
 
-* **Frontend :** Angular 17+ avec standalone components
+* **Frontend :** Angular 19+ avec standalone components
 * **Backend :** FastAPI (Python) - API RESTful fonctionnelle
-* **Base de Données :** SQLite ou JSON local pour la démo
-* **AI Engine :** Factory AI / Blackwell (via API/Proxy)
+* **Base de Données :** SQLite local pour la démo
+* **AI Engine :** OpenAI GPT-4o (via API REST avec clé dans .env)
 
 ### 6.2 Structure de Données (Modèle étendu)
 
@@ -325,9 +449,18 @@ J10 ██████░░░░  Polish final + Répétition démo
 
 ---
 
-## 11. Spécifications Détaillées - Eve (Assistant IA)
+## 11. Spécifications Détaillées - Eve (Assistant IA - OpenAI GPT-4o)
 
-### 11.1 Personnalité & Ton
+### 11.1 Configuration Technique
+
+| Paramètre | Valeur |
+|-----------|--------|
+| **Modèle** | OpenAI GPT-4o |
+| **API Key** | Variable d'environnement `OPENAI_API_KEY` dans `.env` |
+| **Temperature** | 0.3 (réponses précises, peu créatives) |
+| **Max Tokens** | 2000 par réponse |
+
+### 11.2 Personnalité & Ton
 
 | Attribut | Valeur |
 |----------|--------|
@@ -337,16 +470,28 @@ J10 ██████░░░░  Polish final + Répétition démo
 | **Ton** | Informatif, précis, concis |
 | **Rôle** | Consultante read-only - guide et informe |
 
-### 11.2 Capacités
+### 11.3 Logique de Contexte
+
+| Situation | Contexte Eve | Données Disponibles |
+|-----------|--------------|---------------------|
+| Page Home (Command Center) | Global | KPIs agrégés, liste engagements, alertes |
+| Page Engagements | Global | Liste complète, filtres actifs |
+| Dans un Engagement | Engagement spécifique | Documents, financials, deadlines, risques |
+| CMD+Click sur valeur | Auto-set engagement | Valeur cliquée + contexte engagement |
+| Question mentionnant entité | Auto-switch | Bascule vers engagement mentionné |
+
+### 11.4 Capacités
 
 | Capacité | Statut | Description |
 |----------|--------|-------------|
-| Consulter documents | ✅ | Accès lecture à tous les documents uploadés |
+| Lire contenu documents | ✅ | Extraction texte Excel/PDF/CSV, analyse contenu |
+| Consulter métadonnées | ✅ | Accès lecture à tous les documents uploadés |
 | Expliquer données | ✅ | Analyse et explique chiffres, KPIs, tendances |
 | Guider utilisateur | ✅ | Recommandations, next steps, alertes |
-| Citer sources | ✅ | "Ce montant provient du Grand Livre, ligne 234" |
+| Citer sources | ✅ | "Ce montant provient du Grand Livre, ligne 234, cellule F45" |
 | Comparer données | ✅ | N vs N-1, entre entités |
 | Générer visualisations | ✅ | Gantt, charts sur demande |
+| Auto-switch contexte | ✅ | Bascule automatique si entité mentionnée |
 | Modifier données | ❌ | Lecture seule |
 | Supprimer documents | ❌ | Pas de suppression |
 | Envoyer emails | ❌ | Pas d'actions externes |
@@ -551,7 +696,7 @@ FINANCIAL_DATA (embedded)
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                         HEADER                                │
-│  [Logo EY] Avengers               [🔔 Notifs] [👤 Profile]   │
+│  [Logo EY] Avengers                              [🔔 Notifs] │
 ├────────┬─────────────────────────────────────────────────────┤
 │        │                                                      │
 │  S     │                    MAIN CONTENT                      │
@@ -567,49 +712,108 @@ FINANCIAL_DATA (embedded)
 └────────┴─────────────────────────────────────────────────────┘
 ```
 
+**Note :** Avatar déplacé vers sidebar (bottom). Header simplifié.
+
 ### 15.2 Sidebar Navigation
 
 ```
-┌────────────┐
-│  ⬡ EY     │  ← Logo
-├────────────┤
-│            │
-│  🏠 Home   │  ← Active = jaune
-│            │
-│  📁 Docs   │
-│            │
-│  📊 Dash   │
-│            │
-│  ⚙️ Config │
-│            │
-├────────────┤
-│  ◀ Reduce │  ← Collapse toggle
-└────────────┘
+┌────────────────┐
+│  ⬡ EY         │  ← Logo
+├────────────────┤
+│                │
+│  🏠 Home       │  ← Command Center
+│                │
+│  📋 Engagements│  ← NOUVEAU: Liste filtrée
+│                │
+│  📁 Library    │  ← Bibliothèque docs
+│                │
+│  📊 Dashboard  │  ← Analytics
+│                │
+│                │
+│  ─────────────  │
+│                │
+│  👤 Profile    │  ← Déplacé du header
+│  ⚙️ Settings   │
+│                │
+├────────────────┤
+│  ◀ Réduire    │  ← Collapse toggle
+└────────────────┘
 ```
 
-### 15.3 Landing Page - Liste Engagements (Accordéon)
+**Navigation principale :**
+| Menu | Page | Description |
+|------|------|-------------|
+| Home | Command Center | KPIs, Action Center, urgences |
+| Engagements | Liste complète | Tous engagements + filtres |
+| Library | Bibliothèque docs | Vue globale documents |
+| Dashboard | Analytics | Charts, métriques détaillées |
+
+**Footer sidebar :**
+| Menu | Description |
+|------|-------------|
+| Profile | Profil utilisateur |
+| Settings | Paramètres app |
+
+### 15.3 Home - Command Center (Wireframe)
 
 ```
-┌─ ENGAGEMENTS ────────────────────────────────────────────────┐
+┌─────────────────────────────────────────────────────────────┐
+│  KPIs GLOBAUX                                               │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │
+│  │  📊 47   │ │  ⏳ 12   │ │  🔴 5    │ │  ✅ 30   │       │
+│  │  Total   │ │ Actifs   │ │ À Risque │ │ Complétés│       │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘       │
+│        ↓ clic = filtre sur page Engagements                 │
+├─────────────────────────────────────────────────────────────┤
+│  🎯 ACTION CENTER                               [Tout voir] │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ ⚠️ Upload Trial Balance     France SPV    [Action]  │   │
+│  │ ⚠️ Revoir anomalie          Germany       [Action]  │   │
+│  │ ⚠️ Approuver classification Belgium       [Action]  │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  🔴 ENGAGEMENTS À RISQUE                  [Voir tous →]     │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🔴 France SPV      67%  ████████░░░░  J-5  [Ouvrir] │   │
+│  │ 🔴 Luxembourg Fund 20%  ██░░░░░░░░░░  J-8  [Ouvrir] │   │
+│  │ 🟠 Belgium HoldCo  45%  █████░░░░░░░  J-12 [Ouvrir] │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  🕐 ACTIVITÉ RÉCENTE                                        │
+│  │ 📄 Document uploadé: Germany_Ledger.xlsx    il y a 2h│   │
+│  │ ✅ Analyse terminée: Netherlands BV         il y a 4h│   │
+│  │ ⚠️ Risque changé: France SPV → HIGH         il y a 6h│   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 15.3b Page Engagements (Wireframe)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ENGAGEMENTS                                                │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ [Entité ▼]  [Statut ▼]  [Année ▼]  [Service ▼]  🔍  │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  Résultats: 47 engagements                                  │
 │                                                              │
-│  🔴 France SPV                                         ⌄     │
-│     Corporate Tax · Waiting · Due 29 Feb                     │
+│  🔴 France SPV                                               │
+│     Corporate Tax 2024 · Waiting · Due 29 Feb                │
 │     ████████░░░░ 67% · 2 docs manquants                     │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Documents: General Ledger ✅  Trial Balance ❌        │   │
-│  │ Prédiction: Complet le 25 Feb (+4j marge)            │   │
-│  │ [Voir Dashboard]  [Upload Docs]  [💬 Ask Eve]        │   │
-│  └──────────────────────────────────────────────────────┘   │
+│     [Ouvrir] [Documents] [💬 Eve]                           │
 │                                                              │
-│  🟠 Germany PropCo                                     ⌄     │
-│     Corporate Tax · Processing · Due 15 Mar                  │
+│  🟠 Germany PropCo                                           │
+│     Corporate Tax 2024 · Processing · Due 15 Mar             │
 │     ████████████░ 85% · En analyse                          │
+│     [Ouvrir] [Documents] [💬 Eve]                           │
 │                                                              │
-│  🟢 Netherlands BV                                     ⌄     │
-│     Corporate Tax · Completed · Due 01 Feb                   │
+│  🟢 Netherlands BV                                           │
+│     Corporate Tax 2024 · Completed · Due 01 Feb              │
 │     ████████████ 100% · Terminé                             │
+│     [Ouvrir] [Documents] [💬 Eve]                           │
 │                                                              │
-└──────────────────────────────────────────────────────────────┘
+│  ... (liste paginée)                                        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### 15.4 KPIs Header

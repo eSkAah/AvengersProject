@@ -1,4 +1,4 @@
-<div class="dashboard">
+<div class="dashboard" #dashboardContent>
   <!-- Breadcrumb -->
   <app-breadcrumb [items]="breadcrumbs"></app-breadcrumb>
 
@@ -8,7 +8,26 @@
       <h1>Tableau de Bord</h1>
       <p>Vue d'ensemble de vos engagements</p>
     </div>
-    <lucide-icon name="layout-dashboard" [size]="48" class="dashboard-header__icon"></lucide-icon>
+    <div class="dashboard-header__actions">
+      <app-button
+        variant="secondary"
+        size="sm"
+        [loading]="isExporting()"
+        (clicked)="exportToPdf()"
+      >
+        <lucide-icon name="file-text" [size]="16"></lucide-icon>
+        Rapport PDF
+      </app-button>
+      <app-button
+        variant="ghost"
+        size="sm"
+        [loading]="isExporting()"
+        (clicked)="exportVisualToPdf()"
+      >
+        <lucide-icon name="image" [size]="16"></lucide-icon>
+        Capture PDF
+      </app-button>
+    </div>
   </div>
 
   <!-- KPI Cards -->

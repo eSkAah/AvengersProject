@@ -1,0 +1,110 @@
+<div class="engagements-page">
+  <header class="engagements-page__header">
+    <div class="engagements-page__title-section">
+      <h1 class="engagements-page__title">Engagements</h1>
+      <span class="engagements-page__count">
+        {{ filteredCount() }} / {{ totalCount() }} engagements
+      </span>
+    </div>
+  </header>
+
+  <!-- Filters Section -->
+  <div class="engagements-page__filters">
+    <!-- Entity Search -->
+    <div class="filter-group">
+      <label class="filter-group__label">
+        <lucide-icon name="search" [size]="14"></lucide-icon>
+        Entity
+      </label>
+      <input
+        type="text"
+        class="filter-group__input"
+        placeholder="Search entity..."
+        [ngModel]="filters().entity"
+        (ngModelChange)="onEntitySearch($event)"
+      />
+    </div>
+
+    <!-- Status Multi-Select -->
+    <div class="filter-group">
+      <label class="filter-group__label">
+        <lucide-icon name="activity" [size]="14"></lucide-icon>
+        Status
+      </label>
+      <div class="filter-group__chips">
+        @for (status of statusOptions; track status) {
+          <button
+            class="filter-chip"
+            [class.filter-chip--active]="isStatusSelected(status)"
+            (click)="toggleStatus(status)"
+          >
+            {{ status }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Year Dropdown -->
+    <div class="filter-group">
+      <label class="filter-group__label">
+        <lucide-icon name="calendar" [size]="14"></lucide-icon>
+        Year
+      </label>
+      <select
+        class="filter-group__select"
+        [ngModel]="filters().year"
+        (ngModelChange)="onYearChange($event)"
+      >
+        <option value="">All years</option>
+        @for (year of yearOptions; track year) {
+          <option [value]="year">{{ year }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Service Multi-Select -->
+    <div class="filter-group">
+      <label class="filter-group__label">
+        <lucide-icon name="briefcase" [size]="14"></lucide-icon>
+        Service
+      </label>
+      <div class="filter-group__chips">
+        @for (service of serviceOptions; track service) {
+          <button
+            class="filter-chip"
+            [class.filter-chip--active]="isServiceSelected(service)"
+            (click)="toggleService(service)"
+          >
+            {{ service }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Clear Filters -->
+    @if (hasActiveFilters()) {
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        <lucide-icon name="x" [size]="14"></lucide-icon>
+        Clear filters
+      </button>
+    }
+  </div>
+
+  <!-- Engagement List -->
+  <div class="engagements-page__content">
+    @if (filteredEngagements().length === 0) {
+      <div class="engagements-page__empty">
+        <lucide-icon name="inbox" [size]="48"></lucide-icon>
+        <p>No engagements match your filters</p>
+        <button class="clear-filters-btn" (click)="clearFilters()">Clear filters</button>
+      </div>
+    } @else {
+      <app-engagement-list
+        [engagements]="filteredEngagements()"
+        (viewDashboard)="onViewDashboard($event)"
+        (uploadDocs)="onUploadDocs($event)"
+        (askEve)="onAskEve($event)"
+      />
+    }
+  </div>
+</div>

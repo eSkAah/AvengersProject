@@ -39,7 +39,21 @@ import { EveApiService } from '../../core/services/eve-api.service';
               }
             </p>
           </div>
+          <div class="eve-context-badge" [class.eve-context-badge--engagement]="eveService.contextMode() === 'engagement'">
+            <lucide-icon [name]="eveService.contextMode() === 'engagement' ? 'briefcase' : 'globe'" [size]="14"></lucide-icon>
+            <span>{{ eveService.contextMode() === 'engagement' ? 'Engagement' : 'Global' }}</span>
+          </div>
         </div>
+
+        @if (eveService.lastContextSwitch()) {
+          <div class="eve-context-switch">
+            <lucide-icon name="arrow-right-left" [size]="14"></lucide-icon>
+            <span>Contexte basculé vers {{ eveService.lastContextSwitch()?.engagement }}</span>
+            <button (click)="eveService.clearContextSwitch()">
+              <lucide-icon name="x" [size]="12"></lucide-icon>
+            </button>
+          </div>
+        }
 
         <div class="eve-chat" #messagesContainer>
           @if (!eveService.hasMessages()) {
@@ -387,6 +401,50 @@ import { EveApiService } from '../../core/services/eve-api.service';
       cursor: pointer;
       padding: 4px;
       display: flex;
+    }
+
+    .eve-context-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: auto;
+    }
+
+    .eve-context-badge--engagement {
+      background: #FFE600;
+      color: #2E2E38;
+    }
+
+    .eve-context-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: linear-gradient(90deg, rgba(255, 230, 0, 0.15) 0%, rgba(255, 230, 0, 0.05) 100%);
+      border-left: 3px solid #FFE600;
+      font-size: 13px;
+      color: #2E2E38;
+    }
+
+    .eve-context-switch span { flex: 1; }
+
+    .eve-context-switch button {
+      background: none;
+      border: none;
+      color: #6B7280;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      border-radius: 4px;
+    }
+
+    .eve-context-switch button:hover {
+      background: rgba(0, 0, 0, 0.1);
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

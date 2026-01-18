@@ -17,6 +17,8 @@ export class AppComponent {
   title = 'Avengers Project';
 
   prepareRoute(outlet: RouterOutlet) {
-    return outlet?.activatedRouteData?.['animation'] ?? outlet?.activatedRoute?.snapshot?.url;
+    return outlet?.isActivated
+      ? (outlet.activatedRouteData?.['animation'] ?? outlet.activatedRoute?.snapshot?.url)
+      : null;
   }
 }

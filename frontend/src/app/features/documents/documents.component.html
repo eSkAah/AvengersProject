@@ -1,11 +1,86 @@
 <div class="documents-page">
-  <!-- Sidebar with Tree -->
+  <!-- Sidebar with Tree or Engagement Selector -->
   <aside class="documents-page__sidebar">
-    <h3 class="documents-page__sidebar-title">Navigation</h3>
-    <app-document-tree
-      [documents]="allDocuments()"
-      (nodeSelect)="onTreeNodeSelect($event)"
-    ></app-document-tree>
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button
+        class="mode-toggle__btn"
+        [class.mode-toggle__btn--active]="libraryMode() === 'global'"
+        (click)="setLibraryMode('global')"
+      >
+        <lucide-icon name="library" [size]="16"></lucide-icon>
+        <span>Bibliothèque</span>
+      </button>
+      <button
+        class="mode-toggle__btn"
+        [class.mode-toggle__btn--active]="libraryMode() === 'engagement'"
+        (click)="setLibraryMode('engagement')"
+      >
+        <lucide-icon name="briefcase" [size]="16"></lucide-icon>
+        <span>Engagement</span>
+      </button>
+    </div>
+
+    @if (libraryMode() === 'engagement') {
+      <!-- Engagement Selector -->
+      <div class="engagement-selector">
+        <h3 class="engagement-selector__title">Sélectionner un engagement</h3>
+        <div class="engagement-selector__list">
+          @for (eng of engagements(); track eng.id) {
+            <button
+              class="engagement-selector__item"
+              [class.engagement-selector__item--active]="selectedEngagementId() === eng.id"
+              (click)="onEngagementSelect(eng.id)"
+            >
+              <span class="engagement-selector__flag">{{ eng.countryFlag }}</span>
+              <span class="engagement-selector__name">{{ eng.entity }}</span>
+              <span class="engagement-selector__count">
+                {{ engagementDocStats().uploaded.length }} docs
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Engagement Doc Stats -->
+      @if (selectedEngagement()) {
+        <div class="doc-stats">
+          <h4 class="doc-stats__title">{{ selectedEngagement()?.entity }}</h4>
+          <div class="doc-stats__grid">
+            <div class="doc-stats__item doc-stats__item--required">
+              <span class="doc-stats__value">{{ engagementDocStats().required.length }}</span>
+              <span class="doc-stats__label">Requis</span>
+            </div>
+            <div class="doc-stats__item doc-stats__item--uploaded">
+              <span class="doc-stats__value">{{ engagementDocStats().uploaded.length }}</span>
+              <span class="doc-stats__label">Uploadés</span>
+            </div>
+            <div class="doc-stats__item doc-stats__item--missing">
+              <span class="doc-stats__value">{{ engagementDocStats().missing.length }}</span>
+              <span class="doc-stats__label">Manquants</span>
+            </div>
+          </div>
+
+          @if (engagementDocStats().missing.length > 0) {
+            <div class="doc-stats__missing-list">
+              <h5>Documents manquants:</h5>
+              <ul>
+                @for (type of engagementDocStats().missing; track type) {
+                  <li>{{ getDocumentTypeLabel(type) }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <!-- Document Tree for Global Mode -->
+      <h3 class="documents-page__sidebar-title">Navigation</h3>
+      <app-document-tree
+        [documents]="allDocuments()"
+        (nodeSelect)="onTreeNodeSelect($event)"
+      ></app-document-tree>
+    }
   </aside>
 
   <!-- Main content -->
@@ -19,13 +94,15 @@
       ></app-breadcrumb>
 
       <div class="documents-page__header-actions">
-        <app-button
-          variant="primary"
-          size="sm"
-          (clicked)="toggleUploadZone()"
-        >
-          {{ showUploadZone() ? 'Masquer' : 'Télécharger' }}
-        </app-button>
+        @if (libraryMode() === 'engagement' && selectedEngagementId()) {
+          <app-button
+            variant="primary"
+            size="sm"
+            (clicked)="toggleUploadZone()"
+          >
+            {{ showUploadZone() ? 'Masquer' : 'Télécharger' }}
+          </app-button>
+        }
 
         <app-view-toggle
           [mode]="viewMode()"
@@ -35,60 +112,165 @@
       </div>
     </header>
 
-    <!-- Upload Zone -->
-    <div *ngIf="showUploadZone()" class="documents-page__upload">
-      <app-upload-zone
-        [engagementId]="selectedEngagementId()"
-        [disabled]="isUploading()"
-        (filesSelected)="onFilesSelected($event)"
-        (uploadStart)="onUploadStart($event)"
-        (uploadSuccess)="onUploadSuccess($event)"
-        (uploadError)="onUploadError($event)"
-        (uploadComplete)="onUploadComplete($event)"
-      ></app-upload-zone>
+    <!-- Upload Zone (Engagement mode only) -->
+    @if (showUploadZone() && libraryMode() === 'engagement') {
+      <div class="documents-page__upload">
+        <app-upload-zone
+          [engagementId]="selectedEngagementId()"
+          [disabled]="isUploading()"
+          (filesSelected)="onFilesSelected($event)"
+          (uploadStart)="onUploadStart($event)"
+          (uploadSuccess)="onUploadSuccess($event)"
+          (uploadError)="onUploadError($event)"
+          (uploadComplete)="onUploadComplete($event)"
+        ></app-upload-zone>
 
-      <div class="documents-page__upload-actions" *ngIf="uploadZone?.canUpload()">
-        <app-button
-          variant="primary"
-          [loading]="isUploading()"
-          (clicked)="triggerUpload()"
-        >
-          Confirmer le téléchargement
-        </app-button>
+        @if (uploadZone?.canUpload()) {
+          <div class="documents-page__upload-actions">
+            <app-button
+              variant="primary"
+              [loading]="isUploading()"
+              (clicked)="triggerUpload()"
+            >
+              Confirmer le téléchargement
+            </app-button>
+          </div>
+        }
       </div>
-    </div>
+    }
 
-    <!-- Filters -->
-    <app-document-filters
-      [engagements]="engagements()"
-      (filtersChange)="onFiltersChange($event)"
-    ></app-document-filters>
+    <!-- Global Filters (Global mode only) -->
+    @if (libraryMode() === 'global') {
+      <div class="global-filters">
+        <!-- Search -->
+        <div class="global-filters__search">
+          <lucide-icon name="search" [size]="18"></lucide-icon>
+          <input
+            type="text"
+            placeholder="Rechercher par nom, type..."
+            [ngModel]="globalFilters().search"
+            (ngModelChange)="onGlobalSearchChange($event)"
+          />
+        </div>
+
+        <!-- Filter Dropdowns -->
+        <div class="global-filters__dropdowns">
+          <!-- Entity -->
+          <select
+            class="global-filters__select"
+            [ngModel]="globalFilters().entity"
+            (ngModelChange)="onGlobalEntityChange($event)"
+          >
+            <option value="">Toutes les entités</option>
+            @for (entity of entityOptions(); track entity) {
+              <option [value]="entity">{{ entity }}</option>
+            }
+          </select>
+
+          <!-- Year -->
+          <select
+            class="global-filters__select"
+            [ngModel]="globalFilters().year"
+            (ngModelChange)="onGlobalYearChange($event)"
+          >
+            <option value="">Toutes les années</option>
+            @for (year of yearOptions(); track year) {
+              <option [value]="year">{{ year }}</option>
+            }
+          </select>
+
+          <!-- Type -->
+          <select
+            class="global-filters__select"
+            [ngModel]="globalFilters().type"
+            (ngModelChange)="onGlobalTypeChange($event)"
+          >
+            <option value="">Tous les types</option>
+            @for (type of typeOptions; track type) {
+              <option [value]="type">{{ getDocumentTypeLabel(type) }}</option>
+            }
+          </select>
+
+          <!-- Status -->
+          <select
+            class="global-filters__select"
+            [ngModel]="globalFilters().status"
+            (ngModelChange)="onGlobalStatusChange($event)"
+          >
+            <option value="">Tous les statuts</option>
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ getStatusLabel(status) }}</option>
+            }
+          </select>
+
+          @if (hasActiveGlobalFilters()) {
+            <button class="global-filters__clear" (click)="clearGlobalFilters()">
+              <lucide-icon name="x" [size]="14"></lucide-icon>
+              Effacer
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      <!-- Engagement Filters -->
+      <app-document-filters
+        [engagements]="engagements()"
+        (filtersChange)="onFiltersChange($event)"
+      ></app-document-filters>
+    }
 
     <!-- Documents count -->
     <div class="documents-page__count">
       {{ filteredDocuments().length }} document(s)
+      @if (libraryMode() === 'engagement' && selectedEngagement()) {
+        <span class="documents-page__count-context">
+          pour {{ selectedEngagement()?.entity }}
+        </span>
+      }
     </div>
 
     <!-- Document views -->
     <div class="documents-page__content">
-      <app-document-grid
-        *ngIf="viewMode() === 'grid'"
-        [documents]="filteredDocuments()"
-        (documentClick)="onDocumentClick($event)"
-        (download)="onDownload($event)"
-        (preview)="onPreview($event)"
-        (askEve)="onAskEve($event)"
-      ></app-document-grid>
-
-      <app-document-list
-        *ngIf="viewMode() === 'list'"
-        [documents]="filteredDocuments()"
-        [engagements]="engagements()"
-        (documentClick)="onDocumentClick($event)"
-        (download)="onDownload($event)"
-        (preview)="onPreview($event)"
-        (askEve)="onAskEve($event)"
-      ></app-document-list>
+      @if (filteredDocuments().length === 0) {
+        <div class="documents-page__empty">
+          <lucide-icon name="file-x" [size]="48"></lucide-icon>
+          <p>Aucun document trouvé</p>
+          @if (libraryMode() === 'global' && hasActiveGlobalFilters()) {
+            <button class="documents-page__empty-action" (click)="clearGlobalFilters()">
+              Effacer les filtres
+            </button>
+          }
+        </div>
+      } @else {
+        @if (viewMode() === 'grid') {
+          <app-document-grid
+            [documents]="filteredDocuments()"
+            (documentClick)="onDocumentClick($event)"
+            (download)="onDownload($event)"
+            (preview)="onPreview($event)"
+            (askEve)="onAskEve($event)"
+          ></app-document-grid>
+        } @else {
+          <app-document-list
+            [documents]="filteredDocuments()"
+            [engagements]="engagements()"
+            (documentClick)="onDocumentClick($event)"
+            (download)="onDownload($event)"
+            (preview)="onPreview($event)"
+            (askEve)="onAskEve($event)"
+          ></app-document-list>
+        }
+      }
     </div>
   </main>
 </div>
+
+<!-- Document Preview Modal -->
+@if (previewDocument()) {
+  <app-document-preview-modal
+    [documentId]="previewDocument()!.id"
+    [documentName]="previewDocument()!.name"
+    [documentFormat]="previewDocument()!.type"
+    (close)="closePreview()"
+  ></app-document-preview-modal>
+}

@@ -81,49 +81,47 @@ export interface DocumentPreviewData {
                 Réessayer
               </app-button>
             </div>
-          } @else if (previewData(); as data) {
-            @if (data.preview_type === 'table' && data.table_data) {
-              <div class="table-preview">
-                <div class="table-info">
-                  <span class="sheet-name">{{ data.table_data.sheet_name }}</span>
-                  <span class="row-count">
-                    {{ data.table_data.preview_rows }} / {{ data.table_data.total_rows }} lignes
-                    @if (data.table_data.truncated) {
-                      <span class="truncated-badge">(aperçu)</span>
-                    }
-                  </span>
-                </div>
-                <div class="table-container">
-                  <table>
-                    <thead>
+          } @else if (isTablePreview()) {
+            <div class="table-preview">
+              <div class="table-info">
+                <span class="sheet-name">{{ previewData()?.table_data?.sheet_name }}</span>
+                <span class="row-count">
+                  {{ previewData()?.table_data?.preview_rows }} / {{ previewData()?.table_data?.total_rows }} lignes
+                  @if (previewData()?.table_data?.truncated) {
+                    <span class="truncated-badge">(aperçu)</span>
+                  }
+                </span>
+              </div>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      @for (header of getHeaders(); track header) {
+                        <th>{{ header }}</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of getRows(); track $index) {
                       <tr>
-                        @for (header of data.table_data.headers; track header) {
-                          <th>{{ header }}</th>
+                        @for (header of getHeaders(); track header) {
+                          <td>{{ formatCellValue(row[header]) }}</td>
                         }
                       </tr>
-                    </thead>
-                    <tbody>
-                      @for (row of data.table_data.rows; track $index) {
-                        <tr>
-                          @for (header of data.table_data.headers; track header) {
-                            <td>{{ formatCellValue(row[header]) }}</td>
-                          }
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
+                    }
+                  </tbody>
+                </table>
               </div>
-            } @else if (data.preview_type === 'pdf' && pdfUrl()) {
-              <div class="pdf-preview">
-                <iframe
-                  [src]="pdfUrl()"
-                  type="application/pdf"
-                  width="100%"
-                  height="100%"
-                ></iframe>
-              </div>
-            }
+            </div>
+          } @else if (isPdfPreview()) {
+            <div class="pdf-preview">
+              <iframe
+                [src]="pdfUrl()"
+                type="application/pdf"
+                width="100%"
+                height="100%"
+              ></iframe>
+            </div>
           }
         </main>
       </div>
@@ -395,5 +393,23 @@ export class DocumentPreviewModalComponent implements OnInit, OnDestroy {
     }
 
     return String(value);
+  }
+
+  isTablePreview(): boolean {
+    const data = this.previewData();
+    return data?.preview_type === 'table' && !!data?.table_data;
+  }
+
+  isPdfPreview(): boolean {
+    const data = this.previewData();
+    return data?.preview_type === 'pdf' && !!this.pdfUrl();
+  }
+
+  getHeaders(): string[] {
+    return this.previewData()?.table_data?.headers ?? [];
+  }
+
+  getRows(): Record<string, unknown>[] {
+    return this.previewData()?.table_data?.rows ?? [];
   }
 }

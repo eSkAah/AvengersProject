@@ -1,7 +1,7 @@
 # User Stories - Avengers Project
 
-**Version:** 1.0
-**Date:** 2026-01-17
+**Version:** 2.0
+**Date:** 2026-01-18
 **Sprint:** 10 jours (J1-J10)
 
 ---
@@ -19,6 +19,7 @@
 | E7 | Risk & Prédictions | Must-Have | J7-J8 |
 | E8 | Polish & Démo | Must-Have | J9-J10 |
 | E9 | Features Bonus | Should-Have | Si temps |
+| E10 | Platform v2.0 - Navigation & AI | Must-Have | Post-MVP |
 
 ---
 
@@ -866,6 +867,103 @@ pip install fastapi uvicorn sqlalchemy pydantic python-dotenv
 
 ---
 
+## Epic 10: Platform v2.0 - Navigation & AI Enhancement (Post-MVP)
+
+**Goal:** Transform the platform with a command center navigation, dedicated engagements page, action-driven UX, and enhanced AI with OpenAI integration.
+
+### E10-S1: Command Center (Home Redesign)
+**En tant qu'** utilisateur
+**Je veux** que la page d'accueil soit un Command Center montrant ce qui requiert mon attention
+**Afin de** identifier et agir rapidement sur les éléments urgents
+
+**Critères d'acceptation:**
+- [ ] **AC1 - KPIs Summary:** 4 cartes KPI (Total, Actifs, À Risque, Complétés) cliquables
+- [ ] **AC2 - Action Center:** Liste des to-dos actifs qui disparaissent une fois complétés
+- [ ] **AC3 - Engagements À Risque:** Affiche seulement HIGH et MEDIUM risk
+- [ ] **AC4 - Activité Récente:** Feed chronologique des événements récents
+
+**FRs:** FR-V2-01, FR-V2-03
+
+---
+
+### E10-S2: Engagements Page with Filters
+**En tant qu'** utilisateur
+**Je veux** une page Engagements dédiée avec filtres puissants
+**Afin de** trouver n'importe quel engagement parmi 100+ entités
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Route dédiée:** `/engagements` avec liste complète
+- [ ] **AC2 - Filtres multi-critères:** Entité (searchable), Statut, Année, Service
+- [ ] **AC3 - Affichage liste:** Entity, service, status, due date, progress bar, risk badge
+- [ ] **AC4 - Persistence filtres:** Conservés dans la session
+- [ ] **AC5 - Performance:** Rendu < 2s pour 100+ entités
+
+**FRs:** FR-V2-02, NFR-V2-03
+
+---
+
+### E10-S3: Notifications System
+**En tant qu'** utilisateur
+**Je veux** une icône cloche affichant les alertes passives
+**Afin de** rester informé des événements système
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Bell Icon:** Icône 🔔 dans le header avec badge compteur
+- [ ] **AC2 - Dropdown:** Liste des notifications récentes au clic
+- [ ] **AC3 - Mark as Read:** Possibilité de marquer comme lu
+- [ ] **AC4 - Types:** INFO, WARNING, SUCCESS avec icônes appropriées
+
+**FRs:** FR-V2-04
+
+---
+
+### E10-S4: Document Library Hybrid Mode
+**En tant qu'** utilisateur
+**Je veux** que la Document Library ait deux modes (Vue Engagement et Bibliothèque Globale)
+**Afin de** travailler focalisé ou rechercher globalement
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Vue Engagement:** Docs filtrés pour l'engagement actif (requis, uploadés, manquants)
+- [ ] **AC2 - Vue Globale:** Tous les documents avec filtres (Entité, Année, Type, Statut)
+- [ ] **AC3 - Toggle Mode:** Basculer entre les deux modes
+- [ ] **AC4 - Recherche Globale:** Recherche par nom, entité, mots-clés
+
+**FRs:** FR-V2-05
+
+---
+
+### E10-S5: Eve OpenAI Integration & RAG
+**En tant qu'** utilisateur
+**Je veux** qu'Eve utilise OpenAI GPT-4o avec conscience du contexte et lecture des documents
+**Afin d'** obtenir des réponses intelligentes basées sur mon contexte et les documents uploadés
+
+**Critères d'acceptation:**
+- [ ] **AC1 - OpenAI Integration:** Réponses via GPT-4o, temps < 3s
+- [ ] **AC2 - Mode Engagement:** Réponses spécifiques à l'engagement actif
+- [ ] **AC3 - Mode Global:** Réponses générales sur Command Center/Engagements page
+- [ ] **AC4 - Auto-Switch:** Bascule automatique si entité mentionnée dans la question
+- [ ] **AC5 - RAG Documents:** Lecture du contenu des documents avec citations (ligne, cellule)
+- [ ] **AC6 - Error Handling:** Message d'erreur gracieux si API indisponible
+
+**FRs:** FR-V2-06, FR-V2-07, FR-V2-08, NFR-V2-01, NFR-V2-02
+
+---
+
+### E10-S6: Sidebar Navigation Update
+**En tant qu'** utilisateur
+**Je veux** l'avatar déplacé dans la sidebar et la navigation mise à jour
+**Afin d'** avoir un layout plus propre et intuitif
+
+**Critères d'acceptation:**
+- [ ] **AC1 - Avatar Sidebar:** Profil utilisateur en bas de la sidebar (pas dans header)
+- [ ] **AC2 - Navigation Items:** Home, Engagements, Documents, Dashboard avec icônes
+- [ ] **AC3 - Header Simplifié:** Logo, titre page, notifications bell seulement
+- [ ] **AC4 - Collapse Behavior:** Avatar en icône quand sidebar réduite
+
+**FRs:** FR-V2-09
+
+---
+
 ## Résumé Story Points
 
 | Epic | Stories | Estimation |
@@ -880,3 +978,4 @@ pip install fastapi uvicorn sqlalchemy pydantic python-dotenv
 | E8 - Polish | 4 | J9-J10 |
 | **Total Must-Have** | **47** | **10 jours** |
 | E9 - Bonus | 4 | Si temps |
+| **E10 - Platform v2.0** | **6** | **Post-MVP** |
