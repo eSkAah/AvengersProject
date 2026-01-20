@@ -49,6 +49,35 @@
     </div>
   </div>
 
+  <!-- Tab Navigation -->
+  <div class="engagement-tabs">
+    <button
+      class="engagement-tabs__tab"
+      [class.engagement-tabs__tab--active]="activeTab() === 'overview'"
+      (click)="setActiveTab('overview')"
+    >
+      <lucide-icon name="layout-dashboard" [size]="16"></lucide-icon>
+      <span>Overview</span>
+    </button>
+    <button
+      class="engagement-tabs__tab"
+      [class.engagement-tabs__tab--active]="activeTab() === 'results'"
+      [class.engagement-tabs__tab--disabled]="!hasResults() && !ctrResults()"
+      (click)="setActiveTab('results')"
+    >
+      <lucide-icon name="file-check-2" [size]="16"></lucide-icon>
+      <span>Results</span>
+      @if (isResultsNew()) {
+        <span class="engagement-tabs__badge">New</span>
+      }
+      @if (ctrResults()?.status === 'processing') {
+        <lucide-icon name="loader-2" [size]="14" class="spin"></lucide-icon>
+      }
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  @if (activeTab() === 'overview') {
   <!-- Documents Section - Unified Requirements + Files -->
   <div class="detail-card">
     <div class="card-header">
@@ -119,6 +148,35 @@
       </button>
     </div>
   </div>
+  } @else {
+    <!-- Results Tab Content -->
+    <app-results-tab
+      [ctrResults]="ctrResults()"
+      [entityName]="engagement()!.entity"
+      (downloadDocument)="onResultsDownload($event)"
+      (previewDocument)="onResultsPreview($event)"
+      (kpiClick)="onResultsKpiClick($event)"
+      (cmdClick)="onResultsCmdClick($event)"
+    ></app-results-tab>
+
+    <!-- Actions for Results Tab -->
+    <div class="actions">
+      <button class="btn btn--secondary" (click)="goBack()">
+        <lucide-icon name="arrow-left" [size]="18"></lucide-icon>
+        Back
+      </button>
+      <div class="actions__right">
+        <button class="btn btn--outline" (click)="setActiveTab('overview')">
+          <lucide-icon name="layout-dashboard" [size]="18"></lucide-icon>
+          View Overview
+        </button>
+        <button class="btn btn--primary" (click)="askEve()">
+          <lucide-icon name="message-circle" [size]="18"></lucide-icon>
+          Ask Eve
+        </button>
+      </div>
+    </div>
+  }
 </div>
 
 <!-- Drill-Down Modal -->

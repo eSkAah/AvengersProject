@@ -1,0 +1,202 @@
+<div class="results-tab">
+  @if (!ctrResults || ctrResults.status !== 'completed') {
+    <!-- No Results State -->
+    <div class="results-tab__empty">
+      <div class="results-tab__empty-icon">
+        <lucide-icon name="file-clock" [size]="64"></lucide-icon>
+      </div>
+      <h3 class="results-tab__empty-title">Results Not Available</h3>
+      <p class="results-tab__empty-text">
+        @if (ctrResults?.status === 'processing') {
+          The Company Tax Return is currently being processed. Results will be available once the analysis is complete.
+        } @else {
+          All required documents must be validated before the Company Tax Return can be generated.
+        }
+      </p>
+      @if (ctrResults?.status === 'processing') {
+        <app-badge variant="info">
+          <lucide-icon name="loader-2" [size]="14" class="spin"></lucide-icon>
+          Processing...
+        </app-badge>
+      }
+    </div>
+  } @else {
+    <!-- Results Content -->
+    <div class="results-tab__content">
+      <!-- Header with completion info -->
+      <div class="results-tab__header">
+        <div class="results-tab__header-info">
+          <h2 class="results-tab__title">
+            <lucide-icon name="file-check-2" [size]="24"></lucide-icon>
+            Company Tax Return Results
+          </h2>
+          <p class="results-tab__subtitle">
+            Generated on {{ formatDate(ctrResults.completedAt!) }}
+          </p>
+        </div>
+        <app-badge variant="success">
+          <lucide-icon name="check-circle" [size]="14"></lucide-icon>
+          Completed
+        </app-badge>
+      </div>
+
+      <!-- Documents Section -->
+      <section class="results-tab__section">
+        <h3 class="results-tab__section-title">
+          <lucide-icon name="folder-down" [size]="18"></lucide-icon>
+          Result Documents
+        </h3>
+        <div class="results-tab__documents">
+          @for (doc of documents(); track doc.id) {
+            <div class="result-document">
+              <div class="result-document__icon" [class.result-document__icon--pdf]="doc.type === 'pdf'" [class.result-document__icon--xml]="doc.type === 'xml'">
+                <lucide-icon [name]="getDocumentIcon(doc.type)" [size]="24"></lucide-icon>
+              </div>
+              <div class="result-document__info">
+                <span class="result-document__name">{{ doc.name }}</span>
+                <span class="result-document__meta">
+                  {{ doc.type.toUpperCase() }} · {{ formatFileSize(doc.size) }}
+                </span>
+              </div>
+              <div class="result-document__actions">
+                <button class="result-document__btn" (click)="onPreview(doc)" title="Preview">
+                  <lucide-icon name="eye" [size]="18"></lucide-icon>
+                </button>
+                <button class="result-document__btn result-document__btn--primary" (click)="onDownload(doc)" title="Download">
+                  <lucide-icon name="download" [size]="18"></lucide-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Tax KPIs Section -->
+      @if (taxData()) {
+        <section class="results-tab__section">
+          <h3 class="results-tab__section-title">
+            <lucide-icon name="calculator" [size]="18"></lucide-icon>
+            Tax Summary
+            <span class="results-tab__section-hint">
+              <lucide-icon name="command" [size]="12"></lucide-icon>
+              + Click to Ask Eve
+            </span>
+          </h3>
+          <div class="results-tab__kpis">
+            <div
+              class="tax-kpi"
+              (click)="onKpiClick('tax_liability', taxData()!.taxLiability, 'Tax Liability')"
+              (click)="onKpiCmdClick('tax_liability', taxData()!.taxLiability, 'Tax Liability', $event)"
+            >
+              <div class="tax-kpi__icon tax-kpi__icon--liability">
+                <lucide-icon name="receipt" [size]="20"></lucide-icon>
+              </div>
+              <div class="tax-kpi__content">
+                <span class="tax-kpi__label">Tax Liability</span>
+                <span class="tax-kpi__value">{{ formatCurrency(taxData()!.taxLiability) }}</span>
+              </div>
+            </div>
+
+            <div
+              class="tax-kpi"
+              (click)="onKpiClick('effective_rate', taxData()!.effectiveRate, 'Effective Tax Rate')"
+              (click)="onKpiCmdClick('effective_rate', taxData()!.effectiveRate, 'Effective Tax Rate', $event)"
+            >
+              <div class="tax-kpi__icon tax-kpi__icon--etr">
+                <lucide-icon name="percent" [size]="20"></lucide-icon>
+              </div>
+              <div class="tax-kpi__content">
+                <span class="tax-kpi__label">Effective Tax Rate</span>
+                <span class="tax-kpi__value">{{ taxData()!.effectiveRate.toFixed(1) }}%</span>
+                <span class="tax-kpi__delta" [class.tax-kpi__delta--positive]="taxData()!.effectiveRate < taxData()!.statutoryRate">
+                  {{ (taxData()!.effectiveRate - taxData()!.statutoryRate).toFixed(1) }}pp vs statutory
+                </span>
+              </div>
+            </div>
+
+            <div
+              class="tax-kpi"
+              (click)="onKpiClick('pre_tax_income', taxData()!.preTaxIncome, 'Pre-tax Income')"
+              (click)="onKpiCmdClick('pre_tax_income', taxData()!.preTaxIncome, 'Pre-tax Income', $event)"
+            >
+              <div class="tax-kpi__icon tax-kpi__icon--income">
+                <lucide-icon name="trending-up" [size]="20"></lucide-icon>
+              </div>
+              <div class="tax-kpi__content">
+                <span class="tax-kpi__label">Pre-tax Income</span>
+                <span class="tax-kpi__value">{{ formatCurrency(taxData()!.preTaxIncome) }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="results-tab__section">
+          <h3 class="results-tab__section-title">
+            <lucide-icon name="bar-chart-3" [size]="18"></lucide-icon>
+            Tax Analysis
+          </h3>
+
+          <div class="results-tab__charts">
+            <!-- ETR Waterfall Chart -->
+            <div class="chart-card chart-card--wide">
+              <h4 class="chart-card__title">ETR Reconciliation</h4>
+              <p class="chart-card__subtitle">From statutory rate to effective tax rate</p>
+              <div class="chart-card__content">
+                <app-waterfall-chart
+                  [data]="waterfallData()"
+                  [cmdClickEnabled]="true"
+                  (barClick)="onWaterfallClick($event)"
+                  (cmdClick)="onWaterfallCmdClick($event)"
+                ></app-waterfall-chart>
+              </div>
+            </div>
+
+            <!-- Current vs Deferred Tax -->
+            <div class="chart-card">
+              <h4 class="chart-card__title">Current vs Deferred Tax</h4>
+              <p class="chart-card__subtitle">Tax expense breakdown</p>
+              <div class="chart-card__content">
+                @if (taxSplitData()) {
+                  <app-pie-chart
+                    [data]="taxSplitData()"
+                    [cmdClickEnabled]="true"
+                    (segmentClick)="onPieClick($event, 'tax_split')"
+                    (cmdClick)="onPieCmdClick($event, 'tax_split')"
+                  ></app-pie-chart>
+                }
+              </div>
+              <div class="chart-card__legend">
+                <div class="legend-item">
+                  <span class="legend-dot legend-dot--current"></span>
+                  <span>Current: {{ formatCurrency(taxData()!.currentTax) }}</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot legend-dot--deferred"></span>
+                  <span>Deferred: {{ formatCurrency(taxData()!.deferredTax) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tax by Category -->
+            <div class="chart-card">
+              <h4 class="chart-card__title">Tax by Category</h4>
+              <p class="chart-card__subtitle">Income source breakdown</p>
+              <div class="chart-card__content">
+                @if (taxByCategoryData()) {
+                  <app-bar-chart
+                    [data]="taxByCategoryData()"
+                    [showLegend]="false"
+                    [cmdClickEnabled]="true"
+                    (barClick)="onChartClick($event, 'tax_category')"
+                    (cmdClick)="onChartCmdClick($event, 'tax_category')"
+                  ></app-bar-chart>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>

@@ -37,6 +37,11 @@ export const routes: Routes = [
       import('./features/documents/documents.component').then(m => m.DocumentsComponent),
   },
   {
+    path: 'app/insights',
+    loadComponent: () =>
+      import('./features/insights/insights.component').then(m => m.InsightsComponent),
+  },
+  {
     path: 'app/eve',
     loadComponent: () => import('./features/eve/eve.component').then(m => m.EveComponent),
   },

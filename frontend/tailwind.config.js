@@ -11,6 +11,9 @@ module.exports = {
         'ey-black': '#2E2E38',
         'ey-gray': '#747480',
 
+        // Navbar
+        'navbar-dark': '#1F2937',
+
         // Neutrals
         background: '#FAFAFA',
         surface: '#FFFFFF',

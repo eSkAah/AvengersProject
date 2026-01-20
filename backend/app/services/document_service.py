@@ -384,17 +384,17 @@ async def create_document_from_upload(
 
 # Labels for document types and categories
 DOCUMENT_TYPE_LABELS: Dict[DocumentType, str] = {
-    DocumentType.general_ledger: "Grand Livre",
-    DocumentType.trial_balance: "Balance Générale",
-    DocumentType.tax_return: "Déclaration Fiscale",
-    DocumentType.financial_statement: "États Financiers",
-    DocumentType.bank_statement: "Relevé Bancaire",
+    DocumentType.general_ledger: "General Ledger",
+    DocumentType.trial_balance: "Trial Balance",
+    DocumentType.tax_return: "Tax Return",
+    DocumentType.financial_statement: "Financial Statements",
+    DocumentType.bank_statement: "Bank Statement",
 }
 
 DOCUMENT_CATEGORY_LABELS: Dict[DocumentCategory, str] = {
-    DocumentCategory.accounting: "Comptabilité",
-    DocumentCategory.tax: "Fiscal",
-    DocumentCategory.financial: "Financier",
+    DocumentCategory.accounting: "Accounting",
+    DocumentCategory.tax: "Tax",
+    DocumentCategory.financial: "Financial",
 }
 
 

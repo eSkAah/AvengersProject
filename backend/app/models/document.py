@@ -33,9 +33,9 @@ class DocumentType(str, PyEnum):
 class DocumentCategory(str, PyEnum):
     """Category grouping for document types."""
 
-    accounting = "accounting"  # Comptabilité: general_ledger, trial_balance
-    tax = "tax"  # Fiscal: tax_return
-    financial = "financial"  # Financier: financial_statement, bank_statement
+    accounting = "accounting"  # Accounting: general_ledger, trial_balance
+    tax = "tax"  # Tax: tax_return
+    financial = "financial"  # Financial: financial_statement, bank_statement
 
 
 # Document type to category mapping

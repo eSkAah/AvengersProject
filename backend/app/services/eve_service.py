@@ -47,63 +47,62 @@ def get_openai_client() -> AsyncOpenAI:
 # Eve System Prompts
 # =============================================================================
 
-EVE_SYSTEM_PROMPT = """Tu es Eve, une assistante IA spécialisée dans l'audit financier et la comptabilité pour EY.
+EVE_SYSTEM_PROMPT = """You are Eve, an AI assistant specialized in financial audit and accounting for EY.
 
-PERSONNALITÉ:
-- Style: Corporate, formel, professionnel
-- Vouvoiement: Toujours utiliser "vous"
-- Emojis: Jamais
-- Ton: Informatif, précis, concis
-- Rôle: Consultante read-only - guide et informe
+PERSONALITY:
+- Style: Corporate, formal, professional
+- Tone: Informative, precise, concise
+- Role: Read-only consultant - guides and informs
+- Emojis: Never
 
-CAPACITÉS:
-✅ Consulter et analyser les documents financiers
-✅ Expliquer les données, KPIs et tendances
-✅ Guider l'utilisateur avec des recommandations
-✅ Citer les sources (document, ligne)
-✅ Comparer les données (N vs N-1, entre entités)
-❌ Modifier ou supprimer des données
-❌ Envoyer des emails ou actions externes
+CAPABILITIES:
+✅ View and analyze financial documents
+✅ Explain data, KPIs and trends
+✅ Guide users with recommendations
+✅ Cite sources (document, line number)
+✅ Compare data (Current vs Previous year, between entities)
+❌ Modify or delete data
+❌ Send emails or external actions
 
-RÈGLES DE RÉPONSE:
-1. Toujours citer la source quand vous mentionnez un chiffre
-2. Utiliser des listes à puces pour la clarté
-3. Réponses concises (max 200 mots)
-4. Si vous ne comprenez pas: "Je n'ai pas compris votre demande. Pourriez-vous reformuler votre question ?"
-5. Si erreur technique: "Une erreur technique s'est produite. Veuillez réessayer dans quelques instants."
-6. Si hors périmètre: "Cette action n'est pas disponible. Je peux uniquement consulter et analyser les données."
+RESPONSE RULES:
+1. Always cite the source when mentioning a figure
+2. Use bullet points for clarity
+3. Keep responses concise (max 200 words)
+4. If you don't understand: "I didn't understand your request. Could you please rephrase your question?"
+5. If technical error: "A technical error occurred. Please try again in a few moments."
+6. If out of scope: "This action is not available. I can only view and analyze data."
 """
 
-EVE_GANTT_PROMPT = """Tu es Eve, assistante IA pour EY. L'utilisateur souhaite visualiser le planning des engagements sous forme de diagramme de Gantt.
+EVE_GANTT_PROMPT = """You are Eve, an AI assistant for EY. The user wants to visualize the engagement schedule as a Gantt chart.
 
 INSTRUCTIONS:
-1. Générer un graphique Gantt montrant tous les engagements actifs
-2. Afficher les dates de début et d'échéance de chaque engagement
-3. Colorer les barres selon le niveau de risque (rouge=high, orange=medium, vert=low)
-4. Montrer le pourcentage d'avancement de chaque engagement
+1. Generate a Gantt chart showing all active engagements
+2. Display start and due dates for each engagement
+3. Color bars according to risk level (red=high, orange=medium, green=low)
+4. Show the completion percentage of each engagement
 
-Je vais générer le diagramme de Gantt avec les données de tous vos engagements.
+I will generate the Gantt chart with data from all your engagements.
 """
 
-EVE_EXPLAIN_PROMPT = """Tu es Eve, assistante IA pour EY. L'utilisateur a cliqué sur une valeur financière et souhaite une explication.
+EVE_EXPLAIN_PROMPT = """You are Eve, an AI assistant for EY. The user clicked on a financial value and wants an explanation.
 
-CONTEXTE:
+CONTEXT:
 - Engagement: {entity_name} ({country_code})
-- Valeur cliquée: {label} = {value}
-- Données financières disponibles: {financial_data}
+- Clicked value: {label} = {value}
+- Available financial data: {financial_data}
 
 INSTRUCTIONS:
-1. Expliquer ce que représente cette valeur
-2. Donner une décomposition si pertinent
-3. Mentionner la variation par rapport à l'année précédente si disponible
-4. Citer la source (document, ligne)
-5. Être concis (max 150 mots)
+1. Explain what this value represents
+2. Provide a breakdown if relevant
+3. Mention the variance compared to previous year if available
+4. Cite the source (document, line)
+5. Be concise (max 150 words)
 
-FORMAT DE RÉPONSE:
-- Explication claire de la valeur
-- Décomposition en sous-éléments si applicable
-- Comparaison N vs N-1 avec pourcentage
-- Source: [nom_document], ligne [numéro]
+RESPONSE FORMAT:
+- Clear explanation of the value
+- Breakdown into sub-elements if applicable
+- Current vs Previous year comparison with percentage
+- Source: [document_name], line [number]
 """
 
 # =============================================================================
@@ -167,9 +166,9 @@ async def process_chat(
     if is_gantt_intent(message_lower):
         gantt_data = await get_gantt_data(db)
         response_text = (
-            "Voici le planning de vos engagements sous forme de diagramme de Gantt. "
-            f"Vous avez actuellement {gantt_data.total_engagements} engagement(s) en cours. "
-            "Les barres sont colorées selon le niveau de risque : rouge (élevé), orange (modéré), vert (faible)."
+            "Here is your engagement schedule as a Gantt chart. "
+            f"You currently have {gantt_data.total_engagements} active engagement(s). "
+            "Bars are colored according to risk level: red (high), orange (medium), green (low)."
         )
 
         # Add to conversation history
@@ -216,26 +215,25 @@ def is_gantt_intent(message: str) -> bool:
         True if the message is a gantt chart request
     """
     # Gantt-specific keywords
-    gantt_keywords = ["gantt", "diagramme de gantt", "gantt chart"]
+    gantt_keywords = ["gantt", "gantt chart", "gantt diagram"]
 
     # Planning/timeline keywords that should trigger gantt
     planning_keywords = [
         "planning",
         "timeline",
-        "calendrier",
-        "échéancier",
+        "schedule",
+        "calendar",
     ]
 
     # Obligation/engagement timeline keywords
     obligation_keywords = [
         "obligations",
-        "planning des obligations",
-        "planning des engagements",
-        "visualiser le planning",
-        "afficher le planning",
-        "génère le planning",
-        "genere le planning",
-        "montre le planning",
+        "obligation schedule",
+        "engagement schedule",
+        "show the schedule",
+        "display the schedule",
+        "generate the schedule",
+        "show the planning",
     ]
 
     # Check for gantt-specific keywords
@@ -243,7 +241,7 @@ def is_gantt_intent(message: str) -> bool:
         return True
 
     # Check for planning + visualization intent
-    visualization_words = ["génère", "genere", "montre", "affiche", "visualise", "voir"]
+    visualization_words = ["generate", "show", "display", "visualize", "view", "see"]
     if any(viz in message for viz in visualization_words):
         if any(planning in message for planning in planning_keywords):
             return True
@@ -274,37 +272,37 @@ def get_variance_proactive_message(engagement) -> str:
 
     messages = []
     for v in variances:
-        direction = "augmentation" if v.variance_type.value == "increase" else "diminution"
+        direction = "increase" if v.variance_type.value == "increase" else "decrease"
         messages.append(
-            f"- {v.metric_label}: {direction} de {abs(v.variance_percent):.1f}% vs N-1"
+            f"- {v.metric_label}: {direction} of {abs(v.variance_percent):.1f}% vs previous year"
         )
 
     return (
-        f"\n\nJe note des variances significatives pour cet engagement :\n"
+        f"\n\nI notice significant variances for this engagement:\n"
         + "\n".join(messages)
-        + "\n\nSouhaitez-vous que je vous explique ces variations en détail ?"
+        + "\n\nWould you like me to explain these variations in detail?"
     )
 
 
 def build_engagement_context(engagement) -> str:
     """Build context string from engagement data for the system prompt."""
     parts = [
-        f"- Entité: {engagement.entity_name}",
-        f"- Pays: {engagement.country_code}",
+        f"- Entity: {engagement.entity_name}",
+        f"- Country: {engagement.country_code}",
         f"- Service: {engagement.service_type}",
-        f"- Statut: {engagement.status}",
-        f"- Progression: {engagement.completion_percent}%",
-        f"- Niveau de risque: {engagement.risk_level}",
+        f"- Status: {engagement.status}",
+        f"- Progress: {engagement.completion_percent}%",
+        f"- Risk level: {engagement.risk_level}",
     ]
 
     if engagement.due_date:
-        parts.append(f"- Date d'échéance: {engagement.due_date.strftime('%d/%m/%Y')}")
+        parts.append(f"- Due date: {engagement.due_date.strftime('%Y-%m-%d')}")
 
     # Add documents info
     if engagement.documents_required:
-        parts.append(f"- Documents requis: {', '.join(engagement.documents_required)}")
+        parts.append(f"- Required documents: {', '.join(engagement.documents_required)}")
     if engagement.documents_uploaded:
-        parts.append(f"- Documents uploadés: {', '.join(engagement.documents_uploaded)}")
+        parts.append(f"- Uploaded documents: {', '.join(engagement.documents_uploaded)}")
 
     # Add financial data if available
     if engagement.financial_data:
@@ -312,34 +310,34 @@ def build_engagement_context(engagement) -> str:
         current = fd.get("current_year", fd)
         previous = fd.get("previous_year", {})
 
-        parts.append("\nDonnées financières (année en cours):")
+        parts.append("\nFinancial data (current year):")
         if "total_assets" in current:
-            parts.append(f"- Total Actifs: {current['total_assets']:,.0f} €")
+            parts.append(f"- Total Assets: {current['total_assets']:,.0f} €")
         if "total_liabilities" in current:
-            parts.append(f"- Total Passifs: {current['total_liabilities']:,.0f} €")
+            parts.append(f"- Total Liabilities: {current['total_liabilities']:,.0f} €")
         if "equity" in current:
-            parts.append(f"- Capitaux Propres: {current['equity']:,.0f} €")
+            parts.append(f"- Equity: {current['equity']:,.0f} €")
         if "revenue" in current:
-            parts.append(f"- Chiffre d'affaires: {current['revenue']:,.0f} €")
+            parts.append(f"- Revenue: {current['revenue']:,.0f} €")
 
         if previous:
-            parts.append("\nDonnées N-1:")
+            parts.append("\nPrevious year data:")
             if "total_assets" in previous:
-                parts.append(f"- Total Actifs N-1: {previous['total_assets']:,.0f} €")
+                parts.append(f"- Total Assets (prev): {previous['total_assets']:,.0f} €")
             if "total_liabilities" in previous:
-                parts.append(f"- Total Passifs N-1: {previous['total_liabilities']:,.0f} €")
+                parts.append(f"- Total Liabilities (prev): {previous['total_liabilities']:,.0f} €")
             if "revenue" in previous:
-                parts.append(f"- Chiffre d'affaires N-1: {previous['revenue']:,.0f} €")
+                parts.append(f"- Revenue (prev): {previous['revenue']:,.0f} €")
 
         # Add variance info
         variances = check_engagement_variances(engagement.financial_data)
         if variances:
-            parts.append("\nVariances significatives détectées:")
+            parts.append("\nSignificant variances detected:")
             for v in variances:
-                direction = "augmentation" if v.variance_type.value == "increase" else "diminution"
+                direction = "increase" if v.variance_type.value == "increase" else "decrease"
                 parts.append(
-                    f"- {v.metric_label}: {direction} de {abs(v.variance_percent):.1f}% "
-                    f"(N: {v.current_value:,.0f} € → N-1: {v.previous_value:,.0f} €)"
+                    f"- {v.metric_label}: {direction} of {abs(v.variance_percent):.1f}% "
+                    f"(Current: {v.current_value:,.0f} € → Prev: {v.previous_value:,.0f} €)"
                 )
 
     return "\n".join(parts)
@@ -366,8 +364,8 @@ async def generate_chat_response(
     except ValueError as e:
         logger.error(f"OpenAI client not configured: {e}")
         return (
-            "Je ne suis pas encore configurée pour répondre. "
-            "Veuillez vérifier que la clé API OpenAI est correctement configurée."
+            "I am not yet configured to respond. "
+            "Please verify that the OpenAI API key is correctly configured."
         )
 
     # Build messages array for OpenAI
@@ -379,7 +377,7 @@ async def generate_chat_response(
     # 2. Add engagement context if available
     if engagement:
         context = build_engagement_context(engagement)
-        system_content += f"\n\nCONTEXTE DE L'ENGAGEMENT ACTUEL:\n{context}"
+        system_content += f"\n\nCURRENT ENGAGEMENT CONTEXT:\n{context}"
 
     messages.append({"role": "system", "content": system_content})
 
@@ -402,12 +400,12 @@ async def generate_chat_response(
             max_tokens=settings.openai_max_tokens,
             temperature=settings.openai_temperature,
         )
-        return response.choices[0].message.content or "Je n'ai pas pu générer de réponse."
+        return response.choices[0].message.content or "I could not generate a response."
     except Exception as e:
         logger.error(f"OpenAI API error: {e}")
         return (
-            "Une erreur technique s'est produite lors de la génération "
-            "de ma réponse. Veuillez réessayer dans quelques instants."
+            "A technical error occurred while generating "
+            "my response. Please try again in a few moments."
         )
 
 
@@ -428,7 +426,7 @@ async def process_explain(
 
     if not engagement:
         return ExplainResponse(
-            explanation="Impossible de trouver les données pour cet engagement.",
+            explanation="Unable to find data for this engagement.",
             source_document=None,
         )
 
@@ -505,9 +503,9 @@ def generate_explanation(
         tresorerie = round(total * 0.16, 2)
 
         breakdown = [
-            {"label": "Immobilisations", "value": immo, "percentage": 52},
-            {"label": "Actifs circulants", "value": circulants, "percentage": 32},
-            {"label": "Trésorerie", "value": tresorerie, "percentage": 16},
+            {"label": "Fixed Assets", "value": immo, "percentage": 52},
+            {"label": "Current Assets", "value": circulants, "percentage": 32},
+            {"label": "Cash", "value": tresorerie, "percentage": 16},
         ]
 
         prev_total = previous.get("total_assets", 0)
@@ -521,20 +519,20 @@ def generate_explanation(
             }
 
         explanation = (
-            f"Le montant Total Actifs de {total:,.0f} € pour {engagement.entity_name} "
-            f"se décompose comme suit :\n\n"
-            f"- Immobilisations : {immo:,.0f} € (52%)\n"
-            f"- Actifs circulants : {circulants:,.0f} € (32%)\n"
-            f"- Trésorerie : {tresorerie:,.0f} € (16%)\n\n"
-            f"Source : Grand_Livre_{engagement.country_code}_2025.xlsx, lignes 45-78"
+            f"The Total Assets amount of {total:,.0f} € for {engagement.entity_name} "
+            f"breaks down as follows:\n\n"
+            f"- Fixed Assets: {immo:,.0f} € (52%)\n"
+            f"- Current Assets: {circulants:,.0f} € (32%)\n"
+            f"- Cash: {tresorerie:,.0f} € (16%)\n\n"
+            f"Source: General_Ledger_{engagement.country_code}_2025.xlsx, lines 45-78"
         )
 
         if comparison:
-            trend_text = "hausse" if comparison["variance_percent"] > 0 else "baisse"
+            trend_text = "increase" if comparison["variance_percent"] > 0 else "decrease"
             explanation += (
-                f"\n\nCe montant représente une {trend_text} de "
-                f"{abs(comparison['variance_percent']):+.1f}% par rapport à l'exercice "
-                f"précédent ({prev_total:,.0f} €)."
+                f"\n\nThis amount represents a {trend_text} of "
+                f"{abs(comparison['variance_percent']):+.1f}% compared to the previous "
+                f"fiscal year ({prev_total:,.0f} €)."
             )
 
         return explanation, breakdown, comparison
@@ -544,9 +542,9 @@ def generate_explanation(
         total = current.get("total_liabilities", value)
 
         breakdown = [
-            {"label": "Dettes financières", "value": round(total * 0.60, 2), "percentage": 60},
-            {"label": "Dettes fournisseurs", "value": round(total * 0.25, 2), "percentage": 25},
-            {"label": "Autres dettes", "value": round(total * 0.15, 2), "percentage": 15},
+            {"label": "Financial Debts", "value": round(total * 0.60, 2), "percentage": 60},
+            {"label": "Trade Payables", "value": round(total * 0.25, 2), "percentage": 25},
+            {"label": "Other Liabilities", "value": round(total * 0.15, 2), "percentage": 15},
         ]
 
         prev_total = previous.get("total_liabilities", 0)
@@ -560,9 +558,9 @@ def generate_explanation(
             }
 
         explanation = (
-            f"Le montant Total Passifs de {total:,.0f} € pour {engagement.entity_name} "
-            f"représente l'ensemble des obligations financières de l'entité.\n\n"
-            f"Source : Grand_Livre_{engagement.country_code}_2025.xlsx, lignes 120-145"
+            f"The Total Liabilities amount of {total:,.0f} € for {engagement.entity_name} "
+            f"represents all financial obligations of the entity.\n\n"
+            f"Source: General_Ledger_{engagement.country_code}_2025.xlsx, lines 120-145"
         )
 
         return explanation, breakdown, comparison
@@ -572,10 +570,10 @@ def generate_explanation(
         equity = current.get("equity", value)
 
         explanation = (
-            f"Les Capitaux Propres de {equity:,.0f} € représentent la différence entre "
-            f"les actifs et les passifs de {engagement.entity_name}.\n\n"
-            f"Cette valeur reflète la valeur nette comptable de l'entité.\n\n"
-            f"Source : Bilan comptable"
+            f"The Equity of {equity:,.0f} € represents the difference between "
+            f"assets and liabilities of {engagement.entity_name}.\n\n"
+            f"This value reflects the net book value of the entity.\n\n"
+            f"Source: Balance Sheet"
         )
 
         return explanation, None, None
@@ -595,18 +593,18 @@ def generate_explanation(
             }
 
         explanation = (
-            f"Le Chiffre d'Affaires de {revenue:,.0f} € représente le total des ventes "
-            f"et prestations de {engagement.entity_name} sur l'exercice.\n\n"
-            f"Source : Compte de résultat"
+            f"The Revenue of {revenue:,.0f} € represents the total sales "
+            f"and services of {engagement.entity_name} for the fiscal year.\n\n"
+            f"Source: Income Statement"
         )
 
         return explanation, None, comparison
 
     # Default explanation
     explanation = (
-        f"La valeur {label} de {value:,.0f} € fait partie des données financières "
-        f"de l'engagement {engagement.entity_name}.\n\n"
-        f"Pour plus de détails, consultez le tableau de bord ou les documents sources."
+        f"The value {label} of {value:,.0f} € is part of the financial data "
+        f"for the engagement {engagement.entity_name}.\n\n"
+        f"For more details, please consult the dashboard or source documents."
     )
 
     return explanation, None, None

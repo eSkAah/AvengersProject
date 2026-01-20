@@ -54,7 +54,7 @@ async def chat_with_eve(
     except Exception as e:
         # Return fallback message on error
         return ChatResponse(
-            message="Une erreur technique s'est produite. Veuillez réessayer dans quelques instants.",
+            message="A technical error occurred. Please try again in a few moments.",
             sources=None,
             engagement_id=request.engagement_id,
         )
@@ -94,7 +94,7 @@ async def explain_value(
         return response
     except Exception as e:
         return ExplainResponse(
-            explanation="Une erreur technique s'est produite lors de l'analyse de cette valeur.",
+            explanation="A technical error occurred while analyzing this value.",
             source_document=None,
         )
 

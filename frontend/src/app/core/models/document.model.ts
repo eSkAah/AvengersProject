@@ -7,7 +7,7 @@ export type DocumentType =
 
 export type DocumentCategory = 'accounting' | 'tax' | 'financial';
 
-export type DocumentStatus = 'pending' | 'uploaded' | 'analyzing' | 'analyzed' | 'error';
+export type DocumentStatus = 'pending' | 'uploaded' | 'analyzing' | 'analyzed' | 'validated' | 'missing' | 'error';
 
 export interface Document {
   id: string;
@@ -55,6 +55,8 @@ export const DOCUMENT_STATUS_LABELS: Record<DocumentStatus, string> = {
   uploaded: 'Uploaded',
   analyzing: 'Analyzing',
   analyzed: 'Analyzed',
+  validated: 'Validated',
+  missing: 'Missing',
   error: 'Error',
 };
 

@@ -141,7 +141,7 @@ def calculate_risk_with_details(
     if status == StatusEnum.completed or status == "completed":
         return RiskDetails(
             level=RiskLevel.low,
-            reasons=["Engagement terminé avec succès"],
+            reasons=["Engagement completed successfully"],
             suggested_actions=[],
             days_remaining=days_remaining,
             completion_percent=completion_percent,
@@ -154,21 +154,21 @@ def calculate_risk_with_details(
     # Condition 1: < 7 days AND < 80% complete
     if days_remaining < 7 and completion_percent < 80:
         high_risk = True
-        reasons.append(f"Seulement {days_remaining}j restants avec {completion_percent}% de completion")
-        actions.append("Priorisez l'upload des documents manquants immédiatement")
+        reasons.append(f"Only {days_remaining} day(s) remaining with {completion_percent}% completion")
+        actions.append("Prioritize uploading missing documents immediately")
 
     # Condition 2: Missing documents at J-7
     if days_remaining <= 7 and missing_docs_count > 0:
         high_risk = True
-        reasons.append(f"{missing_docs_count} document(s) manquant(s) à J-{abs(days_remaining) if days_remaining <= 0 else days_remaining}")
+        reasons.append(f"{missing_docs_count} missing document(s) at D-{abs(days_remaining) if days_remaining <= 0 else days_remaining}")
         if missing_docs:
-            actions.append(f"Uploadez en priorité: {missing_docs[0]}")
+            actions.append(f"Upload as priority: {missing_docs[0]}")
 
     # Condition 3: Overdue
     if days_remaining < 0:
         high_risk = True
-        reasons.append(f"En retard de {abs(days_remaining)} jour(s)")
-        actions.append("Contactez le client pour accélérer la collecte des documents")
+        reasons.append(f"{abs(days_remaining)} day(s) overdue")
+        actions.append("Contact the client to accelerate document collection")
 
     if high_risk:
         return RiskDetails(
@@ -186,22 +186,22 @@ def calculate_risk_with_details(
     # Condition 1: 7-14 days AND < 90% complete
     if 7 <= days_remaining <= 14 and completion_percent < 90:
         medium_risk = True
-        reasons.append(f"{days_remaining}j restants avec {completion_percent}% de completion")
-        actions.append("Planifiez l'upload des documents restants cette semaine")
+        reasons.append(f"{days_remaining} day(s) remaining with {completion_percent}% completion")
+        actions.append("Plan to upload remaining documents this week")
 
     # Condition 2: Documents still missing
     if missing_docs_count > 0 and days_remaining <= 14:
         medium_risk = True
         if f"{missing_docs_count} document(s)" not in " ".join(reasons):
-            reasons.append(f"{missing_docs_count} document(s) encore requis")
+            reasons.append(f"{missing_docs_count} document(s) still required")
         if missing_docs:
-            actions.append(f"Documents à fournir: {', '.join(missing_docs[:2])}")
+            actions.append(f"Documents to provide: {', '.join(missing_docs[:2])}")
 
     if medium_risk:
         return RiskDetails(
             level=RiskLevel.medium,
-            reasons=reasons if reasons else ["Suivi recommandé"],
-            suggested_actions=actions if actions else ["Continuez le suivi régulier"],
+            reasons=reasons if reasons else ["Monitoring recommended"],
+            suggested_actions=actions if actions else ["Continue regular monitoring"],
             days_remaining=days_remaining,
             completion_percent=completion_percent,
             missing_documents=missing_docs,
@@ -210,15 +210,15 @@ def calculate_risk_with_details(
     # LOW risk - all good
     reasons = []
     if days_remaining > 14:
-        reasons.append(f"Deadline dans {days_remaining} jours")
+        reasons.append(f"Deadline in {days_remaining} days")
     if completion_percent >= 90:
-        reasons.append(f"Completion à {completion_percent}%")
+        reasons.append(f"{completion_percent}% complete")
     if missing_docs_count == 0:
-        reasons.append("Tous les documents reçus")
+        reasons.append("All documents received")
 
     return RiskDetails(
         level=RiskLevel.low,
-        reasons=reasons if reasons else ["Tout est sous contrôle"],
+        reasons=reasons if reasons else ["Everything under control"],
         suggested_actions=[],
         days_remaining=days_remaining,
         completion_percent=completion_percent,

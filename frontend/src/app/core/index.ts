@@ -1,8 +1,7 @@
 // Core module barrel exports
 
 // Layout Components
-export * from './components/sidebar/sidebar.component';
-export * from './components/header/header.component';
+export * from './components/navbar/navbar.component';
 export * from './components/layout-shell/layout-shell.component';
 
 // Models

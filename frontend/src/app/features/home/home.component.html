@@ -1,248 +1,35 @@
-<div class="command-center">
-  <!-- Header Card -->
-  <div class="bento-card bento-card--header">
-    <div class="command-center__header">
-      <div class="command-center__header-content">
-        <h1>Command Center</h1>
-        <p>Overview of your engagements</p>
-      </div>
-      <div class="command-center__header-decoration">
-        <lucide-icon name="command" [size]="48"></lucide-icon>
+<div class="dashboard">
+  <!-- Header -->
+  <div class="dashboard__header">
+    <div class="dashboard__header-content">
+      <lucide-icon [img]="icons.layoutDashboard" [size]="28"></lucide-icon>
+      <div>
+        <h1>Dashboard</h1>
+        <p>Overview of your engagements and documents</p>
       </div>
     </div>
   </div>
 
-  <!-- Bento Grid Layout -->
+  <!-- Bento Grid -->
   <div class="bento-grid">
-    <!-- KPIs Section - clickable cards -->
-    <div class="bento-card bento-card--kpis">
-      <div class="section-header">
-        <div class="section-header__title">
-          <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
-          <h2>Key Indicators</h2>
-        </div>
-      </div>
-      <div class="kpi-grid">
-        <button class="kpi-card kpi-card--total" (click)="onKpiCardClick('all')">
-          <div class="kpi-card__icon">
-            <lucide-icon name="briefcase" [size]="24"></lucide-icon>
-          </div>
-          <div class="kpi-card__content">
-            <span class="kpi-card__value">{{ kpiData().total }}</span>
-            <span class="kpi-card__label">Total Engagements</span>
-          </div>
-          <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
-        </button>
-
-        <button class="kpi-card kpi-card--processing" (click)="onKpiCardClick('processing')">
-          <div class="kpi-card__icon">
-            <lucide-icon name="loader" [size]="24"></lucide-icon>
-          </div>
-          <div class="kpi-card__content">
-            <span class="kpi-card__value">{{ kpiData().processing }}</span>
-            <span class="kpi-card__label">In Progress</span>
-          </div>
-          <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
-        </button>
-
-        <button class="kpi-card kpi-card--risk" (click)="onKpiCardClick('high-risk')">
-          <div class="kpi-card__icon">
-            <lucide-icon name="alert-triangle" [size]="24"></lucide-icon>
-          </div>
-          <div class="kpi-card__content">
-            <span class="kpi-card__value">{{ kpiData().highRisk }}</span>
-            <span class="kpi-card__label">High Risk</span>
-          </div>
-          <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
-        </button>
-
-        <button class="kpi-card kpi-card--completed" (click)="onKpiCardClick('completed')">
-          <div class="kpi-card__icon">
-            <lucide-icon name="check-circle" [size]="24"></lucide-icon>
-          </div>
-          <div class="kpi-card__content">
-            <span class="kpi-card__value">{{ kpiData().completed }}</span>
-            <span class="kpi-card__label">Completed</span>
-          </div>
-          <lucide-icon name="chevron-right" [size]="16" class="kpi-card__arrow"></lucide-icon>
-        </button>
-      </div>
+    <!-- Widget 1: Upload & Missing Documents (Left, tall) -->
+    <div class="bento-card bento-card--upload">
+      <app-upload-widget (uploadFiles)="onFilesUpload($event)"></app-upload-widget>
     </div>
 
-    <!-- Action Center -->
-    <div class="bento-card bento-card--actions">
-      <div class="section-header">
-        <div class="section-header__title">
-          <lucide-icon name="list-todo" [size]="20"></lucide-icon>
-          <h2>Action Center</h2>
-        </div>
-        <span class="section-header__count">{{ actionItems().length }} action(s)</span>
-      </div>
-
-      @if (actionItems().length === 0) {
-        <div class="action-center__empty">
-          <lucide-icon name="check-circle-2" [size]="48"></lucide-icon>
-          <p>No pending actions</p>
-        </div>
-      } @else {
-        <div class="action-center__list">
-          @for (action of actionItems(); track action.id) {
-            <div
-              class="action-item"
-              [class.action-item--high]="action.priority === 'high'"
-              [class.action-item--medium]="action.priority === 'medium'"
-              (click)="onActionClick(action)"
-            >
-              <div class="action-item__icon">
-                <lucide-icon [name]="getActionIcon(action.type)" [size]="18"></lucide-icon>
-              </div>
-              <div class="action-item__content">
-                <span class="action-item__title">{{ action.title }}</span>
-                <span class="action-item__description">{{ action.description }}</span>
-              </div>
-              <lucide-icon name="chevron-right" [size]="16" class="action-item__arrow"></lucide-icon>
-            </div>
-          }
-        </div>
-      }
+    <!-- Widget 2: Engagement Status Donut (Right, top) -->
+    <div class="bento-card bento-card--donut">
+      <app-donut-widget (segmentSelect)="onDonutSegmentChange($event)"></app-donut-widget>
     </div>
 
-    <!-- Recent Activity / Notifications -->
-    <div class="bento-card bento-card--activity">
-      <app-notifications-zone
-        [notifications]="notifications()"
-        (notificationClick)="onNotificationClick($event)"
-      ></app-notifications-zone>
+    <!-- Widget 3: Documents to Sign Off (Right, bottom) -->
+    <div class="bento-card bento-card--signoff">
+      <app-signoff-widget></app-signoff-widget>
     </div>
 
-    <!-- At-Risk Engagements - Compact Cards -->
-    <div class="bento-card bento-card--risk-list">
-      <div class="section-header">
-        <div class="section-header__title">
-          <lucide-icon name="alert-triangle" [size]="20"></lucide-icon>
-          <h2>At-Risk Engagements</h2>
-        </div>
-        <div class="section-header__actions">
-          <span class="section-header__count">{{ atRiskEngagements().length }} engagement(s)</span>
-          @if (atRiskEngagements().length > 4) {
-            <button class="view-all-link" (click)="onViewAllRiskEngagements()">
-              View all
-              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-            </button>
-          }
-        </div>
-      </div>
-
-      @if (atRiskEngagements().length === 0) {
-        <div class="risk-list__empty">
-          <lucide-icon name="shield-check" [size]="48"></lucide-icon>
-          <p>No at-risk engagements</p>
-        </div>
-      } @else {
-        <div class="risk-card-grid">
-          @for (engagement of displayedRiskEngagements(); track engagement.id) {
-            <div
-              class="risk-card"
-              [class.risk-card--high]="engagement.riskLevel === 'high'"
-              [class.risk-card--medium]="engagement.riskLevel === 'medium'"
-              (click)="onViewDashboard(engagement)"
-            >
-              <div class="risk-card__header">
-                <div class="risk-card__entity">
-                  <span class="risk-card__flag">{{ engagement.countryFlag }}</span>
-                  <span class="risk-card__name">{{ engagement.entity }}</span>
-                </div>
-                <span
-                  class="risk-card__status"
-                  [class.status--waiting]="engagement.status === 'waiting'"
-                  [class.status--received]="engagement.status === 'received'"
-                  [class.status--processing]="engagement.status === 'processing'"
-                  [class.status--completed]="engagement.status === 'completed'"
-                >
-                  {{ statusLabels[engagement.status] }}
-                </span>
-              </div>
-              <div class="risk-card__body">
-                <div class="risk-card__service">{{ engagement.service }}</div>
-                <div class="risk-card__due">
-                  <lucide-icon name="calendar" [size]="12"></lucide-icon>
-                  {{ formatShortDate(engagement.dueDate) }}
-                </div>
-              </div>
-              <div class="risk-card__footer">
-                <div class="risk-card__progress">
-                  <div class="risk-card__progress-bar">
-                    <div
-                      class="risk-card__progress-fill"
-                      [style.width.%]="engagement.completionPercent"
-                    ></div>
-                  </div>
-                  <span class="risk-card__progress-text">{{ engagement.completionPercent }}%</span>
-                </div>
-                <div
-                  class="risk-card__risk-badge"
-                  [class.risk-badge--high]="engagement.riskLevel === 'high'"
-                  [class.risk-badge--medium]="engagement.riskLevel === 'medium'"
-                >
-                  <lucide-icon name="alert-triangle" [size]="12"></lucide-icon>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      }
-    </div>
-
-    <!-- Financial Summary -->
-    <div class="bento-card bento-card--financial">
-      <div class="section-header">
-        <div class="section-header__title">
-          <lucide-icon name="coins" [size]="20"></lucide-icon>
-          <h2>Financial Summary</h2>
-        </div>
-      </div>
-
-      <div class="financial-summary">
-        <div class="financial-metric">
-          <div class="financial-metric__icon financial-metric__icon--assets">
-            <lucide-icon name="trending-up" [size]="24"></lucide-icon>
-          </div>
-          <div class="financial-metric__content">
-            <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalAssets) }}</span>
-            <span class="financial-metric__label">Total Assets</span>
-          </div>
-        </div>
-
-        <div class="financial-metric">
-          <div class="financial-metric__icon financial-metric__icon--liabilities">
-            <lucide-icon name="trending-down" [size]="24"></lucide-icon>
-          </div>
-          <div class="financial-metric__content">
-            <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalLiabilities) }}</span>
-            <span class="financial-metric__label">Total Liabilities</span>
-          </div>
-        </div>
-
-        <div class="financial-metric">
-          <div class="financial-metric__icon financial-metric__icon--revenue">
-            <lucide-icon name="wallet" [size]="24"></lucide-icon>
-          </div>
-          <div class="financial-metric__content">
-            <span class="financial-metric__value">{{ formatCurrency(financialTotals().totalRevenue) }}</span>
-            <span class="financial-metric__label">Revenue</span>
-          </div>
-        </div>
-
-        <div class="financial-metric">
-          <div class="financial-metric__icon financial-metric__icon--completion">
-            <lucide-icon name="percent" [size]="24"></lucide-icon>
-          </div>
-          <div class="financial-metric__content">
-            <span class="financial-metric__value">{{ financialTotals().avgCompletion }}%</span>
-            <span class="financial-metric__label">Average Progress</span>
-          </div>
-        </div>
-      </div>
+    <!-- Widget 4: Engagement List (Full width, bottom) -->
+    <div class="bento-card bento-card--engagements">
+      <app-engagement-list-widget [filter]="selectedDonutSegment()"></app-engagement-list-widget>
     </div>
   </div>
 </div>

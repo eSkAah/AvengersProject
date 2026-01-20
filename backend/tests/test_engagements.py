@@ -489,8 +489,8 @@ async def test_prediction_has_formatted_string(client):
     data = response.json()
 
     formatted = data["formatted_prediction"]
-    # Should contain "Prévu le" or similar French text
-    assert "Prévu" in formatted or "Prédiction" in formatted
+    # Should contain "Predicted on" or similar English text
+    assert "Predicted" in formatted or "Prediction" in formatted
 
 
 # =============================================================================
@@ -514,7 +514,7 @@ class TestCalculateRiskWithDetails:
         )
 
         assert details.level == RiskLevel.low
-        assert "terminé" in details.reasons[0].lower()
+        assert "completed" in details.reasons[0].lower()
         assert len(details.suggested_actions) == 0
 
     def test_high_risk_has_actions(self):

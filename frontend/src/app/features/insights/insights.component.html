@@ -1,0 +1,199 @@
+<div class="insights-page">
+  <!-- Breadcrumb -->
+  <app-breadcrumb [items]="breadcrumbs"></app-breadcrumb>
+
+  <!-- Page Header -->
+  <header class="insights-page__header">
+    <div class="insights-page__title-section">
+      <h1 class="insights-page__title">
+        <lucide-icon name="bar-chart-3" [size]="28"></lucide-icon>
+        Global Insights
+      </h1>
+      <p class="insights-page__subtitle">
+        Portfolio-wide tax metrics and analysis
+      </p>
+    </div>
+
+    <!-- Filters -->
+    <div class="insights-page__filters">
+      <div class="filter-group">
+        <label class="filter-group__label">Year</label>
+        <select
+          class="filter-group__select"
+          [ngModel]="filters().year"
+          (ngModelChange)="onYearChange($event)"
+        >
+          @for (year of yearOptions; track year) {
+            <option [value]="year">{{ year }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group filter-group--entities">
+        <label class="filter-group__label">Entities</label>
+        <div class="entity-pills">
+          @for (entity of entityOptions(); track entity) {
+            <button
+              class="entity-pill"
+              [class.entity-pill--active]="filters().entities.includes(entity)"
+              (click)="onEntityToggle(entity)"
+            >
+              {{ entity }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (hasActiveFilters()) {
+        <button class="filter-clear" (click)="clearFilters()">
+          <lucide-icon name="x" [size]="14"></lucide-icon>
+          Clear
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- Global KPIs -->
+  <section class="insights-page__section">
+    <h2 class="insights-page__section-title">
+      <lucide-icon name="calculator" [size]="20"></lucide-icon>
+      Key Metrics
+      <span class="insights-page__section-hint">
+        <lucide-icon name="command" [size]="12"></lucide-icon>
+        + Click to Ask Eve
+      </span>
+    </h2>
+
+    <div class="kpi-grid">
+      @for (kpi of globalKpis(); track kpi.id) {
+        <div
+          class="global-kpi"
+          [class.global-kpi--primary]="kpi.color === 'primary'"
+          [class.global-kpi--success]="kpi.color === 'success'"
+          [class.global-kpi--warning]="kpi.color === 'warning'"
+          [class.global-kpi--error]="kpi.color === 'error'"
+          [class.global-kpi--info]="kpi.color === 'info'"
+          (click)="onKpiClick(kpi)"
+        >
+          <div class="global-kpi__icon">
+            <lucide-icon [name]="kpi.icon" [size]="24"></lucide-icon>
+          </div>
+          <div class="global-kpi__content">
+            <span class="global-kpi__label">{{ kpi.label }}</span>
+            <span class="global-kpi__value">{{ kpi.formattedValue }}</span>
+            @if (kpi.change !== undefined) {
+              <span
+                class="global-kpi__change"
+                [class.global-kpi__change--positive]="kpi.change > 0"
+                [class.global-kpi__change--negative]="kpi.change < 0"
+              >
+                {{ kpi.change > 0 ? '+' : '' }}{{ kpi.change.toFixed(1) }}%
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Charts Grid -->
+  <section class="insights-page__section">
+    <h2 class="insights-page__section-title">
+      <lucide-icon name="pie-chart" [size]="20"></lucide-icon>
+      Tax Analysis
+    </h2>
+
+    <div class="charts-grid">
+      <!-- Tax by Entity -->
+      <div class="chart-card chart-card--wide">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Tax Liability by Entity</h3>
+          <p class="chart-card__subtitle">Sorted by amount (highest first)</p>
+        </div>
+        <div class="chart-card__content">
+          @if (taxByEntityData()) {
+            <app-bar-chart
+              [data]="taxByEntityData()"
+              [horizontal]="true"
+              [cmdClickEnabled]="true"
+              (barClick)="onChartClick($event, 'Tax by Entity')"
+              (cmdClick)="onChartClick($event, 'Tax by Entity')"
+            ></app-bar-chart>
+          } @else {
+            <div class="chart-card__empty">
+              <lucide-icon name="bar-chart-horizontal" [size]="48"></lucide-icon>
+              <p>No data available</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ETR by Entity -->
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Effective Tax Rate by Entity</h3>
+          <p class="chart-card__subtitle">
+            <span class="chart-card__legend-item chart-card__legend-item--green">Below statutory</span>
+            <span class="chart-card__legend-item chart-card__legend-item--red">Above statutory</span>
+          </p>
+        </div>
+        <div class="chart-card__content">
+          @if (etrByEntityData()) {
+            <app-bar-chart
+              [data]="etrByEntityData()"
+              [cmdClickEnabled]="true"
+              (barClick)="onChartClick($event, 'ETR by Entity')"
+              (cmdClick)="onChartClick($event, 'ETR by Entity')"
+            ></app-bar-chart>
+          } @else {
+            <div class="chart-card__empty">
+              <lucide-icon name="bar-chart" [size]="48"></lucide-icon>
+              <p>No data available</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Tax by Jurisdiction -->
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Tax by Jurisdiction</h3>
+          <p class="chart-card__subtitle">Geographic distribution</p>
+        </div>
+        <div class="chart-card__content">
+          @if (taxByJurisdictionData()) {
+            <app-pie-chart
+              [data]="taxByJurisdictionData()"
+              [cmdClickEnabled]="true"
+              (segmentClick)="onPieClick($event, 'Tax by Jurisdiction')"
+              (cmdClick)="onPieClick($event, 'Tax by Jurisdiction')"
+            ></app-pie-chart>
+          } @else {
+            <div class="chart-card__empty">
+              <lucide-icon name="pie-chart" [size]="48"></lucide-icon>
+              <p>No data available</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Summary Stats -->
+  <section class="insights-page__section">
+    <div class="summary-bar">
+      <div class="summary-bar__item">
+        <lucide-icon name="building-2" [size]="16"></lucide-icon>
+        <span>{{ filteredEngagements().length }} Entities</span>
+      </div>
+      <div class="summary-bar__item">
+        <lucide-icon name="calendar" [size]="16"></lucide-icon>
+        <span>FY {{ filters().year }}</span>
+      </div>
+      <div class="summary-bar__item">
+        <lucide-icon name="refresh-cw" [size]="16"></lucide-icon>
+        <span>Last updated: Today</span>
+      </div>
+    </div>
+  </section>
+</div>

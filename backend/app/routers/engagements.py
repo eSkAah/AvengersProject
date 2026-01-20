@@ -204,12 +204,12 @@ async def get_engagement(
                         "engagement_id": "ENG-FR-001",
                         "level": "high",
                         "reasons": [
-                            "Seulement 5j restants avec 67% de completion",
-                            "2 document(s) manquant(s) à J-5",
+                            "Only 5 day(s) remaining with 67% completion",
+                            "2 missing document(s) at D-5",
                         ],
                         "suggested_actions": [
-                            "Priorisez l'upload des documents manquants immédiatement",
-                            "Uploadez en priorité: General Ledger",
+                            "Prioritize uploading missing documents immediately",
+                            "Upload as priority: General Ledger",
                         ],
                         "days_remaining": 5,
                         "completion_percent": 67,
@@ -275,7 +275,7 @@ async def get_risk_details(
                         "is_on_track": False,
                         "confidence": "medium",
                         "due_date": "2026-03-01",
-                        "formatted_prediction": "Prévu le 5 mars (+4j)",
+                        "formatted_prediction": "Predicted on March 5 (+4d)",
                     }
                 }
             },
@@ -310,15 +310,15 @@ async def get_prediction(
 
     # Format the prediction for display
     if prediction.predicted_date:
-        formatted_date = prediction.predicted_date.strftime("%d %B").lstrip("0")
+        formatted_date = prediction.predicted_date.strftime("%B %d").lstrip("0")
         if prediction.days_difference > 0:
-            formatted = f"Prévu le {formatted_date} (+{prediction.days_difference}j)"
+            formatted = f"Predicted on {formatted_date} (+{prediction.days_difference}d)"
         elif prediction.days_difference < 0:
-            formatted = f"Prévu le {formatted_date} ({prediction.days_difference}j)"
+            formatted = f"Predicted on {formatted_date} ({prediction.days_difference}d)"
         else:
-            formatted = f"Prévu le {formatted_date} (dans les temps)"
+            formatted = f"Predicted on {formatted_date} (on track)"
     else:
-        formatted = "Prédiction non disponible"
+        formatted = "Prediction not available"
 
     return PredictionResponse(
         engagement_id=engagement_id,

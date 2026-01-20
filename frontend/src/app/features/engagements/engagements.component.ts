@@ -2,36 +2,82 @@ import { Component, ChangeDetectionStrategy, inject, computed, signal, OnInit } 
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
-import { MockDataService, Engagement, DocumentType, DocumentRequirementStatus } from '../../core';
-import { EngagementListComponent } from '../landing';
+import { LucideAngularModule, LayoutGrid, Table2, Search, Calendar, Briefcase, AlertTriangle, X, ChevronDown, ChevronRight, Eye, Upload, MessageSquare } from 'lucide-angular';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { MockDataService, Engagement, DocumentType, DocumentRequirementStatus, STATUS_LABELS } from '../../core';
+import { RiskBadgeComponent, ProgressBarComponent, BadgeComponent } from '../../shared';
+
+export type ViewMode = 'cards' | 'table';
 
 export interface EngagementFilters {
-  entity: string;
+  search: string;
   status: string[];
   year: string;
   service: string[];
   riskLevel: string[];
 }
 
+const VIEW_MODE_KEY = 'avengers_engagements_view_mode';
 const FILTERS_STORAGE_KEY = 'avengers_engagement_filters';
 
 @Component({
   selector: 'app-engagements',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, EngagementListComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LucideAngularModule,
+    RiskBadgeComponent,
+    ProgressBarComponent,
+    BadgeComponent
+  ],
   templateUrl: './engagements.component.html',
   styleUrl: './engagements.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('expandCollapse', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0 }),
+        animate('200ms ease-out', style({ height: '*', opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ height: 0, opacity: 0 })),
+      ]),
+    ]),
+  ],
 })
 export class EngagementsComponent implements OnInit {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
+  // Icons
+  readonly icons = {
+    layoutGrid: LayoutGrid,
+    table: Table2,
+    search: Search,
+    calendar: Calendar,
+    briefcase: Briefcase,
+    alertTriangle: AlertTriangle,
+    x: X,
+    chevronDown: ChevronDown,
+    chevronRight: ChevronRight,
+    eye: Eye,
+    upload: Upload,
+    messageSquare: MessageSquare
+  };
+
+  readonly statusLabels = STATUS_LABELS;
+
+  // View mode
+  readonly viewMode = signal<ViewMode>('cards');
+
+  // Expanded row (for table view)
+  readonly expandedId = signal<string | null>(null);
+
   // Filter state
   readonly filters = signal<EngagementFilters>({
-    entity: '',
+    search: '',
     status: [],
     year: '',
     service: [],
@@ -39,16 +85,19 @@ export class EngagementsComponent implements OnInit {
   });
 
   // Filter options
-  readonly statusOptions = ['waiting', 'received', 'processing', 'completed'];
+  readonly statusOptions = [
+    { value: 'waiting', label: 'Pending' },
+    { value: 'received', label: 'Received' },
+    { value: 'processing', label: 'In Progress' },
+    { value: 'completed', label: 'Completed' }
+  ];
   readonly serviceOptions = ['Corporate Tax', 'VAT', 'CTR'];
-  readonly yearOptions = ['2024', '2023', '2022'];
-  readonly riskLevelOptions = ['high', 'medium', 'low'];
-
-  // Unique entities from data
-  readonly entityOptions = computed(() => {
-    const entities = this.mockData.engagements().map(e => e.entity);
-    return [...new Set(entities)].sort();
-  });
+  readonly yearOptions = ['2025', '2024', '2023'];
+  readonly riskLevelOptions = [
+    { value: 'high', label: 'High', color: '#EF4444' },
+    { value: 'medium', label: 'Medium', color: '#F59E0B' },
+    { value: 'low', label: 'Low', color: '#10B981' }
+  ];
 
   // Filtered engagements
   readonly filteredEngagements = computed(() => {
@@ -56,27 +105,30 @@ export class EngagementsComponent implements OnInit {
     const currentFilters = this.filters();
 
     return allEngagements.filter(engagement => {
-      // Entity filter (search)
-      if (currentFilters.entity && !engagement.entity.toLowerCase().includes(currentFilters.entity.toLowerCase())) {
-        return false;
+      // Search filter
+      if (currentFilters.search) {
+        const searchLower = currentFilters.search.toLowerCase();
+        const matchesEntity = engagement.entity.toLowerCase().includes(searchLower);
+        const matchesService = engagement.service.toLowerCase().includes(searchLower);
+        if (!matchesEntity && !matchesService) return false;
       }
 
-      // Status filter (multi-select)
+      // Status filter
       if (currentFilters.status.length > 0 && !currentFilters.status.includes(engagement.status)) {
         return false;
       }
 
       // Year filter
-      if (currentFilters.year && !engagement.dueDate.startsWith(currentFilters.year)) {
+      if (currentFilters.year && engagement.fiscalYear.toString() !== currentFilters.year) {
         return false;
       }
 
-      // Service filter (multi-select)
+      // Service filter
       if (currentFilters.service.length > 0 && !currentFilters.service.includes(engagement.service)) {
         return false;
       }
 
-      // Risk level filter (multi-select)
+      // Risk level filter
       if (currentFilters.riskLevel.length > 0 && !currentFilters.riskLevel.includes(engagement.riskLevel)) {
         return false;
       }
@@ -87,20 +139,33 @@ export class EngagementsComponent implements OnInit {
 
   readonly totalCount = computed(() => this.mockData.engagements().length);
   readonly filteredCount = computed(() => this.filteredEngagements().length);
+
   readonly hasActiveFilters = computed(() => {
     const f = this.filters();
-    return f.entity !== '' || f.status.length > 0 || f.year !== '' || f.service.length > 0 || f.riskLevel.length > 0;
+    return f.search !== '' || f.status.length > 0 || f.year !== '' || f.service.length > 0 || f.riskLevel.length > 0;
+  });
+
+  readonly activeFilterCount = computed(() => {
+    const f = this.filters();
+    let count = 0;
+    if (f.search) count++;
+    count += f.status.length;
+    if (f.year) count++;
+    count += f.service.length;
+    count += f.riskLevel.length;
+    return count;
   });
 
   ngOnInit(): void {
-    // Check for query params first (takes priority over session storage)
+    this.loadViewMode();
+
+    // Check for query params first
     const params = this.route.snapshot.queryParams;
     const hasQueryFilters = params['status'] || params['risk'];
 
     if (hasQueryFilters) {
-      // Apply filters from query params
       const newFilters: EngagementFilters = {
-        entity: '',
+        search: '',
         status: params['status'] ? params['status'].split(',') : [],
         year: '',
         service: [],
@@ -109,7 +174,6 @@ export class EngagementsComponent implements OnInit {
       this.filters.set(newFilters);
       this.saveFiltersToSession();
 
-      // Clear query params from URL to keep it clean
       this.router.navigate([], {
         queryParams: {},
         replaceUrl: true,
@@ -119,12 +183,47 @@ export class EngagementsComponent implements OnInit {
     }
   }
 
-  // Entity search
-  onEntitySearch(value: string): void {
-    this.updateFilter('entity', value);
+  // View mode methods
+  setViewMode(mode: ViewMode): void {
+    this.viewMode.set(mode);
+    this.saveViewMode(mode);
+    // Reset expanded state when switching views
+    this.expandedId.set(null);
   }
 
-  // Status toggle
+  private loadViewMode(): void {
+    try {
+      const saved = localStorage.getItem(VIEW_MODE_KEY) as ViewMode | null;
+      if (saved === 'cards' || saved === 'table') {
+        this.viewMode.set(saved);
+      }
+    } catch {
+      // localStorage not available
+    }
+  }
+
+  private saveViewMode(mode: ViewMode): void {
+    try {
+      localStorage.setItem(VIEW_MODE_KEY, mode);
+    } catch {
+      // localStorage not available
+    }
+  }
+
+  // Table expand/collapse
+  toggleExpand(id: string): void {
+    this.expandedId.set(this.expandedId() === id ? null : id);
+  }
+
+  isExpanded(id: string): boolean {
+    return this.expandedId() === id;
+  }
+
+  // Filter methods
+  onSearchChange(value: string): void {
+    this.updateFilter('search', value);
+  }
+
   toggleStatus(status: string): void {
     const current = this.filters().status;
     const updated = current.includes(status)
@@ -133,12 +232,10 @@ export class EngagementsComponent implements OnInit {
     this.updateFilter('status', updated);
   }
 
-  // Year select
   onYearChange(year: string): void {
     this.updateFilter('year', year);
   }
 
-  // Service toggle
   toggleService(service: string): void {
     const current = this.filters().service;
     const updated = current.includes(service)
@@ -147,10 +244,17 @@ export class EngagementsComponent implements OnInit {
     this.updateFilter('service', updated);
   }
 
-  // Clear all filters
+  toggleRiskLevel(riskLevel: string): void {
+    const current = this.filters().riskLevel;
+    const updated = current.includes(riskLevel)
+      ? current.filter(r => r !== riskLevel)
+      : [...current, riskLevel];
+    this.updateFilter('riskLevel', updated);
+  }
+
   clearFilters(): void {
     this.filters.set({
-      entity: '',
+      search: '',
       status: [],
       year: '',
       service: [],
@@ -165,15 +269,6 @@ export class EngagementsComponent implements OnInit {
 
   isServiceSelected(service: string): boolean {
     return this.filters().service.includes(service);
-  }
-
-  // Risk level toggle
-  toggleRiskLevel(riskLevel: string): void {
-    const current = this.filters().riskLevel;
-    const updated = current.includes(riskLevel)
-      ? current.filter(r => r !== riskLevel)
-      : [...current, riskLevel];
-    this.updateFilter('riskLevel', updated);
   }
 
   isRiskLevelSelected(riskLevel: string): boolean {
@@ -204,7 +299,8 @@ export class EngagementsComponent implements OnInit {
     }
   }
 
-  onViewDashboard(engagement: Engagement): void {
+  // Navigation methods
+  onViewDetails(engagement: Engagement): void {
     this.router.navigate(['/app/engagements', engagement.id]);
   }
 
@@ -220,29 +316,36 @@ export class EngagementsComponent implements OnInit {
     });
   }
 
-  /**
-   * Handle upload for a specific document type within an engagement
-   */
-  onUploadDocType(event: { engagement: Engagement; docType: DocumentType }): void {
-    this.router.navigate(['/app/documents'], {
-      queryParams: {
-        tab: 'upload',
-        entity: event.engagement.entity,
-        type: event.docType,
-      },
+  // Helpers
+  formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
   }
 
-  /**
-   * Handle viewing documents by status (uploaded/validated)
-   */
-  onViewDocsByStatus(event: { engagement: Engagement; status: DocumentRequirementStatus; type: DocumentType }): void {
-    this.router.navigate(['/app/documents'], {
-      queryParams: {
-        entity: event.engagement.entity,
-        type: event.type,
-        status: event.status === 'validated' ? 'analyzed' : 'analyzing',
-      },
-    });
+  getDocsCount(engagement: Engagement): string {
+    const uploaded = engagement.documentRequirements?.filter(
+      r => r.status === 'uploaded' || r.status === 'validated'
+    ).length ?? engagement.documentsUploaded.length;
+    const total = engagement.documentRequirements?.filter(r => r.required).length
+      ?? engagement.documentsRequired.length;
+    return `${uploaded}/${total}`;
+  }
+
+  getStatusVariant(status: string): 'info' | 'warning' | 'success' | 'error' {
+    const variants: Record<string, 'info' | 'warning' | 'success' | 'error'> = {
+      waiting: 'warning',
+      received: 'info',
+      processing: 'info',
+      completed: 'success',
+    };
+    return variants[status] || 'info';
+  }
+
+  trackById(index: number, engagement: Engagement): string {
+    return engagement.id;
   }
 }

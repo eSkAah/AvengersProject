@@ -1,90 +1,66 @@
 @use 'styles/variables' as *;
 
-.command-center {
+.dashboard {
   max-width: 1400px;
   margin: 0 auto;
   padding: $spacing-4;
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
-  // Enable container queries for smooth sidebar collapse/expand
-  container-type: inline-size;
-  container-name: command-center;
 
   &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    margin-bottom: $spacing-2;
 
     &-content {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+
+      lucide-icon {
+        color: $ey-yellow;
+      }
+
       h1 {
         font-size: $font-size-2xl;
         font-weight: $font-weight-bold;
         color: $color-text-primary;
-        margin-bottom: $spacing-1;
+        margin: 0;
       }
 
       p {
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         color: $color-text-secondary;
+        margin: 0;
       }
-    }
-
-    &-decoration {
-      color: $ey-yellow;
-      opacity: 0.8;
     }
   }
 
-  // Mobile responsiveness
   @media (max-width: 640px) {
-    padding: $spacing-2;
+    padding: $spacing-3;
     gap: $spacing-3;
 
-    &__header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: $spacing-2;
-
-      &-content {
-        h1 {
-          font-size: $font-size-xl;
-        }
-
-        p {
-          font-size: $font-size-sm;
-        }
+    &__header-content {
+      h1 {
+        font-size: $font-size-xl;
       }
 
-      &-decoration {
-        display: none;
+      p {
+        font-size: $font-size-xs;
       }
     }
   }
 }
 
-// Bento Grid Layout - Redesigned for better visibility
-// Uses container queries for smooth sidebar transitions
+// Bento Grid Layout
 .bento-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: auto auto auto auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
   gap: $spacing-4;
-  // Smooth transition for grid changes
-  transition: gap 0.3s ease;
 
-  // Container query: responds to actual container width, not viewport
-  @container command-center (max-width: 700px) {
+  @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-  }
-
-  // Fallback media query for browsers without container query support
-  @supports not (container-type: inline-size) {
-    @media (max-width: 1024px) {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto;
-    }
   }
 
   @media (max-width: 640px) {
@@ -96,6 +72,7 @@
 .bento-card {
   background: $color-surface;
   border-radius: $radius-xl;
+  padding: $spacing-5;
   overflow: hidden;
 
   // Premium shadow layering
@@ -103,669 +80,68 @@
     0 1px 2px rgba(0, 0, 0, 0.02),
     0 2px 4px rgba(0, 0, 0, 0.02),
     0 4px 8px rgba(0, 0, 0, 0.03),
-    0 8px 16px rgba(0, 0, 0, 0.04),
-    0 16px 32px rgba(0, 0, 0, 0.04);
+    0 8px 16px rgba(0, 0, 0, 0.04);
 
-  // Subtle border for definition
+  // Subtle border
   border: 1px solid rgba($color-border, 0.4);
 
-  // Smooth transition for hover states only (not layout changes)
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.02),
       0 4px 8px rgba(0, 0, 0, 0.03),
       0 8px 16px rgba(0, 0, 0, 0.04),
-      0 16px 32px rgba(0, 0, 0, 0.06),
-      0 24px 48px rgba(0, 0, 0, 0.06);
+      0 16px 32px rgba(0, 0, 0, 0.06);
     transform: translateY(-2px);
   }
 
-  // Header Card
-  &--header {
-    padding: $spacing-5 $spacing-6;
-    background: linear-gradient(
-      135deg,
-      $color-surface 0%,
-      rgba($ey-yellow, 0.03) 100%
-    );
-    border-bottom: 2px solid rgba($ey-yellow, 0.3);
-  }
-
-  // KPIs Card - Row 1, spans left column
-  &--kpis {
+  // Upload Widget - Left column, spans 2 rows
+  &--upload {
     grid-column: 1;
-    grid-row: 1;
-    padding: $spacing-5;
-
-    @container command-center (max-width: 700px) {
-      grid-column: 1;
-    }
-  }
-
-  // Activity / Notifications Card - Right sidebar spanning rows 1-2
-  &--activity {
-    grid-column: 2;
     grid-row: 1 / 3;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    // Allow card to shrink when notifications collapsed
-    align-self: start;
+    min-height: 400px;
 
-    // Remove inner card styling since notifications-zone has its own
-    background: transparent;
-    box-shadow: none;
-    border: none;
-    // Disable hover transitions for this transparent card
-    transition: none;
-
-    &:hover {
-      box-shadow: none;
-      transform: none;
-    }
-
-    app-notifications-zone {
-      display: block;
-    }
-
-    @container command-center (max-width: 700px) {
+    @media (max-width: 1024px) {
       grid-column: 1;
       grid-row: auto;
-      align-self: stretch;
+      min-height: 350px;
     }
   }
 
-  // At-Risk List Card - Row 2, left column
-  &--risk-list {
-    grid-column: 1;
+  // Donut Widget - Right column, row 1
+  &--donut {
+    grid-column: 2;
+    grid-row: 1;
+
+    @media (max-width: 1024px) {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+
+  // Sign Off Widget - Right column, row 2
+  &--signoff {
+    grid-column: 2;
     grid-row: 2;
-    padding: $spacing-5;
+    min-height: 200px;
 
-    @container command-center (max-width: 700px) {
+    @media (max-width: 1024px) {
       grid-column: 1;
       grid-row: auto;
     }
   }
 
-  // Action Center Card - Row 3, left column
-  &--actions {
-    grid-column: 1;
-    grid-row: 3;
-    padding: $spacing-5;
-    display: flex;
-    flex-direction: column;
-
-    @container command-center (max-width: 700px) {
-      grid-column: 1;
-      grid-row: auto;
-    }
-  }
-
-  // Financial Summary Card - Row 4, spans both columns
-  &--financial {
+  // Engagement List - Full width, row 3
+  &--engagements {
     grid-column: 1 / 3;
-    grid-row: 4;
-    padding: $spacing-5;
+    grid-row: 3;
 
-    @container command-center (max-width: 700px) {
+    @media (max-width: 1024px) {
       grid-column: 1;
       grid-row: auto;
-    }
-  }
-}
-
-// Section Header
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-4;
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    color: $color-text-primary;
-
-    lucide-icon {
-      color: $ey-yellow;
-    }
-
-    h2 {
-      font-size: $font-size-lg;
-      font-weight: $font-weight-semibold;
-      color: $color-text-primary;
-      margin: 0;
-    }
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-3;
-  }
-
-  &__count {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    background: rgba($ey-black, 0.04);
-    padding: $spacing-1 $spacing-3;
-    border-radius: $radius-full;
-    font-weight: $font-weight-medium;
-  }
-}
-
-// View All Link
-.view-all-link {
-  display: inline-flex;
-  align-items: center;
-  gap: $spacing-1;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  color: $ey-yellow;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: $spacing-1 $spacing-2;
-  border-radius: $radius-sm;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba($ey-yellow, 0.1);
-    color: darken($ey-yellow, 15%);
-
-    lucide-icon {
-      transform: translateX(2px);
-    }
-  }
-
-  lucide-icon {
-    transition: transform 0.2s ease;
-  }
-}
-
-// KPI Grid & Cards
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-3;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.kpi-card {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-4;
-  background: rgba($color-background, 0.5);
-  border: 1px solid transparent;
-  border-radius: $radius-lg;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-
-  &:hover {
-    background: rgba($color-background, 0.8);
-    border-color: $color-border;
-    transform: translateY(-2px);
-
-    .kpi-card__arrow {
-      transform: translateX(4px);
-      opacity: 1;
-    }
-  }
-
-  &__icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: $radius-md;
-    flex-shrink: 0;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__value {
-    font-size: $font-size-2xl;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
-  }
-
-  &__label {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-
-  &__arrow {
-    color: $color-text-secondary;
-    opacity: 0.5;
-    transition: all 0.2s ease;
-  }
-
-  // Variants
-  &--total .kpi-card__icon {
-    background: rgba($ey-yellow, 0.15);
-    color: $ey-black;
-  }
-
-  &--processing .kpi-card__icon {
-    background: rgba($color-info, 0.1);
-    color: $color-info;
-  }
-
-  &--risk .kpi-card__icon {
-    background: rgba($color-error, 0.1);
-    color: $color-error;
-  }
-
-  &--completed .kpi-card__icon {
-    background: rgba($color-success, 0.1);
-    color: $color-success;
-  }
-}
-
-// Action Center
-.action-center {
-  &__empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: $spacing-3;
-    padding: $spacing-8;
-    text-align: center;
-    color: $color-success;
-
-    p {
-      color: $color-text-secondary;
-      margin: 0;
-    }
-  }
-
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-2;
-    overflow-y: auto;
-    flex: 1;
-  }
-}
-
-.action-item {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-3;
-  background: rgba($color-background, 0.5);
-  border-radius: $radius-md;
-  border-left: 3px solid $color-border;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba($color-background, 0.8);
-    transform: translateX(4px);
-
-    .action-item__arrow {
-      opacity: 1;
-      transform: translateX(2px);
-    }
-  }
-
-  &--high {
-    border-left-color: $color-error;
-
-    .action-item__icon {
-      color: $color-error;
-    }
-  }
-
-  &--medium {
-    border-left-color: $color-warning;
-
-    .action-item__icon {
-      color: $color-warning;
-    }
-  }
-
-  &__icon {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba($color-background, 0.8);
-    border-radius: $radius-sm;
-    color: $color-text-secondary;
-    flex-shrink: 0;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__title {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
-  }
-
-  &__description {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__arrow {
-    color: $color-text-muted;
-    opacity: 0.5;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-  }
-}
-
-// Risk List Empty
-.risk-list__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-3;
-  padding: $spacing-8;
-  text-align: center;
-  color: $color-success;
-
-  p {
-    color: $color-text-secondary;
-    margin: 0;
-  }
-}
-
-// Financial Summary
-.financial-summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-4;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.financial-metric {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-4;
-  background: rgba($color-background, 0.5);
-  border-radius: $radius-lg;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba($color-background, 0.8);
-  }
-
-  &__icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: $radius-md;
-    flex-shrink: 0;
-
-    &--assets {
-      background: rgba($color-success, 0.1);
-      color: $color-success;
-    }
-
-    &--liabilities {
-      background: rgba($color-error, 0.1);
-      color: $color-error;
-    }
-
-    &--revenue {
-      background: rgba($color-info, 0.1);
-      color: $color-info;
-    }
-
-    &--completion {
-      background: rgba($ey-yellow, 0.15);
-      color: $ey-black;
-    }
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  &__value {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
-    white-space: nowrap;
-  }
-
-  &__label {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-}
-
-// Risk Card Grid - Horizontal compact cards
-.risk-card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-3;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-// Risk Card - Compact engagement card
-.risk-card {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-2;
-  padding: $spacing-3;
-  background: rgba($color-background, 0.5);
-  border: 1px solid transparent;
-  border-radius: $radius-lg;
-  border-left: 3px solid $color-border;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba($color-background, 0.8);
-    border-color: $color-border;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-
-  &--high {
-    border-left-color: $color-error;
-  }
-
-  &--medium {
-    border-left-color: $color-warning;
-  }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: $spacing-2;
-  }
-
-  &__entity {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    min-width: 0;
-  }
-
-  &__flag {
-    font-size: $font-size-lg;
-    flex-shrink: 0;
-  }
-
-  &__name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-text-primary;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__status {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    padding: 2px $spacing-2;
-    border-radius: $radius-full;
-    white-space: nowrap;
-    flex-shrink: 0;
-
-    &.status--waiting {
-      background: rgba($color-warning, 0.1);
-      color: darken($color-warning, 10%);
-    }
-
-    &.status--received {
-      background: rgba($color-info, 0.1);
-      color: darken($color-info, 10%);
-    }
-
-    &.status--processing {
-      background: rgba($color-info, 0.1);
-      color: darken($color-info, 10%);
-    }
-
-    &.status--completed {
-      background: rgba($color-success, 0.1);
-      color: darken($color-success, 10%);
-    }
-  }
-
-  &__body {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: $spacing-2;
-  }
-
-  &__service {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__due {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-    white-space: nowrap;
-    flex-shrink: 0;
-
-    lucide-icon {
-      opacity: 0.7;
-    }
-  }
-
-  &__footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: $spacing-2;
-  }
-
-  &__progress {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    flex: 1;
-  }
-
-  &__progress-bar {
-    flex: 1;
-    height: 4px;
-    background: rgba($color-border, 0.5);
-    border-radius: $radius-full;
-    overflow: hidden;
-  }
-
-  &__progress-fill {
-    height: 100%;
-    background: $ey-yellow;
-    border-radius: $radius-full;
-    transition: width 0.3s ease;
-  }
-
-  &__progress-text {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    color: $color-text-secondary;
-    min-width: 32px;
-    text-align: right;
-  }
-
-  &__risk-badge {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: $radius-sm;
-    flex-shrink: 0;
-
-    &.risk-badge--high {
-      background: rgba($color-error, 0.1);
-      color: $color-error;
-    }
-
-    &.risk-badge--medium {
-      background: rgba($color-warning, 0.1);
-      color: $color-warning;
     }
   }
 }

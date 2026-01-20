@@ -168,7 +168,7 @@ def check_risk_escalations(engagements: List) -> List[Notification]:
                 notification = create_notification(
                     notification_type=NotificationType.RISK_ESCALATION,
                     priority=NotificationPriority.HIGH,
-                    message=f"{eng.entity_name} est passé en risque ÉLEVÉ. Action urgente requise.",
+                    message=f"{eng.entity_name} has escalated to HIGH risk. Urgent action required.",
                     engagement_id=eng.id,
                     engagement_name=eng.entity_name,
                 )
@@ -208,7 +208,7 @@ def check_deadline_approaching(engagements: List, days_threshold: int = 7) -> Li
                     notification = create_notification(
                         notification_type=NotificationType.DEADLINE_APPROACHING,
                         priority=NotificationPriority.MEDIUM if days_remaining > 3 else NotificationPriority.HIGH,
-                        message=f"{eng.entity_name}: deadline dans {days_remaining} jour(s). Completion à {eng.completion_percent}%.",
+                        message=f"{eng.entity_name}: deadline in {days_remaining} day(s). Completion at {eng.completion_percent}%.",
                         engagement_id=eng.id,
                         engagement_name=eng.entity_name,
                     )
@@ -255,15 +255,15 @@ def get_notifications_for_eve_context() -> str:
     if not active_notifications:
         return ""
 
-    context_lines = ["\n🔔 ALERTES ACTIVES:"]
+    context_lines = ["\n🔔 ACTIVE ALERTS:"]
 
     for n in sorted(active_notifications, key=lambda x: x.created_at, reverse=True)[:5]:
         icon = "🔴" if n.priority == NotificationPriority.HIGH else "🟠"
         context_lines.append(f"  {icon} {n.message}")
 
     context_lines.append(
-        "\nMentionnez ces alertes à l'utilisateur s'il pose des questions générales "
-        "ou sur le statut des engagements."
+        "\nMention these alerts to the user if they ask general questions "
+        "or about engagement status."
     )
 
     return "\n".join(context_lines)

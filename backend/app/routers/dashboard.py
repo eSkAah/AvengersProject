@@ -123,9 +123,9 @@ async def get_assets_chart_data(
     Get assets breakdown chart data for an engagement.
 
     Returns Chart.js compatible data with categories:
-    - Immobilisations (fixed assets)
-    - Actifs circulants (current assets)
-    - Trésorerie (cash)
+    - Fixed assets
+    - Current assets
+    - Cash
     """
     chart = await get_assets_chart(db, engagement_id)
     if chart is None:
@@ -252,6 +252,6 @@ async def get_gantt_chart_data(
     - Timeline bounds for chart scaling
 
     This endpoint is used by Eve to generate planning visualizations
-    when users request "Génère le planning des obligations".
+    when users request "Generate the obligation schedule".
     """
     return await get_gantt_data(db)

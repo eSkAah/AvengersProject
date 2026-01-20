@@ -110,13 +110,96 @@
         [attr.height]="chartHeight()"
         class="org-chart"
       >
-        <!-- Connections -->
+        <!-- Arrow markers for cross-shareholding -->
+        <defs>
+          <marker
+            id="arrowhead-atob"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6" />
+          </marker>
+          <marker
+            id="arrowhead-btoa"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon points="0 0, 10 3.5, 0 7" fill="#8B5CF6" />
+          </marker>
+        </defs>
+
+        <!-- Connections with ownership labels -->
         <g class="connections">
           @for (link of connections(); track link.from.id + link.to.id) {
-            <path
-              [attr.d]="getNodePath(link.from, link.to)"
-              class="connection-line"
-            />
+            <g class="connection-group">
+              <!-- Connection line -->
+              <path
+                [attr.d]="getNodePath(link.from, link.to)"
+                class="connection-line"
+              />
+              <!-- Ownership percentage label -->
+              <g class="ownership-label" [attr.transform]="'translate(' + getOwnershipLabelPosition(link.from, link.to).x + ',' + getOwnershipLabelPosition(link.from, link.to).y + ')'">
+                <rect
+                  x="-20"
+                  y="-10"
+                  width="40"
+                  height="20"
+                  rx="4"
+                  class="ownership-label__bg"
+                />
+                <text x="0" y="5" class="ownership-label__text">{{ link.ownershipPercent }}%</text>
+              </g>
+            </g>
+          }
+        </g>
+
+        <!-- Cross-shareholding arrows -->
+        <g class="cross-ownerships">
+          @for (cross of crossOwnerships(); track cross.entityA.id + cross.entityB.id) {
+            <!-- A → B arrow -->
+            <g class="cross-ownership cross-ownership--atob">
+              <path
+                [attr.d]="getCrossOwnershipPath(cross.entityA, cross.entityB, 'AtoB')"
+                class="cross-ownership__line cross-ownership__line--atob"
+                marker-end="url(#arrowhead-atob)"
+              />
+              <g class="ownership-label" [attr.transform]="'translate(' + getCrossOwnershipLabelPosition(cross.entityA, cross.entityB, 'AtoB').x + ',' + getCrossOwnershipLabelPosition(cross.entityA, cross.entityB, 'AtoB').y + ')'">
+                <rect
+                  x="-20"
+                  y="-10"
+                  width="40"
+                  height="20"
+                  rx="4"
+                  class="ownership-label__bg ownership-label__bg--blue"
+                />
+                <text x="0" y="5" class="ownership-label__text">{{ cross.percentAtoB }}%</text>
+              </g>
+            </g>
+            <!-- B → A arrow -->
+            <g class="cross-ownership cross-ownership--btoa">
+              <path
+                [attr.d]="getCrossOwnershipPath(cross.entityA, cross.entityB, 'BtoA')"
+                class="cross-ownership__line cross-ownership__line--btoa"
+                marker-end="url(#arrowhead-btoa)"
+              />
+              <g class="ownership-label" [attr.transform]="'translate(' + getCrossOwnershipLabelPosition(cross.entityA, cross.entityB, 'BtoA').x + ',' + getCrossOwnershipLabelPosition(cross.entityA, cross.entityB, 'BtoA').y + ')'">
+                <rect
+                  x="-20"
+                  y="-10"
+                  width="40"
+                  height="20"
+                  rx="4"
+                  class="ownership-label__bg ownership-label__bg--purple"
+                />
+                <text x="0" y="5" class="ownership-label__text">{{ cross.percentBtoA }}%</text>
+              </g>
+            </g>
           }
         </g>
 
@@ -200,100 +283,115 @@
     <!-- Instructions -->
     <div class="structure-page__instructions">
       <lucide-icon name="mouse-pointer" [size]="14"></lucide-icon>
-      <span>Click and drag to navigate - Scroll to zoom - Double-click on an entity to view details</span>
+      <span>Click and drag to navigate - Scroll to zoom - Click on an entity to view details</span>
     </div>
   </div>
 
-  <!-- Selected Node Details Panel -->
-  @if (selectedNode()) {
-    <aside class="structure-page__details">
-      <div class="details__header">
-        <h3>{{ selectedNode()!.name }}</h3>
-        <button class="details__close" (click)="selectedNode.set(null)">
-          <lucide-icon name="x" [size]="18"></lucide-icon>
+  <!-- Entity Drawer (slides in from right) -->
+  @if (drawerOpen() && selectedNode()?.type === 'entity') {
+    <!-- Overlay -->
+    <div class="drawer-overlay" @overlayFade (click)="onOverlayClick()"></div>
+
+    <!-- Drawer -->
+    <aside class="entity-drawer" @drawerSlide>
+      <div class="drawer__header">
+        <div class="drawer__entity-info">
+          <span class="drawer__flag">{{ selectedNode()!.countryFlag }}</span>
+          <div class="drawer__titles">
+            <h2 class="drawer__name">{{ selectedNode()!.name }}</h2>
+            <span class="drawer__country">{{ selectedNode()!.country }}</span>
+          </div>
+        </div>
+        <button class="drawer__close" (click)="closeDrawer()">
+          <lucide-icon [img]="icons.x" [size]="20"></lucide-icon>
         </button>
       </div>
 
-      <div class="details__content">
-        @if (selectedNode()!.type === 'entity') {
-          <div class="details__row">
-            <span class="details__label">Country</span>
-            <span class="details__value">{{ selectedNode()!.countryFlag }} {{ selectedNode()!.country }}</span>
+      <div class="drawer__content">
+        <!-- Ownership Info -->
+        <div class="drawer__section">
+          <h3 class="drawer__section-title">
+            <lucide-icon [img]="icons.building" [size]="16"></lucide-icon>
+            Ownership
+          </h3>
+          <div class="drawer__ownership-info">
+            <div class="ownership-row">
+              <span class="ownership-row__label">Parent Entity</span>
+              <span class="ownership-row__value">Avengers Holding</span>
+            </div>
+            <div class="ownership-row">
+              <span class="ownership-row__label">Ownership</span>
+              <span class="ownership-row__value ownership-row__value--highlight">100%</span>
+            </div>
           </div>
-          <div class="details__row">
-            <span class="details__label">Risk Level</span>
-            <span class="details__value details__value--risk" [ngClass]="'risk-' + selectedNode()!.riskLevel">
-              {{ selectedNode()!.riskLevel | titlecase }}
-            </span>
-          </div>
-          <div class="details__row">
-            <span class="details__label">Average Progress</span>
-            <span class="details__value">{{ selectedNode()!.completion }}%</span>
-          </div>
-          <div class="details__row">
-            <span class="details__label">Total Revenue</span>
-            <span class="details__value">{{ formatCurrency(selectedNode()!.revenue) }}</span>
-          </div>
+        </div>
 
-          <!-- Engagement list -->
-          @if (selectedNode()!.engagements && selectedNode()!.engagements!.length > 0) {
-            <div class="details__engagements">
-              <h4 class="details__engagements-title">
-                Engagements ({{ selectedNode()!.engagements!.length }})
-              </h4>
-              <div class="details__engagements-list">
-                @for (eng of selectedNode()!.engagements; track eng.id) {
-                  <button
-                    class="engagement-card"
-                    [class.engagement-card--high]="eng.riskLevel === 'high'"
-                    [class.engagement-card--medium]="eng.riskLevel === 'medium'"
-                    [class.engagement-card--low]="eng.riskLevel === 'low'"
-                    (click)="navigateToEngagement(eng)"
-                  >
-                    <div class="engagement-card__header">
-                      <span class="engagement-card__service">{{ eng.service }}</span>
-                      <span class="engagement-card__status" [ngClass]="getStatusClass(eng.status)">
-                        {{ getStatusLabel(eng.status) }}
-                      </span>
+        <!-- KPIs -->
+        <div class="drawer__section">
+          <h3 class="drawer__section-title">
+            <lucide-icon [img]="icons.trendingUp" [size]="16"></lucide-icon>
+            Key Metrics
+          </h3>
+          <div class="drawer__kpis">
+            <div class="kpi-card">
+              <span class="kpi-card__label">Risk Level</span>
+              <app-risk-badge [level]="$any(selectedNode()!.riskLevel || 'low')" size="sm"></app-risk-badge>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-card__label">Avg. Progress</span>
+              <span class="kpi-card__value">{{ selectedNode()!.completion }}%</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-card__label">Total Revenue</span>
+              <span class="kpi-card__value">{{ formatCurrency(selectedNode()!.revenue) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Engagements List -->
+        @if (selectedNode()!.engagements && selectedNode()!.engagements!.length > 0) {
+          <div class="drawer__section drawer__section--engagements">
+            <h3 class="drawer__section-title">
+              <lucide-icon [img]="icons.calendar" [size]="16"></lucide-icon>
+              Engagements ({{ selectedNode()!.engagements!.length }})
+            </h3>
+            <div class="drawer__engagements">
+              @for (eng of selectedNode()!.engagements; track eng.id) {
+                <button
+                  class="engagement-item"
+                  [class.engagement-item--high]="eng.riskLevel === 'high'"
+                  [class.engagement-item--medium]="eng.riskLevel === 'medium'"
+                  [class.engagement-item--low]="eng.riskLevel === 'low'"
+                  (click)="navigateToEngagement(eng)"
+                >
+                  <div class="engagement-item__main">
+                    <div class="engagement-item__header">
+                      <span class="engagement-item__service">{{ eng.service }}</span>
+                      <span class="engagement-item__year">{{ eng.fiscalYear }}</span>
                     </div>
-                    <div class="engagement-card__progress">
-                      <div class="engagement-card__progress-bar">
+                    <div class="engagement-item__progress">
+                      <div class="engagement-item__progress-bar">
                         <div
-                          class="engagement-card__progress-fill"
+                          class="engagement-item__progress-fill"
                           [style.width.%]="eng.completionPercent"
                         ></div>
                       </div>
-                      <span class="engagement-card__progress-text">{{ eng.completionPercent }}%</span>
+                      <span class="engagement-item__progress-text">{{ eng.completionPercent }}%</span>
                     </div>
-                    <div class="engagement-card__footer">
-                      <span class="engagement-card__due">
-                        <lucide-icon name="calendar" [size]="12"></lucide-icon>
-                        {{ eng.dueDate | date:'dd/MM/yyyy' }}
+                    <div class="engagement-item__meta">
+                      <app-badge [variant]="getStatusVariant(eng.status)" size="sm">
+                        {{ getStatusLabel(eng.status) }}
+                      </app-badge>
+                      <span class="engagement-item__due">
+                        <lucide-icon [img]="icons.calendar" [size]="12"></lucide-icon>
+                        {{ eng.dueDate | date:'dd MMM yyyy' }}
                       </span>
-                      <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
                     </div>
-                  </button>
-                }
-              </div>
+                  </div>
+                  <lucide-icon [img]="icons.chevronRight" [size]="18" class="engagement-item__arrow"></lucide-icon>
+                </button>
+              }
             </div>
-          }
-        } @else if (selectedNode()!.type === 'region') {
-          <div class="details__row">
-            <span class="details__label">Type</span>
-            <span class="details__value">Geographic Region</span>
-          </div>
-          <div class="details__row">
-            <span class="details__label">Entities</span>
-            <span class="details__value">{{ selectedNode()!.children.length }}</span>
-          </div>
-        } @else {
-          <div class="details__row">
-            <span class="details__label">Type</span>
-            <span class="details__value">Main Holding</span>
-          </div>
-          <div class="details__row">
-            <span class="details__label">Regions</span>
-            <span class="details__value">{{ selectedNode()!.children.length }}</span>
           </div>
         }
       </div>

@@ -147,11 +147,11 @@ class TestGetDocumentTypeLabel:
     @pytest.mark.parametrize(
         "doc_type,expected_label",
         [
-            (DocumentType.general_ledger, "Grand Livre"),
-            (DocumentType.trial_balance, "Balance Générale"),
-            (DocumentType.tax_return, "Déclaration Fiscale"),
-            (DocumentType.financial_statement, "États Financiers"),
-            (None, "Document non classé"),
+            (DocumentType.general_ledger, "General Ledger"),
+            (DocumentType.trial_balance, "Trial Balance"),
+            (DocumentType.tax_return, "Tax Return"),
+            (DocumentType.financial_statement, "Financial Statements"),
+            (None, "Unclassified Document"),
         ],
     )
     def test_get_document_type_label(self, doc_type, expected_label):

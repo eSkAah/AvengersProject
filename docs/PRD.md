@@ -1,69 +1,104 @@
 # PRD : Avengers Project (Digital Engagement Platform POC)
 
 **Type de projet :** Prototype / Hackathon (10 jours)
-**Date de démo cible :** 29 du mois
+**Date de demo cible :** 29 du mois
 **Stack Technique :** Angular (Frontend) + FastAPI (Backend) + OpenAI GPT-4o
-**Philosophie :** Backend fonctionnel avec UI Premium 2026 - Au-delà du simple "Happy Path"
-**Statut :** ✅ IMPLÉMENTÉ (PRD + 14 innovations bonus)
+**Philosophie :** Backend fonctionnel avec UI Premium 2026 - Au-dela du simple "Happy Path"
+**Version :** 2.0 - Post-Demo Iteration
 
 ---
 
 ## 1. Contexte et Objectifs
 
-Ce projet est un prototype technique ("Proof of Concept") destiné à deux audiences :
+Ce projet est un prototype technique ("Proof of Concept") destine a deux audiences :
 
-1. **Client (Externe) :** Un fonds immobilier. L'objectif est de "mettre des étoiles dans les yeux" du client lors d'un pitch commercial en montrant une interface interactive premium (au-delà du Figma).
-2. **Finance Dept (Interne) :** Prouver que l'équipe interne peut livrer une solution intégrant l'IA (Factory AI) plus rapidement et efficacement que les prestataires externes.
+1. **Client (Externe) :** Un fonds immobilier. L'objectif est de "mettre des etoiles dans les yeux" du client lors d'un pitch commercial en montrant une interface interactive premium (au-dela du Figma).
+2. **Finance Dept (Interne) :** Prouver que l'equipe interne peut livrer une solution integrant l'IA (Factory AI) plus rapidement et efficacement que les prestataires externes.
 
 ### Vision Produit
-> **"Avengers Project : Une plateforme où l'IA comprend vos documents, répond en contexte, et anticipe vos besoins - le tout dans une UI premium digne de 2026."**
+> **"Avengers Project : Une plateforme ou l'IA comprend vos documents, repond en contexte, et anticipe vos besoins - le tout dans une UI premium digne de 2026."**
 
-### Les 3 Preuves WOW de la Démo
-1. **"L'IA comprend mes documents"** → Smart Classification automatique
-2. **"L'IA répond en contexte"** → Eve Chatbot + Cmd+Click "Explain"
-3. **"L'IA anticipe mes besoins"** → Risk badges + Prédictions proactives
+### Les 3 Preuves WOW de la Demo
+1. **"L'IA comprend mes documents"** - Smart Classification automatique avec validation utilisateur
+2. **"L'IA repond en contexte"** - Eve Chatbot + CMD+Click "Explain" sur tous les graphiques
+3. **"L'IA anticipe mes besoins"** - Risk badges + Predictions proactives + Insights agrégées
 
 ---
 
-## 2. Périmètre (Scope) & Contraintes
+## 2. Perimetre (Scope) & Contraintes
 
-* **Mode "Startup Premium" :** Développement rapide mais UI/UX de qualité production.
-* **Environnement :** Localhost accepté. Base de données locale (SQLite).
-* **Backend Fonctionnel :** Contrairement à un simple prototype scripté, le backend FastAPI est réellement fonctionnel.
-* **Données :** Dummy Data réalistes pré-seedées via `seed.py`.
+### 2.1 Service Cible : Company Tax Return (CTR)
+
+**Focus exclusif sur le service CTR** (sous-service de Tax) pour la demo.
+
+Le CTR (Company Tax Return) est le service de declaration fiscale d'entreprise propose par EY. Pour effectuer ce service, le client doit fournir **4 documents obligatoires** :
+
+| # | Document | Description |
+|---|----------|-------------|
+| 1 | **Tax Assessment N-1** | Avis d'imposition de l'annee precedente |
+| 2 | **General Ledger** | Grand livre comptable |
+| 3 | **Trial Balance** | Balance generale |
+| 4 | **Financial Statement** | Etats financiers / Comptes annuels |
+
+**Resultat du service CTR :**
+- **PDF** : Rapport CTR genere
+- **XML** : Fichier iXBRL avec donnees tagguees (format HMRC)
+
+### 2.2 Contraintes Techniques
+
+* **Mode "Startup Premium" :** Developpement rapide mais UI/UX de qualite production.
+* **Environnement :** Localhost accepte. Base de donnees locale (SQLite).
+* **Backend Fonctionnel :** Contrairement a un simple prototype script, le backend FastAPI est reellement fonctionnel.
+* **Donnees :** Dummy Data realistes pre-seedees via `seed.py`.
 
 ---
 
 ## 3. Personas & Workflow
 
 * **Client Cible :** Fonds Immobilier investissant dans plusieurs pays (France, Allemagne, Pays-Bas, Belgique, Luxembourg).
-* **Service Cible :** *Corporate Tax* (Impôt sur les sociétés).
-* **Concept d'Engagement :** Une obligation fiscale pour une entité spécifique (ex: "Corporate Tax Return - France Entity"). Un engagement a un cycle de vie (Attente → Reçu → En cours → Complété).
-* **Multi-Engagement :** ✅ **NOUVEAU** - Une entité peut avoir plusieurs engagements (années fiscales différentes, services différents).
+* **Service Cible :** Company Tax Return (CTR)
+* **Concept d'Engagement :** Une obligation fiscale pour une entite specifique (ex: "CTR - France SPV 2026"). Un engagement a un cycle de vie (Attente → Recu → En cours → Complete).
+* **Multi-Engagement :** Une entite peut avoir plusieurs engagements (annees fiscales differentes).
+
+### 3.1 Etats des Entites pour la Demo
+
+| Scenario | Description | Exemple |
+|----------|-------------|---------|
+| **Hero (Demo)** | 3/4 documents fournis, 1 manquant | France SPV |
+| **Complete** | 4/4 documents + resultat CTR disponible | Netherlands BV |
+| **Documents 2025** | Documents de 2025 fournis, besoin 2026 | Germany PropCo |
+| **Vide** | Aucun document fourni | Belgium HoldCo |
 
 ---
 
-## 4. Design System - EY DNA + Premium 2026
+## 4. Design System - Premium 2026
 
-### 4.1 Référence & Direction
-**Base :** https://fmsp.ey.com/ (fonts, couleurs EY corporate)
-**Direction :** Moderniser pour standards premium 2026 (Notion, Figma, Linear-level UX)
+### 4.1 Direction Artistique
+
+**Philosophie :** Design premium, neutre, moins colore. Touches d'accent subtiles.
+
+| Aspect | Direction |
+|--------|-----------|
+| **Couleurs** | Palette neutre dominante, accents EY Yellow subtils |
+| **Style** | Clean, minimal, professionnel |
+| **Effet** | Premium, pas "rainbow" |
 
 ### 4.2 Palette de Couleurs
 
 ```
 PRIMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-Jaune EY Accent    #FFE600  (highlights, CTAs)
+Jaune EY Accent    #FFE600  (accents subtils, CTAs)
 Jaune Hover        #FFD000  (interactions)
 
 NEUTRALS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 Background Light   #FAFAFA  (main bg)
 Surface            #FFFFFF  (cards)
-Border             #E5E5E5  (séparateurs subtils)
+Border             #E5E5E5  (separateurs subtils)
 Text Primary       #2E2E38  (titres, important)
 Text Secondary     #6B7280  (descriptions)
+Navbar Dark        #1F2937  (navbar background)
 
 SEMANTIC
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -75,316 +110,456 @@ Info               #3B82F6  (bleu)
 
 ### 4.3 Style UI 2026
 
-| Élément | Style |
+| Element | Style |
 |---------|-------|
+| **Navbar** | Horizontal, dark theme (#1F2937), full width |
 | **Cards** | bg-white, shadow-sm, rounded-xl (12-16px), border subtle |
-| **Buttons** | Rounded-lg, padding généreux, hover scale 1.02 |
+| **Buttons** | Rounded-lg, padding genereux, hover scale 1.02 |
 | **Inputs** | Border-gray-200, focus:ring-yellow, rounded-lg |
 | **Tables** | Header sticky, row hover bg-gray-50, no borders lourds |
+| **Filters** | Small pills/chips inline, discret, premium |
 | **Modals** | Backdrop blur, slide-in animation, rounded-2xl |
 | **Toasts** | Bottom-right, slide-up, auto-dismiss avec progress |
-| **Navigation** | Sidebar collapsible, icons + labels, active = yellow accent |
 | **Animations** | Transitions 200-300ms, micro-animations au hover |
 | **Loading** | Skeleton loaders, pas de spinners basiques |
 
 ---
 
-## 5. Spécifications Fonctionnelles (Par Module)
+## 5. Specifications Fonctionnelles (Par Module)
 
-### 5.1 Home - Command Center
+### 5.1 Navigation - Navbar Horizontale
 
-**Objectif :** Répondre à "Qu'est-ce qui requiert mon attention MAINTENANT?"
+**Changement majeur :** La sidebar disparait et devient une navbar horizontale dark.
 
-**Principe :** Page d'accueil focalisée sur l'urgent et l'actionnable. Pas de liste complète - c'est sur la page Engagements.
-
-#### 5.1.1 Structure Command Center
+#### 5.1.1 Structure Navbar
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  GLOBAL KPIs (santé en un coup d'œil)                       │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │  📊 47   │ │  ⏳ 12   │ │  🔴 5    │ │  ✅ 30   │        │
-│  │  Total   │ │ Actifs   │ │ À Risque │ │ Complétés│        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
-├─────────────────────────────────────────────────────────────┤
-│  🎯 ACTION CENTER (3 en attente)                            │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │ ⚠️ Uploader Trial Balance - France SPV   [Uploader] │    │
-│  │ ⚠️ Revoir anomalie - Germany PropCo      [Revoir]   │    │
-│  │ ⚠️ Approuver classification - Belgium    [Approuver]│    │
-│  └─────────────────────────────────────────────────────┘    │
-├─────────────────────────────────────────────────────────────┤
-│  🔴 ENGAGEMENTS À RISQUE (urgents uniquement)               │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │ 🔴 France SPV - 67% - Échéance dans 5j    [Ouvrir]  │    │
-│  │ 🔴 Luxembourg Fund - 20% - Échéance 8j    [Ouvrir]  │    │
-│  └─────────────────────────────────────────────────────┘    │
-├─────────────────────────────────────────────────────────────┤
-│  🕐 ACTIVITÉ RÉCENTE                                        │
-│  │ Document uploadé: Germany_Ledger.xlsx - il y a 2h   │    │
-│  │ Analyse terminée: Netherlands - il y a 4h           │    │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ [Logo Client] Company Name  │ Home │ Engagements │ Doclib │ Structure │ Insights │     [🔔] [Avatar ▼] │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-#### 5.1.2 Features
+| Position | Element | Comportement |
+|----------|---------|--------------|
+| **Gauche** | Logo + Nom entreprise | Dynamique par client |
+| **Centre** | Menu principal | Home, Engagements, Doclib, Structure, Insights |
+| **Droite** | Notifications + User | Bell icon + Avatar avec menu logout |
 
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| KPIs Globaux | Métriques clés cliquables (filtre vers Engagements) | ✅ |
-| Action Center | Tâches nécessitant action utilisateur (disparaissent une fois faites) | ✅ |
-| Engagements À Risque | Seulement 🔴 HIGH + 🟠 MEDIUM, pas la liste complète | ✅ |
-| Activité Récente | Feed des événements récents (informatif) | ✅ |
-| Prédiction Deadline | "À ce rythme, France sera prêt le 25" | ✅ |
-| **Action Center Dynamique** | ✅ **NOUVEAU** - Actions dérivées auto de l'état, triées par priorité, persistence session | ✅ |
+#### 5.1.2 Comportements
 
-### 5.1b Page Engagements (Liste Complète)
-
-**Objectif :** Trouver et accéder rapidement à n'importe quel engagement parmi 100+ entités.
-
-**Accès :** Menu sidebar "Engagements"
-
-#### 5.1b.1 Filtres
-
-| Filtre | Type | Exemple |
-|--------|------|---------|
-| Entité | Dropdown searchable | "France SPV", "Germany PropCo" |
-| Statut | Multi-select | Actif, Complété, À Risque, En Attente |
-| Année | Dropdown | 2024, 2023, 2022 |
-| Service | Multi-select | Corporate Tax, CTR, VAT |
-
-#### 5.1b.2 Features
-
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Liste Filtrée | Tous les engagements avec filtres multi-critères | ✅ |
-| Risk Badges | Badges visuels rouge/orange/vert | ✅ |
-| Barre de Progression | % complétion visuel | ✅ |
-| Actions Rapides | Ouvrir, Voir Documents, Ask Eve | ✅ |
-| Tri | Par date d'échéance, risque, entité, statut | ✅ |
-| Persistence Filtres | Filtres conservés dans la session | ✅ |
-| **Multi-Engagement par Entité** | ✅ **NOUVEAU** - Support N engagements par entité | ✅ |
-
-### 5.1c Action Center vs Notifications
-
-**Distinction importante :**
-
-| Concept | Type | Localisation | Comportement |
-|---------|------|--------------|--------------|
-| **Notifications (🔔)** | Passif/Informatif | Icône cloche header | Événements passés → accusé/dismiss |
-| **Action Center** | Actif/To-Do | Section Home + dédié | Tâches à faire → disparaissent quand faites |
-
-**Exemples Notifications :** "Document uploadé", "Analyse terminée", "Risque changé"
-**Exemples Actions :** "Uploader doc manquant", "Revoir anomalie", "Approuver classification"
+| Feature | Description |
+|---------|-------------|
+| **Active State** | Underline ou subtle background sur item actif |
+| **Responsive** | Collapse en hamburger menu sur mobile |
+| **Eve FAB** | Reste en floating bottom-right |
 
 ---
 
-### 5.1d ✅ NOUVEAU - Page Structure Organisationnelle
+### 5.2 Home - Dashboard (Bento Layout)
 
-**Objectif :** Visualiser la hiérarchie complète des entités et leurs engagements.
+**Objectif :** Vue d'ensemble actionnable avec focus sur les taches urgentes.
 
-**Accès :** Menu sidebar "Structure"
-
-#### 5.1d.1 Structure Visuelle
+#### 5.2.1 Layout Bento
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  STRUCTURE ORGANISATIONNELLE                    [🔍 Search] │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  [Zoom +] [Zoom -] [Fit] [Reset] [Expand] [Collapse]│    │
-│  └─────────────────────────────────────────────────────┘    │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│                    ┌──────────────┐                          │
-│                    │   HOLDING    │                          │
-│                    │  Real Estate │                          │
-│                    └──────┬───────┘                          │
-│            ┌──────────────┼──────────────┐                   │
-│      ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐            │
-│      │  Europe   │  │   DACH    │  │  Benelux  │            │
-│      │  Ouest    │  │           │  │           │            │
-│      └─────┬─────┘  └─────┬─────┘  └─────┬─────┘            │
-│            │              │              │                   │
-│      ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐            │
-│      │🇫🇷 France │  │🇩🇪 Germany│  │🇳🇱 Nether.│            │
-│      │   SPV    │  │  PropCo   │  │    BV     │            │
-│      │ 🔴 2 eng │  │ 🟠 1 eng  │  │ 🟢 1 eng  │            │
-│      └──────────┘  └──────────┘  └──────────┘            │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────┬──────────────────────┐
+│                                     │                      │
+│   UPLOAD / MISSING DOCS             │   ENGAGEMENT         │
+│   (Widget Hero - tall)              │   STATUS DONUT       │
+│                                     │   (compact)          │
+│   - Drag & drop zone                │                      │
+│   - Missing docs list with          │   Late | In Progress │
+│     tooltip (which engagements)     │   | Soon             │
+│   - Individual upload buttons       │                      │
+│   - "View All" → Doclib             │                      │
+├─────────────────────────────────────┼──────────────────────┤
+│                                     │                      │
+│   DOCUMENTS TO SIGN OFF             │   ENGAGEMENT LIST    │
+│   (medium)                          │   (large)            │
+│                                     │                      │
+│   - Entity | Doc Name | Action      │   - Filtered by      │
+│   - Action → go to engagement       │     donut selection  │
+│                                     │   - Shows top 5      │
+│                                     │   - "View All" with  │
+│                                     │     active filter    │
+└─────────────────────────────────────┴──────────────────────┘
 ```
 
-#### 5.1d.2 Features
+#### 5.2.2 Widget Details
 
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Hiérarchie Interactive | Holding → Régions → Entités | ✅ |
-| Zoom & Pan | Molette pour zoom (0.3x-2x), drag pour pan | ✅ |
-| Recherche Entité | Search avec auto-expand vers nœud trouvé | ✅ |
-| Multi-Engagement Badge | Affiche le nombre d'engagements par entité | ✅ |
-| Risk Level Agrégé | Couleur du nœud = risque le plus élevé | ✅ |
-| Expand/Collapse All | Contrôles globaux d'expansion | ✅ |
-| Panel Détail | Clic sur nœud = panel avec liste des engagements | ✅ |
-| Rendu SVG | Courbes de Bézier, positionnement dynamique | ✅ |
+**Widget 1: Upload / Missing Documents (Hero)**
+
+| Element | Description |
+|---------|-------------|
+| **Drag & Drop Zone** | Zone pour upload multi-fichiers |
+| **Missing Docs List** | Liste des documents manquants avec icone info |
+| **Tooltip Info** | Au hover, montre quels engagements ont besoin de ce document |
+| **Upload Button** | Bouton upload individuel par document |
+| **Auto-Classification** | Documents uploades sont classes automatiquement |
+| **View All** | Lien vers Document Library |
+
+**Widget 2: Engagement Status Donut**
+
+| Element | Description |
+|---------|-------------|
+| **Segments** | Late (rouge), In Progress (bleu), Soon (orange) |
+| **Chiffres** | Nombres affiches a l'interieur du donut |
+| **Interaction** | Clic sur segment → filtre la liste des engagements |
+
+**Widget 3: Documents to Sign Off**
+
+| Element | Description |
+|---------|-------------|
+| **Colonnes** | Entity, Document Name, Action |
+| **Action Button** | Redirige vers l'engagement pour validation |
+| **Liste** | Documents necessitant verification/approbation |
+
+**Widget 4: Engagement List**
+
+| Element | Description |
+|---------|-------------|
+| **Filtrage** | Filtre par segment du donut selectionne |
+| **Affichage** | Top 5 engagements du statut selectionne |
+| **View All** | Redirige vers Engagements avec filtre actif preserve |
+
+#### 5.2.3 Elements Retires du Dashboard
+
+- ~~Notifications widget~~ → Deplace vers bell icon navbar
+- ~~Key Indicators~~
+- ~~Action Center~~
 
 ---
 
-### 5.2 Document Library - Architecture Hybride
+### 5.3 Page Engagements
 
-**Objectif :** Gestion documentaire scalable pour 100+ entités, style 2026 (pas SharePoint).
+**Objectif :** Trouver et acceder rapidement a n'importe quel engagement.
 
-#### 5.2.1 Deux Modes de Navigation
+#### 5.3.1 Toggle Vue Cards / Table
 
-| Mode | Contexte | Contenu Affiché |
-|------|----------|-----------------|
-| **Vue Engagement** | Dans un engagement | Uniquement les documents de CET engagement (requis, uploadés, manquants) |
-| **Vue Bibliothèque** | Menu Library global | Bibliothèque complète avec hiérarchie Entité → Année → Type + filtres |
+| Mode | Description | Default |
+|------|-------------|---------|
+| **Cards** | Affichage en cartes expandables | ✅ Par defaut |
+| **Table** | Affichage tabulaire avec rows expandables | Option |
 
-**Principe :** La Vue Engagement couvre 90% des cas d'usage (travail sur un dossier). La Vue Bibliothèque couvre 10% (recherche cross-entités, audits).
+#### 5.3.2 Filtres (Pills/Chips Inline)
 
-#### 5.2.2 Vue Bibliothèque (Menu Global)
+**Style :** Small pills/chips, inline, discret, premium - pas de bloc de filtres.
 
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Filtres Multi-Critères | Entité (dropdown searchable), Année, Type doc, Statut | ✅ |
-| Hiérarchie Entité→Année→Type | Navigation par arborescence pour 100+ entités | ✅ |
-| Toggle Grid/List/Tree View | Switch entre vue grille, liste et arborescence | ✅ |
-| Search Global | Recherche rapide dans toute la bibliothèque | ✅ |
-| Preview Inline | Aperçu du document sans quitter la page | ✅ |
-| Document Status Badges | "Analysé", "En attente", "Anomalie détectée" | ✅ |
-| Quick Actions on Hover | Download, Preview, Ask Eve, Delete | ✅ |
-| Breadcrumb Navigation | Navigation contextuelle moderne | ✅ |
-| **Many-to-Many Linking** | ✅ **NOUVEAU** - Documents liés à plusieurs engagements | ✅ |
-| **Year Mismatch Detection** | ✅ **NOUVEAU** - Alerte si document année incorrecte | ✅ |
+| Filtre | Type |
+|--------|------|
+| **Search** | Recherche par entite |
+| **Year** | Dropdown annee |
+| **Status** | Late, In Progress, Soon, Completed |
+| **Risk** | High, Medium, Low |
+| **Service** | CTR (et autres si besoin) |
 
-### 5.3 Smart Upload & Classification IA
+#### 5.3.3 Vue Cards (Expandable)
 
-**Objectif :** Upload intelligent - "Je drop, l'IA comprend, c'est rangé"
+**Card fermee :**
+- Entity name
+- Status badge
+- Progress bar
+- Risk badge
+- Country flag
 
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Upload Single/Bulk | Zone de dépôt unique pour un ou plusieurs fichiers | ✅ |
-| Upload Async | Progress bar pour bulk, notification quand terminé | ✅ |
-| Auto-Détection Type | IA identifie le type (Grand Livre, Trial Balance, etc.) | ✅ |
-| Classification Auto | Routing automatique vers le bon engagement/dossier | ✅ |
-| Animation Classification | Feedback visuel fluide du fichier vers son dossier | ✅ |
-| Status Auto-Update | L'engagement passe de "Waiting" à "Processing" automatiquement | ✅ |
-| **Flying Document Animation** | ✅ **NOUVEAU** - Animation arc du fichier vers tree location | ✅ |
-| **Classification Dialog Queue** | ✅ **NOUVEAU** - Modal confirmation pour fichiers low-confidence | ✅ |
-| **Confidence Scoring** | ✅ **NOUVEAU** - Score high/medium/low sur classification | ✅ |
+**Card ouverte (expand) :**
+- Documents requis (X/Y manquants)
+- Bouton "Details" (→ engagement detail)
+- Bouton Eve (questions contextuelles)
 
-### 5.4 Dashboard & Charts Interactifs
+#### 5.3.4 Vue Table
 
-**Objectif :** Vue analytique WOW avec intelligence contextuelle.
+**Colonnes :**
 
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| KPIs Animés | Métriques clés avec animations d'entrée | ✅ |
-| Charts Interactifs | 3 graphiques (Bar, Pie, Comparison) | ✅ |
-| Hover Intelligent Contextuel | Tooltip enrichi avec données des documents liés | ✅ |
-| Lien vers Source | "Ce montant vient du Grand Livre ligne 234" | ✅ |
-| Click Drill-Down | Clic sur élément = filtrage/zoom | ✅ |
-| Comparaison N-1 | Superposition visuelle année précédente | ✅ |
-| Toggle Chart Types | Switch bar/pie/line | ✅ |
-| **Drill-Down Modal** | ✅ **NOUVEAU** - Modal détaillé avec breakdown + "Ask Eve" | ✅ |
-| **CMD+Click sur Charts** | ✅ **NOUVEAU** - Explication Eve directe depuis graphiques | ✅ |
+| Entity | Status | Progress | Risk | Year | Documents | Actions |
+|--------|--------|----------|------|------|-----------|---------|
 
-### 5.5 Assistant IA "Eve" - Chatbot Contextuel (OpenAI GPT-4o-mini)
+**Row Expandable :** Memes informations que la card ouverte.
 
-**Objectif :** "Je demande, Eve sait de quoi je parle" - IA contextuelle par engagement.
+---
 
-**Moteur IA :** OpenAI GPT-4o-mini (clé API dans fichier .env)
+### 5.4 Page Structure Organisationnelle
 
-#### 5.5.1 Logique de Contexte
+**Objectif :** Visualiser la hierarchie des entites avec relations de propriete.
 
-| Contexte | Données Accessibles | Exemples de Questions |
-|----------|---------------------|----------------------|
-| **Dans un Engagement** | Détails engagement, documents uploadés, données financières, deadlines, niveau de risque | "Quels documents manquent?", "Explique les €3.3M d'actifs", "Pourquoi le risque est élevé?" |
-| **Vue Globale (Home)** | Liste des engagements, KPIs agrégés, aide générale | "Combien d'engagements à risque?", "Quel est le taux de complétion global?" |
+#### 5.4.1 Fonctionnalites
 
-**Comportement Auto-Switch :** Si l'utilisateur pose une question sur un engagement spécifique depuis la vue globale (ex: "Quels documents manquent pour France?"), Eve bascule automatiquement le contexte vers cet engagement et répond.
+| Feature | Description |
+|---------|-------------|
+| **Ownership Percentages** | Affiches sur les lignes de connexion |
+| **Cross-Shareholding** | Deux fleches separees avec leurs pourcentages |
+| **Country Flags** | Drapeau du pays sur chaque entite |
+| **Auto-Layout** | Arrangement automatique base sur la hierarchie de propriete |
+| **Click → Drawer** | Clic sur entite ouvre un drawer lateral |
+| **Drawer Content** | Liste des engagements de l'entite |
+| **Navigation** | Clic sur engagement → redirection vers cet engagement |
 
-**CMD+Click :** Le clic CMD sur une valeur dans un dashboard définit automatiquement le contexte de l'engagement correspondant.
+#### 5.4.2 Exemple Structure
 
-#### 5.5.2 Features
+```
+            ┌─────────────────────┐
+            │  Luxembourg Fund    │
+            │  (Top HoldCo)       │
+            └──────────┬──────────┘
+                       │ 100%
+            ┌──────────┴──────────┐
+            │                     │
+       ┌────▼────┐          ┌─────▼─────┐
+       │ Belgium │───20%───►│ Netherlands│
+       │ HoldCo  │◄───15%───│ BV         │
+       │ 🇧🇪     │          │ 🇳🇱        │
+       └────┬────┘          └─────┬─────┘
+            │ 100%                │ 100%
+       ┌────▼────┐          ┌─────▼─────┐
+       │ France  │          │ Germany   │
+       │ SPV 🇫🇷 │          │ PropCo 🇩🇪│
+       └─────────┘          └───────────┘
+```
 
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Chat Panel Sliding | Panneau latéral élégant, accessible partout | ✅ |
-| Contexte Engagement Auto | Eve connaît l'engagement actif et ses documents | ✅ |
-| Auto-Switch Contexte | Bascule automatique vers engagement mentionné | ✅ |
-| Réponses avec Sources | Citations des documents avec liens directs (ligne, cellule) | ✅ |
-| **Cmd+Click "Ask Eve"** | CMD (Mac) / ALT (Win) + Click sur chiffre = auto-prompt Eve | ✅ |
-| Explain Data | Explication détaillée de tout chiffre/KPI | ✅ |
-| Génération Gantt | Timeline visuelle des obligations | ✅ |
-| Analyse KPI | "Pourquoi ce KPI est rouge?" | ✅ |
-| Historique Conversations | Par engagement, conservé | ✅ |
-| **Quick Prompts** | ✅ **NOUVEAU** - 4 boutons pré-définis pour questions fréquentes | ✅ |
-| **Welcome State** | ✅ **NOUVEAU** - État initial avec suggestions | ✅ |
-| **Conversation History API** | ✅ **NOUVEAU** - Save/Load/Clear via API | ✅ |
+---
 
-#### 5.5.3 Personnalité & Ton
+### 5.5 Document Library (Doclib)
+
+**Objectif :** Gestion documentaire avec focus sur les documents manquants.
+
+#### 5.5.1 Filtres
+
+| Filtre | Action |
+|--------|--------|
+| **Entity** | Toggle on/off - si off, montre tous les documents |
+| **Document Status** | Filter par statut (Missing, Uploaded, Analyzed, etc.) |
+| ~~Search by Name~~ | **RETIRE** |
+
+#### 5.5.2 Documents Manquants
+
+| Feature | Description |
+|---------|-------------|
+| **Missing Status** | Documents demandes mais non uploades apparaissent avec statut "Missing" |
+| **Upload Direct** | Possibilite d'uploader directement depuis cette vue |
+| **Visibilite** | Voir ce qui manque facilement |
+
+#### 5.5.3 Bulk Download
+
+| Feature | Description |
+|---------|-------------|
+| **Progress Bar** | Affichee sous le bouton download pendant le telechargement |
+| **Notification** | Notification une fois tous les downloads completes |
+
+#### 5.5.4 Tree Navigation
+
+| Feature | Description |
+|---------|-------------|
+| **Filtre Entity** | Peut seulement toggle entity filter on/off |
+| **Pas de selection all** | Ne peut pas selectionner tous les documents dans l'arbre |
+| **Remove filter** | Si filtre entity retire → montre tous les documents de toutes les entites |
+
+---
+
+### 5.6 Smart Upload & Classification IA avec Validation
+
+**Objectif :** Upload intelligent avec validation utilisateur avant placement.
+
+#### 5.6.1 Flow Upload
+
+```
+Upload (single/bulk)
+       ↓
+IA classifie chaque document
+       ↓
+Popup/Notification → redirige vers Attribution Screen
+       ↓
+┌─────────────────────────────────────────────────────────────┐
+│  ATTRIBUTION REVIEW                                         │
+│                                                             │
+│  Document          Entity        Year    Type        Action │
+│  ─────────────────────────────────────────────────────────  │
+│  file1.pdf    →    France SPV    2026    GL          [✓]   │
+│  file2.xlsx   →    Germany Co    2025    TB          [✎]   │
+│  file3.pdf    →    ???           ???     ???         [✎]   │
+│                                                             │
+│                    [Validate & Place]                       │
+└─────────────────────────────────────────────────────────────┘
+       ↓
+User corrige si necessaire → Validate
+       ↓
+Animation: documents places dans doclib
+```
+
+#### 5.6.2 Attribution Screen
+
+| Colonne | Description |
+|---------|-------------|
+| **Document** | Nom du fichier uploade |
+| **Entity** | Entite attribuee par l'IA |
+| **Year** | Annee attribuee par l'IA |
+| **Type** | Type de document (GL, TB, Tax Assessment, Financial Statement) |
+| **Action** | Valider (✓) ou Editer (✎) |
+
+| Feature | Description |
+|---------|-------------|
+| **AI Attribution** | L'IA propose entity, year, document type |
+| **Manual Correction** | L'utilisateur peut corriger chaque attribution |
+| **Validate Button** | Confirme toutes les attributions |
+| **Animation** | Documents "volent" vers leur emplacement dans doclib |
+
+---
+
+### 5.7 Engagement Detail - Onglet Results (NOUVEAU)
+
+**Objectif :** Afficher les resultats du CTR une fois le service complete.
+
+#### 5.7.1 Activation
+
+L'onglet Results devient actif quand :
+- Les 4 documents sont valides
+- Le service CTR a ete effectue
+- Un resultat est disponible
+
+#### 5.7.2 Contenu
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  RESULTS                                                        │
+│                                                                 │
+│  [Documents]                    [Charts]                        │
+│  ├── CTR_Report.pdf             ┌─────────────────────────────┐ │
+│  └── CTR_Data.xml               │  ETR Reconciliation         │ │
+│                                 │  (Waterfall chart)          │ │
+│                                 │  CMD+Click on bars          │ │
+│                                 └─────────────────────────────┘ │
+│                                 ┌─────────────────────────────┐ │
+│                                 │  Current vs Deferred Tax    │ │
+│                                 │  (Donut chart)              │ │
+│                                 └─────────────────────────────┘ │
+│                                 ┌─────────────────────────────┐ │
+│                                 │  Tax by Category            │ │
+│                                 │  (Bar chart)                │ │
+│                                 └─────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### 5.7.3 Documents Resultat
+
+| Document | Format | Description |
+|----------|--------|-------------|
+| **CTR Report** | PDF | Rapport de declaration fiscale |
+| **CTR Data** | XML | Fichier iXBRL avec donnees tagguees |
+
+#### 5.7.4 Charts CTR
+
+| Chart | Type | Description |
+|-------|------|-------------|
+| **ETR Reconciliation** | Waterfall | Statutory rate → Effective rate avec adjustments |
+| **Current vs Deferred** | Donut | Repartition impot courant vs differe |
+| **Tax by Category** | Bar | Breakdown par categorie |
+| **KPI Cards** | Cards | Tax Liability, Effective Rate %, Pre-tax Income |
+
+**Eve Integration :** CMD+Click sur n'importe quelle barre/segment → question a Eve.
+
+---
+
+### 5.8 Page Insights (NOUVELLE)
+
+**Objectif :** Vue portfolio agrégée de tous les KPIs CTR.
+
+#### 5.8.1 KPI Cards
+
+| KPI | Description |
+|-----|-------------|
+| **Total Tax Liability** | Somme des impots de toutes les entites |
+| **Avg Effective Tax Rate** | Taux effectif moyen pondere |
+| **CTRs Completed** | X/Y engagements avec resultats delivres |
+| **Entities at Risk** | Entites en retard, docs manquants, anomalies |
+
+#### 5.8.2 Charts (Tous CMD+Clickable)
+
+| Chart | Type | Description | Eve Example |
+|-------|------|-------------|-------------|
+| **Tax by Entity** | Horizontal Bar | Compare montants absolus par entite | "Why is France SPV's tax €800K?" |
+| **ETR by Entity** | Bar + ref line | Compare taux effectifs (ligne ref = statutory) | "Why is Germany's rate higher than statutory?" |
+| **YoY Comparison** | Grouped Bar | Tendance N vs N-1 agregee | "What caused the increase from 2025 to 2026?" |
+| **Tax by Jurisdiction** | Donut | Distribution geographique | "What's the statutory rate in Netherlands?" |
+
+#### 5.8.3 Filtres
+
+| Filtre | Type |
+|--------|------|
+| **Year** | Selector (2026, 2025, etc.) |
+| **Entity** | Multi-select (pour focus sur subset) |
+
+---
+
+### 5.9 Assistant IA "Eve" - Chatbot Contextuel
+
+**Objectif :** "Je demande, Eve sait de quoi je parle" - IA contextuelle.
+
+**Moteur IA :** OpenAI GPT-4o-mini
+
+#### 5.9.1 Logique de Contexte
+
+| Contexte | Donnees Accessibles |
+|----------|---------------------|
+| **Dans un Engagement** | Details engagement, documents, donnees financieres, resultats CTR |
+| **Page Insights** | KPIs agreges, comparaisons cross-entites |
+| **Vue Globale** | Liste des engagements, aide generale |
+
+#### 5.9.2 CMD+Click Integration
+
+| Location | Comportement |
+|----------|--------------|
+| **Dashboard** | CMD+Click sur valeur → Eve explique |
+| **Results Tab Charts** | CMD+Click sur barre → Eve explique ce data point |
+| **Insights Charts** | CMD+Click sur segment → Eve explique avec contexte global |
+
+#### 5.9.3 Features
+
+| Feature | Description |
+|---------|-------------|
+| **Chat Panel Sliding** | Panneau lateral elegant, accessible partout |
+| **Contexte Auto** | Eve connait l'engagement actif et ses documents |
+| **Auto-Switch Contexte** | Bascule automatique vers engagement mentionne |
+| **Reponses avec Sources** | Citations des documents avec liens directs |
+| **Quick Prompts** | 4 boutons pre-definis pour questions frequentes |
+
+#### 5.9.4 Personnalite & Ton
 
 | Attribut | Valeur |
 |----------|--------|
 | **Style** | Corporate, formel, professionnel EY |
 | **Vouvoiement** | Oui, toujours |
 | **Emojis** | Non |
-| **Ton** | Informatif, précis, concis |
-| **Rôle** | Consultante read-only - guide et informe |
-
-### 5.6 Prédictions & Proactivité
-
-**Objectif :** "L'app me dit ce qui va mal AVANT que je demande"
-
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Risk Scoring | Badges rouge/orange/vert sur chaque engagement | ✅ |
-| Prédiction Deadline | Estimation dynamique de completion | ✅ |
-| Alertes Proactives | Notifications automatiques (risk escalation, deadline approaching) | ✅ |
-| Comparaison Auto N-1 | Détection d'écarts anormaux | ✅ |
-| **Rich Risk Tooltip** | ✅ **NOUVEAU** - Raisons + actions + jours restants au hover | ✅ |
-| **Prédiction avec Confiance** | ✅ **NOUVEAU** - Vélocité + scoring high/medium/low | ✅ |
-| **Variance Detection Service** | ✅ **NOUVEAU** - Seuil 15%, insights en français | ✅ |
-
-### 5.7 ✅ NOUVEAU - Système de Notifications
-
-**Objectif :** Alerter proactivement sur les événements importants.
-
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Risk Escalation Alerts | Notification quand engagement passe en HIGH risk | ✅ |
-| Deadline Approaching | Alerte à J-7 avant deadline | ✅ |
-| Dismiss/Dismiss All | Marquer comme lu individuellement ou en masse | ✅ |
-| Unread Count Badge | Badge dans header avec compteur | ✅ |
-| Priority Levels | HIGH, MEDIUM, LOW avec couleurs | ✅ |
-| API Complète | GET, POST dismiss, count | ✅ |
-
-### 5.8 ✅ NOUVEAU - Excel Preview Service
-
-**Objectif :** Prévisualiser le contenu des documents sans téléchargement.
-
-| Feature | Description | Statut |
-|---------|-------------|--------|
-| Excel to JSON | Parsing xlsx/xls vers structure JSON | ✅ |
-| CSV Support | Fallback pour fichiers CSV | ✅ |
-| Preview Limit | Maximum 100 lignes (configurable) | ✅ |
-| Inline Preview Modal | Affichage dans modal sans quitter la page | ✅ |
+| **Ton** | Informatif, precis, concis |
+| **Role** | Consultante read-only - guide et informe |
 
 ---
 
-## 6. Architecture Technique & Données
+### 5.10 Notifications
+
+**Objectif :** Alerter proactivement sur les evenements importants.
+
+| Feature | Description |
+|---------|-------------|
+| **Location** | Bell icon dans navbar (droite) |
+| **Badge** | Compteur unread |
+| **Types** | Risk escalation, Deadline approaching, Document uploaded |
+| **Actions** | Dismiss individual, Dismiss all |
+| **Click** | Redirige vers l'element concerne |
+
+---
+
+## 6. Architecture Technique & Donnees
 
 ### 6.1 Stack
 
 * **Frontend :** Angular 19+ avec standalone components, Signals
 * **Backend :** FastAPI (Python 3.11+) - API RESTful fonctionnelle
-* **Base de Données :** SQLite async (aiosqlite)
-* **AI Engine :** OpenAI GPT-4o-mini (via API REST avec clé dans .env)
+* **Base de Donnees :** SQLite async (aiosqlite)
+* **AI Engine :** OpenAI GPT-4o-mini (via API REST avec cle dans .env)
 * **Charts :** Chart.js + ng2-charts
 * **Icons :** Lucide Icons
 * **CSS :** Tailwind CSS v3
 
-### 6.2 Structure de Données (Modèle étendu)
+### 6.2 Structure de Donnees
 
 ```
 ENGAGEMENT
@@ -393,431 +568,213 @@ id                  string      "ENG-FR-001"
 entity_name         string      "France SPV"
 country_code        string      "FR"
 country_name        string      "France"
-service_type        string      "Corporate Tax"
+service_type        string      "CTR" (Company Tax Return)
 status              enum        waiting|received|processing|completed
 risk_level          enum        high|medium|low
 due_date            date        "2026-02-29"
-predicted_completion date       "2026-02-25"
 completion_percent  int         0-100
-documents_required  array       ["General Ledger", "Trial Balance"]
-financial_data      object      { embedded - voir ci-dessous }
-ai_insights         array       ["Alerte: écart N-1 > 15%", ...]
+documents_required  array       ["Tax Assessment N-1", "General Ledger", "Trial Balance", "Financial Statement"]
+ctr_result          object      { pdf_path, xml_path, generated_at } (null si pas complete)
 created_at          datetime
 updated_at          datetime
 
 DOCUMENT
 ══════════════════════════════════════════════════════════
 id                  string      "DOC-001"
-name                string      "Grand_Livre_France_2026.xlsx"
-type                enum        general_ledger|trial_balance|tax_return|financial_statement|bank_statement
+name                string      "General_Ledger_France_2026.xlsx"
+type                enum        tax_assessment|general_ledger|trial_balance|financial_statement|ctr_report|ctr_xml
+year                int         2026
 format              string      "xlsx"
-size_bytes          int         245000
-status              enum        uploaded|analyzing|analyzed|error
-ai_summary          string      "Grand Livre 2026, 3,378 lignes..."
-file_path           string      "./uploads/ENG-FR-001/..."
+status              enum        missing|uploaded|analyzing|analyzed|validated|error
+engagement_id       string      FK → engagements.id
+entity_id           string      FK → entities.id
+file_path           string      "./uploads/..."
 uploaded_at         datetime
 
-✅ NOUVEAU - DOCUMENT_ENGAGEMENTS (Junction Table - Many-to-Many)
+ENTITY
 ══════════════════════════════════════════════════════════
-document_id         string      FK → documents.id
+id                  string      "ENT-001"
+name                string      "France SPV"
+country_code        string      "FR"
+country_name        string      "France"
+parent_entity_id    string      FK → entities.id (nullable)
+ownership_percent   float       100.0 (% owned by parent)
+
+ENTITY_CROSS_OWNERSHIP (for cross-shareholding)
+══════════════════════════════════════════════════════════
+owner_entity_id     string      FK → entities.id
+owned_entity_id     string      FK → entities.id
+ownership_percent   float       20.0
+
+CTR_RESULT
+══════════════════════════════════════════════════════════
+id                  string      "CTR-001"
 engagement_id       string      FK → engagements.id
-linked_at           datetime
+pdf_path            string      "./results/CTR_Report_France_2026.pdf"
+xml_path            string      "./results/CTR_Data_France_2026.xml"
+tax_liability       float       800000.00
+effective_tax_rate  float       18.5
+statutory_rate      float       25.0
+current_tax         float       600000.00
+deferred_tax        float       200000.00
+generated_at        datetime
 
-CONVERSATION
-══════════════════════════════════════════════════════════
-id                  string      "CONV-001"
-engagement_id       string      "ENG-FR-001"
-messages            array       [{ role, content, timestamp }, ...]
-created_at          datetime
-updated_at          datetime
-
-✅ NOUVEAU - NOTIFICATION
+NOTIFICATION
 ══════════════════════════════════════════════════════════
 id                  string      "NOTIF-001"
-type                enum        RISK_ESCALATION|DEADLINE_APPROACHING
+type                enum        RISK_ESCALATION|DEADLINE_APPROACHING|DOCUMENT_UPLOADED
 engagement_id       string      "ENG-FR-001"
-title               string      "Risque élevé détecté"
-message             string      "France SPV est passé en risque HIGH"
+title               string      "Risque eleve detecte"
+message             string      "France SPV est passe en risque HIGH"
 priority            enum        HIGH|MEDIUM|LOW
 dismissed           boolean     false
 created_at          datetime
-
-FINANCIAL_DATA (embedded)
-══════════════════════════════════════════════════════════
-{
-  "current_year": {
-    "total_assets": 3378000,
-    "total_liabilities": 1200000,
-    "net_equity": 2178000,
-    "revenue": 850000,
-    "expenses": 620000
-  },
-  "previous_year": {
-    "total_assets": 2900000,
-    "total_liabilities": 1100000,
-    "net_equity": 1800000,
-    "revenue": 780000,
-    "expenses": 590000
-  },
-  "variance_percent": {
-    "total_assets": 16.5,
-    "total_liabilities": 9.1,
-    "net_equity": 21.0,
-    "revenue": 9.0,
-    "expenses": 5.1
-  }
-}
 ```
 
 ---
 
-## 7. Scénario de Démo (Script Amélioré)
+## 7. API Endpoints
 
-Ce flux doit fonctionner parfaitement et créer des moments WOW.
+### 7.1 Engagements
 
-### Flow Démo (10-12 minutes)
-
-| Étape | Action | Moment WOW |
-|-------|--------|------------|
-| 1. **Arrivée** | Landing Page s'affiche | UI Premium, Risk badges visibles, Action Center dynamique |
-| 2. **Structure** | ✅ **NOUVEAU** - Clic sur "Structure" | Organigramme interactif, zoom/pan, recherche |
-| 3. **Ask Eve** | "Quels documents manquent pour la France?" | Eve répond avec contexte: "Il manque le Grand Livre et le Trial Balance" |
-| 4. **Document Library** | Navigation vers la bibliothèque | Tree view, toggle grid/list, design moderne |
-| 5. **Upload** | Drag & drop de 3 fichiers | **Flying Document Animation** → Classification auto → highlight tree node |
-| 6. **Vérification** | Retour Landing Page | Badge France passé de rouge à orange, status "Processing" |
-| 7. **Dashboard** | Clic sur engagement France | KPIs animés, charts interactifs |
-| 8. **Drill-Down** | ✅ **NOUVEAU** - Clic sur bar chart | Modal détaillé avec breakdown + source document |
-| 9. **Cmd+Click** | CMD+Click sur "Total Assets: 3,378,000€" | Eve s'ouvre avec explication + source doc |
-| 10. **Risk Tooltip** | ✅ **NOUVEAU** - Hover sur Risk Badge | Tooltip enrichi: raisons, actions, jours restants |
-| 11. **Prédiction** | Vue de la prédiction | "À ce rythme, deadline respectée avec 4 jours d'avance" + confiance |
-| 12. **Notifications** | Clic sur cloche | Liste des alertes avec dismiss |
-
----
-
-## 8. Priorisation des Features - BILAN FINAL
-
-### 8.1 Must-Have (9/9 ✅)
-
-| # | Feature | Statut |
-|---|---------|--------|
-| M1 | Design System Premium (palette, composants, animations) | ✅ |
-| M2 | Landing Page + Liste Engagements + Risk Badges | ✅ |
-| M3 | Document Library (Tree + Grid/List + Search) | ✅ |
-| M4 | Smart Upload + Classification IA | ✅ |
-| M5 | Dashboard + Charts Interactifs + Hover Intelligent | ✅ |
-| M6 | Eve Chatbot Contextuel par Engagement | ✅ |
-| M7 | Cmd+Click "Ask Eve" (feature signature) | ✅ |
-| M8 | Risk Badges + Prédiction Deadline | ✅ |
-| M9 | Demo Flow Parfait (script testé) | ✅ |
-
-### 8.2 Should-Have (4/5 ✅)
-
-| # | Feature | Statut |
-|---|---------|--------|
-| S1 | Gantt auto-updating | ✅ |
-| S2 | Comparaison N-1 sur charts | ✅ |
-| S3 | Notifications proactives Eve | ✅ |
-| S4 | Cross-sell suggestions EY | ❌ Non implémenté |
-| S5 | Document preview inline | ✅ |
-
-### 8.3 Nice-to-Have (0/6)
-
-| # | Feature | Statut |
-|---|---------|--------|
-| N1 | Dark mode | ❌ |
-| N2 | Voice input Eve | ❌ |
-| N3 | Command palette (Cmd+K) | ❌ |
-| N4 | Confetti on completion | ❌ |
-| N5 | Keyboard shortcuts complets | ❌ |
-| N6 | Export conversation PDF | ❌ |
-
-### 8.4 ✅ INNOVATIONS BONUS (14 nouvelles features)
-
-| # | Feature | Description |
-|---|---------|-------------|
-| B1 | **Page Structure Organisationnelle** | Organigramme interactif SVG avec zoom/pan/search |
-| B2 | **Multi-Engagement par Entité** | Une entité = N engagements (scalabilité) |
-| B3 | **Rich Risk Tooltip** | Raisons + actions + jours restants au hover |
-| B4 | **Drill-Down Modal System** | Modal détaillé avec breakdown + "Ask Eve" |
-| B5 | **Flying Document Animation** | Animation arc de l'upload vers tree location |
-| B6 | **Many-to-Many Documents** | Documents liés à plusieurs engagements |
-| B7 | **Variance Detection Service** | Seuil 15%, insights en français |
-| B8 | **Excel Preview Service** | Parsing Excel/CSV pour preview inline |
-| B9 | **Year Mismatch Detection** | Alerte si document année incorrecte |
-| B10 | **Quick Prompts Eve** | 4 boutons pré-définis pour questions fréquentes |
-| B11 | **Prédiction avec Confiance** | Vélocité + scoring high/medium/low |
-| B12 | **Action Center Dynamique** | Actions dérivées auto + persistence session |
-| B13 | **Historique Conversation API** | Save/Load/Clear conversations |
-| B14 | **Classification Dialog Queue** | Modal confirmation pour low-confidence |
-
----
-
-## 9. API Endpoints - COMPLET
-
-### 9.1 Engagements
-
-| Méthode | Endpoint | Description |
+| Methode | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/api/engagements` | Liste tous les engagements avec variance alerts |
-| GET | `/api/engagements/{id}` | Détail d'un engagement |
-| GET | `/api/engagements/{id}/stats` | KPIs calculés pour dashboard |
-| GET | `/api/engagements/{id}/risk` | ✅ **NOUVEAU** - Détails risk avec raisons et actions |
-| GET | `/api/engagements/{id}/prediction` | ✅ **NOUVEAU** - Prédiction avec vélocité et confiance |
+| GET | `/api/engagements` | Liste tous les engagements |
+| GET | `/api/engagements/{id}` | Detail d'un engagement |
+| GET | `/api/engagements/{id}/results` | Resultats CTR (si complete) |
 
-### 9.2 Documents
+### 7.2 Documents
 
-| Méthode | Endpoint | Description |
+| Methode | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/api/documents` | Liste tous les documents (paginé) |
-| GET | `/api/documents?engagement={id}` | Documents d'un engagement |
+| GET | `/api/documents` | Liste tous les documents |
+| GET | `/api/documents?status=missing` | Documents manquants |
 | POST | `/api/documents/upload` | Upload + classification IA |
-| GET | `/api/documents/{id}` | Détail document |
-| GET | `/api/documents/{id}/content` | Download/preview fichier |
-| GET | `/api/documents/{id}/preview` | ✅ **NOUVEAU** - Preview Excel/PDF |
-| GET | `/api/documents/library` | ✅ **NOUVEAU** - Bibliothèque groupée par catégorie |
-| POST | `/api/documents/link` | ✅ **NOUVEAU** - Lier document à engagement |
-| DELETE | `/api/documents/link` | ✅ **NOUVEAU** - Délier document |
-| GET | `/api/documents/available/{id}` | ✅ **NOUVEAU** - Documents non liés |
-| GET | `/api/documents/engagement/{id}` | ✅ **NOUVEAU** - Documents liés |
+| POST | `/api/documents/validate-attribution` | Valider attributions apres review |
+| GET | `/api/documents/{id}/download` | Download fichier |
 
-### 9.3 Eve (IA)
+### 7.3 Entities & Structure
 
-| Méthode | Endpoint | Description |
+| Methode | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/api/eve/chat` | Envoyer message, recevoir réponse |
-| POST | `/api/eve/explain` | Expliquer un chiffre (Cmd+Click) |
+| GET | `/api/entities` | Liste toutes les entites |
+| GET | `/api/entities/structure` | Structure hierarchique avec ownership |
+| GET | `/api/entities/{id}/engagements` | Engagements d'une entite |
+
+### 7.4 Eve (IA)
+
+| Methode | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/eve/chat` | Envoyer message, recevoir reponse |
+| POST | `/api/eve/explain` | Expliquer un chiffre (CMD+Click) |
 | GET | `/api/eve/conversations/{engagement_id}` | Historique conversations |
-| DELETE | `/api/eve/conversations/{engagement_id}` | ✅ **NOUVEAU** - Clear historique |
 
-### 9.4 Dashboard
+### 7.5 Dashboard & Insights
 
-| Méthode | Endpoint | Description |
+| Methode | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/api/engagements/{id}/stats` | Stats avec YoY comparison |
-| GET | `/api/engagements/{id}/charts/assets` | Assets breakdown chart |
-| GET | `/api/engagements/{id}/charts/comparison` | N vs N-1 comparison |
-| GET | `/api/engagements/{id}/charts/breakdown` | Detailed breakdown pie |
-| GET | `/api/dashboard/gantt` | ✅ **NOUVEAU** - Gantt chart data |
+| GET | `/api/dashboard/widgets` | Donnees pour widgets Home |
+| GET | `/api/dashboard/documents-to-signoff` | Docs necessitant validation |
+| GET | `/api/dashboard/missing-documents` | Docs manquants agreges |
+| GET | `/api/insights/kpis` | KPIs globaux Insights page |
+| GET | `/api/insights/charts` | Donnees charts Insights |
 
-### 9.5 ✅ NOUVEAU - Notifications
+### 7.6 Notifications
 
-| Méthode | Endpoint | Description |
+| Methode | Endpoint | Description |
 |---------|----------|-------------|
 | GET | `/api/notifications` | Liste toutes les notifications |
 | GET | `/api/notifications/count` | Compteur unread |
 | POST | `/api/notifications/{id}/dismiss` | Marquer comme lu |
 | POST | `/api/notifications/dismiss-all` | Tout marquer comme lu |
 
-### 9.6 Health
+---
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/v1/health` | Health check avec status DB |
+## 8. Scenario de Demo (Script)
+
+### Flow Demo (10-12 minutes)
+
+| Etape | Action | Moment WOW |
+|-------|--------|------------|
+| 1 | **Arrivee** | Home Dashboard Bento - widgets clairs, donut interactif |
+| 2 | **Missing Docs Widget** | Voir documents manquants, tooltip montre quels engagements |
+| 3 | **Upload** | Drag & drop fichiers → Attribution Screen → Validation |
+| 4 | **Structure** | Organigramme avec ownership %, cross-shareholding visible |
+| 5 | **Click Entity** | Drawer avec engagements → clic → detail engagement |
+| 6 | **Engagement Detail** | Voir progression, documents, status |
+| 7 | **Results Tab** | CTR complete - PDF, XML, charts interactifs |
+| 8 | **CMD+Click Chart** | Eve explique le data point avec contexte |
+| 9 | **Insights Page** | Vue portfolio - KPIs agreges, comparaisons |
+| 10 | **CMD+Click Insights** | Eve repond avec contexte global |
+| 11 | **Engagements Page** | Toggle Cards/Table, filtres pills |
+| 12 | **Doclib** | Filtre Missing, voir ce qui manque |
 
 ---
 
-## 10. Layout & Navigation - MISE À JOUR
+## 9. Dataset Demo
 
-### 10.1 Structure Globale
+### 9.1 Entites
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                         HEADER                                │
-│  [Logo EY] Avengers                              [🔔 Notifs] │
-├────────┬─────────────────────────────────────────────────────┤
-│        │                                                      │
-│  S     │                    MAIN CONTENT                      │
-│  I     │                                                      │
-│  D     │                                                      │
-│  E     │                                                      │
-│  B     │                                                      │
-│  A     │                                                      │
-│  R     │                                                      │
-│        │                                          ┌────────┐  │
-│        │                                          │💬 Eve  │  │
-│        │                                          └────────┘  │
-└────────┴─────────────────────────────────────────────────────┘
-```
+| Entity | Country | Parent | Ownership | Role |
+|--------|---------|--------|-----------|------|
+| Luxembourg Fund | 🇱🇺 LU | - | - | Top HoldCo |
+| Belgium HoldCo | 🇧🇪 BE | Luxembourg Fund | 100% | Intermediate |
+| Netherlands BV | 🇳🇱 NL | Luxembourg Fund | 100% | Intermediate |
+| France SPV | 🇫🇷 FR | Belgium HoldCo | 100% | Operating |
+| Germany PropCo | 🇩🇪 DE | Netherlands BV | 100% | Operating |
 
-### 10.2 Sidebar Navigation - MISE À JOUR
+**Cross-Shareholding :** Belgium HoldCo owns 20% of Netherlands BV, Netherlands BV owns 15% of Belgium HoldCo.
 
-```
-┌────────────────┐
-│  ⬡ EY         │  ← Logo
-├────────────────┤
-│                │
-│  🏠 Home       │  ← Command Center
-│                │
-│  📋 Engagements│  ← Liste filtrée
-│                │
-│  🏛️ Structure  │  ← ✅ NOUVEAU: Organigramme
-│                │
-│  📁 Library    │  ← Bibliothèque docs
-│                │
-│                │
-│  ─────────────  │
-│                │
-│  👤 Profile    │
-│  ⚙️ Settings   │
-│                │
-├────────────────┤
-│  ◀ Réduire    │  ← Collapse toggle
-└────────────────┘
-```
+### 9.2 Engagements CTR
 
-**Navigation principale :**
-| Menu | Page | Description |
-|------|------|-------------|
-| Home | Command Center | KPIs, Action Center, urgences |
-| Engagements | Liste complète | Tous engagements + filtres |
-| **Structure** | ✅ **NOUVEAU** | Organigramme interactif |
-| Library | Bibliothèque docs | Vue globale documents |
+| Entity | Year | Status | Docs | Scenario |
+|--------|------|--------|------|----------|
+| France SPV | 2026 | waiting | 3/4 | **HERO** - Missing 1 doc |
+| Germany PropCo | 2026 | processing | 4/4 | En analyse |
+| Netherlands BV | 2026 | completed | 4/4 + Result | CTR complete avec resultats |
+| Belgium HoldCo | 2026 | waiting | 0/4 | Aucun document |
+| Luxembourg Fund | 2026 | waiting | 2/4 | Documents 2025 fournis, besoin 2026 |
+
+### 9.3 Donnees CTR (Netherlands - Complete)
+
+| Metric | Value |
+|--------|-------|
+| Tax Liability | €450,000 |
+| Effective Tax Rate | 18.2% |
+| Statutory Rate | 25.0% |
+| Current Tax | €320,000 |
+| Deferred Tax | €130,000 |
+| Pre-tax Income | €2,473,000 |
 
 ---
 
-## 11. Risk Logic - MISE À JOUR
+## 10. Criteres de Succes
 
-### 11.1 Calcul Risk Level
+### Pour la Demo
+- [ ] UI percue comme "produit fini", pas un POC bancal
+- [ ] Chaque feature IA fonctionne sans erreur sur le flow demo
+- [ ] Temps de reponse Eve < 3 secondes
+- [ ] Zero bug visible pendant la presentation
+- [ ] Client dit "WOW" au moins 3 fois
 
-```python
-def calculate_risk_level(engagement):
-    days_remaining = (due_date - today).days
-    completion = completion_percent
-    docs_missing = len(documents_required) - len(documents_uploaded)
-
-    # HIGH (Rouge)
-    if days_remaining < 7 and completion < 80:
-        return "high"
-    if days_remaining < 7 and docs_missing > 0:
-        return "high"
-
-    # MEDIUM (Orange)
-    if days_remaining < 14 and completion < 90:
-        return "medium"
-    if status == "analyzing" and analyzing_since > 48_hours:
-        return "medium"
-
-    # LOW (Vert)
-    if status == "completed":
-        return "low"
-    if completion >= 90:
-        return "low"
-    if days_remaining >= 14:
-        return "low"
-
-    return "medium"  # Default
-```
-
-### 11.2 ✅ NOUVEAU - Rich Risk Details
-
-```python
-def calculate_risk_with_details(engagement):
-    risk_level = calculate_risk_level(engagement)
-
-    reasons = []
-    actions = []
-
-    if risk_level == "high":
-        if days_remaining < 7:
-            reasons.append("Moins de 7 jours avant l'échéance")
-            actions.append("Prioriser cet engagement immédiatement")
-        if docs_missing > 0:
-            reasons.append(f"{docs_missing} document(s) manquant(s)")
-            actions.append("Uploader les documents requis")
-
-    return {
-        "level": risk_level,
-        "reasons": reasons,
-        "suggested_actions": actions,
-        "days_remaining": days_remaining,
-        "missing_documents": missing_docs_list
-    }
-```
-
-### 11.3 ✅ NOUVEAU - Prédiction avec Confiance
-
-```python
-def predict_completion(engagement):
-    days_elapsed = (today - created_at).days
-    if days_elapsed == 0:
-        return None
-
-    velocity = completion_percent / days_elapsed  # % par jour
-    remaining = 100 - completion_percent
-    days_to_complete = remaining / velocity
-    predicted_date = today + timedelta(days=days_to_complete)
-
-    # Calcul confiance
-    days_diff = (due_date - predicted_date).days
-    if days_diff > 10:
-        confidence = "high"
-    elif days_diff > 5:
-        confidence = "medium"
-    else:
-        confidence = "low"
-
-    return {
-        "predicted_date": predicted_date,
-        "days_difference": days_diff,
-        "velocity": velocity,
-        "confidence": confidence
-    }
-```
+### Pour l'Equipe Interne
+- [ ] Preuve que OpenAI est integrable rapidement
+- [ ] Code reutilisable pour futurs projets
+- [ ] Documentation technique suffisante
 
 ---
 
-## 12. Dataset Démo
+## 11. Resume des Changements v2.0
 
-### 12.1 Engagements
-
-| Entity | Country | Status | Risk | Completion | Due Date | Scénario |
-|--------|---------|--------|------|------------|----------|----------|
-| France SPV | 🇫🇷 FR | waiting | 🔴 HIGH | 67% | 01 Mar | **HERO** - Upload démo |
-| Germany PropCo | 🇩🇪 DE | processing | 🟠 MED | 85% | 15 Mar | En analyse |
-| Netherlands BV | 🇳🇱 NL | completed | 🟢 LOW | 100% | 01 Feb | Terminé |
-| Belgium HoldCo | 🇧🇪 BE | received | 🟠 MED | 45% | 20 Mar | Docs récents |
-| Luxembourg Fund | 🇱🇺 LU | waiting | 🟢 LOW | 90% | 28 Feb | Presque terminé |
-
-### 12.2 Données Financières
-
-| Entity | Assets | Liabilities | Revenue | YoY |
-|--------|--------|-------------|---------|-----|
-| France SPV | 3,378,000 € | 1,200,000 € | 850,000 € | +16.5% |
-| Germany PropCo | 5,200,000 € | 4,100,000 € | 1,200,000 € | +8.2% |
-| Netherlands BV | 2,100,000 € | 890,000 € | 620,000 € | +12.1% |
-| Belgium HoldCo | 4,500,000 € | 2,800,000 € | 980,000 € | -3.4% 🔴 |
-| Luxembourg Fund | 8,900,000 € | 6,200,000 € | 2,100,000 € | +22.7% |
-
----
-
-## 13. Critères de Succès - BILAN
-
-### Pour la Démo
-- [x] UI perçue comme "produit fini", pas un POC bancal
-- [x] Chaque feature IA fonctionne sans erreur sur le flow démo
-- [x] Temps de réponse Eve < 3 secondes
-- [x] Zero bug visible pendant la présentation
-- [x] Client dit "WOW" au moins 3 fois
-
-### Pour l'Équipe Interne
-- [x] Preuve que OpenAI est intégrable rapidement
-- [x] Code réutilisable pour futurs projets
-- [x] Documentation technique suffisante
-
-### Bonus Atteints
-- [x] 14 innovations au-delà du PRD original
-- [x] Page Structure non prévue mais implémentée
-- [x] Système de notifications complet
-- [x] Architecture Many-to-Many pour scalabilité
-
----
-
-## 14. Conclusion
-
-**Score Final :**
-- Must-Have: 9/9 ✅
-- Should-Have: 4/5 ✅
-- Nice-to-Have: 0/6
-- **Bonus: +14 innovations** 🚀
-
-Le projet **Avengers Project** a largement dépassé les attentes initiales avec une implémentation complète du PRD plus 14 fonctionnalités innovantes non prévues. La démo est prête pour impressionner le client.
+| Domaine | Avant | Apres |
+|---------|-------|-------|
+| **Navigation** | Sidebar verticale | Navbar horizontale dark |
+| **Dashboard** | KPIs + Action Center + Notifications | Bento 4 widgets (Upload, SignOff, Donut, List) |
+| **Engagements** | Cards uniquement | Cards + Table toggle, filtres pills |
+| **Structure** | Organigramme simple | Ownership %, cross-shareholding, flags |
+| **Doclib** | Search by name | Status filter (Missing), bulk download progress |
+| **Upload** | Auto-classification | Attribution validation screen |
+| **Results** | N/A | Nouvel onglet avec PDF, XML, charts CTR |
+| **Insights** | N/A | Nouvelle page KPIs globaux |
+| **Service Focus** | Multiple services | CTR uniquement (4 docs) |
+| **Design** | Colore | Neutre, premium, accents subtils |

@@ -37,13 +37,13 @@ class VarianceAlert:
         }
 
 
-# Metric display labels in French
+# Metric display labels
 METRIC_LABELS = {
-    "total_assets": "Total Actifs",
-    "total_liabilities": "Total Passifs",
-    "equity": "Capitaux Propres",
-    "revenue": "Chiffre d'Affaires",
-    "expenses": "Charges",
+    "total_assets": "Total Assets",
+    "total_liabilities": "Total Liabilities",
+    "equity": "Equity",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
 }
 
 # Default variance threshold (15%)
@@ -87,10 +87,10 @@ def detect_significant_variances(
             metric_label = METRIC_LABELS.get(metric, metric)
 
             # Generate insight message
-            direction = "augmenté" if variance_pct > 0 else "diminué"
+            direction = "increased" if variance_pct > 0 else "decreased"
             insight_message = (
-                f"⚠️ Variance significative : {metric_label} a {direction} de "
-                f"{abs(variance_pct) * 100:.1f}% vs N-1 "
+                f"⚠️ Significant variance: {metric_label} {direction} by "
+                f"{abs(variance_pct) * 100:.1f}% vs prior year "
                 f"({format_currency(previous)} → {format_currency(current)})"
             )
 
@@ -163,18 +163,18 @@ def get_variance_context_for_eve(
         return ""
 
     context_lines = [
-        f"\n⚠️ ALERTES VARIANCE pour {engagement_name}:",
+        f"\n⚠️ VARIANCE ALERTS for {engagement_name}:",
     ]
 
     for v in variances:
         direction = "↑" if v.variance_type == VarianceType.INCREASE else "↓"
         context_lines.append(
-            f"  - {v.metric_label}: {direction}{abs(v.variance_percent):.1f}% vs N-1"
+            f"  - {v.metric_label}: {direction}{abs(v.variance_percent):.1f}% vs prior year"
         )
 
     context_lines.append(
-        "\nMentionnez ces variances significatives si l'utilisateur pose des questions "
-        "sur les données financières ou le statut de cet engagement."
+        "\nMention these significant variances if the user asks questions "
+        "about financial data or the status of this engagement."
     )
 
     return "\n".join(context_lines)

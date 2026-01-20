@@ -1,0 +1,29 @@
+<div class="donut-widget">
+  <div class="donut-widget__header">
+    <lucide-icon [img]="icons.pieChart" [size]="20"></lucide-icon>
+    <h3>Engagement Status</h3>
+  </div>
+
+  <div class="donut-widget__content">
+    <div class="donut-chart">
+      <canvas #donutCanvas width="180" height="180"></canvas>
+    </div>
+
+    <div class="donut-legend">
+      @for (segment of segments(); track segment.key) {
+        <button
+          class="legend-item"
+          [class.legend-item--selected]="selectedSegment() === segment.key"
+          [class.legend-item--dimmed]="selectedSegment() !== 'all' && selectedSegment() !== segment.key"
+          (click)="onSegmentClick(segment.key)"
+        >
+          <span class="legend-item__dot" [style.background-color]="segment.color"></span>
+          <span class="legend-item__label">{{ segment.label }}</span>
+          <span class="legend-item__count">{{ segment.count }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <p class="donut-widget__hint">Click a segment to filter engagements</p>
+</div>

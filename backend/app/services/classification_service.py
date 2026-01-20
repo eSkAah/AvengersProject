@@ -31,7 +31,7 @@ class ClassificationResult:
 # Document type patterns for filename-based classification
 DOCUMENT_TYPE_PATTERNS = {
     DocumentType.general_ledger: {
-        "label": "Grand Livre",
+        "label": "General Ledger",
         "patterns": [
             r"ledger",
             r"grand[_\s-]?livre",
@@ -42,7 +42,7 @@ DOCUMENT_TYPE_PATTERNS = {
         "columns": ["Date", "Account", "Debit", "Credit", "Description"],
     },
     DocumentType.trial_balance: {
-        "label": "Balance Générale",
+        "label": "Trial Balance",
         "patterns": [
             r"trial[_\s-]?balance",
             r"balance[_\s-]?g[eé]n[eé]rale",
@@ -52,7 +52,7 @@ DOCUMENT_TYPE_PATTERNS = {
         "columns": ["Account", "Balance", "Debit", "Credit"],
     },
     DocumentType.tax_return: {
-        "label": "Déclaration Fiscale",
+        "label": "Tax Return",
         "patterns": [
             r"tax[_\s-]?return",
             r"fiscal",
@@ -63,7 +63,7 @@ DOCUMENT_TYPE_PATTERNS = {
         "columns": [],
     },
     DocumentType.financial_statement: {
-        "label": "États Financiers",
+        "label": "Financial Statements",
         "patterns": [
             r"financial[_\s-]?statement",
             r"[eé]tats?[_\s-]?financiers?",
@@ -365,10 +365,10 @@ def get_document_type_label(doc_type: Optional[DocumentType]) -> str:
         doc_type: Document type enum value
 
     Returns:
-        French label for the document type
+        English label for the document type
     """
     if doc_type is None:
-        return "Document non classé"
+        return "Unclassified Document"
 
     config = DOCUMENT_TYPE_PATTERNS.get(doc_type)
     if config:

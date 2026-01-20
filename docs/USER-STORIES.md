@@ -1,1111 +1,1065 @@
-# User Stories - Avengers Project
+# User Stories - Avengers Project v2.0
 
 **Version:** 2.0
-**Date:** 2026-01-18
-**Sprint:** 10 jours (J1-J10)
+**Date:** 2026-01-19
+**Sprint:** Post-Demo Iteration
+**Reference:** PRD v2.0
 
 ---
 
 ## Vue d'ensemble des Epics
 
-| Epic | Titre | Priorité | Jours |
-|------|-------|----------|-------|
-| E1 | Setup & Design System | Must-Have | J1-J2 |
-| E2 | Landing Page & Engagements | Must-Have | J2-J3 |
-| E3 | Document Library | Must-Have | J3-J5 |
-| E4 | Smart Upload & Classification | Must-Have | J3-J5 |
-| E5 | Dashboard & Charts | Must-Have | J4-J6 |
-| E6 | Eve Chatbot | Must-Have | J5-J7 |
-| E7 | Risk & Prédictions | Must-Have | J7-J8 |
-| E8 | Polish & Démo | Must-Have | J9-J10 |
-| E9 | Features Bonus | Should-Have | Si temps |
-| E10 | Platform v2.0 - Navigation & AI | Must-Have | Post-MVP |
-| E11 | UX Polish & Bug Fixes | Must-Have | Post-MVP |
+| Epic | Titre | Priorite | Effort |
+|------|-------|----------|--------|
+| E1 | Navigation Refactor (Sidebar → Navbar) | Must-Have | M |
+| E2 | Dashboard Home (Bento Layout) | Must-Have | L |
+| E3 | Engagements Page (Cards/Table) | Must-Have | M |
+| E4 | Structure Page (Ownership) | Must-Have | M |
+| E5 | Document Library Updates | Must-Have | M |
+| E6 | Upload & Attribution Validation | Must-Have | L |
+| E7 | Results Tab (CTR) | Must-Have | L |
+| E8 | Insights Page (Global KPIs) | Must-Have | L |
+| E9 | Eve Integration Updates | Should-Have | M |
+| E10 | Design System Polish | Should-Have | S |
+
+**Effort Legend:** S = Small (1-2 days), M = Medium (3-4 days), L = Large (5+ days)
 
 ---
 
-## Epic 1: Setup & Design System (J1-J2)
+## Epic 1: Navigation Refactor (Sidebar → Navbar)
 
-### E1-S1: Setup Projet Angular
-**En tant que** développeur
-**Je veux** un projet Angular 19 configuré avec Tailwind
-**Afin de** démarrer le développement frontend
+**Objectif:** Transformer la sidebar verticale en navbar horizontale dark.
 
-**Critères d'acceptation:**
-- [x] Angular 19 avec standalone components
-- [x] Tailwind CSS installé et configuré
-- [x] Structure de dossiers créée (core/, shared/, features/)
-- [x] ESLint + Prettier configurés
-- [x] Environment files (dev/prod)
-- [x] `ng serve` fonctionne sur localhost:4200
-
-**Tâches techniques:**
-```bash
-ng new avengers-project-frontend --standalone --style=scss --routing
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init
-```
+**Reference PRD:** Section 5.1
 
 ---
 
-### E1-S2: Setup Projet FastAPI
-**En tant que** développeur
-**Je veux** un projet FastAPI configuré avec SQLite
-**Afin de** démarrer le développement backend
+### E1-S1: Navbar Component
 
-**Critères d'acceptation:**
-- [x] FastAPI avec structure routers/services/models
-- [x] SQLAlchemy + SQLite configuré
-- [x] CORS activé pour localhost:4200
-- [x] Swagger UI accessible sur /docs
-- [x] Health check endpoint /api/v1/health
-- [x] `uvicorn` fonctionne sur localhost:8000
-
-**Tâches techniques:**
-```bash
-mkdir backend && cd backend
-python -m venv venv
-pip install fastapi uvicorn sqlalchemy pydantic python-dotenv
-```
-
----
-
-### E1-S3: Design System - Palette & Variables
-**En tant que** designer/développeur
-**Je veux** les couleurs et variables EY définies
-**Afin d'** avoir une base de design cohérente
-
-**Critères d'acceptation:**
-- [x] Palette EY dans tailwind.config.js
-- [x] Variables SCSS (_variables.scss)
-- [x] Couleurs: jaune EY, neutrals, semantic
-- [x] Typographie définie
-- [x] Espacements standardisés (4, 8, 12, 16, 24, 32px)
-- [x] Border-radius: 8px (sm), 12px (md), 16px (lg)
-
-**Référence:** PRD Section 4.2 - Palette de Couleurs
-
----
-
-### E1-S4: Design System - Composants de Base
-**En tant que** développeur
-**Je veux** les composants UI de base créés
-**Afin de** les réutiliser dans toute l'application
-
-**Critères d'acceptation:**
-- [x] Button component (primary, secondary, ghost)
-- [x] Card component (avec shadow, hover effect)
-- [x] Badge component (success, warning, error, info)
-- [x] Input component (text, avec focus ring jaune)
-- [x] Skeleton loader component
-- [x] Toast notification component
-
-**Specs visuelles:**
-- Buttons: rounded-lg, padding 12px 24px, hover scale 1.02
-- Cards: bg-white, shadow-sm, rounded-xl, border subtle
-- Transitions: 200-300ms ease-out
-
----
-
-### E1-S5: Layout Shell - Sidebar & Header
 **En tant qu'** utilisateur
-**Je veux** une navigation claire et moderne
-**Afin de** me repérer facilement dans l'application
+**Je veux** une navbar horizontale en haut de l'ecran
+**Afin d'** avoir une navigation moderne et plus d'espace pour le contenu
 
-**Critères d'acceptation:**
-- [x] Sidebar à gauche avec icônes + labels
-- [x] Sidebar collapsible (icônes only)
-- [x] Header avec logo, titre, notifications, profil
-- [x] Navigation: Home, Documents, Dashboard
-- [x] Active state = accent jaune EY
-- [x] Responsive (sidebar collapse sur mobile)
+**Criteres d'acceptation:**
+- [ ] Navbar horizontale full-width
+- [ ] Background dark (#1F2937)
+- [ ] Hauteur fixe (64px)
+- [ ] Position sticky top
+- [ ] Z-index eleve (au-dessus du contenu)
 
-**Wireframe:** PRD Section 15.2
-
----
-
-### E1-S6: Seed Data - Données de Démo
-**En tant que** développeur
-**Je veux** les données de démo pré-chargées
-**Afin de** tester l'application avec des données réalistes
-
-**Critères d'acceptation:**
-- [x] 5 engagements créés (FR, DE, NL, BE, LU)
-- [x] Données financières pour chaque engagement
-- [x] Statuts variés (waiting, processing, completed)
-- [x] Risk levels variés (high, medium, low)
-- [x] Documents pré-uploadés pour DE, NL, BE
-- [x] Script de seed exécutable (MockDataService injectable)
-
-**Référence:** PRD Section 17 - Dataset Démo
+**Design:**
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ [Logo] Company Name  │ Home │ Engagements │ Doclib │ Structure │ Insights │ [Bell] [Avatar] │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Epic 2: Landing Page & Engagements (J2-J3)
+### E1-S2: Logo & Company Name (Dynamic)
 
-### E2-S1: API Engagements - CRUD
+**En tant qu'** utilisateur
+**Je veux** voir le logo et nom de l'entreprise cliente
+**Afin d'** identifier clairement le contexte
+
+**Criteres d'acceptation:**
+- [ ] Logo a gauche de la navbar
+- [ ] Nom de l'entreprise a cote du logo
+- [ ] Dynamique par client (configurable)
+- [ ] Fallback si pas de logo (initiales)
+- [ ] Cliquable → retour Home
+
+---
+
+### E1-S3: Menu Principal
+
+**En tant qu'** utilisateur
+**Je veux** des liens de navigation clairs
+**Afin de** naviguer entre les sections
+
+**Criteres d'acceptation:**
+- [ ] Items: Home, Engagements, Doclib, Structure, Insights
+- [ ] Active state: underline ou subtle background
+- [ ] Hover state: changement de couleur subtil
+- [ ] Espacement egal entre items
+- [ ] Font-weight medium
+
+**Routing:**
+| Item | Route |
+|------|-------|
+| Home | `/` |
+| Engagements | `/engagements` |
+| Doclib | `/documents` |
+| Structure | `/structure` |
+| Insights | `/insights` |
+
+---
+
+### E1-S4: User Menu (Avatar + Dropdown)
+
+**En tant qu'** utilisateur
+**Je veux** un menu utilisateur avec mon avatar
+**Afin d'** acceder a mon profil et me deconnecter
+
+**Criteres d'acceptation:**
+- [ ] Avatar utilisateur (ou initiales) a droite
+- [ ] Click → dropdown menu
+- [ ] Options: Profile, Settings, Logout
+- [ ] Dropdown ferme au clic exterieur
+- [ ] Animation smooth d'ouverture
+
+---
+
+### E1-S5: Notifications Bell
+
+**En tant qu'** utilisateur
+**Je veux** une icone cloche pour les notifications
+**Afin d'** etre informe des evenements importants
+
+**Criteres d'acceptation:**
+- [ ] Icone bell a gauche de l'avatar
+- [ ] Badge compteur si notifications non lues
+- [ ] Click → dropdown liste notifications
+- [ ] Types: Risk escalation, Deadline, Document uploaded
+- [ ] Mark as read / Dismiss individual notification
+- [ ] **Dismiss all** button pour tout marquer comme lu
+- [ ] Click notification → redirection vers element concerne
+
+---
+
+### E1-S6: Responsive Navbar (Hamburger)
+
+**En tant qu'** utilisateur mobile
+**Je veux** un menu hamburger sur petit ecran
+**Afin de** naviguer facilement sur mobile
+
+**Criteres d'acceptation:**
+- [ ] Breakpoint: < 768px
+- [ ] Menu items caches, hamburger icon visible
+- [ ] Click hamburger → menu slide-down ou drawer
+- [ ] Animation smooth
+- [ ] Fermeture au clic exterieur ou sur item
+
+---
+
+### E1-S7: Remove Sidebar Component
+
+**En tant que** developpeur
+**Je veux** supprimer l'ancienne sidebar
+**Afin de** nettoyer le code
+
+**Criteres d'acceptation:**
+- [ ] Supprimer SidebarComponent
+- [ ] Supprimer les styles associes
+- [ ] Mettre a jour le layout principal
+- [ ] Verifier qu'aucune reference ne reste
+- [ ] Tester toutes les pages
+
+---
+
+## Epic 2: Dashboard Home (Bento Layout)
+
+**Objectif:** Transformer la page Home en dashboard Bento avec 4 widgets.
+
+**Reference PRD:** Section 5.2
+
+---
+
+### E2-S1: Bento Grid Layout
+
+**En tant qu'** utilisateur
+**Je veux** un layout bento moderne
+**Afin d'** avoir une vue claire et organisee
+
+**Criteres d'acceptation:**
+- [ ] CSS Grid layout
+- [ ] 2 colonnes principales
+- [ ] Gap entre widgets (16-24px)
+- [ ] Responsive: stack sur mobile
+- [ ] Widgets avec rounded corners et shadows
+
+**Layout:**
+```
+┌─────────────────────────────────────┬──────────────────────┐
+│   UPLOAD / MISSING DOCS (tall)      │   ENGAGEMENT DONUT   │
+│                                     │   (compact)          │
+├─────────────────────────────────────┼──────────────────────┤
+│   DOCUMENTS TO SIGN OFF (medium)    │   ENGAGEMENT LIST    │
+│                                     │   (large)            │
+└─────────────────────────────────────┴──────────────────────┘
+```
+
+---
+
+### E2-S2: Widget Upload / Missing Documents
+
+**En tant qu'** utilisateur
+**Je veux** voir les documents manquants et pouvoir uploader
+**Afin d'** agir rapidement sur ce qui manque
+
+**Criteres d'acceptation:**
+- [ ] Drag & drop zone en haut du widget
+- [ ] Liste des missing docs en dessous
+- [ ] Chaque doc: nom + icone info + bouton upload
+- [ ] Tooltip sur icone info → liste des engagements concernes
+- [ ] Auto-classification sur upload
+- [ ] "View All" link → Document Library
+- [ ] Widget le plus grand (hero position)
+
+**API:**
+- GET `/api/dashboard/missing-documents`
+
+---
+
+### E2-S3: Widget Engagement Status Donut
+
+**En tant qu'** utilisateur
+**Je veux** voir la repartition des statuts en donut
+**Afin d'** avoir une vue rapide de la situation
+
+**Criteres d'acceptation:**
+- [ ] Donut chart avec 3 segments
+- [ ] Segments: Late (rouge), In Progress (bleu), Soon (orange)
+- [ ] Chiffres affiches au centre ou a cote
+- [ ] Click sur segment → filtre Widget 4
+- [ ] Hover → tooltip avec count exact
+- [ ] Animation d'entree
+
+**API:**
+- GET `/api/dashboard/engagement-status`
+
+---
+
+### E2-S4: Widget Documents to Sign Off
+
+**En tant qu'** utilisateur
+**Je veux** voir les documents necessitant validation
+**Afin de** les traiter rapidement
+
+**Criteres d'acceptation:**
+- [ ] Liste des documents avec statut "pending_signoff"
+- [ ] Colonnes: Entity | Document Name | Action
+- [ ] Action button → redirige vers engagement
+- [ ] Max 5 items affiches (scroll si plus)
+- [ ] Empty state si aucun document
+
+**API:**
+- GET `/api/dashboard/documents-to-signoff`
+
+---
+
+### E2-S5: Widget Engagement List (Filtered)
+
+**En tant qu'** utilisateur
+**Je veux** voir les engagements filtres par le donut
+**Afin d'** acceder rapidement aux urgences
+
+**Criteres d'acceptation:**
+- [ ] Liste des engagements (top 5)
+- [ ] Filtre par segment donut selectionne
+- [ ] Default: tous les engagements
+- [ ] Infos: Entity, Status, Progress, Risk badge
+- [ ] Click row → engagement detail
+- [ ] "View All" → page Engagements avec filtre actif
+
+**API:**
+- GET `/api/engagements?status={status}&limit=5`
+
+---
+
+### E2-S6: Remove Old Dashboard Elements
+
+**En tant que** developpeur
+**Je veux** supprimer les anciens elements du dashboard
+**Afin d'** avoir un code propre
+
+**Elements a supprimer:**
+- [ ] Notifications widget (deplace vers navbar)
+- [ ] Key Indicators section
+- [ ] Action Center
+- [ ] Activity feed (si present)
+
+---
+
+## Epic 3: Engagements Page (Cards/Table)
+
+**Objectif:** Ajouter toggle Cards/Table et filtres pills.
+
+**Reference PRD:** Section 5.3
+
+---
+
+### E3-S1: View Toggle (Cards / Table)
+
+**En tant qu'** utilisateur
+**Je veux** basculer entre vue cards et table
+**Afin de** choisir l'affichage qui me convient
+
+**Criteres d'acceptation:**
+- [ ] Toggle button avec icones Cards/Table
+- [ ] Cards = vue par defaut
+- [ ] Etat persiste (localStorage)
+- [ ] Transition smooth entre vues
+- [ ] Position: en haut a droite
+
+---
+
+### E3-S2: Table View with Expandable Rows
+
+**En tant qu'** utilisateur
+**Je veux** voir les engagements en tableau
+**Afin d'** avoir une vue dense des informations
+
+**Criteres d'acceptation:**
+- [ ] Colonnes: Entity | Status | Progress | Risk | Year | Documents | Actions
+- [ ] Header sticky
+- [ ] Row hover effect
+- [ ] Click row → expand avec details
+- [ ] Expanded row: memes infos que card ouverte
+- [ ] Tri par colonne (click header)
+
+**Expanded Row Content:**
+- Documents requis (X/Y)
+- Bouton "Details"
+- Bouton Eve
+
+---
+
+### E3-S3: Pill Filters (Inline)
+
+**En tant qu'** utilisateur
+**Je veux** des filtres sous forme de pills
+**Afin d'** avoir une interface epuree et premium
+
+**Criteres d'acceptation:**
+- [ ] Style: small pills/chips inline
+- [ ] Filtres: Search, Year, Status, Risk, Service
+- [ ] Pills selectionnees = background colore
+- [ ] Click pill → toggle/dropdown
+- [ ] Clear all button
+- [ ] Discret, pas de bloc de filtres imposant
+
+**Design:**
+```
+[Search...] [Year ▼] [Status ▼] [Risk ▼] [Service ▼] [Clear]
+```
+
+---
+
+### E3-S4: Cards View Updates
+
+**En tant qu'** utilisateur
+**Je veux** des cards modernisees
+**Afin d'** avoir une experience premium
+
+**Criteres d'acceptation:**
+- [ ] Card fermee: Entity, Status badge, Progress bar, Risk badge, Country flag
+- [ ] Card ouverte: Documents (X/Y), Details button, Eve button
+- [ ] Rename "Dashboard" button → "Details"
+- [ ] Animation expand/collapse smooth
+- [ ] Less colorful, more neutral design
+
+---
+
+## Epic 4: Structure Page (Ownership)
+
+**Objectif:** Ameliorer l'organigramme avec ownership et cross-shareholding.
+
+**Reference PRD:** Section 5.4
+
+---
+
+### E4-S1: Ownership Percentages on Lines
+
+**En tant qu'** utilisateur
+**Je veux** voir les pourcentages de propriete sur les lignes
+**Afin de** comprendre la structure de propriete
+
+**Criteres d'acceptation:**
+- [ ] Pourcentage affiche sur chaque ligne de connexion
+- [ ] Position: milieu de la ligne
+- [ ] Background blanc/leger pour lisibilite
+- [ ] Format: "100%" ou "30%"
+- [ ] Font-size petit mais lisible
+
+---
+
+### E4-S2: Cross-Shareholding Visualization
+
+**En tant qu'** utilisateur
+**Je veux** voir les participations croisees
+**Afin de** comprendre les relations complexes
+
+**Criteres d'acceptation:**
+- [ ] Deux fleches separees si cross-shareholding
+- [ ] Chaque fleche avec son pourcentage
+- [ ] Direction claire (fleche pointee)
+- [ ] Couleur differente ou style pour distinguer
+- [ ] Legende si necessaire
+
+**Exemple:**
+```
+Belgium HoldCo ───20%───► Netherlands BV
+Belgium HoldCo ◄───15%─── Netherlands BV
+```
+
+---
+
+### E4-S3: Country Flags on Entities
+
+**En tant qu'** utilisateur
+**Je veux** voir les drapeaux des pays sur chaque entite
+**Afin d'** identifier rapidement la localisation
+
+**Criteres d'acceptation:**
+- [ ] Flag emoji ou icone sur chaque noeud
+- [ ] Position coherente (coin ou a cote du nom)
+- [ ] Flags: FR, DE, NL, BE, LU
+- [ ] Fallback si pas de flag
+
+---
+
+### E4-S4: Auto-Layout Based on Hierarchy
+
+**En tant qu'** utilisateur
+**Je veux** un layout automatique base sur la hierarchie
+**Afin d'** avoir une visualisation claire
+
+**Criteres d'acceptation:**
+- [ ] Top-down layout (parent en haut)
+- [ ] Arrangement automatique des noeuds
+- [ ] Espacement egal entre niveaux
+- [ ] Centrage des enfants sous le parent
+- [ ] Gestion des cross-shareholding sans chevauchement
+
+---
+
+### E4-S5: Entity Structure API Update
+
 **En tant que** frontend
-**Je veux** une API pour récupérer les engagements
-**Afin d'** afficher la liste sur la landing page
+**Je veux** une API avec les donnees de propriete
+**Afin d'** afficher la structure correctement
 
-**Critères d'acceptation:**
-- [ ] GET /api/engagements → liste tous les engagements
-- [ ] GET /api/engagements/{id} → détail d'un engagement
-- [ ] Response format conforme au schema Pydantic
-- [ ] Calcul automatique du risk_level
-- [ ] Calcul automatique du completion_percent
-- [ ] Tests unitaires pour les endpoints
+**Criteres d'acceptation:**
+- [ ] GET `/api/entities/structure`
+- [ ] Inclut: ownership_percent par relation
+- [ ] Inclut: cross_ownership array
+- [ ] Format hierarchique
 
-**Schema Response:**
+**Response Schema:**
 ```json
 {
-  "id": "ENG-FR-001",
-  "entity_name": "France SPV",
-  "country_code": "FR",
-  "status": "waiting",
-  "risk_level": "high",
-  "completion_percent": 67,
-  "due_date": "2026-02-29",
-  "predicted_completion": "2026-02-25"
+  "entities": [...],
+  "relationships": [
+    { "parent_id": "ENT-001", "child_id": "ENT-002", "ownership_percent": 100 }
+  ],
+  "cross_ownership": [
+    { "owner_id": "ENT-002", "owned_id": "ENT-003", "percent": 20 }
+  ]
 }
 ```
 
 ---
 
-### E2-S2: KPIs Header
+### E4-S6: Entity Drawer Component
+
 **En tant qu'** utilisateur
-**Je veux** voir les KPIs globaux en haut de page
-**Afin d'** avoir une vue d'ensemble instantanée
+**Je veux** cliquer sur une entite pour voir ses engagements
+**Afin d'** acceder rapidement aux details depuis la structure
 
-**Critères d'acceptation:**
-- [x] 4 cards KPI: Total, En cours, À risque, Complétés
-- [x] Chiffres animés à l'arrivée (count up)
-- [x] Cliquables = filtrent la liste
-- [x] Icônes distinctives par KPI
-- [x] Couleurs semantic (rouge pour risque, vert pour complété)
-
-**Composants:**
-- KpiCard component
-- KpiHeader component (container des 4 cards)
-
----
-
-### E2-S3: Liste Engagements - Vue Accordéon
-**En tant qu'** utilisateur
-**Je veux** voir mes engagements en liste accordéon
-**Afin de** voir le résumé et les détails à la demande
-
-**Critères d'acceptation:**
-- [x] Liste des engagements avec Risk Badge coloré
-- [x] Infos visibles fermé: Entity, Service, Status, Due Date, Progress bar
-- [x] Expand au clic → détails (documents, prédiction, actions)
-- [x] Actions dans le tiroir: Voir Dashboard, Upload Docs, Ask Eve
-- [x] Animation smooth d'ouverture/fermeture
-- [x] Un seul accordéon ouvert à la fois (ou plusieurs?)
-
-**Wireframe:** PRD Section 15.3
-
----
-
-### E2-S4: Risk Badge Component
-**En tant qu'** utilisateur
-**Je veux** voir clairement le niveau de risque
-**Afin de** prioriser mes actions
-
-**Critères d'acceptation:**
-- [x] 3 états: high (rouge), medium (orange), low (vert)
-- [x] Icône + couleur
-- [x] Tooltip au hover expliquant le risque
-- [x] Animation pulse si high risk
+**Criteres d'acceptation:**
+- [ ] Click sur entite → ouvre drawer lateral (right side)
+- [ ] Drawer affiche: nom entite, pays (flag), ownership info
+- [ ] Liste des engagements de cette entite avec status badges
+- [ ] Click sur engagement → redirection vers engagement detail
+- [ ] Close button (X) ferme le drawer
+- [ ] Clic exterieur ferme le drawer
+- [ ] Animation slide-in smooth (300ms)
+- [ ] Overlay semi-transparent sur le reste de la page
 
 **Design:**
 ```
-🔴 HIGH    → bg-red-100, text-red-700, border-red-200
-🟠 MEDIUM  → bg-orange-100, text-orange-700, border-orange-200
-🟢 LOW     → bg-green-100, text-green-700, border-green-200
+┌──────────────────────────────────────┬─────────────────────────┐
+│                                      │  ENTITY DRAWER          │
+│      STRUCTURE DIAGRAM               │  ───────────────────    │
+│                                      │  France SPV 🇫🇷         │
+│         [Click on entity]  ───────►  │  Owned by: Belgium 100% │
+│                                      │                         │
+│                                      │  ENGAGEMENTS            │
+│                                      │  ├─ CTR 2026 [Late]     │
+│                                      │  └─ CTR 2025 [Done]     │
+│                                      │                    [X]  │
+└──────────────────────────────────────┴─────────────────────────┘
+```
+
+**API:**
+- GET `/api/entities/{id}/engagements`
+
+---
+
+## Epic 5: Document Library Updates
+
+**Objectif:** Ajouter filtre status, bulk download progress, retirer search by name.
+
+**Reference PRD:** Section 5.5
+
+---
+
+### E5-S1: Document Status Filter
+
+**En tant qu'** utilisateur
+**Je veux** filtrer par statut de document
+**Afin de** voir facilement les documents manquants
+
+**Criteres d'acceptation:**
+- [ ] Filtre dropdown: All, Missing, Uploaded, Analyzed, Validated
+- [ ] "Missing" montre les docs demandes mais non uploades
+- [ ] Filtre combinable avec entity filter
+- [ ] Count affiche par statut
+
+---
+
+### E5-S2: Missing Documents Display
+
+**En tant qu'** utilisateur
+**Je veux** voir les documents manquants dans la library
+**Afin de** savoir ce qu'il faut uploader
+
+**Criteres d'acceptation:**
+- [ ] Documents avec statut "missing" apparaissent
+- [ ] Style visuel different (grayed out, icon different)
+- [ ] Bouton upload direct sur chaque doc missing
+- [ ] Info: pour quel engagement ce doc est requis
+
+---
+
+### E5-S3: Bulk Download Progress
+
+**En tant qu'** utilisateur
+**Je veux** voir la progression du telechargement bulk
+**Afin de** savoir quand c'est termine
+
+**Criteres d'acceptation:**
+- [ ] Progress bar sous le bouton download
+- [ ] Pourcentage affiche
+- [ ] Notification toast quand termine
+- [ ] Gestion erreur si un fichier echoue
+- [ ] Cancel button pendant le download
+
+---
+
+### E5-S4: Remove Search by Name Filter
+
+**En tant que** developpeur
+**Je veux** retirer le filtre search by name
+**Afin de** simplifier l'interface
+
+**Criteres d'acceptation:**
+- [ ] Supprimer le champ de recherche par nom
+- [ ] Verifier que les autres filtres fonctionnent
+- [ ] Mettre a jour les tests si necessaire
+
+---
+
+### E5-S5: Entity Filter Simplification
+
+**En tant qu'** utilisateur
+**Je veux** un filtre entity simplifie
+**Afin d'** avoir une navigation claire
+
+**Criteres d'acceptation:**
+- [ ] Toggle entity filter on/off seulement
+- [ ] Pas de selection "all documents" dans le tree
+- [ ] Si filtre off → tous les documents de toutes entites
+- [ ] Tree reste navigable mais pas selectionnable en masse
+
+---
+
+## Epic 6: Upload & Attribution Validation
+
+**Objectif:** Ajouter ecran de validation des attributions IA.
+
+**Reference PRD:** Section 5.6
+
+---
+
+### E6-S1: Attribution Review Screen
+
+**En tant qu'** utilisateur
+**Je veux** valider les attributions de l'IA
+**Afin de** corriger les erreurs avant placement
+
+**Criteres d'acceptation:**
+- [ ] Modal ou page dediee apres upload
+- [ ] Liste des documents uploades
+- [ ] Colonnes: Document | Entity | Year | Type | Action
+- [ ] Action: Validate (check) ou Edit (pencil)
+- [ ] Bouton global "Validate & Place"
+
+**Wireframe:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ATTRIBUTION REVIEW                                         │
+│                                                             │
+│  Document          Entity        Year    Type        Action │
+│  ─────────────────────────────────────────────────────────  │
+│  file1.pdf    →    France SPV    2026    GL          [✓]   │
+│  file2.xlsx   →    Germany Co    2025    TB          [✎]   │
+│  file3.pdf    →    ???           ???     ???         [✎]   │
+│                                                             │
+│                         [Validate & Place]                  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### E2-S5: Progress Bar Component
-**En tant qu'** utilisateur
-**Je veux** voir la progression de chaque engagement
-**Afin de** comprendre l'avancement
+### E6-S2: Edit Attribution Modal
 
-**Critères d'acceptation:**
-- [x] Barre de progression 0-100%
-- [x] Couleur selon le risk_level
-- [x] Pourcentage affiché
-- [x] Animation de remplissage à l'arrivée
-- [x] Label optionnel ("67% · 2 docs manquants")
+**En tant qu'** utilisateur
+**Je veux** corriger une attribution incorrecte
+**Afin de** placer le document au bon endroit
+
+**Criteres d'acceptation:**
+- [ ] Click Edit → modal de correction
+- [ ] Dropdowns: Entity, Year, Document Type
+- [ ] Pre-rempli avec suggestion IA
+- [ ] Save → met a jour la ligne
+- [ ] Cancel → ferme sans sauver
 
 ---
 
-### E2-S6: Notifications Zone
+### E6-S3: Placement Animation
+
 **En tant qu'** utilisateur
-**Je veux** voir une zone de notifications intelligentes
-**Afin d'** être alerté proactivement des actions requises
+**Je veux** voir une animation de placement
+**Afin d'** avoir un feedback visuel satisfaisant
 
-**Critères d'acceptation:**
-- [x] Zone notifications visible en haut de la landing page
-- [x] Affiche alertes proactives ("Documents requis pour France")
-- [x] Badges count pour nombre de notifications
-- [x] Click sur notification → navigation vers l'engagement concerné
-- [x] Types: warning (orange), info (bleu), urgent (rouge)
-- [x] Animation slide-in pour nouvelles notifications
-- [x] Dismiss possible (X) avec persistance session
-
-**Référence:** PRD Section 5.1 - Notifications Intelligentes (FR3)
+**Criteres d'acceptation:**
+- [ ] Apres validation → animation
+- [ ] Documents "volent" vers leur emplacement
+- [ ] Redirection vers doclib avec highlight
+- [ ] Toast de confirmation
 
 ---
 
-## Epic 3: Document Library (J3-J5)
+### E6-S4: API Validate Attribution
 
-### E3-S1: API Documents - CRUD
 **En tant que** frontend
-**Je veux** une API pour gérer les documents
-**Afin d'** afficher et manipuler les documents
+**Je veux** une API pour valider les attributions
+**Afin de** finaliser le placement
 
-**Critères d'acceptation:**
-- [ ] GET /api/documents → liste tous les documents
-- [ ] GET /api/documents?engagement={id} → filtrer par engagement
-- [ ] GET /api/documents/{id} → détail d'un document
-- [ ] GET /api/documents/{id}/content → preview/téléchargement
-- [ ] Response avec metadata (type, size, status, ai_summary)
+**Criteres d'acceptation:**
+- [ ] POST `/api/documents/validate-attribution`
+- [ ] Body: array of { document_id, entity_id, year, type }
+- [ ] Response: success + documents places
+- [ ] Gestion erreur si attribution invalide
 
 ---
 
-### E3-S2: Document Tree Navigation
+### E6-S5: Classification Confidence Indicator
+
 **En tant qu'** utilisateur
-**Je veux** naviguer dans les documents via une arborescence
-**Afin de** trouver rapidement mes fichiers
+**Je veux** voir le niveau de confiance de l'IA
+**Afin de** savoir quoi verifier en priorite
 
-**Critères d'acceptation:**
-- [x] Tree view à gauche de l'écran
-- [x] Niveaux: Client > Engagements > Documents
-- [x] Expand/collapse des nœuds
-- [x] Icônes différentes par type de document
-- [x] Counter de documents par nœud
-- [x] Clic sur nœud = filtre la vue principale
-
-**Structure:**
-```
-📁 Real Estate Fund Global
-├── 📁 France SPV (2)
-│   ├── 📄 General Ledger
-│   └── 📄 Trial Balance
-├── 📁 Germany PropCo (2)
-└── 📁 Netherlands BV (4)
-```
+**Criteres d'acceptation:**
+- [ ] Indicateur: High/Medium/Low confidence
+- [ ] Couleur: vert/orange/rouge
+- [ ] Low confidence = highlight pour attention
+- [ ] Tooltip avec explication
 
 ---
 
-### E3-S3: Document Grid View
+## Epic 7: Results Tab (CTR)
+
+**Objectif:** Ajouter onglet Results dans le detail engagement avec resultats CTR.
+
+**Reference PRD:** Section 5.7
+
+---
+
+### E7-S1: Results Tab Component
+
 **En tant qu'** utilisateur
-**Je veux** voir mes documents en grille
-**Afin d'** avoir une vue visuelle des fichiers
+**Je veux** un onglet Results dans l'engagement
+**Afin de** voir les resultats du CTR
 
-**Critères d'acceptation:**
-- [x] Cards pour chaque document
-- [x] Thumbnail/icône selon le type
-- [x] Nom du fichier (tronqué si long)
-- [x] Status badge (Analyzed, Pending, Error)
-- [x] Date d'upload
-- [x] Hover → actions rapides
+**Criteres d'acceptation:**
+- [ ] Nouvel onglet "Results" dans engagement detail
+- [ ] Actif seulement si CTR complete
+- [ ] Desactive/cache si pas de resultat
+- [ ] Badge "New" si resultat recent
 
 ---
 
-### E3-S4: Document List View
+### E7-S2: Results Tab Activation Logic
+
+**En tant que** systeme
+**Je veux** activer l'onglet quand CTR est complete
+**Afin de** montrer les resultats au bon moment
+
+**Criteres d'acceptation:**
+- [ ] Conditions: 4 docs valides + service effectue
+- [ ] Check engagement.ctr_result != null
+- [ ] Afficher message si pas encore complete
+- [ ] Auto-refresh quand resultat disponible
+
+---
+
+### E7-S3: CTR Documents Display
+
 **En tant qu'** utilisateur
-**Je veux** voir mes documents en liste
-**Afin d'** avoir plus de détails visibles
+**Je veux** voir les documents resultat
+**Afin de** les telecharger
 
-**Critères d'acceptation:**
-- [x] Tableau avec colonnes: Nom, Type, Engagement, Status, Date, Actions
-- [x] Header sticky
-- [x] Row hover effect
-- [x] Tri par colonne (clic sur header)
-- [x] Actions inline: Download, Preview, Ask Eve
+**Criteres d'acceptation:**
+- [ ] Liste: CTR Report (PDF), CTR Data (XML)
+- [ ] Icones par type de fichier
+- [ ] Boutons: Download, Preview
+- [ ] Date de generation
+- [ ] Taille du fichier
 
 ---
 
-### E3-S5: View Toggle (Grid/List)
+### E7-S4: CTR Charts Section
+
 **En tant qu'** utilisateur
-**Je veux** basculer entre vue grille et liste
-**Afin de** choisir ma préférence d'affichage
+**Je veux** voir des graphiques CTR
+**Afin de** visualiser les donnees fiscales
 
-**Critères d'acceptation:**
-- [x] Toggle button avec icônes Grid/List
-- [x] État persisté (localStorage)
-- [x] Transition smooth entre les vues
-- [x] Position: en haut à droite de la zone principale
+**Criteres d'acceptation:**
+- [ ] ETR Reconciliation (Waterfall chart)
+- [ ] Current vs Deferred Tax (Donut)
+- [ ] Tax by Category (Bar chart)
+- [ ] KPI Cards: Tax Liability, ETR %, Pre-tax Income
+- [ ] Tous CMD+Clickable pour Eve
 
 ---
 
-### E3-S6: Search & Filter Documents
+### E7-S5: Waterfall Chart Component
+
 **En tant qu'** utilisateur
-**Je veux** rechercher et filtrer les documents
-**Afin de** trouver rapidement un fichier spécifique
+**Je veux** un waterfall chart pour ETR reconciliation
+**Afin de** comprendre le passage statutory → effective
 
-**Critères d'acceptation:**
-- [x] Barre de recherche (nom de fichier)
-- [x] Filtre par type de document (dropdown)
-- [x] Filtre par status (dropdown)
-- [x] Filtre par engagement (dropdown)
-- [x] Clear filters button
-- [x] Résultats mis à jour en temps réel
-
----
-
-### E3-S7: Breadcrumb Navigation
-**En tant qu'** utilisateur
-**Je veux** voir un fil d'Ariane (breadcrumb) contextuel
-**Afin de** comprendre où je suis et naviguer facilement
-
-**Critères d'acceptation:**
-- [x] Breadcrumb visible en haut de la zone principale
-- [x] Format: Client > Engagement > Documents
-- [x] Chaque niveau est cliquable pour navigation
-- [x] Dernier élément non cliquable (page courante)
-- [x] Icône "home" pour retour racine
-- [x] Style moderne: séparateurs "/" ou chevrons
-- [x] Truncate si path trop long (tooltip au hover)
-
-**Référence:** PRD Section 5.2 - Breadcrumb Navigation (FR12)
+**Criteres d'acceptation:**
+- [ ] Barre initiale: Statutory Rate (21% ou autre)
+- [ ] Barres intermediaires: ajustements (+/-)
+- [ ] Barre finale: Effective Rate
+- [ ] Couleurs: vert pour reduction, rouge pour augmentation
+- [ ] Hover → detail de l'ajustement
+- [ ] CMD+Click → Eve
 
 ---
 
-## Epic 4: Smart Upload & Classification (J3-J5)
+### E7-S6: API CTR Results
 
-### E4-S1: API Upload Document
 **En tant que** frontend
-**Je veux** une API pour uploader des fichiers
-**Afin de** permettre l'ajout de documents
+**Je veux** une API pour les resultats CTR
+**Afin d'** alimenter l'onglet Results
 
-**Critères d'acceptation:**
-- [ ] POST /api/documents/upload (multipart/form-data)
-- [ ] Accepte: xlsx, xls, pdf, csv
-- [ ] Limite: 10MB par fichier
-- [ ] Retourne: document créé avec status "uploaded"
-- [ ] Stockage dans ./uploads/{engagement_id}/
-- [ ] Gestion des erreurs (format, taille)
+**Criteres d'acceptation:**
+- [ ] GET `/api/engagements/{id}/results`
+- [ ] Response: documents, tax_data, charts_data
+- [ ] 404 si pas de resultat
+- [ ] Include: tax_liability, etr, statutory_rate, current_tax, deferred_tax
 
 ---
 
-### E4-S2: Upload Zone Component
+## Epic 8: Insights Page (Global KPIs)
+
+**Objectif:** Creer nouvelle page Insights avec KPIs agreges.
+
+**Reference PRD:** Section 5.8
+
+---
+
+### E8-S1: Insights Page Routing
+
 **En tant qu'** utilisateur
-**Je veux** une zone de dépôt intuitive
-**Afin de** uploader facilement mes fichiers
+**Je veux** acceder a la page Insights
+**Afin de** voir les KPIs globaux
 
-**Critères d'acceptation:**
-- [ ] Zone de drag & drop visible
-- [ ] États: default, dragover (highlight), uploading, success, error
-- [ ] Support click pour sélection fichier
-- [ ] Support multi-fichiers (bulk upload)
-- [ ] Preview des fichiers avant upload
-- [ ] Bouton "Upload" pour confirmer
-
-**Design:**
-- Border dashed, rounded-xl
-- Dragover: border-ey-yellow, bg-yellow-50
-- Icône upload + texte "Déposez vos fichiers ici"
+**Criteres d'acceptation:**
+- [ ] Route: `/insights`
+- [ ] Lien dans navbar
+- [ ] Page component cree
+- [ ] Layout responsive
 
 ---
 
-### E4-S3: Classification IA Service
-**En tant que** système
-**Je veux** classifier automatiquement les documents
-**Afin de** les router vers le bon engagement
+### E8-S2: Global KPI Cards
 
-**Critères d'acceptation:**
-- [ ] Détection du type par nom de fichier (rapide)
-- [ ] Détection du type par contenu (fallback)
-- [ ] Appel Factory AI si incertain
-- [ ] Types: general_ledger, trial_balance, tax_return, financial_statement
-- [ ] Matching avec engagement par pays/entité
-- [ ] Confidence score retourné
-
-**Logique:** PRD Section 12.3
-
----
-
-### E4-S4: Upload Progress & Feedback
 **En tant qu'** utilisateur
-**Je veux** voir la progression de l'upload
-**Afin de** savoir quand c'est terminé
+**Je veux** voir les KPIs agreges
+**Afin d'** avoir une vue portfolio
 
-**Critères d'acceptation:**
-- [ ] Progress bar pendant upload
-- [ ] Spinner pendant classification
-- [ ] Animation de "classification" (fichier → dossier)
-- [ ] Toast success: "Document classé dans France SPV"
-- [ ] Toast error si échec
-- [ ] Mise à jour automatique de la liste
-
----
-
-### E4-S5: Auto-Update Engagement Status
-**En tant que** système
-**Je veux** mettre à jour le status de l'engagement
-**Afin de** refléter l'avancement automatiquement
-
-**Critères d'acceptation:**
-- [ ] Upload document → engagement.status = "received"
-- [ ] Classification terminée → engagement.status = "processing"
-- [ ] Tous docs requis uploadés → recalcul completion_percent
-- [ ] Notification WebSocket ou polling pour update UI
-- [ ] Risk level recalculé
+**Criteres d'acceptation:**
+- [ ] Card: Total Tax Liability (somme)
+- [ ] Card: Avg Effective Tax Rate (moyenne ponderee)
+- [ ] Card: CTRs Completed (X/Y)
+- [ ] Card: Entities at Risk (count)
+- [ ] Animation count-up
+- [ ] Click → filtre les charts
 
 ---
 
-## Epic 5: Dashboard & Charts (J4-J6)
+### E8-S3: Tax by Entity Chart
 
-### E5-S1: API Dashboard KPIs
-**En tant que** frontend
-**Je veux** une API pour les KPIs du dashboard
-**Afin d'** afficher les métriques de l'engagement
-
-**Critères d'acceptation:**
-- [ ] GET /api/engagements/{id}/stats
-- [ ] Retourne: assets, liabilities, equity, revenue, expenses
-- [ ] Inclut: previous_year pour comparaison
-- [ ] Inclut: variance_percent calculé
-- [ ] Données agrégées si demandé
-
----
-
-### E5-S2: API Dashboard Charts
-**En tant que** frontend
-**Je veux** une API pour les données de charts
-**Afin d'** alimenter les graphiques
-
-**Critères d'acceptation:**
-- [ ] GET /api/dashboard/charts/assets → données assets chart
-- [ ] GET /api/dashboard/charts/comparison → N vs N-1
-- [ ] GET /api/dashboard/charts/breakdown → répartition
-- [ ] Format adapté à Chart.js (labels, datasets)
-
----
-
-### E5-S3: KPI Section Dashboard
 **En tant qu'** utilisateur
-**Je veux** voir les KPIs financiers de l'engagement
-**Afin de** comprendre la situation en un coup d'œil
+**Je veux** comparer les taxes par entite
+**Afin de** identifier les plus grosses contributions
 
-**Critères d'acceptation:**
-- [ ] Cards pour: Total Assets, Liabilities, Net Equity, Revenue
-- [ ] Valeur principale + variation YoY (%)
-- [ ] Icône up/down selon variation
-- [ ] Couleur: vert si positif, rouge si négatif
-- [ ] Animation count-up à l'arrivée
-- [ ] CMD+Click enabled pour chaque KPI
+**Criteres d'acceptation:**
+- [ ] Horizontal bar chart
+- [ ] Une barre par entite
+- [ ] Trie par montant decroissant
+- [ ] Hover → valeur exacte
+- [ ] CMD+Click → Eve
 
 ---
 
-### E5-S4: Assets Bar Chart
+### E8-S4: ETR by Entity Chart
+
 **En tant qu'** utilisateur
-**Je veux** voir un graphique des actifs
-**Afin de** visualiser la répartition
-
-**Critères d'acceptation:**
-- [ ] Bar chart horizontal ou vertical
-- [ ] Catégories: Immobilisations, Actifs circulants, Trésorerie
-- [ ] Couleurs cohérentes avec le design system
-- [ ] Hover → tooltip avec valeur exacte
-- [ ] Animation d'entrée
-
----
-
-### E5-S5: Comparison Chart N vs N-1
-**En tant qu'** utilisateur
-**Je veux** comparer avec l'année précédente
-**Afin de** voir l'évolution
-
-**Critères d'acceptation:**
-- [ ] Grouped bar chart (N vs N-1)
-- [ ] Métriques: Assets, Liabilities, Revenue, Expenses
-- [ ] Légende claire
-- [ ] Hover → détails comparatifs
-- [ ] Variation % affichée
-
----
-
-### E5-S6: Smart Tooltip avec Source
-**En tant qu'** utilisateur
-**Je veux** des tooltips enrichis sur les charts
-**Afin de** comprendre d'où viennent les données
-
-**Critères d'acceptation:**
-- [ ] Hover sur point/barre → tooltip custom
-- [ ] Contenu: valeur, label, source document
-- [ ] Lien: "Source: Grand_Livre.xlsx, ligne 234"
-- [ ] Indication: "⌘+Click pour demander à Eve"
-- [ ] Style: card avec shadow, fond blanc
-
----
-
-### E5-S7: CMD+Click Integration
-**En tant qu'** utilisateur
-**Je veux** CMD+Click sur n'importe quel chiffre
-**Afin de** demander des explications à Eve
-
-**Critères d'acceptation:**
-- [ ] Directive cmdClick sur tous les éléments de données
-- [ ] Tooltip "⌘+Click pour demander à Eve" au hover
-- [ ] CMD+Click (Mac) / ALT+Click (Win)
-- [ ] Ouvre le panel Eve
-- [ ] Pré-remplit avec la question contextuelle
-- [ ] Eve répond avec explication + source
-
-**Référence:** PRD Section 5.5 - Cmd+Click "Ask Eve"
-
----
-
-### E5-S8: Chart Drill-Down on Click
-**En tant qu'** utilisateur
-**Je veux** cliquer sur un élément de graphique pour zoomer/filtrer
-**Afin d'** explorer les données en profondeur
-
-**Critères d'acceptation:**
-- [ ] Clic sur barre/segment → filtre les données affichées
-- [ ] Visuel: élément cliqué devient "actif" (bordure, glow)
-- [ ] Breadcrumb de drill-down ("Total > Immobilisations")
-- [ ] Bouton "Reset" pour revenir à la vue initiale
-- [ ] Animation de transition entre niveaux
-- [ ] Fonctionne sur: bar chart, pie chart, line chart
-- [ ] Cursor pointer au hover sur éléments cliquables
-
-**Référence:** PRD Section 5.4 - Click Drill-Down (FR25)
-
----
-
-## Epic 6: Eve Chatbot (J5-J7)
-
-### E6-S1: API Eve Chat
-**En tant que** frontend
-**Je veux** une API pour le chat avec Eve
-**Afin d'** envoyer des messages et recevoir des réponses
-
-**Critères d'acceptation:**
-- [ ] POST /api/eve/chat
-- [ ] Body: { message, engagement_id?, context? }
-- [ ] Response: { message, sources?, engagement_id }
-- [ ] Intégration Factory AI
-- [ ] Timeout handling (max 30s)
-- [ ] Fallback message si erreur
-
----
-
-### E6-S2: API Eve Explain
-**En tant que** frontend
-**Je veux** une API pour expliquer des valeurs
-**Afin de** supporter le CMD+Click
-
-**Critères d'acceptation:**
-- [ ] POST /api/eve/explain
-- [ ] Body: { value, context, engagement_id }
-- [ ] Response: { explanation, source_document, source_line }
-- [ ] Prompt optimisé pour explications courtes
-- [ ] Citation de source obligatoire
-
----
-
-### E6-S3: Eve Floating Button (FAB)
-**En tant qu'** utilisateur
-**Je veux** un bouton Eve toujours accessible
-**Afin d'** ouvrir le chat à tout moment
-
-**Critères d'acceptation:**
-- [ ] Floating Action Button en bas à droite
-- [ ] Icône chat/assistant
-- [ ] Animation pulse si notification
-- [ ] Click → ouvre le panel Eve
-- [ ] Badge counter si messages non lus
-- [ ] Position fixe, z-index élevé
-
----
-
-### E6-S4: Eve Chat Panel
-**En tant qu'** utilisateur
-**Je veux** un panneau de chat élégant
-**Afin de** converser avec Eve
-
-**Critères d'acceptation:**
-- [ ] Panel sliding depuis la droite
-- [ ] Header: "Eve - Assistant IA" + bouton fermer
-- [ ] Zone de messages scrollable
-- [ ] Input en bas avec bouton envoyer
-- [ ] Indicateur "Eve réfléchit..." pendant le loading
-- [ ] Animation d'apparition smooth
-- [ ] Largeur: 400px (desktop), full (mobile)
-
----
-
-### E6-S5: Message Bubbles
-**En tant qu'** utilisateur
-**Je veux** des bulles de message stylées
-**Afin de** distinguer mes messages de ceux d'Eve
-
-**Critères d'acceptation:**
-- [ ] User messages: alignés à droite, bg-ey-yellow
-- [ ] Eve messages: alignés à gauche, bg-gray-100
-- [ ] Timestamp discret
-- [ ] Support markdown basique (gras, listes)
-- [ ] Sources cliquables si présentes
-- [ ] Animation d'apparition
-
----
-
-### E6-S6: Eve Context Awareness
-**En tant qu'** utilisateur
-**Je veux** qu'Eve connaisse mon contexte
-**Afin de** ne pas répéter les informations
-
-**Critères d'acceptation:**
-- [ ] Eve sait sur quel engagement je suis
-- [ ] Eve a accès aux documents de l'engagement
-- [ ] Contexte passé automatiquement dans l'API
-- [ ] Historique de conversation conservé (session)
-- [ ] Possibilité de changer de contexte
-
----
-
-### E6-S7: Eve Prompts Prédéfinis
-**En tant que** développeur
-**Je veux** des prompts système bien définis
-**Afin qu'** Eve réponde de manière cohérente
-
-**Critères d'acceptation:**
-- [ ] System prompt avec personnalité Eve (corporate, vouvoiement)
-- [ ] Prompt pour explain value (avec format de réponse)
-- [ ] Prompt pour chat général
-- [ ] Prompt pour analyse KPI
-- [ ] Instructions de formatting (listes, sources)
-
-**Référence:** PRD Section 11 - Spécifications Eve
-
----
-
-## Epic 7: Risk & Prédictions (J7-J8)
-
-### E7-S1: Risk Calculation Service
-**En tant que** système
-**Je veux** calculer automatiquement le niveau de risque
-**Afin de** prioriser les engagements
-
-**Critères d'acceptation:**
-- [ ] Calcul basé sur: jours restants, completion %, docs manquants
-- [ ] HIGH: < 7j ET < 80% OU docs manquants à J-7
-- [ ] MEDIUM: 7-14j ET < 90% OU analyse > 48h
-- [ ] LOW: > 14j OU >= 90% OU completed
-- [ ] Recalcul à chaque modification
-- [ ] Stockage en DB
-
-**Logique:** PRD Section 16.1
-
----
-
-### E7-S2: Prediction Calculation Service
-**En tant que** système
-**Je veux** prédire la date de completion
-**Afin d'** informer les utilisateurs
-
-**Critères d'acceptation:**
-- [ ] Calcul velocity: completion% / jours écoulés
-- [ ] Prédiction: today + (restant% / velocity)
-- [ ] Gestion des cas edge (velocity = 0, nouveau)
-- [ ] Mise à jour quotidienne
-- [ ] Affichage: "Prévu le 25 Feb (+4j)"
-
-**Logique:** PRD Section 16.2
-
----
-
-### E7-S3: Risk Badge avec Tooltip
-**En tant qu'** utilisateur
-**Je veux** comprendre pourquoi un engagement est à risque
-**Afin de** prendre les bonnes actions
-
-**Critères d'acceptation:**
-- [ ] Hover sur badge → tooltip explicatif
-- [ ] Contenu: raison du risque + action suggérée
-- [ ] Ex: "À risque: 2 documents manquants, deadline dans 5 jours"
-- [ ] Suggestion: "Uploadez le General Ledger"
-
----
-
-### E7-S4: Prédiction Display
-**En tant qu'** utilisateur
-**Je veux** voir la prédiction de completion
-**Afin de** planifier mes actions
-
-**Critères d'acceptation:**
-- [ ] Affiché dans l'accordéon engagement
-- [ ] Format: "Prévu le [date] ([+/-Xj] vs deadline)"
-- [ ] Couleur: vert si en avance, rouge si en retard
-- [ ] Icône calendrier
-- [ ] Update en temps réel après upload
-
----
-
-## Epic 8: Polish & Démo (J9-J10)
-
-### E8-S1: Animations & Transitions
-**En tant qu'** utilisateur
-**Je veux** une expérience fluide et premium
-**Afin de** percevoir la qualité du produit
-
-**Critères d'acceptation:**
-- [ ] Page transitions (fade/slide)
-- [ ] Accordion open/close smooth
-- [ ] Chart animations on load
-- [ ] Skeleton loaders partout
-- [ ] Hover states sur tous les interactifs
-- [ ] Toast notifications animées
-
----
-
-### E8-S2: Error States & Fallbacks
-**En tant qu'** utilisateur
-**Je veux** des messages d'erreur clairs
-**Afin de** comprendre les problèmes
-
-**Critères d'acceptation:**
-- [ ] API error → toast avec message
-- [ ] Eve timeout → message standard
-- [ ] Upload error → explication (format, taille)
-- [ ] Empty states avec illustrations
-- [ ] Retry buttons où applicable
-
----
-
-### E8-S3: Demo Script Testing
-**En tant que** équipe
-**Je veux** un script de démo testé
-**Afin de** garantir une présentation parfaite
-
-**Critères d'acceptation:**
-- [ ] Script écrit étape par étape
-- [ ] Chaque étape testée 10x minimum
-- [ ] Timing mesuré (8-10 min total)
-- [ ] Fallback plan si problème
-- [ ] Données de démo vérifiées
-- [ ] Fichiers de test préparés pour upload
-
-**Référence:** PRD Section 7 - Scénario de Démo
-
----
-
-### E8-S4: Performance Optimization
-**En tant que** développeur
-**Je veux** une app performante
-**Afin de** garantir une démo fluide
-
-**Critères d'acceptation:**
-- [ ] Lazy loading des routes
-- [ ] Images optimisées
-- [ ] Bundle size < 500KB initial
-- [ ] Time to Interactive < 3s
-- [ ] API responses < 500ms
-- [ ] Eve response < 3s
-
----
-
-## Epic 9: Features Bonus (Should-Have)
-
-### E9-S1: Gantt Chart Generation
-**En tant qu'** utilisateur
-**Je veux** demander à Eve de générer un Gantt
-**Afin de** visualiser le planning
-
-**Critères d'acceptation:**
-- [ ] Prompt: "Génère le planning des obligations"
-- [ ] Gantt chart avec tous les engagements
-- [ ] Dates de début estimées, due dates
-- [ ] Affichage dans le panel Eve
-- [ ] Export possible (PNG)
-
----
-
-### E9-S2: Comparison N-1 Auto
-**En tant qu'** utilisateur
-**Je veux** voir les écarts N-1 automatiquement
+**Je veux** comparer les taux effectifs
 **Afin d'** identifier les anomalies
 
-**Critères d'acceptation:**
-- [ ] Alerte si variance > 15%
-- [ ] Affichage dans ai_insights
-- [ ] Eve mentionne proactivement
-- [ ] Explication du contexte
+**Criteres d'acceptation:**
+- [ ] Bar chart vertical
+- [ ] Ligne de reference: statutory rate
+- [ ] Couleur differente si au-dessus/en-dessous
+- [ ] Hover → detail
+- [ ] CMD+Click → Eve
 
 ---
 
-### E9-S3: Document Preview Inline
+### E8-S5: YoY Comparison Chart
+
 **En tant qu'** utilisateur
-**Je veux** prévisualiser un document sans le télécharger
-**Afin de** gagner du temps
+**Je veux** voir l'evolution N vs N-1
+**Afin de** comprendre les tendances
 
-**Critères d'acceptation:**
-- [ ] Modal de preview
-- [ ] Support PDF (embed viewer)
-- [ ] Support Excel (tableau HTML)
-- [ ] Navigation pages pour PDF
-- [ ] Bouton download
+**Criteres d'acceptation:**
+- [ ] Grouped bar chart
+- [ ] Barres: 2025 vs 2026
+- [ ] Metrics: Total Tax, Avg ETR
+- [ ] Variation % affichee
+- [ ] CMD+Click → Eve
 
 ---
 
-### E9-S4: Eve Proactive Notifications
+### E8-S6: Tax by Jurisdiction Chart
+
 **En tant qu'** utilisateur
-**Je veux** qu'Eve m'alerte proactivement
-**Afin de** ne rien manquer
+**Je veux** voir la repartition geographique
+**Afin de** comprendre l'exposition fiscale
 
-**Critères d'acceptation:**
-- [ ] Notification si engagement devient HIGH risk
-- [ ] Notification si deadline approche (J-7)
-- [ ] Badge sur FAB Eve
-- [ ] Toast notification
-- [ ] Liste dans panel Eve
+**Criteres d'acceptation:**
+- [ ] Donut chart
+- [ ] Segments: France, Germany, Netherlands, Belgium, Luxembourg
+- [ ] Pourcentage par segment
+- [ ] Hover → montant exact
+- [ ] CMD+Click → Eve
 
 ---
 
-## Epic 10: Platform v2.0 - Navigation & AI Enhancement (Post-MVP)
+### E8-S7: Insights Page Filters
 
-**Goal:** Transform the platform with a command center navigation, dedicated engagements page, action-driven UX, and enhanced AI with OpenAI integration.
-
-### E10-S1: Command Center (Home Redesign)
 **En tant qu'** utilisateur
-**Je veux** que la page d'accueil soit un Command Center montrant ce qui requiert mon attention
-**Afin de** identifier et agir rapidement sur les éléments urgents
+**Je veux** filtrer les donnees Insights
+**Afin de** me concentrer sur un sous-ensemble
 
-**Critères d'acceptation:**
-- [ ] **AC1 - KPIs Summary:** 4 cartes KPI (Total, Actifs, À Risque, Complétés) cliquables
-- [ ] **AC2 - Action Center:** Liste des to-dos actifs qui disparaissent une fois complétés
-- [ ] **AC3 - Engagements À Risque:** Affiche seulement HIGH et MEDIUM risk
-- [ ] **AC4 - Activité Récente:** Feed chronologique des événements récents
-
-**FRs:** FR-V2-01, FR-V2-03
+**Criteres d'acceptation:**
+- [ ] Filtre Year: dropdown (2026, 2025, etc.)
+- [ ] Filtre Entity: multi-select
+- [ ] Filtres appliques a tous les charts
+- [ ] Reset button
+- [ ] Persistence session
 
 ---
 
-### E10-S2: Engagements Page with Filters
+### E8-S8: API Insights
+
+**En tant que** frontend
+**Je veux** une API pour les donnees Insights
+**Afin d'** alimenter la page
+
+**Criteres d'acceptation:**
+- [ ] GET `/api/insights/kpis` → KPI cards data
+- [ ] GET `/api/insights/charts` → all charts data
+- [ ] Query params: year, entity_ids
+- [ ] Response: aggregated data
+
+---
+
+## Epic 9: Eve Integration Updates
+
+**Objectif:** Mettre a jour Eve pour les nouvelles pages et charts.
+
+**Reference PRD:** Section 5.9
+
+---
+
+### E9-S1: Eve Context for Insights Page
+
 **En tant qu'** utilisateur
-**Je veux** une page Engagements dédiée avec filtres puissants
-**Afin de** trouver n'importe quel engagement parmi 100+ entités
+**Je veux** qu'Eve connaisse le contexte Insights
+**Afin de** poser des questions sur les KPIs globaux
 
-**Critères d'acceptation:**
-- [ ] **AC1 - Route dédiée:** `/engagements` avec liste complète
-- [ ] **AC2 - Filtres multi-critères:** Entité (searchable), Statut, Année, Service
-- [ ] **AC3 - Affichage liste:** Entity, service, status, due date, progress bar, risk badge
-- [ ] **AC4 - Persistence filtres:** Conservés dans la session
-- [ ] **AC5 - Performance:** Rendu < 2s pour 100+ entités
-
-**FRs:** FR-V2-02, NFR-V2-03
+**Criteres d'acceptation:**
+- [ ] Eve detecte qu'on est sur /insights
+- [ ] Context inclut: KPIs agreges, filtres actifs
+- [ ] Reponses appropriees au contexte global
+- [ ] Peut repondre sur comparaisons entre entites
 
 ---
 
-### E10-S3: Notifications System
+### E9-S2: CMD+Click on All New Charts
+
 **En tant qu'** utilisateur
-**Je veux** une icône cloche affichant les alertes passives
-**Afin de** rester informé des événements système
+**Je veux** CMD+Click sur tous les nouveaux charts
+**Afin de** demander des explications a Eve
 
-**Critères d'acceptation:**
-- [ ] **AC1 - Bell Icon:** Icône 🔔 dans le header avec badge compteur
-- [ ] **AC2 - Dropdown:** Liste des notifications récentes au clic
-- [ ] **AC3 - Mark as Read:** Possibilité de marquer comme lu
-- [ ] **AC4 - Types:** INFO, WARNING, SUCCESS avec icônes appropriées
-
-**FRs:** FR-V2-04
+**Criteres d'acceptation:**
+- [ ] Directive cmdClick sur charts Insights
+- [ ] Directive cmdClick sur charts Results tab
+- [ ] Tooltip "CMD+Click for Eve" au hover
+- [ ] Pre-fill question avec contexte du data point
 
 ---
 
-### E10-S4: Document Library Hybrid Mode
+### E9-S3: Eve Responses for CTR Data
+
 **En tant qu'** utilisateur
-**Je veux** que la Document Library ait deux modes (Vue Engagement et Bibliothèque Globale)
-**Afin de** travailler focalisé ou rechercher globalement
+**Je veux** qu'Eve explique les donnees CTR
+**Afin de** comprendre les resultats fiscaux
 
-**Critères d'acceptation:**
-- [ ] **AC1 - Vue Engagement:** Docs filtrés pour l'engagement actif (requis, uploadés, manquants)
-- [ ] **AC2 - Vue Globale:** Tous les documents avec filtres (Entité, Année, Type, Statut)
-- [ ] **AC3 - Toggle Mode:** Basculer entre les deux modes
-- [ ] **AC4 - Recherche Globale:** Recherche par nom, entité, mots-clés
-
-**FRs:** FR-V2-05
+**Criteres d'acceptation:**
+- [ ] Eve peut expliquer: ETR, tax liability, deferred tax
+- [ ] Prompts specifiques pour donnees fiscales
+- [ ] Sources: CTR Report, documents sources
+- [ ] Ton: professionnel, educatif
 
 ---
 
-### E10-S5: Eve OpenAI Integration & RAG
-**En tant qu'** utilisateur
-**Je veux** qu'Eve utilise OpenAI GPT-4o avec conscience du contexte et lecture des documents
-**Afin d'** obtenir des réponses intelligentes basées sur mon contexte et les documents uploadés
+## Epic 10: Design System Polish
 
-**Critères d'acceptation:**
-- [ ] **AC1 - OpenAI Integration:** Réponses via GPT-4o, temps < 3s
-- [ ] **AC2 - Mode Engagement:** Réponses spécifiques à l'engagement actif
-- [ ] **AC3 - Mode Global:** Réponses générales sur Command Center/Engagements page
-- [ ] **AC4 - Auto-Switch:** Bascule automatique si entité mentionnée dans la question
-- [ ] **AC5 - RAG Documents:** Lecture du contenu des documents avec citations (ligne, cellule)
-- [ ] **AC6 - Error Handling:** Message d'erreur gracieux si API indisponible
+**Objectif:** Appliquer le nouveau design premium et neutre.
 
-**FRs:** FR-V2-06, FR-V2-07, FR-V2-08, NFR-V2-01, NFR-V2-02
+**Reference PRD:** Section 4
 
 ---
 
-### E10-S6: Sidebar Navigation Update
-**En tant qu'** utilisateur
-**Je veux** l'avatar déplacé dans la sidebar et la navigation mise à jour
-**Afin d'** avoir un layout plus propre et intuitif
+### E10-S1: Color Palette Update
 
-**Critères d'acceptation:**
-- [ ] **AC1 - Avatar Sidebar:** Profil utilisateur en bas de la sidebar (pas dans header)
-- [ ] **AC2 - Navigation Items:** Home, Engagements, Documents, Dashboard avec icônes
-- [ ] **AC3 - Header Simplifié:** Logo, titre page, notifications bell seulement
-- [ ] **AC4 - Collapse Behavior:** Avatar en icône quand sidebar réduite
+**En tant que** developpeur
+**Je veux** mettre a jour la palette de couleurs
+**Afin d'** avoir un design plus premium
 
-**FRs:** FR-V2-09
-
----
-
-### E10-S7: Command Center Document Status Deep-Linking
-**En tant qu'** utilisateur
-**Je veux** cliquer sur un statut de document dans le Command Center et être redirigé vers la bibliothèque avec les filtres actifs
-**Afin de** voir immédiatement les documents correspondants
-
-**Critères d'acceptation:**
-- [ ] **AC1 - Clickable Status:** Les statuts (missing, uploaded, validated) sont cliquables
-- [ ] **AC2 - Navigation avec Filtres:** Redirection vers `/documents` avec query params
-- [ ] **AC3 - Filtres Actifs:** Entité + Année + Statut pré-sélectionnés
-- [ ] **AC4 - Visual Feedback:** Cursor pointer et highlight au hover
-
-**FRs:** FR-V2-10
+**Criteres d'acceptation:**
+- [ ] Reduire l'utilisation des couleurs vives
+- [ ] Plus de neutrals (grays)
+- [ ] Accents jaune EY subtils (pas dominants)
+- [ ] Navbar dark color (#1F2937)
+- [ ] Mettre a jour tailwind.config.js
 
 ---
 
-### E10-S8: Notification Deep-Linking to Engagement/Document
-**En tant qu'** utilisateur
-**Je veux** cliquer sur une notification et être redirigé vers l'engagement ou le document concerné
-**Afin de** traiter rapidement les alertes
+### E10-S2: Filter Pills Styling
 
-**Critères d'acceptation:**
-- [ ] **AC1 - Entity Redirect:** Notification d'engagement → ouvre l'engagement dans le Command Center
-- [ ] **AC2 - Document Redirect:** Notification de document → ouvre `/documents` avec doc sélectionné
-- [ ] **AC3 - Auto-Expand:** L'engagement concerné s'expand automatiquement
-- [ ] **AC4 - Highlight:** Le document concerné est highlight temporairement (2s)
+**En tant que** developpeur
+**Je veux** styliser les filtres en pills
+**Afin d'** avoir une interface epuree
 
-**FRs:** FR-V2-11
-
----
-
-### E10-S9: Entity Tree Navigation to Documents
-**En tant qu'** utilisateur
-**Je veux** cliquer sur une entité dans l'arborescence et voir ses engagements puis ses documents
-**Afin de** naviguer intuitivement vers les documents d'un engagement spécifique
-
-**Critères d'acceptation:**
-- [ ] **AC1 - Entity Click:** Clic sur entité → expand les engagements associés
-- [ ] **AC2 - Engagement Click:** Clic sur engagement → affiche documents de cet engagement
-- [ ] **AC3 - Breadcrumb Update:** Fil d'Ariane mis à jour (Entity > Engagement > Documents)
-- [ ] **AC4 - Context Persistence:** Le contexte d'engagement est conservé pour Eve
-
-**FRs:** FR-V2-12
+**Criteres d'acceptation:**
+- [ ] Pills small, rounded-full
+- [ ] Border subtle
+- [ ] Background neutre, selected = accent
+- [ ] Hover state subtil
+- [ ] Inline layout, pas de bloc
 
 ---
 
-### E10-S10: Dashboard Removal & Command Center Layout
-**En tant qu'** équipe produit
-**Je veux** supprimer le Dashboard standalone et améliorer le layout du Command Center
-**Afin de** simplifier la navigation et concentrer l'attention sur les actions
+### E10-S3: Cards Neutralization
 
-**Critères d'acceptation:**
-- [ ] **AC1 - Remove Dashboard Route:** Suppression de `/dashboard` et lien sidebar
-- [ ] **AC2 - KPIs in Command Center:** Intégration des KPIs essentiels dans le Command Center
-- [ ] **AC3 - Clean Layout:** Amélioration de la mise en page (grille responsive)
-- [ ] **AC4 - Charts Optional:** Les graphiques sont optionnels (expandable section)
+**En tant que** developpeur
+**Je veux** rendre les cards plus neutres
+**Afin d'** avoir un look premium
 
-**FRs:** FR-V2-13
-
----
-
-### E10-S11: Bulk Document Upload with Auto-Detection
-**En tant qu'** utilisateur
-**Je veux** uploader plusieurs documents en masse avec détection automatique de l'année, entité et type
-**Afin de** gagner du temps lors d'uploads volumineux
-
-**Critères d'acceptation:**
-- [ ] **AC1 - Bulk Drop Zone:** Zone de drop supportant 10+ fichiers simultanément
-- [ ] **AC2 - Auto Year Detection:** Détection de l'année fiscale dans le nom ou contenu
-- [ ] **AC3 - Auto Entity Detection:** Détection de l'entité (France SPV, Germany PropCo, etc.)
-- [ ] **AC4 - Auto Type Detection:** Détection du type de document (Grand Livre, Balance, etc.)
-- [ ] **AC5 - Preview Before Confirm:** Prévisualisation des détections avant confirmation
-- [ ] **AC6 - Manual Override:** Possibilité de corriger les détections manuellement
-
-**FRs:** FR-V2-14
+**Criteres d'acceptation:**
+- [ ] Reduire les couleurs dans les cards
+- [ ] Borders plus subtils
+- [ ] Shadows plus legeres
+- [ ] Focus sur le contenu, pas les decorations
 
 ---
 
-## Epic 11: UX Polish & Bug Fixes (Post-MVP)
+### E10-S4: Remove Excess Colors
 
-**Goal:** Améliorer l'expérience utilisateur et corriger les bugs identifiés.
+**En tant que** developpeur
+**Je veux** retirer les couleurs excessives
+**Afin d'** avoir un design coherent
 
-### E11-S1: Eve OpenAI Integration
-**En tant qu'** utilisateur
-**Je veux** qu'Eve soit connectée à OpenAI et réponde avec intelligence contextuelle
-**Afin d'** obtenir des réponses pertinentes sur l'application et les données
-
-**Critères d'acceptation:**
-- [ ] **AC1 - OpenAI Connection:** Backend connecté à l'API OpenAI (GPT-4o)
-- [ ] **AC2 - Context Injection:** Eve reçoit le contexte de l'engagement actif
-- [ ] **AC3 - App Awareness:** Eve peut répondre sur les fonctionnalités de l'app
-- [ ] **AC4 - Document Awareness:** Eve peut analyser les documents uploadés
-- [ ] **AC5 - Error Handling:** Message gracieux si API indisponible
-
-**FRs:** FR-V2-15
+**Criteres d'acceptation:**
+- [ ] Audit de toutes les pages
+- [ ] Identifier les elements trop colores
+- [ ] Remplacer par neutrals ou accents subtils
+- [ ] Verifier la coherence globale
 
 ---
 
-### E11-S2: Eve Notification Badge Fix
-**En tant qu'** utilisateur
-**Je veux** que le badge de notification d'Eve n'affiche pas "2" quand il n'y a rien
-**Afin de** ne pas être induit en erreur par de fausses notifications
+## Resume des Stories
 
-**Critères d'acceptation:**
-- [ ] **AC1 - No False Positives:** Badge affiché uniquement si vraies notifications
-- [ ] **AC2 - Reset on Read:** Badge disparaît après lecture des messages
-- [ ] **AC3 - Accurate Count:** Compteur reflète exactement les messages non lus
-- [ ] **AC4 - Init State:** Badge à 0 au chargement initial
-
-**FRs:** FR-V2-16
-
----
-
-### E11-S3: Drawer Close on Outside Click
-**En tant qu'** utilisateur
-**Je veux** que les tiroirs (drawers) se ferment quand je clique à l'extérieur
-**Afin de** fermer facilement les panels sans chercher le bouton X
-
-**Critères d'acceptation:**
-- [ ] **AC1 - Eve Panel:** Clic hors du panel Eve → ferme le panel
-- [ ] **AC2 - Notification Panel:** Clic hors du dropdown → ferme le dropdown
-- [ ] **AC3 - Engagement Accordion:** Clic hors de l'accordéon → ferme l'accordéon
-- [ ] **AC4 - Exception:** Clic sur un élément interactif (bouton, lien) ne ferme pas
-- [ ] **AC5 - Escape Key:** Touche Escape ferme aussi les panels
-
-**FRs:** FR-V2-17
+| Epic | Stories | Priorite |
+|------|---------|----------|
+| E1 - Navigation | 7 | Must-Have |
+| E2 - Dashboard | 6 | Must-Have |
+| E3 - Engagements | 4 | Must-Have |
+| E4 - Structure | 6 | Must-Have |
+| E5 - Doclib | 5 | Must-Have |
+| E6 - Upload | 5 | Must-Have |
+| E7 - Results | 6 | Must-Have |
+| E8 - Insights | 8 | Must-Have |
+| E9 - Eve | 3 | Should-Have |
+| E10 - Design | 4 | Should-Have |
+| **Total** | **54** | |
 
 ---
 
-## Résumé Story Points
+## Definition of Done (DoD)
 
-| Epic | Stories | Estimation |
-|------|---------|------------|
-| E1 - Setup | 6 | J1-J2 |
-| E2 - Landing | 6 | J2-J3 |
-| E3 - Documents | 7 | J3-J5 |
-| E4 - Upload | 5 | J3-J5 |
-| E5 - Dashboard | 8 | J4-J6 |
-| E6 - Eve | 7 | J5-J7 |
-| E7 - Risk | 4 | J7-J8 |
-| E8 - Polish | 4 | J9-J10 |
-| **Total Must-Have** | **47** | **10 jours** |
-| E9 - Bonus | 4 | Si temps |
-| **E10 - Platform v2.0** | **11** | **Post-MVP** |
-| **E11 - UX Polish** | **3** | **Post-MVP** |
+Chaque story est consideree terminee quand:
+
+- [ ] Code implemente et fonctionnel
+- [ ] Tests unitaires ecrits (si applicable)
+- [ ] Responsive verifie (desktop + mobile)
+- [ ] Design conforme au PRD
+- [ ] Code review effectuee
+- [ ] Merge dans develop
+- [ ] Demo au PM/stakeholder
+
+---
+
+## Sprint Planning Suggestion
+
+**Sprint 1 (Week 1):**
+- E1: Navigation Refactor (complet)
+- E10: Design System Polish (complet)
+
+**Sprint 2 (Week 2):**
+- E2: Dashboard Home (complet)
+- E3: Engagements Page (complet)
+
+**Sprint 3 (Week 3):**
+- E4: Structure Page (complet)
+- E5: Document Library (complet)
+
+**Sprint 4 (Week 4):**
+- E6: Upload & Attribution (complet)
+- E7: Results Tab (complet)
+
+**Sprint 5 (Week 5):**
+- E8: Insights Page (complet)
+- E9: Eve Integration (complet)
+- Bug fixes & polish

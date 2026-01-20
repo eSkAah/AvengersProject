@@ -189,7 +189,7 @@ async def get_assets_chart(
     actifs_circulants = round(total_assets * 0.32, 2)  # Current assets ~32%
     tresorerie = round(total_assets * 0.16, 2)  # Cash ~16%
 
-    labels = ["Immobilisations", "Actifs circulants", "Trésorerie"]
+    labels = ["Fixed Assets", "Current Assets", "Cash"]
     values = [immobilisations, actifs_circulants, tresorerie]
 
     # EY-compliant colors (Yellow as accent, neutrals for variety)
@@ -199,7 +199,7 @@ async def get_assets_chart(
         labels=labels,
         datasets=[
             ChartDataset(
-                label="Répartition des Actifs",
+                label="Asset Breakdown",
                 data=values,
                 backgroundColor=colors,
                 borderColor=colors,
@@ -212,7 +212,7 @@ async def get_assets_chart(
         engagement_id=engagement_id,
         chart_type="bar",
         data=chart_data,
-        source_document=f"Grand_Livre_{engagement.country_code}_2025.xlsx",
+        source_document=f"General_Ledger_{engagement.country_code}_2025.xlsx",
     )
 
 
@@ -330,11 +330,11 @@ async def get_breakdown_chart(
 
     # Simulate breakdown categories
     categories = [
-        ("Immobilisations corporelles", 0.35, EY_COLORS["yellow"]),
-        ("Immobilisations financières", 0.17, EY_COLORS["yellow_hover"]),
-        ("Créances clients", 0.18, EY_COLORS["info"]),
-        ("Stocks", 0.14, EY_COLORS["gray"]),
-        ("Trésorerie", 0.16, EY_COLORS["success"]),
+        ("Tangible Fixed Assets", 0.35, EY_COLORS["yellow"]),
+        ("Financial Assets", 0.17, EY_COLORS["yellow_hover"]),
+        ("Trade Receivables", 0.18, EY_COLORS["info"]),
+        ("Inventory", 0.14, EY_COLORS["gray"]),
+        ("Cash", 0.16, EY_COLORS["success"]),
     ]
 
     items = []
@@ -352,10 +352,10 @@ async def get_breakdown_chart(
     return BreakdownChartResponse(
         engagement_id=engagement_id,
         chart_type="pie",
-        title="Répartition des Actifs",
+        title="Asset Breakdown",
         total=total_assets,
         items=items,
-        source_document=f"Grand_Livre_{engagement.country_code}_2025.xlsx",
+        source_document=f"General_Ledger_{engagement.country_code}_2025.xlsx",
     )
 
 

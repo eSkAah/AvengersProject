@@ -89,16 +89,302 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  &__details {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 320px;
-    height: 100%;
+}
+
+// Drawer Overlay
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 50;
+}
+
+// Entity Drawer
+.entity-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  max-width: 90vw;
+  height: 100vh;
+  background: $color-surface;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+  z-index: 51;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.drawer {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: $spacing-5;
+    border-bottom: 1px solid $color-border-light;
+    background: linear-gradient(
+      135deg,
+      $color-surface 0%,
+      rgba($ey-yellow, 0.03) 100%
+    );
+  }
+
+  &__entity-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  &__flag {
+    font-size: 2.5rem;
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+  }
+
+  &__name {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    margin: 0;
+  }
+
+  &__country {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $color-background;
+      color: $color-text-primary;
+      border-color: $color-text-secondary;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-4;
+  }
+
+  &__section {
+    margin-bottom: $spacing-5;
+
+    &--engagements {
+      margin-bottom: 0;
+    }
+  }
+
+  &__section-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-3 0;
+    padding-bottom: $spacing-2;
+    border-bottom: 1px solid $color-border-light;
+
+    lucide-icon {
+      color: $color-text-secondary;
+    }
+  }
+
+  &__ownership-info {
+    background: $color-background;
+    border-radius: $radius-md;
+    padding: $spacing-3;
+  }
+
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-3;
+  }
+
+  &__engagements {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+  }
+}
+
+// Ownership row in drawer
+.ownership-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-2 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__value {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+
+    &--highlight {
+      color: $ey-yellow;
+      font-weight: $font-weight-bold;
+      background: rgba($ey-yellow, 0.1);
+      padding: $spacing-1 $spacing-2;
+      border-radius: $radius-sm;
+    }
+  }
+}
+
+// KPI card in drawer
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-3;
+  background: $color-background;
+  border-radius: $radius-md;
+  text-align: center;
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__value {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+}
+
+// Engagement item in drawer
+.engagement-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  width: 100%;
+  padding: $spacing-3;
+  background: $color-background;
+  border: 1px solid $color-border-light;
+  border-radius: $radius-md;
+  cursor: pointer;
+  text-align: left;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-border;
     background: $color-surface;
-    border-left: 1px solid $color-border-light;
-    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.05);
-    z-index: 10;
+    transform: translateX(4px);
+  }
+
+  &--high {
+    border-left: 3px solid $color-error;
+  }
+
+  &--medium {
+    border-left: 3px solid $color-warning;
+  }
+
+  &--low {
+    border-left: 3px solid $color-success;
+  }
+
+  &__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__service {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__year {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    background: rgba($ey-black, 0.05);
+    padding: 2px $spacing-2;
+    border-radius: $radius-sm;
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    &-bar {
+      flex: 1;
+      height: 4px;
+      background: $color-border-light;
+      border-radius: $radius-full;
+      overflow: hidden;
+    }
+
+    &-fill {
+      height: 100%;
+      background: $ey-yellow;
+      border-radius: $radius-full;
+      transition: width $transition-normal;
+    }
+
+    &-text {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      color: $color-text-secondary;
+      min-width: 32px;
+      text-align: right;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__due {
+    display: flex;
+    align-items: center;
+    gap: $spacing-1;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__arrow {
+    color: $color-text-secondary;
+    flex-shrink: 0;
   }
 }
 
@@ -303,6 +589,49 @@
   stroke: $color-border;
   stroke-width: 2;
   stroke-linecap: round;
+}
+
+// Ownership labels on connections
+.ownership-label {
+  &__bg {
+    fill: $color-surface;
+    stroke: $color-border;
+    stroke-width: 1;
+
+    &--blue {
+      fill: rgba($color-info, 0.1);
+      stroke: $color-info;
+    }
+
+    &--purple {
+      fill: rgba(#8B5CF6, 0.1);
+      stroke: #8B5CF6;
+    }
+  }
+
+  &__text {
+    font-size: 10px;
+    font-weight: 600;
+    fill: $color-text-primary;
+    text-anchor: middle;
+  }
+}
+
+// Cross-shareholding arrows
+.cross-ownership {
+  &__line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+
+    &--atob {
+      stroke: $color-info;
+    }
+
+    &--btoa {
+      stroke: #8B5CF6;
+    }
+  }
 }
 
 // Nodes

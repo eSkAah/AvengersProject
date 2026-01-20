@@ -1,0 +1,78 @@
+<div class="engagement-list-widget">
+  <div class="engagement-list-widget__header">
+    <div class="engagement-list-widget__title">
+      <lucide-icon [img]="icons.briefcase" [size]="20"></lucide-icon>
+      <h3>{{ filterLabel() }}</h3>
+    </div>
+    <div class="engagement-list-widget__actions">
+      <span class="engagement-list-widget__count">{{ totalCount() }} engagement(s)</span>
+      @if (totalCount() > 5) {
+        <button class="view-all-btn" (click)="onViewAll()">
+          View All
+          <lucide-icon [img]="icons.chevronRight" [size]="14"></lucide-icon>
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (filteredEngagements().length === 0) {
+    <div class="engagement-list-widget__empty">
+      <lucide-icon [img]="icons.briefcase" [size]="32"></lucide-icon>
+      <span>No engagements found</span>
+    </div>
+  } @else {
+    <div class="engagement-list">
+      @for (engagement of filteredEngagements(); track engagement.id) {
+        <div
+          class="engagement-item"
+          [class.engagement-item--high]="engagement.riskLevel === 'high'"
+          [class.engagement-item--medium]="engagement.riskLevel === 'medium'"
+          (click)="onEngagementClick(engagement)"
+        >
+          <div class="engagement-item__main">
+            <div class="engagement-item__entity">
+              <span class="engagement-item__flag">{{ engagement.countryFlag }}</span>
+              <span class="engagement-item__name">{{ engagement.entity }}</span>
+            </div>
+            <span
+              class="engagement-item__status"
+              [class.status--waiting]="engagement.status === 'waiting'"
+              [class.status--received]="engagement.status === 'received'"
+              [class.status--processing]="engagement.status === 'processing'"
+              [class.status--completed]="engagement.status === 'completed'"
+            >
+              {{ statusLabels[engagement.status] }}
+            </span>
+          </div>
+
+          <div class="engagement-item__details">
+            <div class="engagement-item__progress">
+              <div class="progress-bar">
+                <div class="progress-bar__fill" [style.width.%]="engagement.completionPercent"></div>
+              </div>
+              <span class="progress-text">{{ engagement.completionPercent }}%</span>
+            </div>
+
+            <div class="engagement-item__meta">
+              <span class="engagement-item__due">
+                <lucide-icon [img]="icons.calendar" [size]="12"></lucide-icon>
+                {{ formatDate(engagement.dueDate) }}
+              </span>
+              @if (engagement.riskLevel !== 'low') {
+                <span
+                  class="engagement-item__risk"
+                  [class.risk--high]="engagement.riskLevel === 'high'"
+                  [class.risk--medium]="engagement.riskLevel === 'medium'"
+                >
+                  <lucide-icon [img]="icons.alertTriangle" [size]="12"></lucide-icon>
+                </span>
+              }
+            </div>
+          </div>
+
+          <lucide-icon [img]="icons.chevronRight" [size]="16" class="engagement-item__arrow"></lucide-icon>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,177 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Left: Logo & Company Name -->
+    <a routerLink="/app" class="navbar-brand">
+      @if (companyLogo()) {
+        <img [src]="companyLogo()" alt="Logo" class="navbar-logo" />
+      } @else {
+        <div class="navbar-logo-fallback">
+          {{ getCompanyInitials() }}
+        </div>
+      }
+      <span class="navbar-company-name">{{ companyName() }}</span>
+    </a>
+
+    <!-- Center: Navigation Items (Desktop) -->
+    <div class="navbar-menu desktop-only">
+      @for (item of navItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+          class="navbar-item"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </div>
+
+    <!-- Right: Notifications & User Menu -->
+    <div class="navbar-actions">
+      <!-- Notifications Bell -->
+      <div class="notifications-container">
+        <button
+          class="navbar-icon-btn"
+          (click)="toggleNotifications()"
+          [class.active]="notificationsOpen()"
+          aria-label="Notifications"
+        >
+          <lucide-icon [img]="icons.bell" [size]="20"></lucide-icon>
+          @if (unreadCount() > 0) {
+            <span class="notification-badge">{{ unreadCount() }}</span>
+          }
+        </button>
+
+        <!-- Notifications Dropdown -->
+        @if (notificationsOpen()) {
+          <div class="dropdown notifications-dropdown">
+            <div class="dropdown-header">
+              <span>Notifications</span>
+              @if (notifications().length > 0) {
+                <button class="dismiss-all-btn" (click)="dismissAllNotifications()">
+                  Dismiss all
+                </button>
+              }
+            </div>
+            <div class="dropdown-content">
+              @if (notifications().length === 0) {
+                <div class="empty-state">
+                  <lucide-icon [img]="icons.bell" [size]="24" class="text-neutral-400"></lucide-icon>
+                  <span>No notifications</span>
+                </div>
+              } @else {
+                @for (notification of notifications(); track notification.id) {
+                  <div
+                    class="notification-item"
+                    (click)="onNotificationClick(notification)"
+                  >
+                    <div class="notification-icon" [ngClass]="getNotificationColor(notification.type)">
+                      <lucide-icon [name]="getNotificationIcon(notification.type)" [size]="16"></lucide-icon>
+                    </div>
+                    <div class="notification-content">
+                      <span class="notification-title">{{ notification.title }}</span>
+                      <span class="notification-time">{{ getTimeAgo(notification.created_at) }}</span>
+                    </div>
+                    <button
+                      class="notification-dismiss"
+                      (click)="dismissNotification(notification.id, $event)"
+                      aria-label="Dismiss"
+                    >
+                      <lucide-icon [img]="icons.x" [size]="14"></lucide-icon>
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- User Menu -->
+      <div class="user-menu-container desktop-only">
+        <button
+          class="user-menu-btn"
+          (click)="toggleUserMenu()"
+          [class.active]="userMenuOpen()"
+        >
+          <div class="user-avatar">
+            {{ userInitials() }}
+          </div>
+          <lucide-icon [img]="icons.chevronDown" [size]="16" class="chevron"></lucide-icon>
+        </button>
+
+        <!-- User Dropdown -->
+        @if (userMenuOpen()) {
+          <div class="dropdown user-dropdown">
+            <a class="dropdown-item" routerLink="/app/profile" (click)="userMenuOpen.set(false)">
+              <lucide-icon [img]="icons.user" [size]="16"></lucide-icon>
+              <span>Profile</span>
+            </a>
+            <a class="dropdown-item" routerLink="/app/settings" (click)="userMenuOpen.set(false)">
+              <lucide-icon [img]="icons.settings" [size]="16"></lucide-icon>
+              <span>Settings</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item logout" (click)="logout()">
+              <lucide-icon [img]="icons.logOut" [size]="16"></lucide-icon>
+              <span>Logout</span>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        class="navbar-icon-btn mobile-only"
+        (click)="toggleMobileMenu()"
+        aria-label="Menu"
+      >
+        @if (mobileMenuOpen()) {
+          <lucide-icon [img]="icons.x" [size]="24"></lucide-icon>
+        } @else {
+          <lucide-icon [img]="icons.menu" [size]="24"></lucide-icon>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-menu">
+      <div class="mobile-menu-items">
+        @for (item of navItems; track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.exact }"
+            class="mobile-menu-item"
+            (click)="closeMobileMenu()"
+          >
+            <lucide-icon [img]="item.icon" [size]="20"></lucide-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      </div>
+      <div class="mobile-menu-divider"></div>
+      <div class="mobile-menu-user">
+        <a class="mobile-menu-item" routerLink="/app/profile" (click)="closeMobileMenu()">
+          <lucide-icon [img]="icons.user" [size]="20"></lucide-icon>
+          <span>Profile</span>
+        </a>
+        <a class="mobile-menu-item" routerLink="/app/settings" (click)="closeMobileMenu()">
+          <lucide-icon [img]="icons.settings" [size]="20"></lucide-icon>
+          <span>Settings</span>
+        </a>
+        <button class="mobile-menu-item logout" (click)="logout()">
+          <lucide-icon [img]="icons.logOut" [size]="20"></lucide-icon>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  }
+</nav>
+
+<!-- Mobile Menu Backdrop -->
+@if (mobileMenuOpen()) {
+  <div class="mobile-backdrop" (click)="closeMobileMenu()"></div>
+}

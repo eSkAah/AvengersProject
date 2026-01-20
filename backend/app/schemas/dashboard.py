@@ -169,7 +169,7 @@ class AssetsChartResponse(BaseModel):
                 "engagement_id": "ENG-FR-001",
                 "chart_type": "bar",
                 "data": {
-                    "labels": ["Immobilisations", "Actifs circulants", "Trésorerie"],
+                    "labels": ["Fixed Assets", "Current Assets", "Cash"],
                     "datasets": [
                         {
                             "label": "Assets Breakdown",
@@ -178,7 +178,7 @@ class AssetsChartResponse(BaseModel):
                         }
                     ],
                 },
-                "source_document": "Grand_Livre_FR_2025.xlsx",
+                "source_document": "General_Ledger_FR_2025.xlsx",
             }
         }
     )
@@ -259,25 +259,25 @@ class BreakdownChartResponse(BaseModel):
                 "total": 15400000,
                 "items": [
                     {
-                        "label": "Immobilisations",
+                        "label": "Fixed Assets",
                         "value": 8000000,
                         "percentage": 51.95,
                         "color": "#FFE600",
                     },
                     {
-                        "label": "Actifs circulants",
+                        "label": "Current Assets",
                         "value": 5000000,
                         "percentage": 32.47,
                         "color": "#FFD000",
                     },
                     {
-                        "label": "Trésorerie",
+                        "label": "Cash",
                         "value": 2400000,
                         "percentage": 15.58,
                         "color": "#2E2E38",
                     },
                 ],
-                "source_document": "Grand_Livre_FR_2025.xlsx",
+                "source_document": "General_Ledger_FR_2025.xlsx",
             }
         }
     )

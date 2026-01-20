@@ -146,7 +146,7 @@ class TestChatEndpoint:
 
         assert response.status_code == 200
         data = response.json()
-        assert "aider" in data["message"].lower() or "capacité" in data["message"].lower()
+        assert "help" in data["message"].lower() or "capabilit" in data["message"].lower()
 
     @pytest.mark.asyncio
     async def test_chat_unknown_question(self):
@@ -475,7 +475,7 @@ class TestEveIntegration:
             response = await client.post(
                 "/api/eve/chat",
                 json={
-                    "message": "Comment ce chiffre a-t-il évolué?",
+                    "message": "How has this figure evolved?",
                     "engagement_id": engagement_id,
                 },
             )
@@ -503,7 +503,7 @@ class TestGanttIntent:
         ) as client:
             response = await client.post(
                 "/api/eve/chat",
-                json={"message": "Génère un diagramme de Gantt"},
+                json={"message": "Generate a Gantt chart"},
             )
 
         assert response.status_code == 200
@@ -514,13 +514,13 @@ class TestGanttIntent:
 
     @pytest.mark.asyncio
     async def test_gantt_intent_with_planning_keyword(self):
-        """Test that 'génère le planning' triggers gantt response."""
+        """Test that 'generate the schedule' triggers gantt response."""
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://test"
         ) as client:
             response = await client.post(
                 "/api/eve/chat",
-                json={"message": "Génère le planning des obligations"},
+                json={"message": "Generate the obligation schedule"},
             )
 
         assert response.status_code == 200
@@ -530,13 +530,13 @@ class TestGanttIntent:
 
     @pytest.mark.asyncio
     async def test_gantt_intent_with_visualiser_planning(self):
-        """Test that 'visualiser le planning' triggers gantt response."""
+        """Test that 'show the schedule' triggers gantt response."""
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://test"
         ) as client:
             response = await client.post(
                 "/api/eve/chat",
-                json={"message": "Visualise le planning"},
+                json={"message": "Show the schedule"},
             )
 
         assert response.status_code == 200
@@ -572,7 +572,7 @@ class TestGanttIntent:
         ) as client:
             response = await client.post(
                 "/api/eve/chat",
-                json={"message": "Génère le Gantt"},
+                json={"message": "Generate the Gantt"},
             )
 
         assert response.status_code == 200
@@ -591,12 +591,12 @@ class TestGanttIntent:
         ) as client:
             response = await client.post(
                 "/api/eve/chat",
-                json={"message": "Montre le planning"},
+                json={"message": "Show the planning"},
             )
 
         assert response.status_code == 200
         data = response.json()
-        assert "planning" in data["message"].lower() or "gantt" in data["message"].lower()
+        assert "schedule" in data["message"].lower() or "gantt" in data["message"].lower()
         assert "engagement" in data["message"].lower()
 
     @pytest.mark.asyncio
@@ -624,7 +624,7 @@ class TestGanttIntent:
             response = await client.post(
                 "/api/eve/chat",
                 json={
-                    "message": "Génère le planning des engagements",
+                    "message": "Generate the engagement schedule",
                     "engagement_id": "ENG-FR-001",
                 },
             )

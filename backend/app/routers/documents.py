@@ -482,8 +482,8 @@ async def upload_document(
         document.type = classification_result.document_type
         document.status = DocumentStatus.analyzed
         ai_summary = (
-            f"Document classé automatiquement: {get_document_type_label(classification_result.document_type)} "
-            f"(confiance: {classification_result.confidence:.0%}, méthode: {classification_result.method})"
+            f"Automatically classified document: {get_document_type_label(classification_result.document_type)} "
+            f"(confidence: {classification_result.confidence:.0%}, method: {classification_result.method})"
         )
         document.ai_summary = ai_summary
         classification_success = True
@@ -557,8 +557,8 @@ async def get_document_library(
     Get all documents organized by category and type.
 
     Returns a hierarchical structure:
-    - Categories (Comptabilité, Fiscal, Financier)
-      - Types (Grand Livre, Balance Générale, etc.)
+    - Categories (Accounting, Tax, Financial)
+      - Types (General Ledger, Trial Balance, etc.)
         - Documents
     """
     grouped, total = await get_documents_grouped_by_category(db)

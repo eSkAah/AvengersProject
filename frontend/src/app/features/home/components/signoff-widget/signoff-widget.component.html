@@ -1,0 +1,43 @@
+<div class="signoff-widget">
+  <div class="signoff-widget__header">
+    <div class="signoff-widget__title">
+      <lucide-icon [img]="icons.fileCheck" [size]="20"></lucide-icon>
+      <h3>Documents to Sign Off</h3>
+    </div>
+    @if (totalToSignOff() > 0) {
+      <span class="signoff-widget__count">{{ totalToSignOff() }}</span>
+    }
+  </div>
+
+  @if (documentsToSignOff().length === 0) {
+    <div class="signoff-widget__empty">
+      <lucide-icon [img]="icons.checkCircle" [size]="32"></lucide-icon>
+      <span>All documents validated</span>
+    </div>
+  } @else {
+    <div class="signoff-widget__table">
+      <div class="signoff-table__header">
+        <span class="col-entity">Entity</span>
+        <span class="col-document">Document</span>
+        <span class="col-action">Action</span>
+      </div>
+      <div class="signoff-table__body">
+        @for (doc of documentsToSignOff(); track doc.type + doc.engagementId) {
+          <div class="signoff-table__row">
+            <span class="col-entity">
+              <span class="entity-flag">{{ doc.countryFlag }}</span>
+              <span class="entity-name">{{ doc.entity }}</span>
+            </span>
+            <span class="col-document">{{ doc.label }}</span>
+            <span class="col-action">
+              <button class="action-btn" (click)="onDocumentClick(doc)">
+                Review
+                <lucide-icon [img]="icons.chevronRight" [size]="14"></lucide-icon>
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

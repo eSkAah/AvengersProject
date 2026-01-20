@@ -61,6 +61,7 @@ export interface PendingFile {
   file: FilePreview;
   metadata: DetectedMetadata;
   isProcessing: boolean;
+  isValidated: boolean;
 }
 
 @Component({
@@ -156,26 +157,74 @@ export class DocumentsComponent implements OnInit {
   });
 
   readonly typeOptions = ['general_ledger', 'trial_balance', 'tax_return', 'financial_statement'];
-  readonly statusOptions = ['pending', 'analyzing', 'analyzed', 'error'];
+  readonly statusOptions = ['missing', 'uploaded', 'analyzed', 'validated'];
+
+  // Bulk download state
+  readonly bulkDownloadProgress = signal(0);
+  readonly isBulkDownloading = signal(false);
+  readonly bulkDownloadTotal = signal(0);
+  readonly bulkDownloadCurrent = signal(0);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => {
     const items: BreadcrumbItem[] = [{ label: 'Library', icon: '📁' }];
     return items;
   });
 
+  // Missing documents from engagement requirements
+  readonly missingDocuments = computed<Document[]>(() => {
+    const engagements = this.engagements();
+    const missingDocs: Document[] = [];
+
+    engagements.forEach(eng => {
+      const requirements = eng.documentRequirements || [];
+      requirements
+        .filter(req => req.status === 'missing')
+        .forEach(req => {
+          missingDocs.push({
+            id: `missing-${eng.id}-${req.type}`,
+            name: `${req.label} (Required)`,
+            type: req.type,
+            engagementIds: [eng.id],
+            uploadedAt: '',
+            status: 'missing' as Document['status'],
+            size: 0,
+            year: eng.fiscalYear,
+            entityId: eng.id,
+            entityName: eng.entity,
+            isMissing: true,
+          } as Document & { isMissing: boolean });
+        });
+    });
+
+    return missingDocs;
+  });
+
+  // All documents including missing ones
+  readonly allDocsWithMissing = computed(() => {
+    return [...this.allDocuments(), ...this.missingDocuments()];
+  });
+
+  // Status counts for filter badges
+  readonly statusCounts = computed(() => {
+    const allDocs = this.allDocsWithMissing();
+    const entityFilter = this.globalFilters().entity;
+
+    const filteredDocs = entityFilter
+      ? allDocs.filter(d => d.entityName === entityFilter)
+      : allDocs;
+
+    return {
+      missing: filteredDocs.filter(d => (d as Document & { isMissing?: boolean }).isMissing).length,
+      uploaded: filteredDocs.filter(d => d.status === 'analyzing' || d.status === 'pending').length,
+      analyzed: filteredDocs.filter(d => d.status === 'analyzed').length,
+      validated: filteredDocs.filter(d => d.status === 'validated').length,
+    };
+  });
+
   // Filtered documents
   filteredDocuments = computed(() => {
-    let docs = this.allDocuments();
+    let docs = this.allDocsWithMissing();
     const gf = this.globalFilters();
-
-    // Search by name or keywords
-    if (gf.search) {
-      const search = gf.search.toLowerCase();
-      docs = docs.filter((d) =>
-        d.name.toLowerCase().includes(search) ||
-        this.getDocumentTypeLabel(d.type).toLowerCase().includes(search)
-      );
-    }
 
     // Filter by entity
     if (gf.entity) {
@@ -194,7 +243,15 @@ export class DocumentsComponent implements OnInit {
 
     // Filter by status
     if (gf.status) {
-      docs = docs.filter((d) => d.status === gf.status);
+      if (gf.status === 'missing') {
+        docs = docs.filter((d) => (d as Document & { isMissing?: boolean }).isMissing);
+      } else if (gf.status === 'uploaded') {
+        docs = docs.filter((d) => d.status === 'analyzing' || d.status === 'pending');
+      } else if (gf.status === 'analyzed') {
+        docs = docs.filter((d) => d.status === 'analyzed');
+      } else if (gf.status === 'validated') {
+        docs = docs.filter((d) => d.status === 'validated');
+      }
     }
 
     return docs;
@@ -284,7 +341,53 @@ export class DocumentsComponent implements OnInit {
 
   hasActiveGlobalFilters(): boolean {
     const gf = this.globalFilters();
-    return !!(gf.search || gf.entity || gf.year || gf.type || gf.status);
+    return !!(gf.entity || gf.year || gf.type || gf.status);
+  }
+
+  // Bulk download methods
+  async startBulkDownload(): Promise<void> {
+    const docs = this.filteredDocuments().filter(d => !(d as Document & { isMissing?: boolean }).isMissing);
+    if (docs.length === 0) {
+      this.toast.warning('No documents to download');
+      return;
+    }
+
+    this.isBulkDownloading.set(true);
+    this.bulkDownloadTotal.set(docs.length);
+    this.bulkDownloadCurrent.set(0);
+    this.bulkDownloadProgress.set(0);
+
+    try {
+      for (let i = 0; i < docs.length; i++) {
+        // Check if cancelled
+        if (!this.isBulkDownloading()) break;
+
+        const doc = docs[i];
+        await this.simulateDownload(doc);
+
+        this.bulkDownloadCurrent.set(i + 1);
+        this.bulkDownloadProgress.set(Math.round(((i + 1) / docs.length) * 100));
+      }
+
+      if (this.isBulkDownloading()) {
+        this.toast.success(`Downloaded ${docs.length} documents`);
+      }
+    } catch (error) {
+      this.toast.error('Download failed');
+    } finally {
+      this.isBulkDownloading.set(false);
+      this.bulkDownloadProgress.set(0);
+    }
+  }
+
+  cancelBulkDownload(): void {
+    this.isBulkDownloading.set(false);
+    this.toast.info('Download cancelled');
+  }
+
+  private async simulateDownload(doc: Document): Promise<void> {
+    // Simulate download delay (300-800ms per file)
+    await this.delay(300 + Math.random() * 500);
   }
 
   onViewModeChange(mode: ViewMode): void {
@@ -346,6 +449,7 @@ export class DocumentsComponent implements OnInit {
       file,
       metadata: this.detectMetadata(file.name),
       isProcessing: false,
+      isValidated: false,
     }));
     this.pendingFiles.set(newPendingFiles);
   }
@@ -623,12 +727,275 @@ export class DocumentsComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      pending: 'Pending',
-      analyzing: 'Analyzing',
+      missing: 'Missing',
+      uploaded: 'Uploaded',
       analyzed: 'Analyzed',
+      validated: 'Validated',
+      pending: 'Uploaded',
+      analyzing: 'Uploaded',
       error: 'Error',
     };
     return labels[status] || status;
+  }
+
+  // Attribution Review Methods
+
+  /**
+   * Check if a pending file has all required attribution
+   */
+  isFileComplete(pf: PendingFile): boolean {
+    return !!(pf.metadata.entity && pf.metadata.year && pf.metadata.type);
+  }
+
+  /**
+   * Handle inline attribution changes
+   */
+  onAttributionChange(fileId: string, field: 'entity' | 'year' | 'type', value: string | number): void {
+    this.pendingFiles.update(files =>
+      files.map(f => {
+        if (f.file.id !== fileId) return f;
+
+        const updatedMetadata = { ...f.metadata };
+        if (field === 'entity') {
+          updatedMetadata.entity = value as string || null;
+        } else if (field === 'year') {
+          updatedMetadata.year = value ? Number(value) : null;
+        } else if (field === 'type') {
+          updatedMetadata.type = value as string || null;
+        }
+
+        // Recalculate confidence based on completeness
+        const detectedCount = [updatedMetadata.entity, updatedMetadata.year, updatedMetadata.type].filter(Boolean).length;
+        if (detectedCount >= 3) {
+          updatedMetadata.confidence = 'high';
+        } else if (detectedCount >= 2) {
+          updatedMetadata.confidence = 'medium';
+        } else {
+          updatedMetadata.confidence = 'low';
+        }
+
+        return {
+          ...f,
+          metadata: updatedMetadata,
+          isValidated: false, // Reset validation when editing
+        };
+      })
+    );
+  }
+
+  /**
+   * Mark a single file as validated
+   */
+  validateSingleFile(fileId: string): void {
+    this.pendingFiles.update(files =>
+      files.map(f =>
+        f.file.id === fileId ? { ...f, isValidated: true } : f
+      )
+    );
+    this.toast.success('Attribution validated');
+  }
+
+  /**
+   * Edit attribution (unvalidate to allow changes)
+   */
+  editAttribution(fileId: string): void {
+    this.pendingFiles.update(files =>
+      files.map(f =>
+        f.file.id === fileId ? { ...f, isValidated: false } : f
+      )
+    );
+  }
+
+  /**
+   * Get count of incomplete files (missing attribution)
+   */
+  getIncompleteCount(): number {
+    return this.pendingFiles().filter(pf => !this.isFileComplete(pf)).length;
+  }
+
+  /**
+   * Get count of validated files
+   */
+  getValidatedCount(): number {
+    return this.pendingFiles().filter(pf => pf.isValidated).length;
+  }
+
+  /**
+   * Get count of complete but not validated files
+   */
+  getCompleteUnvalidatedCount(): number {
+    return this.pendingFiles().filter(pf => this.isFileComplete(pf) && !pf.isValidated).length;
+  }
+
+  /**
+   * Validate all complete files at once
+   */
+  validateAllComplete(): void {
+    this.pendingFiles.update(files =>
+      files.map(f => {
+        if (this.isFileComplete(f) && !f.isValidated) {
+          return { ...f, isValidated: true };
+        }
+        return f;
+      })
+    );
+    const count = this.getCompleteUnvalidatedCount();
+    if (count > 0) {
+      this.toast.success(`${count} file(s) validated`);
+    }
+  }
+
+  /**
+   * Place all validated documents (upload and classify)
+   */
+  async placeValidatedDocuments(): Promise<void> {
+    const validatedFiles = this.pendingFiles().filter(pf => pf.isValidated);
+    if (validatedFiles.length === 0) {
+      this.toast.warning('No validated files to place');
+      return;
+    }
+
+    this.isUploading.set(true);
+
+    for (let i = 0; i < validatedFiles.length; i++) {
+      const pf = validatedFiles[i];
+
+      // Get source position from the row element
+      const rowElement = document.querySelector(`[data-file-id="${pf.file.id}"]`) as HTMLElement;
+      const sourcePosition = rowElement
+        ? {
+            x: rowElement.getBoundingClientRect().left + rowElement.getBoundingClientRect().width / 2,
+            y: rowElement.getBoundingClientRect().top + rowElement.getBoundingClientRect().height / 2,
+          }
+        : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+      await this.uploadFileWithAnimation(pf, sourcePosition);
+
+      // Small delay between documents for visual effect
+      if (i < validatedFiles.length - 1) {
+        await this.delay(300);
+      }
+    }
+
+    this.isUploading.set(false);
+    this.toast.success(`${validatedFiles.length} document(s) placed successfully`);
+  }
+
+  /**
+   * Upload file with placement animation
+   */
+  private async uploadFileWithAnimation(
+    pf: PendingFile,
+    sourcePosition: { x: number; y: number }
+  ): Promise<void> {
+    const { file, metadata } = pf;
+
+    // Mark as processing
+    this.pendingFiles.update(files =>
+      files.map(f => f.file.id === file.id ? { ...f, isProcessing: true } : f)
+    );
+
+    // Prepare target position in tree
+    if (this.documentTree && metadata.entity && metadata.year && metadata.type) {
+      const docType = metadata.type as DocumentType;
+
+      // Expand tree to show target location
+      this.documentTree.expandAndHighlight(
+        metadata.entity,
+        metadata.year,
+        docType
+      );
+
+      await this.delay(200);
+
+      // Get target position
+      const targetNodeId = `type-${metadata.entity}-${metadata.year}-${docType}`;
+      const targetElement = document.querySelector(`[data-node-id="${targetNodeId}"]`) as HTMLElement;
+
+      let targetPos = { x: 100, y: 300 };
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        targetPos = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        };
+      }
+
+      // Create and start animation
+      const animation: PlacementAnimation = {
+        id: crypto.randomUUID(),
+        documentId: file.id,
+        documentName: file.name,
+        documentType: docType,
+        sourcePosition,
+        status: 'flying',
+      };
+
+      this.activeAnimation.set(animation);
+      this.animationTargetPosition.set(targetPos);
+
+      // Wait for animation to complete
+      await this.delay(800);
+
+      // Update animation status to landed
+      this.activeAnimation.update(anim =>
+        anim ? { ...anim, status: 'landed' } : null
+      );
+
+      await this.delay(300);
+
+      // Highlight target node
+      this.documentTree.highlightNode(targetNodeId, 2000);
+
+      // Clear animation
+      this.activeAnimation.set(null);
+    }
+
+    // Now perform the actual upload
+    try {
+      const response = await this.simulateUpload(file, metadata);
+
+      // Find engagement ID from entity name
+      const matchingEngagement = this.engagements().find(
+        e => e.entity === metadata.entity
+      );
+      const engagementIds = matchingEngagement ? [matchingEngagement.id] : [];
+
+      // Create document in mock data
+      const newDoc: Document = {
+        id: crypto.randomUUID(),
+        name: file.name,
+        type: (metadata.type || 'general_ledger') as Document['type'],
+        engagementIds,
+        uploadedAt: new Date().toISOString(),
+        status: 'analyzing',
+        size: file.size,
+        year: metadata.year || new Date().getFullYear(),
+        entityId: matchingEngagement?.id || crypto.randomUUID(),
+        entityName: metadata.entity || 'Unclassified',
+      };
+      this.mockData.addDocument(newDoc);
+
+      // Remove from pending
+      this.pendingFiles.update(files => files.filter(f => f.file.id !== file.id));
+    } catch (error) {
+      this.toast.error(`Upload failed: ${file.name}`);
+      this.pendingFiles.update(files =>
+        files.map(f => f.file.id === file.id ? { ...f, isProcessing: false } : f)
+      );
+    }
+  }
+
+  // Helper to check if document is missing
+  isDocumentMissing(doc: Document): boolean {
+    return !!(doc as Document & { isMissing?: boolean }).isMissing;
+  }
+
+  // Navigate to upload for missing document
+  onUploadMissing(doc: Document): void {
+    // Switch to upload tab with context
+    this.activeTab.set('upload');
+    this.toast.info(`Upload ${this.getDocumentTypeLabel(doc.type)} for ${doc.entityName}`);
   }
 
   onUploadStart(files: FilePreview[]): void {

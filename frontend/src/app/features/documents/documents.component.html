@@ -72,101 +72,207 @@
           ></app-upload-zone>
         </div>
 
-        <!-- Pending Files List -->
+        <!-- Attribution Review Table -->
         @if (pendingFiles().length > 0) {
-          <div class="pending-files">
-            <h3 class="pending-files__title">
-              Pending Files ({{ pendingFiles().length }})
-            </h3>
-
-            <div class="pending-files__list">
-              @for (pf of pendingFiles(); track pf.file.id) {
-                <div
-                  class="pending-file"
-                  [class.pending-file--processing]="pf.isProcessing"
-                  [class.pending-file--low-confidence]="pf.metadata.confidence === 'low'"
-                  [class.pending-file--medium-confidence]="pf.metadata.confidence === 'medium'"
-                  [class.pending-file--high-confidence]="pf.metadata.confidence === 'high'"
-                >
-                  <div class="pending-file__icon">
-                    <lucide-icon name="file-text" [size]="24"></lucide-icon>
-                  </div>
-
-                  <div class="pending-file__info">
-                    <span class="pending-file__name">{{ pf.file.name }}</span>
-                    <span class="pending-file__size">
-                      {{ (pf.file.size / 1024 / 1024).toFixed(2) }} MB
-                    </span>
-                  </div>
-
-                  <div class="pending-file__metadata">
-                    @if (pf.metadata.entity) {
-                      <span class="pending-file__tag pending-file__tag--entity">
-                        {{ pf.metadata.entity }}
-                      </span>
-                    }
-                    @if (pf.metadata.year) {
-                      <span class="pending-file__tag pending-file__tag--year">
-                        {{ pf.metadata.year }}
-                      </span>
-                    }
-                    @if (pf.metadata.type) {
-                      <span class="pending-file__tag pending-file__tag--type">
-                        {{ getDocumentTypeLabel(pf.metadata.type) }}
-                      </span>
-                    }
-                  </div>
-
-                  <div class="pending-file__confidence">
-                    @switch (pf.metadata.confidence) {
-                      @case ('high') {
-                        <span class="confidence-badge confidence-badge--high">
-                          <lucide-icon name="check-circle" [size]="14"></lucide-icon>
-                          Auto
-                        </span>
-                      }
-                      @case ('medium') {
-                        <span class="confidence-badge confidence-badge--medium">
-                          <lucide-icon name="alert-circle" [size]="14"></lucide-icon>
-                          Partial
-                        </span>
-                      }
-                      @case ('low') {
-                        <span class="confidence-badge confidence-badge--low">
-                          <lucide-icon name="help-circle" [size]="14"></lucide-icon>
-                          Manual
-                        </span>
-                      }
-                    }
-                  </div>
-
-                  @if (!pf.isProcessing) {
-                    <button
-                      class="pending-file__remove"
-                      (click)="removePendingFile(pf.file.id)"
-                      title="Remove"
-                    >
-                      <lucide-icon name="x" [size]="16"></lucide-icon>
-                    </button>
-                  } @else {
-                    <div class="pending-file__spinner">
-                      <lucide-icon name="loader-2" [size]="16"></lucide-icon>
-                    </div>
-                  }
-                </div>
-              }
+          <div class="attribution-review">
+            <div class="attribution-review__header">
+              <h3 class="attribution-review__title">
+                <lucide-icon name="clipboard-check" [size]="20"></lucide-icon>
+                Attribution Review
+              </h3>
+              <span class="attribution-review__count">
+                {{ pendingFiles().length }} document(s) to validate
+              </span>
             </div>
 
-            <div class="pending-files__actions">
-              <app-button
-                variant="primary"
-                [loading]="isUploading()"
-                [disabled]="pendingFiles().length === 0"
-                (clicked)="validateUploads()"
-              >
-                <lucide-icon name="upload-cloud" [size]="16"></lucide-icon>
-                Validate Upload
-              </app-button>
+            <div class="attribution-review__table-wrapper">
+              <table class="attribution-review__table">
+                <thead>
+                  <tr>
+                    <th class="attribution-review__th attribution-review__th--document">Document</th>
+                    <th class="attribution-review__th attribution-review__th--entity">Entity</th>
+                    <th class="attribution-review__th attribution-review__th--year">Year</th>
+                    <th class="attribution-review__th attribution-review__th--type">Type</th>
+                    <th class="attribution-review__th attribution-review__th--confidence">Confidence</th>
+                    <th class="attribution-review__th attribution-review__th--actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (pf of pendingFiles(); track pf.file.id; let i = $index) {
+                    <tr
+                      class="attribution-review__row"
+                      [attr.data-file-id]="pf.file.id"
+                      [class.attribution-review__row--processing]="pf.isProcessing"
+                      [class.attribution-review__row--validated]="pf.isValidated"
+                      [class.attribution-review__row--incomplete]="!isFileComplete(pf)"
+                    >
+                      <!-- Document Name -->
+                      <td class="attribution-review__td attribution-review__td--document">
+                        <div class="attribution-review__file">
+                          <lucide-icon name="file-text" [size]="18"></lucide-icon>
+                          <div class="attribution-review__file-info">
+                            <span class="attribution-review__file-name">{{ pf.file.name }}</span>
+                            <span class="attribution-review__file-size">
+                              {{ (pf.file.size / 1024 / 1024).toFixed(2) }} MB
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <!-- Entity -->
+                      <td class="attribution-review__td attribution-review__td--entity">
+                        <select
+                          class="attribution-review__select"
+                          [class.attribution-review__select--empty]="!pf.metadata.entity"
+                          [ngModel]="pf.metadata.entity"
+                          (ngModelChange)="onAttributionChange(pf.file.id, 'entity', $event)"
+                          [disabled]="pf.isProcessing"
+                        >
+                          <option value="">-- Select --</option>
+                          @for (entity of entityOptions(); track entity) {
+                            <option [value]="entity">{{ entity }}</option>
+                          }
+                        </select>
+                      </td>
+
+                      <!-- Year -->
+                      <td class="attribution-review__td attribution-review__td--year">
+                        <input
+                          type="number"
+                          class="attribution-review__input"
+                          [class.attribution-review__input--empty]="!pf.metadata.year"
+                          [ngModel]="pf.metadata.year"
+                          (ngModelChange)="onAttributionChange(pf.file.id, 'year', $event)"
+                          [disabled]="pf.isProcessing"
+                          min="2020"
+                          max="2030"
+                          placeholder="Year"
+                        />
+                      </td>
+
+                      <!-- Type -->
+                      <td class="attribution-review__td attribution-review__td--type">
+                        <select
+                          class="attribution-review__select"
+                          [class.attribution-review__select--empty]="!pf.metadata.type"
+                          [ngModel]="pf.metadata.type"
+                          (ngModelChange)="onAttributionChange(pf.file.id, 'type', $event)"
+                          [disabled]="pf.isProcessing"
+                        >
+                          <option value="">-- Select --</option>
+                          @for (type of typeOptions; track type) {
+                            <option [value]="type">{{ getDocumentTypeLabel(type) }}</option>
+                          }
+                        </select>
+                      </td>
+
+                      <!-- Confidence Indicator -->
+                      <td class="attribution-review__td attribution-review__td--confidence">
+                        @if (pf.isValidated) {
+                          <span class="confidence-indicator confidence-indicator--validated">
+                            <lucide-icon name="shield-check" [size]="14"></lucide-icon>
+                            Validated
+                          </span>
+                        } @else {
+                          @switch (pf.metadata.confidence) {
+                            @case ('high') {
+                              <span class="confidence-indicator confidence-indicator--high">
+                                <lucide-icon name="sparkles" [size]="14"></lucide-icon>
+                                AI Auto
+                              </span>
+                            }
+                            @case ('medium') {
+                              <span class="confidence-indicator confidence-indicator--medium">
+                                <lucide-icon name="alert-triangle" [size]="14"></lucide-icon>
+                                Partial
+                              </span>
+                            }
+                            @case ('low') {
+                              <span class="confidence-indicator confidence-indicator--low">
+                                <lucide-icon name="help-circle" [size]="14"></lucide-icon>
+                                Manual
+                              </span>
+                            }
+                          }
+                        }
+                      </td>
+
+                      <!-- Actions -->
+                      <td class="attribution-review__td attribution-review__td--actions">
+                        @if (pf.isProcessing) {
+                          <div class="attribution-review__spinner">
+                            <lucide-icon name="loader-2" [size]="18"></lucide-icon>
+                          </div>
+                        } @else {
+                          <div class="attribution-review__actions">
+                            @if (!pf.isValidated && isFileComplete(pf)) {
+                              <button
+                                class="attribution-review__action attribution-review__action--validate"
+                                (click)="validateSingleFile(pf.file.id)"
+                                title="Validate"
+                              >
+                                <lucide-icon name="check" [size]="16"></lucide-icon>
+                              </button>
+                            }
+                            @if (pf.isValidated) {
+                              <button
+                                class="attribution-review__action attribution-review__action--edit"
+                                (click)="editAttribution(pf.file.id)"
+                                title="Edit"
+                              >
+                                <lucide-icon name="pencil" [size]="16"></lucide-icon>
+                              </button>
+                            }
+                            <button
+                              class="attribution-review__action attribution-review__action--remove"
+                              (click)="removePendingFile(pf.file.id)"
+                              title="Remove"
+                            >
+                              <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+                            </button>
+                          </div>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div class="attribution-review__footer">
+              <div class="attribution-review__summary">
+                @if (getIncompleteCount() > 0) {
+                  <span class="attribution-review__warning">
+                    <lucide-icon name="alert-circle" [size]="14"></lucide-icon>
+                    {{ getIncompleteCount() }} file(s) need attribution
+                  </span>
+                }
+                @if (getValidatedCount() > 0) {
+                  <span class="attribution-review__validated-count">
+                    <lucide-icon name="check-circle" [size]="14"></lucide-icon>
+                    {{ getValidatedCount() }} validated
+                  </span>
+                }
+              </div>
+              <div class="attribution-review__buttons">
+                <app-button
+                  variant="secondary"
+                  (clicked)="validateAllComplete()"
+                  [disabled]="getCompleteUnvalidatedCount() === 0"
+                >
+                  <lucide-icon name="check-check" [size]="16"></lucide-icon>
+                  Validate All Complete
+                </app-button>
+                <app-button
+                  variant="primary"
+                  [loading]="isUploading()"
+                  [disabled]="getValidatedCount() === 0"
+                  (clicked)="placeValidatedDocuments()"
+                >
+                  <lucide-icon name="upload-cloud" [size]="16"></lucide-icon>
+                  Place {{ getValidatedCount() }} Document(s)
+                </app-button>
+              </div>
             </div>
           </div>
         }
@@ -175,15 +281,29 @@
       <!-- Library Tab Content -->
       <!-- Global Filters -->
       <div class="global-filters">
-        <!-- Search -->
-        <div class="global-filters__search">
-          <lucide-icon name="search" [size]="18"></lucide-icon>
-          <input
-            type="text"
-            placeholder="Search by name, type..."
-            [ngModel]="globalFilters().search"
-            (ngModelChange)="onGlobalSearchChange($event)"
-          />
+        <!-- Status Pills -->
+        <div class="global-filters__status-pills">
+          <button
+            class="status-pill"
+            [class.status-pill--active]="globalFilters().status === ''"
+            (click)="onGlobalStatusChange('')"
+          >
+            All
+          </button>
+          @for (status of statusOptions; track status) {
+            <button
+              class="status-pill"
+              [class.status-pill--active]="globalFilters().status === status"
+              [class.status-pill--missing]="status === 'missing'"
+              [class.status-pill--uploaded]="status === 'uploaded'"
+              [class.status-pill--analyzed]="status === 'analyzed'"
+              [class.status-pill--validated]="status === 'validated'"
+              (click)="onGlobalStatusChange(status)"
+            >
+              {{ getStatusLabel(status) }}
+              <span class="status-pill__count">{{ $any(statusCounts())[status] }}</span>
+            </button>
+          }
         </div>
 
         <!-- Filter Dropdowns -->
@@ -212,22 +332,37 @@
             }
           </select>
 
-          <!-- Status -->
-          <select
-            class="global-filters__select"
-            [ngModel]="globalFilters().status"
-            (ngModelChange)="onGlobalStatusChange($event)"
-          >
-            <option value="">All Statuses</option>
-            @for (status of statusOptions; track status) {
-              <option [value]="status">{{ getStatusLabel(status) }}</option>
-            }
-          </select>
-
           @if (hasActiveGlobalFilters()) {
             <button class="global-filters__clear" (click)="clearGlobalFilters()">
               <lucide-icon name="x" [size]="14"></lucide-icon>
               Clear
+            </button>
+          }
+        </div>
+
+        <!-- Bulk Download -->
+        <div class="global-filters__actions">
+          @if (isBulkDownloading()) {
+            <div class="bulk-download">
+              <div class="bulk-download__progress">
+                <div class="bulk-download__bar" [style.width.%]="bulkDownloadProgress()"></div>
+              </div>
+              <span class="bulk-download__text">
+                {{ bulkDownloadCurrent() }}/{{ bulkDownloadTotal() }}
+              </span>
+              <button class="bulk-download__cancel" (click)="cancelBulkDownload()">
+                <lucide-icon name="x" [size]="14"></lucide-icon>
+              </button>
+            </div>
+          } @else {
+            <button
+              class="global-filters__download"
+              (click)="startBulkDownload()"
+              [disabled]="filteredDocuments().length === 0"
+              title="Download all filtered documents"
+            >
+              <lucide-icon name="download" [size]="16"></lucide-icon>
+              Download All
             </button>
           }
         </div>

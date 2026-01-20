@@ -1,4 +1,47 @@
-import { Engagement, DocumentRequirement } from '../models';
+import { Engagement, DocumentRequirement, CtrResults } from '../models';
+
+// Mock CTR Results for completed engagements
+const MOCK_CTR_RESULTS_NL: CtrResults = {
+  status: 'completed',
+  completedAt: '2026-01-25T14:30:00Z',
+  documents: [
+    {
+      id: 'CTR-NL-001',
+      name: 'CTR_Netherlands_BV_2025_Report.pdf',
+      type: 'pdf',
+      size: 2450000,
+      generatedAt: '2026-01-25T14:30:00Z',
+    },
+    {
+      id: 'CTR-NL-002',
+      name: 'CTR_Netherlands_BV_2025_Data.xml',
+      type: 'xml',
+      size: 185000,
+      generatedAt: '2026-01-25T14:30:00Z',
+    },
+  ],
+  taxData: {
+    statutoryRate: 25.8,
+    effectiveRate: 22.3,
+    taxLiability: 138260,
+    preTaxIncome: 620000,
+    currentTax: 118500,
+    deferredTax: 19760,
+    etrAdjustments: [
+      { label: 'Statutory Rate', value: 25.8, description: 'Dutch corporate tax rate' },
+      { label: 'R&D Tax Credit', value: -2.1, description: 'Innovation Box benefit' },
+      { label: 'Non-deductible Expenses', value: 0.8, description: 'Entertainment and fines' },
+      { label: 'Participation Exemption', value: -1.5, description: 'Dividend income exemption' },
+      { label: 'Permanent Differences', value: -0.7, description: 'Other permanent adjustments' },
+    ],
+    taxByCategory: [
+      { category: 'Operating Income', amount: 95000 },
+      { category: 'Financial Income', amount: 12500 },
+      { category: 'Real Estate', amount: 18760 },
+      { category: 'Other', amount: 12000 },
+    ],
+  },
+};
 
 // Helper to create document requirements with fiscal year
 const createRequirements = (
@@ -112,6 +155,7 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
       { type: 'tax_return', label: 'Tax Return', required: true, status: 'validated', documentId: 'DOC-NL-004' },
     ], 2025),
     scenario: 'Completed',
+    ctrResults: MOCK_CTR_RESULTS_NL,
   },
   {
     id: 'ENG-BE-001',

@@ -27,6 +27,39 @@ export interface VarianceAlert {
   insight_message: string;
 }
 
+// CTR (Company Tax Return) Results
+export interface CtrResultDocument {
+  id: string;
+  name: string;
+  type: 'pdf' | 'xml';
+  size: number;
+  generatedAt: string;
+}
+
+export interface EtrAdjustment {
+  label: string;
+  value: number; // Percentage points (+/-)
+  description: string;
+}
+
+export interface CtrTaxData {
+  statutoryRate: number;
+  effectiveRate: number;
+  taxLiability: number;
+  preTaxIncome: number;
+  currentTax: number;
+  deferredTax: number;
+  etrAdjustments: EtrAdjustment[];
+  taxByCategory: { category: string; amount: number }[];
+}
+
+export interface CtrResults {
+  status: 'pending' | 'processing' | 'completed';
+  completedAt?: string;
+  documents: CtrResultDocument[];
+  taxData?: CtrTaxData;
+}
+
 export interface DocumentRequirement {
   type: DocumentType;
   label: string;
@@ -55,6 +88,7 @@ export interface Engagement {
   scenario?: string;
   varianceAlerts?: VarianceAlert[];
   aiInsights?: string[];
+  ctrResults?: CtrResults;
 }
 
 export const STATUS_LABELS: Record<EngagementStatus, string> = {

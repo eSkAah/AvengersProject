@@ -104,8 +104,8 @@ class TestDetectSignificantVariances:
         variances = detect_significant_variances(current, previous)
 
         assert len(variances) == 1
-        assert "Total Actifs" in variances[0].insight_message
-        assert "augmenté" in variances[0].insight_message
+        assert "Total Assets" in variances[0].insight_message
+        assert "increased" in variances[0].insight_message
         assert "23" in variances[0].insight_message
 
 

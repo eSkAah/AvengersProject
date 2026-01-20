@@ -11,9 +11,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, X, ChevronRight, Calendar, TrendingUp, Building2, ArrowUpRight, ExternalLink } from 'lucide-angular';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { MockDataService, Engagement } from '../../core';
-import { BreadcrumbComponent, BreadcrumbItem, ButtonComponent } from '../../shared';
+import { BreadcrumbComponent, BreadcrumbItem, ButtonComponent, RiskBadgeComponent, BadgeComponent } from '../../shared';
 
 export interface EntityNode {
   id: string;
@@ -32,19 +33,65 @@ export interface EntityNode {
   engagementCount?: number;
 }
 
+// Relationship with ownership
+export interface OwnershipRelation {
+  from: EntityNode;
+  to: EntityNode;
+  ownershipPercent: number;
+}
+
+// Cross-shareholding (bidirectional ownership)
+export interface CrossOwnership {
+  entityA: EntityNode;
+  entityB: EntityNode;
+  percentAtoB: number;
+  percentBtoA: number;
+}
+
 @Component({
   selector: 'app-structure',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, BreadcrumbComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, LucideAngularModule, BreadcrumbComponent, ButtonComponent, RiskBadgeComponent, BadgeComponent],
   templateUrl: './structure.component.html',
   styleUrl: './structure.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('drawerSlide', [
+      transition(':enter', [
+        style({ transform: 'translateX(100%)', opacity: 0 }),
+        animate('300ms ease-out', style({ transform: 'translateX(0)', opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ transform: 'translateX(100%)', opacity: 0 })),
+      ]),
+    ]),
+    trigger('overlayFade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ opacity: 0 })),
+      ]),
+    ]),
+  ],
 })
 export class StructureComponent implements AfterViewInit {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
 
   readonly svgContainer = viewChild<ElementRef>('svgContainer');
+
+  // Icons
+  readonly icons = {
+    x: X,
+    chevronRight: ChevronRight,
+    calendar: Calendar,
+    trendingUp: TrendingUp,
+    building: Building2,
+    arrowUpRight: ArrowUpRight,
+    externalLink: ExternalLink,
+  };
 
   readonly breadcrumbs: BreadcrumbItem[] = [
     { label: 'Home', path: '/' },
@@ -57,6 +104,9 @@ export class StructureComponent implements AfterViewInit {
   readonly panY = signal(0);
   readonly selectedNode = signal<EntityNode | null>(null);
   readonly isDragging = signal(false);
+
+  // Drawer state (for entity details)
+  readonly drawerOpen = signal(false);
 
   // Expanded state - use a signal to track which nodes are expanded
   readonly expandedNodes = signal<Set<string>>(new Set(['holding', 'region-Benelux', 'region-DACH', 'region-Western Europe', 'region-Other']));
@@ -191,12 +241,33 @@ export class StructureComponent implements AfterViewInit {
     return nodes;
   });
 
-  // Computed connections
-  readonly connections = computed(() => {
-    const links: { from: EntityNode; to: EntityNode }[] = [];
+  // Computed connections with ownership percentages
+  readonly connections = computed<OwnershipRelation[]>(() => {
+    const links: OwnershipRelation[] = [];
     const expanded = this.expandedNodes();
     this.collectConnections(this.entityTree(), links, expanded);
     return links;
+  });
+
+  // Cross-shareholding relationships (bidirectional ownership)
+  readonly crossOwnerships = computed<CrossOwnership[]>(() => {
+    const nodes = this.visibleNodes();
+    const crossOwn: CrossOwnership[] = [];
+
+    // Find Belgium HoldCo and Netherlands BV for demo cross-shareholding
+    const belgiumNode = nodes.find(n => n.name.includes('Belgium'));
+    const netherlandsNode = nodes.find(n => n.name.includes('Netherlands'));
+
+    if (belgiumNode && netherlandsNode) {
+      crossOwn.push({
+        entityA: belgiumNode,
+        entityB: netherlandsNode,
+        percentAtoB: 20,
+        percentBtoA: 15,
+      });
+    }
+
+    return crossOwn;
   });
 
   // Chart dimensions
@@ -309,13 +380,32 @@ export class StructureComponent implements AfterViewInit {
     }
   }
 
-  private collectConnections(node: EntityNode, result: { from: EntityNode; to: EntityNode }[], expanded: Set<string>): void {
+  private collectConnections(node: EntityNode, result: OwnershipRelation[], expanded: Set<string>): void {
     if (expanded.has(node.id) && node.children) {
       node.children.forEach((child) => {
-        result.push({ from: node, to: child });
+        // Default ownership: 100% for holding/region → children
+        // Could be customized per relationship
+        const ownership = this.getOwnershipPercent(node, child);
+        result.push({ from: node, to: child, ownershipPercent: ownership });
         this.collectConnections(child, result, expanded);
       });
     }
+  }
+
+  // Get ownership percentage for a relationship
+  private getOwnershipPercent(parent: EntityNode, child: EntityNode): number {
+    // Demo: holding owns regions 100%, regions own entities with varying percentages
+    if (parent.type === 'holding') return 100;
+    if (parent.type === 'region') {
+      // Vary ownership for demo
+      if (child.name.includes('France')) return 100;
+      if (child.name.includes('Germany')) return 85;
+      if (child.name.includes('Netherlands')) return 100;
+      if (child.name.includes('Belgium')) return 75;
+      if (child.name.includes('Luxembourg')) return 100;
+      return 100;
+    }
+    return 100;
   }
 
   // Check if node is expanded
@@ -387,9 +477,29 @@ export class StructureComponent implements AfterViewInit {
     }
   }
 
-  // Node interaction
+  // Node interaction - open drawer
   selectNode(node: EntityNode): void {
     this.selectedNode.set(node);
+    // Open drawer for entities (not for holding/region)
+    if (node.type === 'entity') {
+      this.drawerOpen.set(true);
+    }
+  }
+
+  // Close drawer
+  closeDrawer(): void {
+    this.drawerOpen.set(false);
+    // Optionally clear selection after animation
+    setTimeout(() => {
+      if (!this.drawerOpen()) {
+        this.selectedNode.set(null);
+      }
+    }, 250);
+  }
+
+  // Close drawer on overlay click
+  onOverlayClick(): void {
+    this.closeDrawer();
   }
 
   toggleNode(node: EntityNode, event: Event): void {
@@ -446,6 +556,16 @@ export class StructureComponent implements AfterViewInit {
 
   getStatusClass(status: string): string {
     return `status-${status}`;
+  }
+
+  getStatusVariant(status: string): 'info' | 'warning' | 'success' | 'error' {
+    const variants: Record<string, 'info' | 'warning' | 'success' | 'error'> = {
+      waiting: 'warning',
+      received: 'info',
+      processing: 'info',
+      completed: 'success',
+    };
+    return variants[status] || 'info';
   }
 
   // Search functionality
@@ -540,6 +660,60 @@ export class StructureComponent implements AfterViewInit {
     const midY = startY + (endY - startY) / 2;
 
     return `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+  }
+
+  // Get label position for ownership percentage
+  getOwnershipLabelPosition(from: EntityNode, to: EntityNode): { x: number; y: number } {
+    const startX = (from.x || 0) + this.nodeWidth / 2;
+    const startY = (from.y || 0) + this.nodeHeight;
+    const endX = (to.x || 0) + this.nodeWidth / 2;
+    const endY = to.y || 0;
+
+    // Position label at midpoint of the curve
+    return {
+      x: (startX + endX) / 2,
+      y: startY + (endY - startY) / 2,
+    };
+  }
+
+  // Get cross-shareholding paths (two arrows: A→B and B→A)
+  getCrossOwnershipPath(entityA: EntityNode, entityB: EntityNode, direction: 'AtoB' | 'BtoA'): string {
+    const aX = (entityA.x || 0) + this.nodeWidth;
+    const aY = (entityA.y || 0) + this.nodeHeight / 2;
+    const bX = entityB.x || 0;
+    const bY = (entityB.y || 0) + this.nodeHeight / 2;
+
+    // Offset to separate the two arrows
+    const offset = direction === 'AtoB' ? -15 : 15;
+
+    const startX = direction === 'AtoB' ? aX : bX;
+    const startY = (direction === 'AtoB' ? aY : bY) + offset;
+    const endX = direction === 'AtoB' ? bX : aX;
+    const endY = (direction === 'AtoB' ? bY : aY) + offset;
+
+    const midX = (startX + endX) / 2;
+
+    return `M ${startX} ${startY} Q ${midX} ${startY + offset * 2}, ${endX} ${endY}`;
+  }
+
+  // Get cross-ownership label position
+  getCrossOwnershipLabelPosition(entityA: EntityNode, entityB: EntityNode, direction: 'AtoB' | 'BtoA'): { x: number; y: number } {
+    const aX = (entityA.x || 0) + this.nodeWidth;
+    const aY = (entityA.y || 0) + this.nodeHeight / 2;
+    const bX = entityB.x || 0;
+    const bY = (entityB.y || 0) + this.nodeHeight / 2;
+
+    const offset = direction === 'AtoB' ? -25 : 25;
+
+    return {
+      x: (aX + bX) / 2,
+      y: (aY + bY) / 2 + offset,
+    };
+  }
+
+  // Get arrow marker ID based on direction
+  getArrowMarkerId(direction: 'AtoB' | 'BtoA'): string {
+    return direction === 'AtoB' ? 'arrowhead-atob' : 'arrowhead-btoa';
   }
 
   getRiskClass(risk?: string): string {

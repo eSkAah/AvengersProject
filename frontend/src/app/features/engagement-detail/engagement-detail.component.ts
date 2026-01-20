@@ -27,6 +27,7 @@ import {
   DrillDownData,
 } from '../../shared';
 import { Document as DocumentModel } from '../../core/models/document.model';
+import { CtrResultDocument } from '../../core/models/engagement.model';
 import { KpiSectionComponent } from '../dashboard/components/kpi-section/kpi-section.component';
 import {
   KpiMetric,
@@ -36,6 +37,9 @@ import {
   ChartsSectionComponent,
   DrillDownEvent,
 } from '../dashboard/components/charts-section/charts-section.component';
+import { ResultsTabComponent, ResultsKpiClickEvent } from './components/results-tab/results-tab.component';
+
+export type EngagementTab = 'overview' | 'results';
 
 @Component({
   selector: 'app-engagement-detail',
@@ -52,6 +56,7 @@ import {
     KpiSectionComponent,
     ChartsSectionComponent,
     DrillDownModalComponent,
+    ResultsTabComponent,
   ],
   templateUrl: './engagement-detail.component.html',
   styleUrl: './engagement-detail.component.scss',
@@ -68,6 +73,7 @@ export class EngagementDetailComponent implements OnInit {
 
   readonly engagementId = signal<string | null>(null);
   readonly drillDownData = signal<DrillDownData | null>(null);
+  readonly activeTab = signal<EngagementTab>('overview');
 
   readonly engagement = computed(() => {
     const id = this.engagementId();
@@ -125,6 +131,26 @@ export class EngagementDetailComponent implements OnInit {
       month: 'long',
       year: 'numeric',
     });
+  });
+
+  // CTR Results availability
+  readonly hasResults = computed(() => {
+    const eng = this.engagement();
+    return eng?.ctrResults?.status === 'completed';
+  });
+
+  readonly ctrResults = computed(() => {
+    const eng = this.engagement();
+    return eng?.ctrResults ?? null;
+  });
+
+  readonly isResultsNew = computed(() => {
+    const results = this.ctrResults();
+    if (!results?.completedAt) return false;
+    const completedDate = new Date(results.completedAt);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    return completedDate > threeDaysAgo;
   });
 
   ngOnInit(): void {
@@ -301,5 +327,49 @@ export class EngagementDetailComponent implements OnInit {
     const question = `Can you explain ${data.title} (${this.formatCurrency(data.value)})?`;
     this.eveService.sendMessage(question).subscribe();
     this.closeDrillDown();
+  }
+
+  // Tab navigation
+  setActiveTab(tab: EngagementTab): void {
+    this.activeTab.set(tab);
+  }
+
+  // Results Tab handlers
+  onResultsDownload(doc: CtrResultDocument): void {
+    this.toast(`Downloading ${doc.name}...`);
+  }
+
+  onResultsPreview(doc: CtrResultDocument): void {
+    this.toast(`Opening preview for ${doc.name}...`);
+  }
+
+  onResultsKpiClick(event: ResultsKpiClickEvent): void {
+    this.drillDownData.set({
+      title: event.label,
+      value: event.value,
+      details: [
+        { label: 'Metric Type', value: event.metric, type: 'text' as const },
+      ],
+    });
+    this.drillDownModal?.open();
+  }
+
+  onResultsCmdClick(event: ResultsKpiClickEvent): void {
+    const engagementId = this.engagementId();
+    if (!engagementId) return;
+
+    this.eveService.openPanel();
+    const valueStr = event.metric.includes('rate') || event.metric.includes('etr')
+      ? `${event.value.toFixed(1)}%`
+      : this.formatCurrency(event.value);
+    this.eveService
+      .explainValue(valueStr, event.label, engagementId, { metric: event.metric })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+  }
+
+  private toast(message: string): void {
+    // Simple toast - could integrate with ToastService
+    console.log(message);
   }
 }

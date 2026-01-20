@@ -328,9 +328,9 @@ async def test_get_assets_chart_has_labels_and_values(client):
     data = response.json()
 
     labels = data["data"]["labels"]
-    assert "Immobilisations" in labels
-    assert "Actifs circulants" in labels
-    assert "Trésorerie" in labels
+    assert "Fixed Assets" in labels
+    assert "Current Assets" in labels
+    assert "Cash" in labels
     assert len(data["data"]["datasets"]) > 0
     assert len(data["data"]["datasets"][0]["data"]) == 3
 
