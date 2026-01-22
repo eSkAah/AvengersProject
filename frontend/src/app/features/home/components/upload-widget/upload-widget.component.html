@@ -1,5 +1,10 @@
 <div class="upload-widget">
-  <!-- Upload Zone -->
+  <div class="upload-widget__header">
+    <lucide-icon [img]="icons.upload" [size]="18"></lucide-icon>
+    <h3>Upload Document</h3>
+  </div>
+
+  <!-- Compact Upload Zone -->
   <div
     class="upload-zone"
     [class.upload-zone--dragover]="isDragOver()"
@@ -16,64 +21,8 @@
       (change)="onFileSelect($event)"
     />
     <label for="file-upload" class="upload-zone__content">
-      <div class="upload-zone__icon">
-        <lucide-icon [img]="icons.upload" [size]="32"></lucide-icon>
-      </div>
-      <div class="upload-zone__text">
-        <span class="upload-zone__title">Drop files here</span>
-        <span class="upload-zone__subtitle">or click to browse</span>
-      </div>
+      <lucide-icon [img]="icons.upload" [size]="24"></lucide-icon>
+      <span class="upload-zone__text">Drop files or click to browse</span>
     </label>
-  </div>
-
-  <!-- Missing Documents List -->
-  <div class="missing-docs">
-    <div class="missing-docs__header">
-      <h3>Missing Documents</h3>
-      <span class="missing-docs__count">{{ totalMissing() }} missing</span>
-    </div>
-
-    @if (missingDocuments().length === 0) {
-      <div class="missing-docs__empty">
-        <lucide-icon [img]="icons.fileText" [size]="24"></lucide-icon>
-        <span>All documents uploaded</span>
-      </div>
-    } @else {
-      <div class="missing-docs__list">
-        @for (doc of missingDocuments(); track doc.type) {
-          <div class="missing-doc-item">
-            <div class="missing-doc-item__main">
-              <lucide-icon [img]="icons.fileText" [size]="18"></lucide-icon>
-              <span class="missing-doc-item__name">{{ doc.label }}</span>
-              <button
-                class="missing-doc-item__info"
-                [title]="getTooltipText(doc)"
-              >
-                <lucide-icon [img]="icons.info" [size]="14"></lucide-icon>
-              </button>
-            </div>
-            <div class="missing-doc-item__actions">
-              <div class="missing-doc-item__entities">
-                @for (eng of doc.engagements.slice(0, 3); track eng.id) {
-                  <span class="entity-flag" [title]="eng.entity">{{ eng.countryFlag }}</span>
-                }
-                @if (doc.engagements.length > 3) {
-                  <span class="entity-more">+{{ doc.engagements.length - 3 }}</span>
-                }
-              </div>
-              <button class="upload-btn" (click)="onUploadClick(doc.type)">
-                <lucide-icon [img]="icons.upload" [size]="14"></lucide-icon>
-                Upload
-              </button>
-            </div>
-          </div>
-        }
-      </div>
-    }
-
-    <button class="view-all-btn" (click)="navigateToDoclib()">
-      View All Documents
-      <lucide-icon [img]="icons.chevronRight" [size]="16"></lucide-icon>
-    </button>
   </div>
 </div>

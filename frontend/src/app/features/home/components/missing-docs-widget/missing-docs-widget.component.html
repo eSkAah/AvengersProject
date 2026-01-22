@@ -1,0 +1,53 @@
+<div class="missing-docs-widget">
+  <div class="missing-docs__header">
+    <div class="missing-docs__title">
+      <lucide-icon [img]="icons.alertCircle" [size]="18"></lucide-icon>
+      <h3>Missing Documents</h3>
+    </div>
+    @if (totalMissing() > 0) {
+      <span class="missing-docs__count">{{ totalMissing() }} missing</span>
+    }
+  </div>
+
+  @if (missingDocuments().length === 0) {
+    <div class="missing-docs__empty">
+      <lucide-icon [img]="icons.fileText" [size]="24"></lucide-icon>
+      <span>All documents uploaded</span>
+    </div>
+  } @else {
+    <div class="missing-docs__list">
+      @for (doc of missingDocuments(); track doc.type) {
+        <div class="missing-doc-item">
+          <div class="missing-doc-item__main">
+            <lucide-icon [img]="icons.fileText" [size]="16"></lucide-icon>
+            <span class="missing-doc-item__name">{{ doc.label }}</span>
+            <button
+              class="missing-doc-item__info"
+              [title]="getTooltipText(doc)"
+            >
+              <lucide-icon [img]="icons.info" [size]="12"></lucide-icon>
+            </button>
+          </div>
+          <div class="missing-doc-item__actions">
+            <div class="missing-doc-item__entities">
+              @for (eng of doc.engagements.slice(0, 2); track eng.id) {
+                <span class="entity-flag" [title]="eng.entity">{{ eng.countryFlag }}</span>
+              }
+              @if (doc.engagements.length > 2) {
+                <span class="entity-more">+{{ doc.engagements.length - 2 }}</span>
+              }
+            </div>
+            <button class="upload-btn" (click)="onUploadClick(doc.type)">
+              <lucide-icon [img]="icons.upload" [size]="12"></lucide-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <button class="view-all-btn" (click)="navigateToDoclib()">
+    View All
+    <lucide-icon [img]="icons.chevronRight" [size]="14"></lucide-icon>
+  </button>
+</div>

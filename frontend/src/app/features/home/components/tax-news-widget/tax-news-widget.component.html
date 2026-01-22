@@ -1,0 +1,38 @@
+<div class="tax-news-widget">
+  <div class="tax-news-widget__header">
+    <div class="tax-news-widget__title">
+      <lucide-icon [img]="icons.newspaper" [size]="22"></lucide-icon>
+      <h2>Tax News & Insights</h2>
+    </div>
+    <button class="view-all-btn">
+      View All
+      <lucide-icon [img]="icons.chevronRight" [size]="16"></lucide-icon>
+    </button>
+  </div>
+
+  <div class="news-grid">
+    @for (item of news(); track item.id) {
+      <article class="news-card" [class]="'news-card--' + item.category">
+        <div class="news-card__header">
+          <span class="news-card__category" [class]="'category--' + item.category">
+            {{ getCategoryLabel(item.category) }}
+          </span>
+          <span class="news-card__date">
+            <lucide-icon [img]="icons.calendar" [size]="12"></lucide-icon>
+            {{ formatDate(item.date) }}
+          </span>
+        </div>
+        <h3 class="news-card__title">{{ item.title }}</h3>
+        <p class="news-card__summary">{{ item.summary }}</p>
+        <div class="news-card__footer">
+          <div class="news-card__countries">
+            @for (flag of item.countries.slice(0, 4); track flag) {
+              <span class="country-flag">{{ flag }}</span>
+            }
+          </div>
+          <span class="news-card__source">{{ item.source }}</span>
+        </div>
+      </article>
+    }
+  </div>
+</div>

@@ -1,0 +1,157 @@
+@use 'styles/variables' as *;
+
+.services-widget {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-4;
+
+    h2 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: $color-text-primary;
+      margin: 0;
+    }
+  }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    background: rgba($color-background, 0.8);
+    padding: $spacing-1 $spacing-3;
+    border-radius: $radius-full;
+  }
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-3;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.service-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-3;
+  padding: $spacing-4;
+  background: rgba($color-background, 0.5);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($color-border, 0.5);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba($color-background, 0.8);
+    border-color: rgba($ey-yellow, 0.3);
+    transform: translateY(-2px);
+
+    .service-card__action {
+      color: $ey-yellow;
+      transform: translateX(2px);
+    }
+  }
+
+  &--expiring {
+    border-left: 3px solid $color-warning;
+  }
+
+  &--pending {
+    border-left: 3px solid $color-info;
+  }
+
+  &--active {
+    border-left: 3px solid $color-success;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba($ey-yellow, 0.1);
+    border-radius: $radius-lg;
+    flex-shrink: 0;
+
+    lucide-icon {
+      color: $ey-yellow;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin: 0 0 4px 0;
+  }
+
+  &__description {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-2 0;
+    line-height: 1.4;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+
+  &__status {
+    font-size: 10px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: $radius-sm;
+
+    &.status--active {
+      color: $color-success;
+      background: rgba($color-success, 0.1);
+    }
+
+    &.status--pending {
+      color: $color-info;
+      background: rgba($color-info, 0.1);
+    }
+
+    &.status--expiring {
+      color: $color-warning;
+      background: rgba($color-warning, 0.1);
+    }
+  }
+
+  &__engagements {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-text-secondary;
+    cursor: pointer;
+    padding: $spacing-1;
+    transition: all 0.2s ease;
+    align-self: center;
+  }
+}

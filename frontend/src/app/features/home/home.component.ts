@@ -14,6 +14,9 @@ import {
   DonutSegment,
   SignoffWidgetComponent,
   EngagementListWidgetComponent,
+  MissingDocsWidgetComponent,
+  ServicesWidgetComponent,
+  TaxNewsWidgetComponent,
 } from './components';
 
 @Component({
@@ -26,6 +29,9 @@ import {
     DonutWidgetComponent,
     SignoffWidgetComponent,
     EngagementListWidgetComponent,
+    MissingDocsWidgetComponent,
+    ServicesWidgetComponent,
+    TaxNewsWidgetComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',

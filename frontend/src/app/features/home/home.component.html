@@ -12,24 +12,32 @@
 
   <!-- Bento Grid -->
   <div class="bento-grid">
-    <!-- Widget 1: Upload & Missing Documents (Left, tall) -->
-    <div class="bento-card bento-card--upload">
-      <app-upload-widget (uploadFiles)="onFilesUpload($event)"></app-upload-widget>
+    <!-- Left Column: Subscribed Services (Large) -->
+    <div class="bento-card bento-card--services">
+      <app-services-widget></app-services-widget>
     </div>
 
-    <!-- Widget 2: Engagement Status Donut (Right, top) -->
-    <div class="bento-card bento-card--donut">
-      <app-donut-widget (segmentSelect)="onDonutSegmentChange($event)"></app-donut-widget>
+    <!-- Right Column: Upload, Missing Docs, Sign Off -->
+    <div class="bento-column-right">
+      <!-- Upload Document (Compact) -->
+      <div class="bento-card bento-card--upload">
+        <app-upload-widget (uploadFiles)="onFilesUpload($event)"></app-upload-widget>
+      </div>
+
+      <!-- Missing Documents -->
+      <div class="bento-card bento-card--missing">
+        <app-missing-docs-widget></app-missing-docs-widget>
+      </div>
+
+      <!-- Documents to Sign Off -->
+      <div class="bento-card bento-card--signoff">
+        <app-signoff-widget></app-signoff-widget>
+      </div>
     </div>
 
-    <!-- Widget 3: Documents to Sign Off (Right, bottom) -->
-    <div class="bento-card bento-card--signoff">
-      <app-signoff-widget></app-signoff-widget>
-    </div>
-
-    <!-- Widget 4: Engagement List (Full width, bottom) -->
-    <div class="bento-card bento-card--engagements">
-      <app-engagement-list-widget [filter]="selectedDonutSegment()"></app-engagement-list-widget>
+    <!-- Full Width: Tax News & Insights -->
+    <div class="bento-card bento-card--news">
+      <app-tax-news-widget></app-tax-news-widget>
     </div>
   </div>
 </div>
