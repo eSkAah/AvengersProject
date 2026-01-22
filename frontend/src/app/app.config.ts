@@ -1,7 +1,9 @@
 import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 import {
   LucideAngularModule,
   Home,
@@ -104,7 +106,19 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    provideAnimations(),
+    provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+        options: {
+          darkModeSelector: '.dark-mode',
+          cssLayer: {
+            name: 'primeng',
+            order: 'tailwind-base, primeng, tailwind-utilities'
+          }
+        }
+      }
+    }),
     importProvidersFrom(
       LucideAngularModule.pick({
         Home,

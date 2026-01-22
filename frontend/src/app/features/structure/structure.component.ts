@@ -4,54 +4,48 @@ import {
   inject,
   computed,
   signal,
-  ElementRef,
-  viewChild,
-  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule, X, ChevronRight, Calendar, TrendingUp, Building2, ArrowUpRight, ExternalLink } from 'lucide-angular';
+import { LucideAngularModule, X, ChevronRight, Calendar, TrendingUp, Building2 } from 'lucide-angular';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { TreeNode, PrimeTemplate } from 'primeng/api';
+import { OrganizationChart } from 'primeng/organizationchart';
 import { MockDataService, Engagement } from '../../core';
-import { BreadcrumbComponent, BreadcrumbItem, ButtonComponent, RiskBadgeComponent, BadgeComponent } from '../../shared';
+import { BreadcrumbComponent, BreadcrumbItem, RiskBadgeComponent, BadgeComponent } from '../../shared';
 
-export interface EntityNode {
+// Extended TreeNode with custom data
+export interface EntityTreeNode extends TreeNode<EntityData> {
+  children?: EntityTreeNode[];
+}
+
+export interface EntityData {
   id: string;
   name: string;
-  type: 'holding' | 'region' | 'entity';
+  nodeType: 'holding' | 'region' | 'entity';
   country?: string;
   countryFlag?: string;
   riskLevel?: string;
   completion?: number;
   revenue?: number;
-  children: EntityNode[];
-  x?: number;
-  y?: number;
-  // Multi-engagement support
   engagements?: Engagement[];
   engagementCount?: number;
-}
-
-// Relationship with ownership
-export interface OwnershipRelation {
-  from: EntityNode;
-  to: EntityNode;
-  ownershipPercent: number;
-}
-
-// Cross-shareholding (bidirectional ownership)
-export interface CrossOwnership {
-  entityA: EntityNode;
-  entityB: EntityNode;
-  percentAtoB: number;
-  percentBtoA: number;
 }
 
 @Component({
   selector: 'app-structure',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, BreadcrumbComponent, ButtonComponent, RiskBadgeComponent, BadgeComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LucideAngularModule,
+    OrganizationChart,
+    PrimeTemplate,
+    BreadcrumbComponent,
+    RiskBadgeComponent,
+    BadgeComponent,
+  ],
   templateUrl: './structure.component.html',
   styleUrl: './structure.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,11 +70,9 @@ export interface CrossOwnership {
     ]),
   ],
 })
-export class StructureComponent implements AfterViewInit {
+export class StructureComponent {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
-
-  readonly svgContainer = viewChild<ElementRef>('svgContainer');
 
   // Icons
   readonly icons = {
@@ -89,8 +81,6 @@ export class StructureComponent implements AfterViewInit {
     calendar: Calendar,
     trendingUp: TrendingUp,
     building: Building2,
-    arrowUpRight: ArrowUpRight,
-    externalLink: ExternalLink,
   };
 
   readonly breadcrumbs: BreadcrumbItem[] = [
@@ -98,34 +88,22 @@ export class StructureComponent implements AfterViewInit {
     { label: 'Entity Structure' },
   ];
 
-  // View state
-  readonly zoom = signal(1);
-  readonly panX = signal(0);
-  readonly panY = signal(0);
-  readonly selectedNode = signal<EntityNode | null>(null);
-  readonly isDragging = signal(false);
-
-  // Drawer state (for entity details)
+  // Selected node for drawer
+  readonly selectedNode = signal<EntityTreeNode | null>(null);
   readonly drawerOpen = signal(false);
-
-  // Expanded state - use a signal to track which nodes are expanded
-  readonly expandedNodes = signal<Set<string>>(new Set(['holding', 'region-Benelux', 'region-DACH', 'region-Western Europe', 'region-Other']));
 
   // Search state
   readonly searchQuery = signal('');
   readonly showSearchResults = signal(false);
 
-  // Chart dimensions
-  private readonly nodeWidth = 180;
-  private readonly nodeHeight = 80;
-  private readonly horizontalSpacing = 60;
-  private readonly verticalSpacing = 100;
+  // Selection for org chart (non-signal for PrimeNG compatibility)
+  selection: EntityTreeNode | null = null;
 
-  // Build base tree structure (without positions)
-  private readonly baseTree = computed<EntityNode>(() => {
+  // Build PrimeNG TreeNode structure
+  readonly orgChartData = computed<EntityTreeNode[]>(() => {
     const engagements = this.mockData.engagements();
 
-    // First, group engagements by entity name
+    // Group engagements by entity name
     const entitiesByName: Record<string, Engagement[]> = {};
     engagements.forEach((eng) => {
       if (!entitiesByName[eng.entity]) {
@@ -135,7 +113,7 @@ export class StructureComponent implements AfterViewInit {
     });
 
     // Group by region
-    const regions: Record<string, EntityNode> = {};
+    const regions: Record<string, EntityTreeNode> = {};
 
     Object.entries(entitiesByName).forEach(([entityName, entityEngagements]) => {
       const firstEng = entityEngagements[0];
@@ -143,45 +121,97 @@ export class StructureComponent implements AfterViewInit {
 
       if (!regions[regionName]) {
         regions[regionName] = {
-          id: `region-${regionName}`,
-          name: regionName,
+          expanded: true,
           type: 'region',
+          styleClass: 'node-region',
+          data: {
+            id: `region-${regionName}`,
+            name: regionName,
+            nodeType: 'region',
+          },
           children: [],
         };
       }
 
-      // Calculate aggregated values for multi-engagement entities
+      // Calculate aggregated values
       const highestRisk = this.getHighestRisk(entityEngagements);
       const avgCompletion = Math.round(
         entityEngagements.reduce((sum, e) => sum + e.completionPercent, 0) / entityEngagements.length
       );
       const totalRevenue = entityEngagements.reduce((sum, e) => sum + e.financialData.revenue, 0);
 
-      regions[regionName].children.push({
-        id: `entity-${entityName.replace(/\s+/g, '-')}`,
-        name: entityName,
+      const riskClass = highestRisk === 'high' ? 'node-risk-high' : highestRisk === 'medium' ? 'node-risk-medium' : 'node-risk-low';
+
+      regions[regionName].children!.push({
         type: 'entity',
-        country: firstEng.country,
-        countryFlag: firstEng.countryFlag,
-        riskLevel: highestRisk,
-        completion: avgCompletion,
-        revenue: totalRevenue,
+        styleClass: `node-entity ${riskClass}`,
+        data: {
+          id: `entity-${entityName.replace(/\s+/g, '-')}`,
+          name: entityName,
+          nodeType: 'entity',
+          country: firstEng.country,
+          countryFlag: firstEng.countryFlag,
+          riskLevel: highestRisk,
+          completion: avgCompletion,
+          revenue: totalRevenue,
+          engagements: entityEngagements,
+          engagementCount: entityEngagements.length,
+        },
         children: [],
-        engagements: entityEngagements,
-        engagementCount: entityEngagements.length,
       });
     });
 
     // Create root holding node
-    return {
-      id: 'holding',
-      name: 'Avengers Holding',
+    const holdingNode: EntityTreeNode = {
+      expanded: true,
       type: 'holding',
-      children: Object.values(regions).sort((a, b) => a.name.localeCompare(b.name)),
-    } as EntityNode;
+      styleClass: 'node-holding',
+      data: {
+        id: 'holding',
+        name: 'Avengers Holding',
+        nodeType: 'holding',
+      },
+      children: Object.values(regions).sort((a, b) =>
+        (a.data?.name || '').localeCompare(b.data?.name || '')
+      ),
+    };
+
+    return [holdingNode];
   });
 
-  // Helper to get highest risk level from engagements
+  // All entities for search
+  readonly allEntities = computed(() => {
+    const entities: EntityData[] = [];
+    const collectEntities = (nodes: EntityTreeNode[]) => {
+      nodes.forEach((node) => {
+        if (node.data?.nodeType === 'entity') {
+          entities.push(node.data);
+        }
+        if (node.children) {
+          collectEntities(node.children);
+        }
+      });
+    };
+    collectEntities(this.orgChartData());
+    return entities;
+  });
+
+  // Search results
+  readonly searchResults = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return [];
+
+    return this.allEntities()
+      .filter(
+        (e) =>
+          e.name.toLowerCase().includes(query) ||
+          e.country?.toLowerCase().includes(query) ||
+          e.countryFlag?.includes(query)
+      )
+      .slice(0, 10);
+  });
+
+  // Helper to get highest risk level
   private getHighestRisk(engagements: Engagement[]): string {
     const riskPriority: Record<string, number> = { high: 3, medium: 2, low: 1 };
     let highest = 'low';
@@ -198,118 +228,6 @@ export class StructureComponent implements AfterViewInit {
     return highest;
   }
 
-  // Computed tree with positions (depends on expanded state)
-  readonly entityTree = computed<EntityNode>(() => {
-    const tree = this.cloneTree(this.baseTree());
-    const expanded = this.expandedNodes();
-
-    // Mark expanded state
-    this.markExpanded(tree, expanded);
-
-    // Calculate positions
-    this.calculateNodePositions(tree);
-
-    return tree;
-  });
-
-  // All entities for search
-  readonly allEntities = computed(() => {
-    const entities: EntityNode[] = [];
-    this.collectAllEntities(this.baseTree(), entities);
-    return entities.filter(e => e.type === 'entity');
-  });
-
-  // Search results
-  readonly searchResults = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return [];
-
-    return this.allEntities()
-      .filter(e =>
-        e.name.toLowerCase().includes(query) ||
-        e.country?.toLowerCase().includes(query) ||
-        e.countryFlag?.includes(query)
-      )
-      .slice(0, 10);
-  });
-
-  // Computed flat list for rendering
-  readonly visibleNodes = computed(() => {
-    const nodes: EntityNode[] = [];
-    const expanded = this.expandedNodes();
-    this.collectVisibleNodes(this.entityTree(), nodes, expanded);
-    return nodes;
-  });
-
-  // Computed connections with ownership percentages
-  readonly connections = computed<OwnershipRelation[]>(() => {
-    const links: OwnershipRelation[] = [];
-    const expanded = this.expandedNodes();
-    this.collectConnections(this.entityTree(), links, expanded);
-    return links;
-  });
-
-  // Cross-shareholding relationships (bidirectional ownership)
-  readonly crossOwnerships = computed<CrossOwnership[]>(() => {
-    const nodes = this.visibleNodes();
-    const crossOwn: CrossOwnership[] = [];
-
-    // Find Belgium HoldCo and Netherlands BV for demo cross-shareholding
-    const belgiumNode = nodes.find(n => n.name.includes('Belgium'));
-    const netherlandsNode = nodes.find(n => n.name.includes('Netherlands'));
-
-    if (belgiumNode && netherlandsNode) {
-      crossOwn.push({
-        entityA: belgiumNode,
-        entityB: netherlandsNode,
-        percentAtoB: 20,
-        percentBtoA: 15,
-      });
-    }
-
-    return crossOwn;
-  });
-
-  // Chart dimensions
-  readonly chartWidth = computed(() => {
-    const nodes = this.visibleNodes();
-    if (nodes.length === 0) return 800;
-    const maxX = Math.max(...nodes.map((n) => (n.x || 0) + this.nodeWidth));
-    return Math.max(800, maxX + 100);
-  });
-
-  readonly chartHeight = computed(() => {
-    const nodes = this.visibleNodes();
-    if (nodes.length === 0) return 600;
-    const maxY = Math.max(...nodes.map((n) => (n.y || 0) + this.nodeHeight));
-    return Math.max(600, maxY + 100);
-  });
-
-  ngAfterViewInit(): void {
-    // Center the view initially
-    setTimeout(() => {
-      this.centerView();
-    }, 100);
-  }
-
-  private cloneTree(node: EntityNode): EntityNode {
-    return {
-      ...node,
-      engagements: node.engagements ? [...node.engagements] : undefined,
-      children: node.children.map(child => this.cloneTree(child)),
-    };
-  }
-
-  private markExpanded(node: EntityNode, expanded: Set<string>): void {
-    (node as EntityNode & { expanded: boolean }).expanded = expanded.has(node.id);
-    node.children.forEach(child => this.markExpanded(child, expanded));
-  }
-
-  private collectAllEntities(node: EntityNode, result: EntityNode[]): void {
-    result.push(node);
-    node.children.forEach(child => this.collectAllEntities(child, result));
-  }
-
   private getRegionName(flag: string): string {
     const regions: Record<string, string> = {
       '🇫🇷': 'Western Europe',
@@ -321,167 +239,11 @@ export class StructureComponent implements AfterViewInit {
     return regions[flag] || 'Other';
   }
 
-  private calculateNodePositions(root: EntityNode): void {
-    const startY = 50;
-    const expanded = this.expandedNodes();
-
-    // First, calculate the total width of the tree
-    const totalTreeWidth = this.calculateSubtreeWidth(root, expanded);
-    const treePixelWidth = totalTreeWidth * (this.nodeWidth + this.horizontalSpacing);
-
-    // Position root node centered
-    root.x = Math.max(50, treePixelWidth / 2 - this.nodeWidth / 2);
-    root.y = startY;
-
-    // Recursively position children
-    this.positionChildren(root, expanded);
-  }
-
-  private positionChildren(node: EntityNode, expanded: Set<string>): void {
-    if (!expanded.has(node.id) || node.children.length === 0) {
-      return;
-    }
-
-    let totalWidth = 0;
-    const childWidths: number[] = [];
-
-    // First pass: calculate widths
-    node.children.forEach((child) => {
-      const width = this.calculateSubtreeWidth(child, expanded);
-      childWidths.push(width);
-      totalWidth += width;
-    });
-
-    // Second pass: position children
-    let currentX = (node.x || 0) + this.nodeWidth / 2 - (totalWidth * (this.nodeWidth + this.horizontalSpacing)) / 2;
-
-    node.children.forEach((child, index) => {
-      const childWidth = childWidths[index];
-      child.x = currentX + (childWidth * (this.nodeWidth + this.horizontalSpacing)) / 2 - this.nodeWidth / 2;
-      child.y = (node.y || 0) + this.nodeHeight + this.verticalSpacing;
-
-      this.positionChildren(child, expanded);
-
-      currentX += childWidth * (this.nodeWidth + this.horizontalSpacing);
-    });
-  }
-
-  private calculateSubtreeWidth(node: EntityNode, expanded: Set<string>): number {
-    if (!expanded.has(node.id) || node.children.length === 0) {
-      return 1;
-    }
-    return node.children.reduce((sum, child) => sum + this.calculateSubtreeWidth(child, expanded), 0);
-  }
-
-  private collectVisibleNodes(node: EntityNode, result: EntityNode[], expanded: Set<string>): void {
-    result.push(node);
-    if (expanded.has(node.id) && node.children) {
-      node.children.forEach((child) => this.collectVisibleNodes(child, result, expanded));
-    }
-  }
-
-  private collectConnections(node: EntityNode, result: OwnershipRelation[], expanded: Set<string>): void {
-    if (expanded.has(node.id) && node.children) {
-      node.children.forEach((child) => {
-        // Default ownership: 100% for holding/region → children
-        // Could be customized per relationship
-        const ownership = this.getOwnershipPercent(node, child);
-        result.push({ from: node, to: child, ownershipPercent: ownership });
-        this.collectConnections(child, result, expanded);
-      });
-    }
-  }
-
-  // Get ownership percentage for a relationship
-  private getOwnershipPercent(parent: EntityNode, child: EntityNode): number {
-    // Demo: holding owns regions 100%, regions own entities with varying percentages
-    if (parent.type === 'holding') return 100;
-    if (parent.type === 'region') {
-      // Vary ownership for demo
-      if (child.name.includes('France')) return 100;
-      if (child.name.includes('Germany')) return 85;
-      if (child.name.includes('Netherlands')) return 100;
-      if (child.name.includes('Belgium')) return 75;
-      if (child.name.includes('Luxembourg')) return 100;
-      return 100;
-    }
-    return 100;
-  }
-
-  // Check if node is expanded
-  isExpanded(nodeId: string): boolean {
-    return this.expandedNodes().has(nodeId);
-  }
-
-  // Pan & Zoom handlers
-  onWheel(event: WheelEvent): void {
-    event.preventDefault();
-    const delta = event.deltaY > 0 ? -0.1 : 0.1;
-    const newZoom = Math.max(0.3, Math.min(2, this.zoom() + delta));
-    this.zoom.set(newZoom);
-  }
-
-  onMouseDown(event: MouseEvent): void {
-    if (event.button === 0) {
-      this.isDragging.set(true);
-    }
-  }
-
-  onMouseMove(event: MouseEvent): void {
-    if (this.isDragging()) {
-      this.panX.update((x) => x + event.movementX);
-      this.panY.update((y) => y + event.movementY);
-    }
-  }
-
-  onMouseUp(): void {
-    this.isDragging.set(false);
-  }
-
-  onMouseLeave(): void {
-    this.isDragging.set(false);
-  }
-
-  // Controls
-  zoomIn(): void {
-    this.zoom.update((z) => Math.min(2, z + 0.2));
-  }
-
-  zoomOut(): void {
-    this.zoom.update((z) => Math.max(0.3, z - 0.2));
-  }
-
-  resetView(): void {
-    this.zoom.set(1);
-    this.panX.set(0);
-    this.panY.set(0);
-  }
-
-  centerView(): void {
-    const container = this.svgContainer()?.nativeElement;
-    if (container) {
-      const rect = container.getBoundingClientRect();
-      this.panX.set((rect.width - this.chartWidth() * this.zoom()) / 2);
-      this.panY.set(20);
-    }
-  }
-
-  fitToScreen(): void {
-    const container = this.svgContainer()?.nativeElement;
-    if (container) {
-      const rect = container.getBoundingClientRect();
-      const scaleX = (rect.width - 40) / this.chartWidth();
-      const scaleY = (rect.height - 40) / this.chartHeight();
-      this.zoom.set(Math.min(scaleX, scaleY, 1));
-      this.centerView();
-    }
-  }
-
-  // Node interaction - open drawer
-  selectNode(node: EntityNode): void {
+  // Node selection handler
+  onNodeSelect(event: { node: EntityTreeNode }): void {
+    const node = event.node;
     this.selectedNode.set(node);
-    // Open drawer for entities (not for holding/region)
-    if (node.type === 'entity') {
+    if (node.data?.nodeType === 'entity') {
       this.drawerOpen.set(true);
     }
   }
@@ -489,83 +251,21 @@ export class StructureComponent implements AfterViewInit {
   // Close drawer
   closeDrawer(): void {
     this.drawerOpen.set(false);
-    // Optionally clear selection after animation
     setTimeout(() => {
       if (!this.drawerOpen()) {
         this.selectedNode.set(null);
+        this.selection = null;
       }
     }, 250);
   }
 
-  // Close drawer on overlay click
   onOverlayClick(): void {
     this.closeDrawer();
   }
 
-  toggleNode(node: EntityNode, event: Event): void {
-    event.stopPropagation();
-    this.expandedNodes.update(set => {
-      const newSet = new Set(set);
-      if (newSet.has(node.id)) {
-        newSet.delete(node.id);
-      } else {
-        newSet.add(node.id);
-      }
-      return newSet;
-    });
-  }
-
-  // Expand all nodes
-  expandAll(): void {
-    const allIds = new Set<string>();
-    this.collectAllIds(this.baseTree(), allIds);
-    this.expandedNodes.set(allIds);
-  }
-
-  // Collapse all except root
-  collapseAll(): void {
-    this.expandedNodes.set(new Set(['holding']));
-  }
-
-  private collectAllIds(node: EntityNode, ids: Set<string>): void {
-    ids.add(node.id);
-    node.children.forEach(child => this.collectAllIds(child, ids));
-  }
-
-  navigateToEntity(node: EntityNode): void {
-    if (node.type === 'entity' && node.engagements?.length === 1) {
-      // Single engagement: navigate directly
-      this.router.navigate(['/app/engagements', node.engagements[0].id]);
-    }
-    // Multiple engagements: user selects from details panel
-  }
-
+  // Navigation
   navigateToEngagement(engagement: Engagement): void {
     this.router.navigate(['/app/engagements', engagement.id]);
-  }
-
-  getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      waiting: 'Pending',
-      received: 'Received',
-      processing: 'In Progress',
-      completed: 'Completed',
-    };
-    return labels[status] || status;
-  }
-
-  getStatusClass(status: string): string {
-    return `status-${status}`;
-  }
-
-  getStatusVariant(status: string): 'info' | 'warning' | 'success' | 'error' {
-    const variants: Record<string, 'info' | 'warning' | 'success' | 'error'> = {
-      waiting: 'warning',
-      received: 'info',
-      processing: 'info',
-      completed: 'success',
-    };
-    return variants[status] || 'info';
   }
 
   // Search functionality
@@ -581,152 +281,55 @@ export class StructureComponent implements AfterViewInit {
   }
 
   onSearchBlur(): void {
-    // Delay to allow click on result
     setTimeout(() => {
       this.showSearchResults.set(false);
     }, 200);
   }
 
-  selectSearchResult(entity: EntityNode): void {
+  selectSearchResult(entity: EntityData): void {
     this.searchQuery.set('');
     this.showSearchResults.set(false);
 
-    // Expand path to entity
-    this.expandPathToEntity(entity.id);
-
-    // Wait for tree to re-render, then center on entity
-    setTimeout(() => {
-      this.centerOnEntity(entity.id);
-      this.selectedNode.set(entity);
-    }, 100);
-  }
-
-  private expandPathToEntity(entityId: string): void {
-    // Find path from root to entity
-    const path = this.findPathToEntity(this.baseTree(), entityId, []);
-    if (path) {
-      this.expandedNodes.update(set => {
-        const newSet = new Set(set);
-        path.forEach(id => newSet.add(id));
-        return newSet;
-      });
-    }
-  }
-
-  private findPathToEntity(node: EntityNode, targetId: string, currentPath: string[]): string[] | null {
-    const newPath = [...currentPath, node.id];
-
-    if (node.id === targetId) {
-      return newPath;
-    }
-
-    for (const child of node.children) {
-      const result = this.findPathToEntity(child, targetId, newPath);
-      if (result) {
-        return result;
+    // Find the node and select it
+    const findNode = (nodes: EntityTreeNode[]): EntityTreeNode | null => {
+      for (const node of nodes) {
+        if (node.data?.id === entity.id) {
+          return node;
+        }
+        if (node.children) {
+          const found = findNode(node.children);
+          if (found) return found;
+        }
       }
+      return null;
+    };
+
+    const node = findNode(this.orgChartData());
+    if (node) {
+      this.selection = node;
+      this.onNodeSelect({ node });
     }
-
-    return null;
   }
 
-  private centerOnEntity(entityId: string): void {
-    const node = this.visibleNodes().find(n => n.id === entityId);
-    if (!node || node.x === undefined || node.y === undefined) return;
-
-    const container = this.svgContainer()?.nativeElement;
-    if (!container) return;
-
-    const rect = container.getBoundingClientRect();
-    const zoom = this.zoom();
-
-    // Calculate pan to center the node
-    const nodeCenter = {
-      x: node.x + this.nodeWidth / 2,
-      y: node.y + this.nodeHeight / 2,
+  // Status helpers
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      waiting: 'Pending',
+      received: 'Received',
+      processing: 'In Progress',
+      completed: 'Completed',
     };
-
-    this.panX.set(rect.width / 2 - nodeCenter.x * zoom);
-    this.panY.set(rect.height / 2 - nodeCenter.y * zoom);
+    return labels[status] || status;
   }
 
-  // Helpers
-  getNodePath(from: EntityNode, to: EntityNode): string {
-    const startX = (from.x || 0) + this.nodeWidth / 2;
-    const startY = (from.y || 0) + this.nodeHeight;
-    const endX = (to.x || 0) + this.nodeWidth / 2;
-    const endY = to.y || 0;
-
-    const midY = startY + (endY - startY) / 2;
-
-    return `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
-  }
-
-  // Get label position for ownership percentage
-  getOwnershipLabelPosition(from: EntityNode, to: EntityNode): { x: number; y: number } {
-    const startX = (from.x || 0) + this.nodeWidth / 2;
-    const startY = (from.y || 0) + this.nodeHeight;
-    const endX = (to.x || 0) + this.nodeWidth / 2;
-    const endY = to.y || 0;
-
-    // Position label at midpoint of the curve
-    return {
-      x: (startX + endX) / 2,
-      y: startY + (endY - startY) / 2,
+  getStatusVariant(status: string): 'info' | 'warning' | 'success' | 'error' {
+    const variants: Record<string, 'info' | 'warning' | 'success' | 'error'> = {
+      waiting: 'warning',
+      received: 'info',
+      processing: 'info',
+      completed: 'success',
     };
-  }
-
-  // Get cross-shareholding paths (two arrows: A→B and B→A)
-  getCrossOwnershipPath(entityA: EntityNode, entityB: EntityNode, direction: 'AtoB' | 'BtoA'): string {
-    const aX = (entityA.x || 0) + this.nodeWidth;
-    const aY = (entityA.y || 0) + this.nodeHeight / 2;
-    const bX = entityB.x || 0;
-    const bY = (entityB.y || 0) + this.nodeHeight / 2;
-
-    // Offset to separate the two arrows
-    const offset = direction === 'AtoB' ? -15 : 15;
-
-    const startX = direction === 'AtoB' ? aX : bX;
-    const startY = (direction === 'AtoB' ? aY : bY) + offset;
-    const endX = direction === 'AtoB' ? bX : aX;
-    const endY = (direction === 'AtoB' ? bY : aY) + offset;
-
-    const midX = (startX + endX) / 2;
-
-    return `M ${startX} ${startY} Q ${midX} ${startY + offset * 2}, ${endX} ${endY}`;
-  }
-
-  // Get cross-ownership label position
-  getCrossOwnershipLabelPosition(entityA: EntityNode, entityB: EntityNode, direction: 'AtoB' | 'BtoA'): { x: number; y: number } {
-    const aX = (entityA.x || 0) + this.nodeWidth;
-    const aY = (entityA.y || 0) + this.nodeHeight / 2;
-    const bX = entityB.x || 0;
-    const bY = (entityB.y || 0) + this.nodeHeight / 2;
-
-    const offset = direction === 'AtoB' ? -25 : 25;
-
-    return {
-      x: (aX + bX) / 2,
-      y: (aY + bY) / 2 + offset,
-    };
-  }
-
-  // Get arrow marker ID based on direction
-  getArrowMarkerId(direction: 'AtoB' | 'BtoA'): string {
-    return direction === 'AtoB' ? 'arrowhead-atob' : 'arrowhead-btoa';
-  }
-
-  getRiskClass(risk?: string): string {
-    switch (risk) {
-      case 'high':
-        return 'node--risk-high';
-      case 'medium':
-        return 'node--risk-medium';
-      case 'low':
-        return 'node--risk-low';
-      default:
-        return '';
-    }
+    return variants[status] || 'info';
   }
 
   formatCurrency(value?: number): string {
@@ -737,9 +340,5 @@ export class StructureComponent implements AfterViewInit {
       notation: 'compact',
       maximumFractionDigits: 1,
     }).format(value);
-  }
-
-  getTransform(): string {
-    return `translate(${this.panX()}px, ${this.panY()}px) scale(${this.zoom()})`;
   }
 }

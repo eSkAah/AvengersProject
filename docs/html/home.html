@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Real Estate Fund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* ===== CSS Variables (EY Branding) ===== */
+    :root {
+      /* EY Yellow */
+      --ey-yellow: #FFE600;
+      --ey-yellow-hover: #FFD000;
+      --ey-black: #2E2E38;
+
+      /* Neutrals */
+      --color-background: #FAFAFA;
+      --color-surface: #FFFFFF;
+      --color-border: #E5E5E5;
+      --color-text-primary: #2E2E38;
+      --color-text-secondary: #6B7280;
+      --color-text-muted: #9CA3AF;
+
+      /* Semantic */
+      --color-success: #10B981;
+      --color-warning: #F59E0B;
+      --color-error: #EF4444;
+      --color-info: #3B82F6;
+
+      /* Spacing */
+      --spacing-1: 4px;
+      --spacing-2: 8px;
+      --spacing-3: 12px;
+      --spacing-4: 16px;
+      --spacing-5: 20px;
+      --spacing-6: 24px;
+
+      /* Border Radius */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-full: 9999px;
+
+      /* Font */
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-background);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* ===== Navbar ===== */
+    .navbar {
+      background: var(--ey-black);
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-4);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      text-decoration: none;
+    }
+
+    .navbar-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--ey-yellow);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ey-black);
+    }
+
+    .navbar-company-name {
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .navbar-menu {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .navbar-item {
+      padding: var(--spacing-2) var(--spacing-4);
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .navbar-item:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-item.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+
+    .navbar-icon-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .navbar-icon-btn:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #6366F1, #8B5CF6);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .user-menu-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      padding: var(--spacing-1);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .user-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ===== Dashboard Container ===== */
+    .dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--spacing-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+
+    .dashboard__header {
+      margin-bottom: var(--spacing-2);
+    }
+
+    .dashboard__header-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+
+    .dashboard__header-content .icon {
+      color: var(--ey-yellow);
+    }
+
+    .dashboard__header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+
+    .dashboard__header p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ===== Bento Grid ===== */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: var(--spacing-4);
+    }
+
+    .bento-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-5);
+      overflow: hidden;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        0 2px 4px rgba(0, 0, 0, 0.02),
+        0 4px 8px rgba(0, 0, 0, 0.03),
+        0 8px 16px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(229, 229, 229, 0.4);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .bento-card:hover {
+      box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.02),
+        0 4px 8px rgba(0, 0, 0, 0.03),
+        0 8px 16px rgba(0, 0, 0, 0.04),
+        0 16px 32px rgba(0, 0, 0, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .bento-card--upload {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      min-height: 400px;
+    }
+
+    .bento-card--donut {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .bento-card--signoff {
+      grid-column: 2;
+      grid-row: 2;
+      min-height: 200px;
+    }
+
+    .bento-card--engagements {
+      grid-column: 1 / 3;
+      grid-row: 3;
+    }
+
+    /* ===== Upload Widget ===== */
+    .upload-widget {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: var(--spacing-4);
+    }
+
+    .upload-zone {
+      position: relative;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-lg);
+      background: rgba(250, 250, 250, 0.5);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--ey-yellow);
+      background: rgba(255, 230, 0, 0.05);
+    }
+
+    .upload-zone:hover .upload-zone__icon,
+    .upload-zone.dragover .upload-zone__icon {
+      color: var(--ey-yellow);
+      transform: translateY(-2px);
+    }
+
+    .upload-zone__input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-zone__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-6);
+      cursor: pointer;
+    }
+
+    .upload-zone__icon {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-2);
+      transition: all 0.2s ease;
+    }
+
+    .upload-zone__text {
+      text-align: center;
+    }
+
+    .upload-zone__title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+
+    .upload-zone__subtitle {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+
+    /* Missing Documents */
+    .missing-docs {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .missing-docs__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-3);
+    }
+
+    .missing-docs__header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+
+    .missing-docs__count {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-error);
+      background: rgba(239, 68, 68, 0.1);
+      padding: 2px var(--spacing-2);
+      border-radius: var(--radius-full);
+    }
+
+    .missing-docs__list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+      overflow-y: auto;
+    }
+
+    .missing-doc-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+      padding: var(--spacing-3);
+      background: rgba(250, 250, 250, 0.5);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-error);
+    }
+
+    .missing-doc-item__main {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .missing-doc-item__main .icon {
+      color: var(--color-text-secondary);
+      flex-shrink: 0;
+    }
+
+    .missing-doc-item__name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .missing-doc-item__info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .missing-doc-item__info:hover {
+      background: rgba(250, 250, 250, 0.8);
+      color: var(--color-text-primary);
+    }
+
+    .missing-doc-item__actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .missing-doc-item__entities {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .entity-flag {
+      font-size: 16px;
+    }
+
+    .entity-more {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      background: rgba(250, 250, 250, 0.8);
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px var(--spacing-2);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ey-black);
+      background: var(--ey-yellow);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .upload-btn:hover {
+      background: var(--ey-yellow-hover);
+      transform: translateY(-1px);
+    }
+
+    .view-all-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-1);
+      margin-top: var(--spacing-3);
+      padding: var(--spacing-2);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-all-btn:hover {
+      color: var(--ey-yellow);
+      border-color: var(--ey-yellow);
+      background: rgba(255, 230, 0, 0.05);
+    }
+
+    .view-all-btn:hover .icon {
+      transform: translateX(2px);
+    }
+
+    .view-all-btn .icon {
+      transition: transform 0.2s ease;
+    }
+
+    /* ===== Donut Widget ===== */
+    .donut-widget {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .donut-widget__header {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      margin-bottom: var(--spacing-4);
+    }
+
+    .donut-widget__header .icon {
+      color: var(--ey-yellow);
+    }
+
+    .donut-widget__header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+
+    .donut-widget__content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-4);
+    }
+
+    .donut-chart {
+      position: relative;
+    }
+
+    .donut-chart canvas {
+      display: block;
+    }
+
+    .donut-legend {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+      width: 100%;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2) var(--spacing-3);
+      background: rgba(250, 250, 250, 0.5);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      width: 100%;
+    }
+
+    .legend-item:hover {
+      background: rgba(250, 250, 250, 0.8);
+      border-color: var(--color-border);
+    }
+
+    .legend-item.selected {
+      background: rgba(250, 250, 250, 0.8);
+      border-color: var(--color-border);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-item.dimmed {
+      opacity: 0.5;
+    }
+
+    .legend-item__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    .legend-item__label {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .legend-item__count {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      background: rgba(46, 46, 56, 0.05);
+      padding: 2px var(--spacing-2);
+      border-radius: var(--radius-full);
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .donut-widget__hint {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin: 0;
+      margin-top: auto;
+    }
+
+    /* ===== Sign Off Widget ===== */
+    .signoff-widget {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .signoff-widget__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-4);
+    }
+
+    .signoff-widget__title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .signoff-widget__title .icon {
+      color: var(--ey-yellow);
+    }
+
+    .signoff-widget__title h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+
+    .signoff-widget__count {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-warning);
+      background: rgba(245, 158, 11, 0.1);
+      padding: 2px var(--spacing-2);
+      border-radius: var(--radius-full);
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .signoff-widget__table {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .signoff-table__header {
+      display: grid;
+      grid-template-columns: 1.2fr 1.5fr 80px;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2) var(--spacing-3);
+      background: rgba(250, 250, 250, 0.5);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .signoff-table__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .signoff-table__row {
+      display: grid;
+      grid-template-columns: 1.2fr 1.5fr 80px;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2) var(--spacing-3);
+      border-bottom: 1px solid rgba(229, 229, 229, 0.5);
+      transition: background 0.2s ease;
+    }
+
+    .signoff-table__row:hover {
+      background: rgba(250, 250, 250, 0.5);
+    }
+
+    .signoff-table__row:last-child {
+      border-bottom: none;
+    }
+
+    .col-entity {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      min-width: 0;
+    }
+
+    .col-entity .entity-name {
+      font-size: 14px;
+      color: var(--color-text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .col-document {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+    }
+
+    .col-action {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px var(--spacing-2);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ey-black);
+      background: var(--ey-yellow);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: var(--ey-yellow-hover);
+    }
+
+    .action-btn:hover .icon {
+      transform: translateX(2px);
+    }
+
+    .action-btn .icon {
+      transition: transform 0.2s ease;
+    }
+
+    /* ===== Engagement List Widget ===== */
+    .engagement-list-widget {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .engagement-list-widget__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-4);
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+    }
+
+    .engagement-list-widget__title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .engagement-list-widget__title .icon {
+      color: var(--ey-yellow);
+    }
+
+    .engagement-list-widget__title h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+
+    .engagement-list-widget__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+
+    .engagement-list-widget__count {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      background: rgba(46, 46, 56, 0.04);
+      padding: var(--spacing-1) var(--spacing-3);
+      border-radius: var(--radius-full);
+      font-weight: 500;
+    }
+
+    .view-all-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ey-yellow);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-1) var(--spacing-2);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .view-all-link:hover {
+      background: rgba(255, 230, 0, 0.1);
+    }
+
+    .view-all-link:hover .icon {
+      transform: translateX(2px);
+    }
+
+    .view-all-link .icon {
+      transition: transform 0.2s ease;
+    }
+
+    .engagement-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+    }
+
+    .engagement-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+      background: rgba(250, 250, 250, 0.5);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .engagement-item:hover {
+      background: rgba(250, 250, 250, 0.8);
+      border-color: var(--color-border);
+      transform: translateX(4px);
+    }
+
+    .engagement-item:hover .engagement-item__arrow {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+
+    .engagement-item--high {
+      border-left-color: var(--color-error);
+    }
+
+    .engagement-item--medium {
+      border-left-color: var(--color-warning);
+    }
+
+    .engagement-item--completed {
+      border-left-color: var(--color-success);
+    }
+
+    .engagement-item__main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .engagement-item__entity {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .engagement-item__flag {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .engagement-item__name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .engagement-item__status {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px var(--spacing-2);
+      border-radius: var(--radius-full);
+      width: fit-content;
+    }
+
+    .engagement-item__status.status--pending {
+      background: rgba(245, 158, 11, 0.1);
+      color: #B45309;
+    }
+
+    .engagement-item__status.status--received {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1D4ED8;
+    }
+
+    .engagement-item__status.status--processing {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1D4ED8;
+    }
+
+    .engagement-item__status.status--completed {
+      background: rgba(16, 185, 129, 0.1);
+      color: #047857;
+    }
+
+    .engagement-item__details {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+      min-width: 140px;
+    }
+
+    .engagement-item__progress {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(229, 229, 229, 0.5);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar__fill {
+      height: 100%;
+      background: var(--ey-yellow);
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .engagement-item__meta {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+
+    .engagement-item__due {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+
+    .engagement-item__due .icon {
+      opacity: 0.7;
+    }
+
+    .engagement-item__risk {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-sm);
+    }
+
+    .engagement-item__risk.risk--high {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--color-error);
+    }
+
+    .engagement-item__risk.risk--medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning);
+    }
+
+    .engagement-item__arrow {
+      color: var(--color-text-muted);
+      opacity: 0.5;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    /* ===== Eve Chatbot FAB ===== */
+    .eve-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      background: var(--ey-black);
+      border: none;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 8px 24px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      z-index: 50;
+    }
+
+    .eve-fab:hover {
+      transform: scale(1.1);
+      box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.15),
+        0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .eve-fab .icon {
+      color: var(--ey-yellow);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      .bento-card--upload {
+        grid-column: 1;
+        grid-row: auto;
+        min-height: 350px;
+      }
+
+      .bento-card--donut {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .bento-card--signoff {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .bento-card--engagements {
+        grid-column: 1;
+        grid-row: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .navbar-menu {
+        display: none;
+      }
+
+      .dashboard {
+        padding: var(--spacing-3);
+        gap: var(--spacing-3);
+      }
+
+      .dashboard__header h1 {
+        font-size: 20px;
+      }
+
+      .dashboard__header p {
+        font-size: 12px;
+      }
+
+      .engagement-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .engagement-item__details {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .engagement-item__arrow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="#" class="navbar-brand">
+        <div class="navbar-logo">RE</div>
+        <span class="navbar-company-name">Real Estate Fund</span>
+      </a>
+
+      <div class="navbar-menu">
+        <a href="#" class="navbar-item active">Home</a>
+        <a href="#" class="navbar-item">Engagements</a>
+        <a href="#" class="navbar-item">Doclib</a>
+        <a href="#" class="navbar-item">Structure</a>
+        <a href="#" class="navbar-item">Insights</a>
+      </div>
+
+      <div class="navbar-actions">
+        <button class="navbar-icon-btn" aria-label="Notifications">
+          <i data-lucide="bell"></i>
+        </button>
+        <button class="user-menu-btn">
+          <div class="user-avatar">JD</div>
+          <i data-lucide="chevron-down" class="icon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <!-- Header -->
+    <div class="dashboard__header">
+      <div class="dashboard__header-content">
+        <i data-lucide="layout-dashboard" class="icon" style="width: 28px; height: 28px;"></i>
+        <div>
+          <h1>Dashboard</h1>
+          <p>Overview of your engagements and documents</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="bento-grid">
+      <!-- Widget 1: Upload & Missing Documents -->
+      <div class="bento-card bento-card--upload">
+        <div class="upload-widget">
+          <!-- Upload Zone -->
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="file-upload" class="upload-zone__input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx">
+            <label for="file-upload" class="upload-zone__content">
+              <div class="upload-zone__icon">
+                <i data-lucide="upload" style="width: 32px; height: 32px;"></i>
+              </div>
+              <div class="upload-zone__text">
+                <span class="upload-zone__title">Drop files here</span>
+                <span class="upload-zone__subtitle">or click to browse</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Missing Documents List -->
+          <div class="missing-docs">
+            <div class="missing-docs__header">
+              <h3>Missing Documents</h3>
+              <span class="missing-docs__count">7 missing</span>
+            </div>
+
+            <div class="missing-docs__list">
+              <!-- Missing Doc Item 1 -->
+              <div class="missing-doc-item">
+                <div class="missing-doc-item__main">
+                  <i data-lucide="file-text" class="icon" style="width: 18px; height: 18px;"></i>
+                  <span class="missing-doc-item__name">Tax Return</span>
+                  <button class="missing-doc-item__info" title="Required for: France SPV, Germany PropCo, Belgium HoldCo">
+                    <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </div>
+                <div class="missing-doc-item__actions">
+                  <div class="missing-doc-item__entities">
+                    <span class="entity-flag">🇫🇷</span>
+                    <span class="entity-flag">🇩🇪</span>
+                    <span class="entity-flag">🇧🇪</span>
+                  </div>
+                  <button class="upload-btn">
+                    <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                    Upload
+                  </button>
+                </div>
+              </div>
+
+              <!-- Missing Doc Item 2 -->
+              <div class="missing-doc-item">
+                <div class="missing-doc-item__main">
+                  <i data-lucide="file-text" class="icon" style="width: 18px; height: 18px;"></i>
+                  <span class="missing-doc-item__name">Financial Statement</span>
+                  <button class="missing-doc-item__info" title="Required for: France SPV">
+                    <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </div>
+                <div class="missing-doc-item__actions">
+                  <div class="missing-doc-item__entities">
+                    <span class="entity-flag">🇫🇷</span>
+                  </div>
+                  <button class="upload-btn">
+                    <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                    Upload
+                  </button>
+                </div>
+              </div>
+
+              <!-- Missing Doc Item 3 -->
+              <div class="missing-doc-item">
+                <div class="missing-doc-item__main">
+                  <i data-lucide="file-text" class="icon" style="width: 18px; height: 18px;"></i>
+                  <span class="missing-doc-item__name">Bank Statement</span>
+                  <button class="missing-doc-item__info" title="Required for: Germany PropCo, Netherlands BV">
+                    <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </div>
+                <div class="missing-doc-item__actions">
+                  <div class="missing-doc-item__entities">
+                    <span class="entity-flag">🇩🇪</span>
+                    <span class="entity-flag">🇳🇱</span>
+                  </div>
+                  <button class="upload-btn">
+                    <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                    Upload
+                  </button>
+                </div>
+              </div>
+
+              <!-- Missing Doc Item 4 -->
+              <div class="missing-doc-item">
+                <div class="missing-doc-item__main">
+                  <i data-lucide="file-text" class="icon" style="width: 18px; height: 18px;"></i>
+                  <span class="missing-doc-item__name">Trial Balance</span>
+                  <button class="missing-doc-item__info" title="Required for: France SPV, Germany PropCo">
+                    <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </div>
+                <div class="missing-doc-item__actions">
+                  <div class="missing-doc-item__entities">
+                    <span class="entity-flag">🇫🇷</span>
+                    <span class="entity-flag">🇩🇪</span>
+                  </div>
+                  <button class="upload-btn">
+                    <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                    Upload
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button class="view-all-btn">
+              View All Documents
+              <i data-lucide="chevron-right" class="icon" style="width: 16px; height: 16px;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget 2: Engagement Status Donut -->
+      <div class="bento-card bento-card--donut">
+        <div class="donut-widget">
+          <div class="donut-widget__header">
+            <i data-lucide="pie-chart" class="icon" style="width: 20px; height: 20px;"></i>
+            <h3>Engagement Status</h3>
+          </div>
+
+          <div class="donut-widget__content">
+            <div class="donut-chart">
+              <canvas id="donutCanvas" width="180" height="180"></canvas>
+            </div>
+
+            <div class="donut-legend">
+              <button class="legend-item" data-segment="late">
+                <span class="legend-item__dot" style="background-color: #EF4444;"></span>
+                <span class="legend-item__label">Late</span>
+                <span class="legend-item__count">3</span>
+              </button>
+              <button class="legend-item" data-segment="soon">
+                <span class="legend-item__dot" style="background-color: #F59E0B;"></span>
+                <span class="legend-item__label">Soon</span>
+                <span class="legend-item__count">3</span>
+              </button>
+              <button class="legend-item" data-segment="in_progress">
+                <span class="legend-item__dot" style="background-color: #3B82F6;"></span>
+                <span class="legend-item__label">In Progress</span>
+                <span class="legend-item__count">0</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="donut-widget__hint">Click a segment to filter engagements</p>
+        </div>
+      </div>
+
+      <!-- Widget 3: Documents to Sign Off -->
+      <div class="bento-card bento-card--signoff">
+        <div class="signoff-widget">
+          <div class="signoff-widget__header">
+            <div class="signoff-widget__title">
+              <i data-lucide="file-check" class="icon" style="width: 20px; height: 20px;"></i>
+              <h3>Documents to Sign Off</h3>
+            </div>
+            <span class="signoff-widget__count">4</span>
+          </div>
+
+          <div class="signoff-widget__table">
+            <div class="signoff-table__header">
+              <span class="col-entity">Entity</span>
+              <span class="col-document">Document</span>
+              <span class="col-action">Action</span>
+            </div>
+            <div class="signoff-table__body">
+              <div class="signoff-table__row">
+                <span class="col-entity">
+                  <span class="entity-flag">🇫🇷</span>
+                  <span class="entity-name">France SPV</span>
+                </span>
+                <span class="col-document">General Ledger</span>
+                <span class="col-action">
+                  <button class="action-btn">
+                    Review
+                    <i data-lucide="chevron-right" class="icon" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </span>
+              </div>
+              <div class="signoff-table__row">
+                <span class="col-entity">
+                  <span class="entity-flag">🇫🇷</span>
+                  <span class="entity-name">France SPV</span>
+                </span>
+                <span class="col-document">Bank Statement</span>
+                <span class="col-action">
+                  <button class="action-btn">
+                    Review
+                    <i data-lucide="chevron-right" class="icon" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </span>
+              </div>
+              <div class="signoff-table__row">
+                <span class="col-entity">
+                  <span class="entity-flag">🇩🇪</span>
+                  <span class="entity-name">Germany PropCo</span>
+                </span>
+                <span class="col-document">General Ledger</span>
+                <span class="col-action">
+                  <button class="action-btn">
+                    Review
+                    <i data-lucide="chevron-right" class="icon" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </span>
+              </div>
+              <div class="signoff-table__row">
+                <span class="col-entity">
+                  <span class="entity-flag">🇩🇪</span>
+                  <span class="entity-name">Germany PropCo</span>
+                </span>
+                <span class="col-document">Trial Balance</span>
+                <span class="col-action">
+                  <button class="action-btn">
+                    Review
+                    <i data-lucide="chevron-right" class="icon" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget 4: Engagement List -->
+      <div class="bento-card bento-card--engagements">
+        <div class="engagement-list-widget">
+          <div class="engagement-list-widget__header">
+            <div class="engagement-list-widget__title">
+              <i data-lucide="briefcase" class="icon" style="width: 20px; height: 20px;"></i>
+              <h3 id="engagement-title">All Engagements</h3>
+            </div>
+            <div class="engagement-list-widget__actions">
+              <span class="engagement-list-widget__count">6 engagement(s)</span>
+              <button class="view-all-link">
+                View All
+                <i data-lucide="chevron-right" class="icon" style="width: 14px; height: 14px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="engagement-list" id="engagement-list">
+            <!-- Engagement Item 1: France SPV - High Risk (Pending) -->
+            <div class="engagement-item engagement-item--high" data-risk="high" data-status="pending">
+              <div class="engagement-item__main">
+                <div class="engagement-item__entity">
+                  <span class="engagement-item__flag">🇫🇷</span>
+                  <span class="engagement-item__name">France SPV</span>
+                </div>
+                <span class="engagement-item__status status--pending">Pending</span>
+              </div>
+              <div class="engagement-item__details">
+                <div class="engagement-item__progress">
+                  <div class="progress-bar">
+                    <div class="progress-bar__fill" style="width: 67%;"></div>
+                  </div>
+                  <span class="progress-text">67%</span>
+                </div>
+                <div class="engagement-item__meta">
+                  <span class="engagement-item__due">
+                    <i data-lucide="calendar" class="icon" style="width: 12px; height: 12px;"></i>
+                    Mar 01
+                  </span>
+                  <span class="engagement-item__risk risk--high">
+                    <i data-lucide="alert-triangle" style="width: 12px; height: 12px;"></i>
+                  </span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="engagement-item__arrow" style="width: 16px; height: 16px;"></i>
+            </div>
+
+            <!-- Engagement Item 2: Germany PropCo - Medium Risk (In Progress) -->
+            <div class="engagement-item engagement-item--medium" data-risk="medium" data-status="processing">
+              <div class="engagement-item__main">
+                <div class="engagement-item__entity">
+                  <span class="engagement-item__flag">🇩🇪</span>
+                  <span class="engagement-item__name">Germany PropCo</span>
+                </div>
+                <span class="engagement-item__status status--processing">In Progress</span>
+              </div>
+              <div class="engagement-item__details">
+                <div class="engagement-item__progress">
+                  <div class="progress-bar">
+                    <div class="progress-bar__fill" style="width: 85%;"></div>
+                  </div>
+                  <span class="progress-text">85%</span>
+                </div>
+                <div class="engagement-item__meta">
+                  <span class="engagement-item__due">
+                    <i data-lucide="calendar" class="icon" style="width: 12px; height: 12px;"></i>
+                    Mar 15
+                  </span>
+                  <span class="engagement-item__risk risk--medium">
+                    <i data-lucide="alert-triangle" style="width: 12px; height: 12px;"></i>
+                  </span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="engagement-item__arrow" style="width: 16px; height: 16px;"></i>
+            </div>
+
+            <!-- Engagement Item 3: Netherlands BV - Completed -->
+            <div class="engagement-item engagement-item--completed" data-risk="low" data-status="completed">
+              <div class="engagement-item__main">
+                <div class="engagement-item__entity">
+                  <span class="engagement-item__flag">🇳🇱</span>
+                  <span class="engagement-item__name">Netherlands BV</span>
+                </div>
+                <span class="engagement-item__status status--completed">Completed</span>
+              </div>
+              <div class="engagement-item__details">
+                <div class="engagement-item__progress">
+                  <div class="progress-bar">
+                    <div class="progress-bar__fill" style="width: 100%;"></div>
+                  </div>
+                  <span class="progress-text">100%</span>
+                </div>
+                <div class="engagement-item__meta">
+                  <span class="engagement-item__due">
+                    <i data-lucide="calendar" class="icon" style="width: 12px; height: 12px;"></i>
+                    Feb 01
+                  </span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="engagement-item__arrow" style="width: 16px; height: 16px;"></i>
+            </div>
+
+            <!-- Engagement Item 4: Belgium HoldCo - Medium Risk (Received) -->
+            <div class="engagement-item engagement-item--medium" data-risk="medium" data-status="received">
+              <div class="engagement-item__main">
+                <div class="engagement-item__entity">
+                  <span class="engagement-item__flag">🇧🇪</span>
+                  <span class="engagement-item__name">Belgium HoldCo</span>
+                </div>
+                <span class="engagement-item__status status--received">Received</span>
+              </div>
+              <div class="engagement-item__details">
+                <div class="engagement-item__progress">
+                  <div class="progress-bar">
+                    <div class="progress-bar__fill" style="width: 45%;"></div>
+                  </div>
+                  <span class="progress-text">45%</span>
+                </div>
+                <div class="engagement-item__meta">
+                  <span class="engagement-item__due">
+                    <i data-lucide="calendar" class="icon" style="width: 12px; height: 12px;"></i>
+                    Mar 20
+                  </span>
+                  <span class="engagement-item__risk risk--medium">
+                    <i data-lucide="alert-triangle" style="width: 12px; height: 12px;"></i>
+                  </span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="engagement-item__arrow" style="width: 16px; height: 16px;"></i>
+            </div>
+
+            <!-- Engagement Item 5: Luxembourg Fund - High Risk (Pending) -->
+            <div class="engagement-item engagement-item--high" data-risk="high" data-status="pending">
+              <div class="engagement-item__main">
+                <div class="engagement-item__entity">
+                  <span class="engagement-item__flag">🇱🇺</span>
+                  <span class="engagement-item__name">Luxembourg Fund</span>
+                </div>
+                <span class="engagement-item__status status--pending">Pending</span>
+              </div>
+              <div class="engagement-item__details">
+                <div class="engagement-item__progress">
+                  <div class="progress-bar">
+                    <div class="progress-bar__fill" style="width: 20%;"></div>
+                  </div>
+                  <span class="progress-text">20%</span>
+                </div>
+                <div class="engagement-item__meta">
+                  <span class="engagement-item__due">
+                    <i data-lucide="calendar" class="icon" style="width: 12px; height: 12px;"></i>
+                    Feb 25
+                  </span>
+                  <span class="engagement-item__risk risk--high">
+                    <i data-lucide="alert-triangle" style="width: 12px; height: 12px;"></i>
+                  </span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="engagement-item__arrow" style="width: 16px; height: 16px;"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eve Chatbot FAB -->
+  <button class="eve-fab" aria-label="Open Eve Assistant">
+    <i data-lucide="message-circle" class="icon" style="width: 24px; height: 24px;"></i>
+  </button>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // ===== Donut Chart =====
+    const donutData = {
+      segments: [
+        { key: 'late', label: 'Late', count: 3, color: '#EF4444' },
+        { key: 'soon', label: 'Soon', count: 3, color: '#F59E0B' },
+        { key: 'in_progress', label: 'In Progress', count: 0, color: '#3B82F6' }
+      ],
+      total: 6,
+      selected: 'all'
+    };
+
+    function drawDonut() {
+      const canvas = document.getElementById('donutCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const outerRadius = Math.min(centerX, centerY) - 10;
+      const innerRadius = outerRadius * 0.65;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const total = donutData.segments.reduce((sum, s) => sum + s.count, 0);
+
+      if (total === 0) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2, true);
+        ctx.fillStyle = '#E5E5E5';
+        ctx.fill();
+        return;
+      }
+
+      let startAngle = -Math.PI / 2;
+
+      donutData.segments.forEach(segment => {
+        if (segment.count === 0) return;
+
+        const sliceAngle = (segment.count / total) * Math.PI * 2;
+        const isSelected = donutData.selected === segment.key;
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, isSelected ? outerRadius + 4 : outerRadius, startAngle, startAngle + sliceAngle);
+        ctx.closePath();
+
+        ctx.fillStyle = segment.color;
+        ctx.globalAlpha = isSelected || donutData.selected === 'all' ? 1 : 0.4;
+        ctx.fill();
+
+        startAngle += sliceAngle;
+      });
+
+      // Inner circle (donut hole)
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+
+      // Center text
+      ctx.fillStyle = '#2E2E38';
+      ctx.font = 'bold 28px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(total.toString(), centerX, centerY - 8);
+
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.fillText('Total', centerX, centerY + 14);
+    }
+
+    // ===== Legend Click Handler =====
+    const legendItems = document.querySelectorAll('.legend-item');
+    const engagementTitle = document.getElementById('engagement-title');
+    const engagementItems = document.querySelectorAll('.engagement-item');
+
+    const filterLabels = {
+      all: 'All Engagements',
+      late: 'Late Engagements',
+      soon: 'Approaching Deadline',
+      in_progress: 'In Progress'
+    };
+
+    const riskMapping = {
+      late: 'high',
+      soon: 'medium',
+      in_progress: 'low'
+    };
+
+    function updateLegendStyles() {
+      legendItems.forEach(item => {
+        const segment = item.dataset.segment;
+        item.classList.remove('selected', 'dimmed');
+
+        if (donutData.selected === segment) {
+          item.classList.add('selected');
+        } else if (donutData.selected !== 'all') {
+          item.classList.add('dimmed');
+        }
+      });
+    }
+
+    function filterEngagements() {
+      engagementTitle.textContent = filterLabels[donutData.selected];
+
+      engagementItems.forEach(item => {
+        const risk = item.dataset.risk;
+
+        if (donutData.selected === 'all') {
+          item.style.display = 'flex';
+        } else {
+          const matchRisk = riskMapping[donutData.selected];
+          if (donutData.selected === 'in_progress') {
+            item.style.display = (risk === 'low' && item.dataset.status !== 'completed') ? 'flex' : 'none';
+          } else {
+            item.style.display = risk === matchRisk ? 'flex' : 'none';
+          }
+        }
+      });
+    }
+
+    legendItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const segment = item.dataset.segment;
+
+        if (donutData.selected === segment) {
+          donutData.selected = 'all';
+        } else {
+          donutData.selected = segment;
+        }
+
+        updateLegendStyles();
+        drawDonut();
+        filterEngagements();
+      });
+    });
+
+    // ===== Upload Zone Drag & Drop =====
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-upload');
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadZone.classList.remove('dragover');
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFiles(files);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFiles(e.target.files);
+      }
+    });
+
+    function handleFiles(files) {
+      console.log('Files uploaded:', Array.from(files).map(f => f.name));
+      alert(`${files.length} file(s) selected for upload:\n${Array.from(files).map(f => f.name).join('\n')}`);
+    }
+
+    // ===== Engagement Item Click =====
+    engagementItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const name = item.querySelector('.engagement-item__name').textContent;
+        alert(`Navigate to engagement: ${name}`);
+      });
+    });
+
+    // ===== Action Buttons =====
+    document.querySelectorAll('.action-btn, .upload-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const row = btn.closest('.signoff-table__row') || btn.closest('.missing-doc-item');
+        if (row) {
+          const docName = row.querySelector('.col-document')?.textContent ||
+                         row.querySelector('.missing-doc-item__name')?.textContent;
+          alert(`Action triggered for: ${docName}`);
+        }
+      });
+    });
+
+    // ===== View All Buttons =====
+    document.querySelectorAll('.view-all-btn, .view-all-link').forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert('Navigate to full list view');
+      });
+    });
+
+    // ===== Navbar Items =====
+    document.querySelectorAll('.navbar-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.navbar-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+    // ===== Eve FAB =====
+    document.querySelector('.eve-fab').addEventListener('click', () => {
+      alert('Open Eve AI Assistant');
+    });
+
+    // Initial render
+    drawDonut();
+  </script>
+</body>
+</html>
