@@ -2,7 +2,7 @@ import { DocumentType } from './document.model';
 
 export type EngagementStatus = 'waiting' | 'received' | 'processing' | 'completed';
 export type RiskLevel = 'high' | 'medium' | 'low';
-export type CountryCode = 'FR' | 'DE' | 'NL' | 'BE' | 'LU';
+export type CountryCode = 'FR' | 'DE' | 'NL' | 'BE' | 'LU' | 'UK' | 'ES' | 'IT';
 export type DocumentRequirementStatus = 'missing' | 'uploaded' | 'validated' | 'year_mismatch';
 
 export interface FinancialData {
@@ -110,4 +110,7 @@ export const COUNTRY_FLAGS: Record<CountryCode, string> = {
   NL: '🇳🇱',
   BE: '🇧🇪',
   LU: '🇱🇺',
+  UK: '🇬🇧',
+  ES: '🇪🇸',
+  IT: '🇮🇹',
 };

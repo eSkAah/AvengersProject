@@ -1,30 +1,42 @@
 <div class="services-widget">
   <div class="services-widget__header">
-    <h2>Subscribed Services</h2>
-    <span class="services-widget__count">{{ services().length }} services</span>
+    <div class="services-widget__title">
+      <h3>Services</h3>
+    </div>
   </div>
 
-  <div class="services-grid">
-    @for (service of services(); track service.id) {
-      <div class="service-card" [class]="'service-card--' + service.status">
-        <div class="service-card__icon">
-          <lucide-icon [img]="service.icon" [size]="24"></lucide-icon>
+  <div class="services-widget__list">
+    @for (service of services; track service.id) {
+      <div class="service-card">
+        <div class="service-card__icon" [class]="service.iconBgColor">
+          <lucide-icon [img]="service.icon" [size]="20"></lucide-icon>
         </div>
         <div class="service-card__content">
-          <h3 class="service-card__name">{{ service.name }}</h3>
+          <h4 class="service-card__name">{{ service.name }}</h4>
           <p class="service-card__description">{{ service.description }}</p>
-          <div class="service-card__meta">
-            <span class="service-card__status" [class]="'status--' + service.status">
-              {{ getStatusLabel(service.status) }}
-            </span>
-            <span class="service-card__engagements">
-              {{ service.engagementCount }} entities
-            </span>
-          </div>
         </div>
-        <button class="service-card__action">
-          <lucide-icon [img]="icons.chevronRight" [size]="18"></lucide-icon>
-        </button>
+        <div class="service-card__status">
+          @if (service.status.completed > 0) {
+            <div class="status-item status-item--completed" [title]="'Completed'">
+              <span class="status-count">{{ service.status.completed }}</span>
+            </div>
+          }
+          @if (service.status.reviewing > 0) {
+            <div class="status-item status-item--reviewing" [title]="'Reviewing'">
+              <span class="status-count">{{ service.status.reviewing }}</span>
+            </div>
+          }
+          @if (service.status.inProgress > 0) {
+            <div class="status-item status-item--progress" [title]="'In Progress'">
+              <span class="status-count">{{ service.status.inProgress }}</span>
+            </div>
+          }
+          @if (service.status.notStarted > 0) {
+            <div class="status-item status-item--notstarted" [title]="'Not Started'">
+              <span class="status-count">{{ service.status.notStarted }}</span>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>

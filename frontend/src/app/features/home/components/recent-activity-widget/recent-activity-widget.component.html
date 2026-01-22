@@ -1,0 +1,20 @@
+<div class="activity-widget">
+  <div class="activity-widget__header">
+    <h3>Recent Activity</h3>
+  </div>
+
+  <div class="activity-widget__list">
+    @for (activity of activities; track activity.id) {
+      <div class="activity-item" [class]="getTypeClass(activity.type)">
+        <div class="activity-item__icon">
+          <lucide-icon [img]="activity.icon" [size]="16"></lucide-icon>
+        </div>
+        <div class="activity-item__content">
+          <span class="activity-item__title">{{ activity.title }}</span>
+          <span class="activity-item__entity">{{ activity.entity }}</span>
+        </div>
+        <span class="activity-item__time">{{ activity.time }}</span>
+      </div>
+    }
+  </div>
+</div>

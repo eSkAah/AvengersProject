@@ -1,42 +1,45 @@
-<div class="dashboard">
-  <!-- Header -->
-  <div class="dashboard__header">
-    <div class="dashboard__header-content">
-      <lucide-icon [img]="icons.layoutDashboard" [size]="28"></lucide-icon>
-      <div>
-        <h1>Dashboard</h1>
-        <p>Overview of your engagements and documents</p>
+<div class="bento-home">
+  <!-- Bento Grid - Apple/Stripe Premium Layout -->
+  <div class="bento-grid">
+    <!-- TOP ROW: Welcome + Upload in same Bento style -->
+    <div class="bento-tile bento-tile--welcome">
+      <div class="welcome-content">
+        <h1>Welcome back, <span class="user-name">John</span></h1>
+        <p>Your engagement overview and quick actions</p>
+      </div>
+      <div class="welcome-date">
+        <span class="day">{{ today | date:'EEEE' }}</span>
+        <span class="date">{{ today | date:'d MMMM yyyy' }}</span>
       </div>
     </div>
-  </div>
 
-  <!-- Bento Grid -->
-  <div class="bento-grid">
-    <!-- Left Column: Subscribed Services (Large) -->
-    <div class="bento-card bento-card--services">
+    <div class="bento-tile bento-tile--upload">
+      <app-drop-file-widget></app-drop-file-widget>
+    </div>
+
+    <!-- LEFT COLUMN -->
+    <div class="bento-tile bento-tile--services">
       <app-services-widget></app-services-widget>
     </div>
 
-    <!-- Right Column: Upload, Missing Docs, Sign Off -->
-    <div class="bento-column-right">
-      <!-- Upload Document (Compact) -->
-      <div class="bento-card bento-card--upload">
-        <app-upload-widget (uploadFiles)="onFilesUpload($event)"></app-upload-widget>
-      </div>
-
-      <!-- Missing Documents -->
-      <div class="bento-card bento-card--missing">
-        <app-missing-docs-widget></app-missing-docs-widget>
-      </div>
-
-      <!-- Documents to Sign Off -->
-      <div class="bento-card bento-card--signoff">
-        <app-signoff-widget></app-signoff-widget>
-      </div>
+    <div class="bento-tile bento-tile--activity">
+      <app-recent-activity-widget></app-recent-activity-widget>
     </div>
 
-    <!-- Full Width: Tax News & Insights -->
-    <div class="bento-card bento-card--news">
+    <div class="bento-tile bento-tile--contacts">
+      <app-contacts-widget></app-contacts-widget>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="bento-tile bento-tile--missing">
+      <app-missing-documents-widget></app-missing-documents-widget>
+    </div>
+
+    <div class="bento-tile bento-tile--signoff">
+      <app-signoff-widget></app-signoff-widget>
+    </div>
+
+    <div class="bento-tile bento-tile--news">
       <app-tax-news-widget></app-tax-news-widget>
     </div>
   </div>

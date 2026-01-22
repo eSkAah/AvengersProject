@@ -1,0 +1,25 @@
+<div class="contacts-widget">
+  <div class="contacts-widget__header">
+    <h3>Your Team</h3>
+  </div>
+
+  <div class="contacts-widget__list">
+    @for (contact of contacts; track contact.id) {
+      <div class="contact-card">
+        <img
+          class="contact-card__avatar"
+          [src]="contact.avatarUrl"
+          [alt]="contact.firstName + ' ' + contact.lastName"
+          loading="lazy"
+        />
+        <div class="contact-card__info">
+          <span class="contact-card__name">{{ contact.firstName }} {{ contact.lastName }}</span>
+          <span class="contact-card__role">{{ contact.role }}</span>
+        </div>
+        <button class="contact-card__action" (click)="onContactEmail(contact)" title="Send email">
+          <lucide-icon [img]="icons.mail" [size]="16"></lucide-icon>
+        </button>
+      </div>
+    }
+  </div>
+</div>

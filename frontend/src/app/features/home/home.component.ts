@@ -3,20 +3,18 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { LucideAngularModule, LayoutDashboard } from 'lucide-angular';
+import { LucideAngularModule, Home } from 'lucide-angular';
 import { MockDataService } from '../../core';
 import {
-  UploadWidgetComponent,
-  DonutWidgetComponent,
-  DonutSegment,
+  DropFileWidgetComponent,
+  MissingDocumentsWidgetComponent,
   SignoffWidgetComponent,
-  EngagementListWidgetComponent,
-  MissingDocsWidgetComponent,
   ServicesWidgetComponent,
   TaxNewsWidgetComponent,
+  RecentActivityWidgetComponent,
+  ContactsWidgetComponent,
 } from './components';
 
 @Component({
@@ -25,13 +23,13 @@ import {
   imports: [
     CommonModule,
     LucideAngularModule,
-    UploadWidgetComponent,
-    DonutWidgetComponent,
+    DropFileWidgetComponent,
+    MissingDocumentsWidgetComponent,
     SignoffWidgetComponent,
-    EngagementListWidgetComponent,
-    MissingDocsWidgetComponent,
     ServicesWidgetComponent,
     TaxNewsWidgetComponent,
+    RecentActivityWidgetComponent,
+    ContactsWidgetComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -42,15 +40,10 @@ export class HomeComponent {
   private readonly router = inject(Router);
 
   readonly icons = {
-    layoutDashboard: LayoutDashboard,
+    home: Home,
   };
 
-  // State for donut filter
-  readonly selectedDonutSegment = signal<DonutSegment>('all');
-
-  onDonutSegmentChange(segment: DonutSegment): void {
-    this.selectedDonutSegment.set(segment);
-  }
+  readonly today = new Date();
 
   onFilesUpload(files: File[]): void {
     // Navigate to documents page with upload mode

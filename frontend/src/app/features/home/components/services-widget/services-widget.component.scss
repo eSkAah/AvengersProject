@@ -1,157 +1,198 @@
 @use 'styles/variables' as *;
 
+// ============================================
+// SERVICES WIDGET - Apple/Stripe Premium Style
+// ============================================
+
 .services-widget {
   display: flex;
   flex-direction: column;
   height: 100%;
 
   &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-4;
+    margin-bottom: $spacing-3;
+  }
 
-    h2 {
-      font-size: $font-size-lg;
-      font-weight: $font-weight-bold;
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    h3 {
+      font-size: 0.9375rem;
+      font-weight: 600;
       color: $color-text-primary;
       margin: 0;
+      letter-spacing: -0.01em;
     }
   }
 
-  &__count {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    background: rgba($color-background, 0.8);
-    padding: $spacing-1 $spacing-3;
-    border-radius: $radius-full;
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
   }
 }
 
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-3;
-  flex: 1;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-}
+// ============================================
+// SERVICE CARD - Premium Aligned Layout
+// ============================================
 
 .service-card {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-3;
-  padding: $spacing-4;
-  background: rgba($color-background, 0.5);
-  border-radius: $radius-lg;
-  border: 1px solid rgba($color-border, 0.5);
-  transition: all 0.2s ease;
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #F8F9FA;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 
   &:hover {
-    background: rgba($color-background, 0.8);
-    border-color: rgba($ey-yellow, 0.3);
-    transform: translateY(-2px);
-
-    .service-card__action {
-      color: $ey-yellow;
-      transform: translateX(2px);
-    }
+    background: #F1F3F5;
+    border-color: rgba($color-border, 0.6);
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
-  &--expiring {
-    border-left: 3px solid $color-warning;
-  }
-
-  &--pending {
-    border-left: 3px solid $color-info;
-  }
-
-  &--active {
-    border-left: 3px solid $color-success;
-  }
-
+  // Icon container
   &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: rgba($ey-yellow, 0.1);
-    border-radius: $radius-lg;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     flex-shrink: 0;
 
     lucide-icon {
-      color: $ey-yellow;
+      color: white;
+    }
+
+    // Color variants with premium gradients
+    &.bg-blue {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
+
+    &.bg-green {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+
+    &.bg-purple {
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+    }
+
+    &.bg-orange {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+    }
+
+    &.bg-teal {
+      background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+      box-shadow: 0 2px 8px rgba(20, 184, 166, 0.25);
     }
   }
 
+  // Content section
   &__content {
-    flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
   }
 
   &__name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
+    font-size: 0.8125rem;
+    font-weight: 600;
     color: $color-text-primary;
-    margin: 0 0 4px 0;
+    margin: 0;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__description {
-    font-size: $font-size-xs;
+    font-size: 0.6875rem;
     color: $color-text-secondary;
-    margin: 0 0 $spacing-2 0;
-    line-height: 1.4;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  &__meta {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-  }
-
+  // Status section with colored badges
   &__status {
-    font-size: 10px;
-    font-weight: $font-weight-semibold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 2px 6px;
-    border-radius: $radius-sm;
-
-    &.status--active {
-      color: $color-success;
-      background: rgba($color-success, 0.1);
-    }
-
-    &.status--pending {
-      color: $color-info;
-      background: rgba($color-info, 0.1);
-    }
-
-    &.status--expiring {
-      color: $color-warning;
-      background: rgba($color-warning, 0.1);
-    }
-  }
-
-  &__engagements {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-  }
-
-  &__action {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: $color-text-secondary;
-    cursor: pointer;
-    padding: $spacing-1;
-    transition: all 0.2s ease;
-    align-self: center;
+    gap: 4px;
+  }
+}
+
+// ============================================
+// STATUS ITEMS - Colored indicators
+// ============================================
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  cursor: help;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  .status-count {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Completed - Green
+  &--completed {
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+
+    .status-count {
+      color: #047857;
+    }
+  }
+
+  // Reviewing - Orange/Yellow
+  &--reviewing {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+
+    .status-count {
+      color: #B45309;
+    }
+  }
+
+  // In Progress - Blue
+  &--progress {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+
+    .status-count {
+      color: #1D4ED8;
+    }
+  }
+
+  // Not Started - Gray
+  &--notstarted {
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+
+    .status-count {
+      color: #6B7280;
+    }
   }
 }

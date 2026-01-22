@@ -1,152 +1,255 @@
 @use 'styles/variables' as *;
 
-.dashboard {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: $spacing-4;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-4;
+// ============================================
+// BENTO GRID HOME - Apple/Stripe Premium Layout
+// Ultra-dense, elegant, executive-ready
+// ============================================
 
-  &__header {
-    margin-bottom: $spacing-2;
+.bento-home {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F8F9FA 0%, #F0F1F3 100%);
+  padding: $spacing-3 $spacing-6;
 
-    &-content {
-      display: flex;
-      align-items: center;
-      gap: $spacing-3;
-
-      lucide-icon {
-        color: $ey-yellow;
-      }
-
-      h1 {
-        font-size: $font-size-2xl;
-        font-weight: $font-weight-bold;
-        color: $color-text-primary;
-        margin: 0;
-      }
-
-      p {
-        font-size: $font-size-sm;
-        color: $color-text-secondary;
-        margin: 0;
-      }
-    }
-  }
-
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     padding: $spacing-3;
-    gap: $spacing-3;
-
-    &__header-content {
-      h1 {
-        font-size: $font-size-xl;
-      }
-
-      p {
-        font-size: $font-size-xs;
-      }
-    }
   }
 }
 
-// Bento Grid Layout
+// ============================================
+// BENTO GRID - Optimized Brick Layout
+// Row 1: Welcome (2/3) + Upload (1/3)
+// Row 2: Services (1/3) + Missing (2/3)
+// Row 3: Activity (1/3) + SignOff (2/3)
+// Row 4: News (3/4) + Contacts (1/4)
+// ============================================
+
 .bento-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: auto auto;
-  gap: $spacing-4;
+  grid-template-columns: minmax(280px, 1.2fr) 1fr 1fr 1fr;
+  gap: $spacing-3;
+  max-width: 1400px;
+  margin: 0 auto;
 
-  @media (max-width: 1024px) {
+  // Bento brick layout with varying proportions
+  // Row 1: Welcome wider, Upload fills rest
+  // Row 2-3: Services/Activity wider, Right takes rest
+  // Row 4: News 3/4, Contacts 1/4
+  grid-template-areas:
+    "welcome  welcome  upload   upload"
+    "services missing  missing  missing"
+    "activity signoff  signoff  signoff"
+    "news     news     news     contacts";
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "welcome  welcome  upload"
+      "services missing  missing"
+      "activity signoff  signoff"
+      "news     news     contacts";
+  }
+
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
-
-  @media (max-width: 640px) {
-    gap: $spacing-3;
-  }
-}
-
-// Right column stack
-.bento-column-right {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-4;
-
-  @media (max-width: 640px) {
-    gap: $spacing-3;
+    grid-template-areas:
+      "welcome"
+      "upload"
+      "missing"
+      "signoff"
+      "services"
+      "activity"
+      "news"
+      "contacts";
   }
 }
 
-// Bento Card - Premium Styling
-.bento-card {
+// ============================================
+// BENTO TILES - Premium Card Styling
+// ============================================
+
+.bento-tile {
   background: $color-surface;
-  border-radius: $radius-xl;
-  padding: $spacing-5;
+  border-radius: 16px;
+  padding: $spacing-4;
   overflow: hidden;
+  position: relative;
 
-  // Premium shadow layering
+  // Premium subtle shadow
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.02),
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    0 4px 8px rgba(0, 0, 0, 0.03),
-    0 8px 16px rgba(0, 0, 0, 0.04);
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 
-  // Subtle border
+  // Subtle border for depth
   border: 1px solid rgba($color-border, 0.4);
 
+  // Smooth transitions
   transition:
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.02),
-      0 4px 8px rgba(0, 0, 0, 0.03),
-      0 8px 16px rgba(0, 0, 0, 0.04),
-      0 16px 32px rgba(0, 0, 0, 0.06);
+      0 2px 4px rgba(0, 0, 0, 0.03),
+      0 8px 20px rgba(0, 0, 0, 0.06);
     transform: translateY(-2px);
   }
 
-  // Services Widget - Left column, large
-  &--services {
-    grid-column: 1;
-    grid-row: 1;
-    min-height: 480px;
+  // WELCOME - Takes 2/3 of first row, taller
+  &--welcome {
+    grid-area: welcome;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-5 $spacing-6;
+    min-height: 88px;
 
-    @media (max-width: 1024px) {
-      grid-column: 1;
-      grid-row: auto;
-      min-height: auto;
+    &:hover {
+      transform: none;
     }
   }
 
-  // Upload Widget - Right column, compact
+  // UPLOAD - Takes remaining space of first row, matches welcome height
   &--upload {
-    padding: $spacing-4;
-    min-height: 140px;
-  }
+    grid-area: upload;
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    align-items: stretch;
+    min-height: 88px;
 
-  // Missing Documents Widget
-  &--missing {
-    flex: 1;
-    min-height: 200px;
-  }
-
-  // Sign Off Widget
-  &--signoff {
-    min-height: 180px;
-  }
-
-  // Tax News Widget - Full width, bottom
-  &--news {
-    grid-column: 1 / 3;
-    grid-row: 2;
-
-    @media (max-width: 1024px) {
-      grid-column: 1;
-      grid-row: auto;
+    &:hover {
+      transform: none;
+      box-shadow: none;
     }
+
+    // Make child fill the space
+    > * {
+      flex: 1;
+    }
+  }
+
+  // LEFT COLUMN - 1/3 width
+  &--services {
+    grid-area: services;
+    background: white;
+  }
+
+  &--activity {
+    grid-area: activity;
+    background: white;
+  }
+
+  // RIGHT COLUMN - 2/3 width
+  &--missing {
+    grid-area: missing;
+    background: white;
+  }
+
+  &--signoff {
+    grid-area: signoff;
+    background: white;
+  }
+
+  // BOTTOM ROW - News 3/4, Contacts 1/4
+  &--news {
+    grid-area: news;
+    background: white;
+  }
+
+  &--contacts {
+    grid-area: contacts;
+    background: white;
+  }
+}
+
+// ============================================
+// WELCOME TILE CONTENT
+// ============================================
+
+.welcome-content {
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 2px 0;
+    letter-spacing: -0.02em;
+
+    .user-name {
+      color: $ey-yellow;
+      font-weight: 700;
+    }
+  }
+
+  p {
+    font-size: 0.8125rem;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+.welcome-date {
+  text-align: right;
+
+  .day {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: $ey-yellow;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .date {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+}
+
+// ============================================
+// GLOBAL WIDGET STYLING OVERRIDES
+// Premium compact design system
+// ============================================
+
+:host {
+  // Widget titles - clean, premium
+  ::ng-deep .widget-title,
+  ::ng-deep h3 {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em;
+  }
+
+  // Entity names and primary text
+  ::ng-deep .entity-name,
+  ::ng-deep .file-name,
+  ::ng-deep .service-card__name {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+  }
+
+  // Flags - consistent sizing
+  ::ng-deep .entity-flag {
+    font-size: 1rem !important;
+  }
+
+  // Service cards - optimized padding
+  ::ng-deep .service-card {
+    padding: 12px 14px !important;
+  }
+
+  // News cards - readable
+  ::ng-deep .news-card__title {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+  }
+
+  ::ng-deep .news-card__summary {
+    font-size: 0.8125rem !important;
+    line-height: 1.5 !important;
   }
 }
