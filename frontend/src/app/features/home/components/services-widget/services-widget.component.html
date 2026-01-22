@@ -1,0 +1,31 @@
+<div class="services-widget">
+  <div class="services-widget__header">
+    <h2>Subscribed Services</h2>
+    <span class="services-widget__count">{{ services().length }} services</span>
+  </div>
+
+  <div class="services-grid">
+    @for (service of services(); track service.id) {
+      <div class="service-card" [class]="'service-card--' + service.status">
+        <div class="service-card__icon">
+          <lucide-icon [img]="service.icon" [size]="24"></lucide-icon>
+        </div>
+        <div class="service-card__content">
+          <h3 class="service-card__name">{{ service.name }}</h3>
+          <p class="service-card__description">{{ service.description }}</p>
+          <div class="service-card__meta">
+            <span class="service-card__status" [class]="'status--' + service.status">
+              {{ getStatusLabel(service.status) }}
+            </span>
+            <span class="service-card__engagements">
+              {{ service.engagementCount }} entities
+            </span>
+          </div>
+        </div>
+        <button class="service-card__action">
+          <lucide-icon [img]="icons.chevronRight" [size]="18"></lucide-icon>
+        </button>
+      </div>
+    }
+  </div>
+</div>

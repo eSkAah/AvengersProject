@@ -1,0 +1,201 @@
+@use 'styles/variables' as *;
+
+.tax-news-widget {
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-4;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    lucide-icon {
+      color: $ey-yellow;
+    }
+
+    h2 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: $color-text-primary;
+      margin: 0;
+    }
+  }
+}
+
+.view-all-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+  padding: $spacing-2 $spacing-3;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  background: none;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $ey-yellow;
+    border-color: $ey-yellow;
+    background: rgba($ey-yellow, 0.05);
+
+    lucide-icon {
+      transform: translateX(2px);
+    }
+  }
+
+  lucide-icon {
+    transition: transform 0.2s ease;
+  }
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-4;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.news-card {
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-4;
+  background: rgba($color-background, 0.5);
+  border-radius: $radius-lg;
+  border: 1px solid rgba($color-border, 0.5);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba($color-background, 0.8);
+    border-color: rgba($ey-yellow, 0.3);
+    transform: translateY(-2px);
+  }
+
+  &--regulation {
+    border-top: 3px solid $color-info;
+  }
+
+  &--policy {
+    border-top: 3px solid $color-warning;
+  }
+
+  &--market {
+    border-top: 3px solid $color-success;
+  }
+
+  &--insight {
+    border-top: 3px solid $ey-yellow;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-2;
+  }
+
+  &__category {
+    font-size: 10px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: $radius-sm;
+
+    &.category--regulation {
+      color: $color-info;
+      background: rgba($color-info, 0.1);
+    }
+
+    &.category--policy {
+      color: $color-warning;
+      background: rgba($color-warning, 0.1);
+    }
+
+    &.category--market {
+      color: $color-success;
+      background: rgba($color-success, 0.1);
+    }
+
+    &.category--insight {
+      color: darken($ey-yellow, 15%);
+      background: rgba($ey-yellow, 0.15);
+    }
+  }
+
+  &__date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+
+    lucide-icon {
+      color: $color-text-muted;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-2 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__summary {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    line-height: 1.5;
+    margin: 0 0 $spacing-3 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: $spacing-2;
+    border-top: 1px solid rgba($color-border, 0.3);
+  }
+
+  &__countries {
+    display: flex;
+    gap: 2px;
+  }
+
+  &__source {
+    font-size: 10px;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.country-flag {
+  font-size: $font-size-sm;
+}
