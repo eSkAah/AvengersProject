@@ -11,6 +11,39 @@
   align-items: center;
 }
 
+// Sub-tabs (Dashboard / Multicountry)
+.sub-tabs {
+  display: flex;
+  background: #2e2e38;
+  border-radius: 8px;
+  padding: 4px;
+
+  &__btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(white, 0.6);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: rgba(white, 0.9);
+    }
+
+    &--active {
+      background: #ffe600;
+      color: #2e2e38;
+    }
+  }
+}
+
+.view-header {
+  margin-bottom: 0.5rem;
+}
+
 // View Toggle - Apple style
 .view-toggle {
   position: relative;
@@ -144,6 +177,7 @@
   &--orange { border-left-color: #f59e0b; }
   &--purple { border-left-color: #8b5cf6; }
   &--gray { border-left-color: #6b7280; }
+  &--yellow { border-left-color: #eab308; }
 }
 
 // Entity Cards Grid
@@ -514,6 +548,220 @@
   color: #dc2626 !important;
 }
 
+// ==========================================
+// MULTICOUNTRY VIEW
+// ==========================================
+.multicountry-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// Multicountry Filters
+.mc-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mc-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #374151;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 140px;
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+  }
+}
+
+// Multicountry KPI Strip
+.mc-kpi-strip {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mc-kpi {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.875rem 1rem;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid transparent;
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.25rem;
+  }
+
+  &__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-variant-numeric: tabular-nums;
+
+    &.negative {
+      color: #dc2626;
+    }
+  }
+
+  &--red { border-left-color: #ef4444; }
+  &--yellow { border-left-color: #eab308; }
+  &--gray { border-left-color: #6b7280; }
+  &--blue { border-left-color: #3b82f6; }
+}
+
+// Multicountry Table
+.mc-table-section {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.mc-table-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 1rem 1.25rem;
+  margin: 0;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.mc-table-wrapper {
+  overflow-x: auto;
+}
+
+.mc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+
+  th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+
+    &.text-right {
+      text-align: right;
+    }
+  }
+
+  td {
+    padding: 0.625rem 1rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    white-space: nowrap;
+
+    &.text-right {
+      text-align: right;
+    }
+
+    &.mono {
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &.sticky-col {
+      position: sticky;
+      left: 0;
+      background: white;
+      font-weight: 500;
+      z-index: 1;
+    }
+
+    &.negative {
+      color: #dc2626;
+    }
+  }
+
+  th.sticky-col {
+    position: sticky;
+    left: 0;
+    background: #f9fafb;
+    z-index: 2;
+  }
+
+  tr:hover td {
+    background: #fafafa;
+  }
+
+  tr:hover td.sticky-col {
+    background: #fafafa;
+  }
+}
+
+.totals-row {
+  td {
+    background: #f9fafb !important;
+    border-top: 2px solid #e5e7eb;
+    font-weight: 600;
+
+    &.sticky-col {
+      background: #f9fafb !important;
+    }
+  }
+}
+
+// Multicountry Charts
+.mc-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.mc-chart-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+}
+
+.mc-chart-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.mc-chart-container {
+  height: 280px;
+  position: relative;
+}
+
 // Responsive
 @media (max-width: 768px) {
   .entity-cards,
@@ -540,5 +788,17 @@
 
   .summary-stat {
     flex: 1 1 45%;
+  }
+
+  .mc-kpi-strip {
+    flex-wrap: wrap;
+  }
+
+  .mc-kpi {
+    flex: 1 1 45%;
+  }
+
+  .mc-charts {
+    grid-template-columns: 1fr;
   }
 }
