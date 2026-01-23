@@ -151,4 +151,8 @@ export class ServiceDetailComponent implements OnInit {
       day: 'numeric',
     });
   }
+
+  navigateToEntity(engagementId: string): void {
+    this.router.navigate(['/app/entities', engagementId]);
+  }
 }

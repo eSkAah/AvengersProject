@@ -268,11 +268,37 @@
 }
 
 .entity-row {
-  transition: background 150ms ease-out;
+  transition: all 150ms ease-out;
+
+  &--clickable {
+    cursor: pointer;
+
+    .row-arrow {
+      opacity: 0;
+      color: $color-text-secondary;
+      transition: opacity 150ms ease-out, transform 150ms ease-out;
+    }
+
+    &:hover {
+      background: rgba($ey-yellow, 0.05);
+
+      .row-arrow {
+        opacity: 1;
+        transform: translateX(2px);
+      }
+    }
+  }
 
   &:hover {
     background: rgba($ey-yellow, 0.02);
   }
+}
+
+.date-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .entity-cell {

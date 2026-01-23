@@ -1,10 +1,10 @@
-// Navbar Variables
+// Navbar Variables - EY style with Tristan Capital Partners branding
 $navbar-height: 64px;
-$navbar-bg: #1F2937;
-$navbar-text: rgba(255, 255, 255, 0.7);
+$navbar-bg: #1A1A1A; // Black background (EY style)
+$navbar-text: rgba(255, 255, 255, 0.75);
 $navbar-text-hover: #FFFFFF;
 $navbar-text-active: #FFFFFF;
-$ey-yellow: #FFE600;
+$ey-yellow: #FFE600; // EY yellow accent
 
 // Navbar Base
 .navbar {

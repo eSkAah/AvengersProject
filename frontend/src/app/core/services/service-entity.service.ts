@@ -13,6 +13,7 @@ export interface Service {
 
 export interface ServiceEntity {
   id: string;
+  engagementId: string; // Maps to the entity detail page
   name: string;
   countryFlag: string;
   status: EntityStatus;
@@ -72,34 +73,34 @@ export class ServiceEntityService {
 
   private readonly entitiesByService: Record<string, ServiceEntity[]> = {
     'cit': [
-      { id: 'fr-sci', name: 'France SCI', countryFlag: '🇫🇷', status: 'completed', progress: 100, lastUpdated: '2026-01-20' },
-      { id: 'de-gmbh', name: 'Germany GmbH', countryFlag: '🇩🇪', status: 'reviewing', progress: 85, lastUpdated: '2026-01-22' },
-      { id: 'nl-bv', name: 'Netherlands BV', countryFlag: '🇳🇱', status: 'in-progress', progress: 60, lastUpdated: '2026-01-21' },
-      { id: 'be-sa', name: 'Belgium SA', countryFlag: '🇧🇪', status: 'in-progress', progress: 45, lastUpdated: '2026-01-19' },
-      { id: 'lu-sarl', name: 'Luxembourg SARL', countryFlag: '🇱🇺', status: 'not-started', progress: 0, lastUpdated: '2026-01-15' },
+      { id: 'fr-sci', engagementId: 'ENG-CCP5-FR-001', name: 'CCP 5 Paris Office SPV', countryFlag: '🇫🇷', status: 'in-progress', progress: 67, lastUpdated: '2026-01-20' },
+      { id: 'de-gmbh', engagementId: 'ENG-CCP5-DE-001', name: 'CCP 5 Munich Logistics PropCo', countryFlag: '🇩🇪', status: 'reviewing', progress: 85, lastUpdated: '2026-01-22' },
+      { id: 'nl-bv', engagementId: 'ENG-CCP5-NL-001', name: 'CCP 5 Amsterdam Retail BV', countryFlag: '🇳🇱', status: 'completed', progress: 100, lastUpdated: '2026-01-21' },
+      { id: 'lu-sarl', engagementId: 'ENG-EPISO6-LU-001', name: 'EPISO 6 Luxembourg HoldCo', countryFlag: '🇱🇺', status: 'in-progress', progress: 78, lastUpdated: '2026-01-15' },
+      { id: 'es-sl', engagementId: 'ENG-EPISO6-ES-001', name: 'EPISO 6 Madrid Residential SL', countryFlag: '🇪🇸', status: 'not-started', progress: 35, lastUpdated: '2026-01-19' },
     ],
     'vat': [
-      { id: 'fr-sci-vat', name: 'France SCI', countryFlag: '🇫🇷', status: 'completed', progress: 100, lastUpdated: '2026-01-18' },
-      { id: 'de-gmbh-vat', name: 'Germany GmbH', countryFlag: '🇩🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-17' },
-      { id: 'nl-bv-vat', name: 'Netherlands BV', countryFlag: '🇳🇱', status: 'completed', progress: 100, lastUpdated: '2026-01-16' },
-      { id: 'be-sa-vat', name: 'Belgium SA', countryFlag: '🇧🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-15' },
-      { id: 'es-sl-vat', name: 'Spain SL', countryFlag: '🇪🇸', status: 'in-progress', progress: 70, lastUpdated: '2026-01-22' },
+      { id: 'fr-sci-vat', engagementId: 'ENG-CCP5-FR-001', name: 'CCP 5 Paris Office SPV', countryFlag: '🇫🇷', status: 'completed', progress: 100, lastUpdated: '2026-01-18' },
+      { id: 'de-gmbh-vat', engagementId: 'ENG-CCP5-DE-001', name: 'CCP 5 Munich Logistics PropCo', countryFlag: '🇩🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-17' },
+      { id: 'nl-bv-vat', engagementId: 'ENG-CCP5-NL-001', name: 'CCP 5 Amsterdam Retail BV', countryFlag: '🇳🇱', status: 'completed', progress: 100, lastUpdated: '2026-01-16' },
+      { id: 'be-sa-vat', engagementId: 'ENG-EPISO6-BE-001', name: 'EPISO 6 Brussels Industrial SA', countryFlag: '🇧🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-15' },
+      { id: 'es-sl-vat', engagementId: 'ENG-EPISO6-ES-001', name: 'EPISO 6 Madrid Residential SL', countryFlag: '🇪🇸', status: 'in-progress', progress: 70, lastUpdated: '2026-01-22' },
     ],
     'assessment': [
-      { id: 'fr-sci-assess', name: 'France SCI', countryFlag: '🇫🇷', status: 'reviewing', progress: 90, lastUpdated: '2026-01-21' },
-      { id: 'de-gmbh-assess', name: 'Germany GmbH', countryFlag: '🇩🇪', status: 'reviewing', progress: 88, lastUpdated: '2026-01-20' },
-      { id: 'nl-bv-assess', name: 'Netherlands BV', countryFlag: '🇳🇱', status: 'in-progress', progress: 55, lastUpdated: '2026-01-19' },
+      { id: 'fr-sci-assess', engagementId: 'ENG-CCP5-FR-001', name: 'CCP 5 Paris Office SPV', countryFlag: '🇫🇷', status: 'reviewing', progress: 90, lastUpdated: '2026-01-21' },
+      { id: 'de-gmbh-assess', engagementId: 'ENG-CCP5-DE-001', name: 'CCP 5 Munich Logistics PropCo', countryFlag: '🇩🇪', status: 'reviewing', progress: 88, lastUpdated: '2026-01-20' },
+      { id: 'nl-bv-assess', engagementId: 'ENG-CCP5-NL-001', name: 'CCP 5 Amsterdam Retail BV', countryFlag: '🇳🇱', status: 'in-progress', progress: 55, lastUpdated: '2026-01-19' },
     ],
     'accounting': [
-      { id: 'fr-sci-acc', name: 'France SCI', countryFlag: '🇫🇷', status: 'completed', progress: 100, lastUpdated: '2026-01-10' },
-      { id: 'de-gmbh-acc', name: 'Germany GmbH', countryFlag: '🇩🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-11' },
-      { id: 'nl-bv-acc', name: 'Netherlands BV', countryFlag: '🇳🇱', status: 'completed', progress: 100, lastUpdated: '2026-01-12' },
-      { id: 'be-sa-acc', name: 'Belgium SA', countryFlag: '🇧🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-13' },
+      { id: 'fr-sci-acc', engagementId: 'ENG-CCP5-FR-001', name: 'CCP 5 Paris Office SPV', countryFlag: '🇫🇷', status: 'completed', progress: 100, lastUpdated: '2026-01-10' },
+      { id: 'de-gmbh-acc', engagementId: 'ENG-CCP5-DE-001', name: 'CCP 5 Munich Logistics PropCo', countryFlag: '🇩🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-11' },
+      { id: 'nl-bv-acc', engagementId: 'ENG-CCP5-NL-001', name: 'CCP 5 Amsterdam Retail BV', countryFlag: '🇳🇱', status: 'completed', progress: 100, lastUpdated: '2026-01-12' },
+      { id: 'be-sa-acc', engagementId: 'ENG-EPISO6-BE-001', name: 'EPISO 6 Brussels Industrial SA', countryFlag: '🇧🇪', status: 'completed', progress: 100, lastUpdated: '2026-01-13' },
     ],
     'transfer-pricing': [
-      { id: 'fr-de-tp', name: 'France-Germany', countryFlag: '🇫🇷🇩🇪', status: 'reviewing', progress: 80, lastUpdated: '2026-01-22' },
-      { id: 'nl-be-tp', name: 'Netherlands-Belgium', countryFlag: '🇳🇱🇧🇪', status: 'in-progress', progress: 50, lastUpdated: '2026-01-21' },
-      { id: 'lu-fr-tp', name: 'Luxembourg-France', countryFlag: '🇱🇺🇫🇷', status: 'not-started', progress: 0, lastUpdated: '2026-01-18' },
+      { id: 'fr-de-tp', engagementId: 'ENG-CCP5-FR-001', name: 'France-Germany TP', countryFlag: '🇫🇷🇩🇪', status: 'reviewing', progress: 80, lastUpdated: '2026-01-22' },
+      { id: 'nl-be-tp', engagementId: 'ENG-CCP5-NL-001', name: 'Netherlands-Belgium TP', countryFlag: '🇳🇱🇧🇪', status: 'in-progress', progress: 50, lastUpdated: '2026-01-21' },
+      { id: 'lu-fr-tp', engagementId: 'ENG-EPISO6-LU-001', name: 'Luxembourg-France TP', countryFlag: '🇱🇺🇫🇷', status: 'not-started', progress: 0, lastUpdated: '2026-01-18' },
     ]
   };
 

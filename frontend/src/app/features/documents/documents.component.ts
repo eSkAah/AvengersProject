@@ -156,7 +156,7 @@ export class DocumentsComponent implements OnInit {
     return Array.from(years).sort().reverse();
   });
 
-  readonly typeOptions = ['general_ledger', 'trial_balance', 'tax_return', 'financial_statement'];
+  readonly typeOptions = ['general_ledger', 'trial_balance', 'bank_statement', 'tax_return', 'financial_statement'];
   readonly statusOptions = ['missing', 'uploaded', 'analyzed', 'validated'];
 
   // Bulk download state
@@ -719,6 +719,7 @@ export class DocumentsComponent implements OnInit {
     const labels: Record<string, string> = {
       general_ledger: 'General Ledger',
       trial_balance: 'Trial Balance',
+      bank_statement: 'Bank Statement',
       tax_return: 'Tax Return',
       financial_statement: 'Financial Statement',
     };

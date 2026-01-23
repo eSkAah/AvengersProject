@@ -29,27 +29,21 @@
   <!-- ==================== DASHBOARD VIEW ==================== -->
   @if (activeTab() === 'dashboard') {
     <!-- View Toggle -->
-    <div class="view-header">
-      <div class="view-toggle">
-        <button
-          class="view-toggle__btn"
-          [class.view-toggle__btn--active]="activeView() === 'summary'"
-          (click)="setView('summary')"
-        >
-          Summary
-        </button>
-        <button
-          class="view-toggle__btn"
-          [class.view-toggle__btn--active]="activeView() === 'data'"
-          (click)="setView('data')"
-        >
-          Data
-        </button>
-        <div
-          class="view-toggle__indicator"
-          [class.view-toggle__indicator--right]="activeView() === 'data'"
-        ></div>
-      </div>
+    <div class="view-toggle">
+      <button
+        class="view-toggle__btn"
+        [class.view-toggle__btn--active]="activeView() === 'summary'"
+        (click)="setView('summary')"
+      >
+        Summary
+      </button>
+      <button
+        class="view-toggle__btn"
+        [class.view-toggle__btn--active]="activeView() === 'data'"
+        (click)="setView('data')"
+      >
+        Data
+      </button>
     </div>
 
     <!-- Summary View -->

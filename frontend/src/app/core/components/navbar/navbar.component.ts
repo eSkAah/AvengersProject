@@ -51,8 +51,8 @@ export class NavbarComponent {
     x: X
   };
 
-  // State
-  companyName = signal<string>('Real Estate Fund');
+  // State - Tristan Capital Partners branding
+  companyName = signal<string>('Tristan Capital Partners');
   companyLogo = signal<string | null>(null);
   userMenuOpen = signal<boolean>(false);
   notificationsOpen = signal<boolean>(false);
@@ -62,13 +62,11 @@ export class NavbarComponent {
   // Services for dropdown
   services = computed(() => this.serviceEntityService.getServices());
 
-  // Navigation items
+  // Navigation items (Engagements and Insights removed - now integrated elsewhere)
   navItems: NavItem[] = [
     { label: 'Home', icon: this.icons.home, route: '/app', exact: true },
-    { label: 'Engagements', icon: this.icons.briefcase, route: '/app/engagements', exact: false },
     { label: 'Doclib', icon: this.icons.folder, route: '/app/documents', exact: false },
     { label: 'Structure', icon: this.icons.gitBranch, route: '/app/structure', exact: false },
-    { label: 'Insights', icon: this.icons.barChart, route: '/app/insights', exact: false },
   ];
 
   // User info

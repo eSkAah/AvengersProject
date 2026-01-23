@@ -1,0 +1,120 @@
+<div class="entity-documents">
+  <!-- Header -->
+  <div class="documents-header">
+    <div class="header-left">
+      <div class="stats">
+        <span class="stat">
+          <span class="stat-value">{{ documentStats().total }}</span>
+          <span class="stat-label">Documents</span>
+        </span>
+        <span class="stat stat--validated">
+          <span class="stat-value">{{ documentStats().validated }}</span>
+          <span class="stat-label">Validated</span>
+        </span>
+        <span class="stat stat--analyzing">
+          <span class="stat-value">{{ documentStats().analyzing }}</span>
+          <span class="stat-label">Analyzing</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Search -->
+      <div class="search-box">
+        <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
+        <input
+          type="text"
+          placeholder="Search documents..."
+          [value]="searchQuery()"
+          (input)="onSearch($event)"
+        />
+      </div>
+
+      <!-- Upload toggle -->
+      <button
+        class="btn-upload"
+        [class.active]="isUploadMode()"
+        (click)="toggleUploadMode()"
+      >
+        <lucide-icon [img]="Upload" [size]="18"></lucide-icon>
+        Upload
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload zone (shown when upload mode active) -->
+  @if (isUploadMode()) {
+    <div class="upload-section">
+      <app-upload-zone
+        [disabled]="isUploading()"
+        (filesSelected)="onFilesSelected($event)"
+      ></app-upload-zone>
+    </div>
+  }
+
+  <!-- Content -->
+  <div class="documents-content">
+    <!-- Tree sidebar -->
+    <aside class="tree-sidebar">
+      <app-document-tree
+        [documents]="filteredDocuments()"
+        (nodeSelect)="onTreeNodeSelect($event)"
+      ></app-document-tree>
+    </aside>
+
+    <!-- Documents grid -->
+    <div class="documents-main">
+      @if (filteredDocuments().length === 0) {
+        <div class="empty-state">
+          <lucide-icon [img]="FolderOpen" [size]="48" class="empty-icon"></lucide-icon>
+          <p class="empty-text">No documents found</p>
+          <p class="empty-hint">Upload documents to get started</p>
+        </div>
+      } @else {
+        <div class="documents-grid">
+          @for (doc of filteredDocuments(); track doc.id) {
+            <div
+              class="doc-card"
+              [class.doc-card--validated]="doc.status === 'validated'"
+              [class.doc-card--analyzing]="doc.status === 'analyzing'"
+              (click)="previewDocument.set(doc)"
+            >
+              <div class="doc-icon">
+                <lucide-icon [img]="FileText" [size]="24"></lucide-icon>
+              </div>
+              <div class="doc-info">
+                <span class="doc-name">{{ doc.name }}</span>
+                <span class="doc-meta">{{ doc.type | titlecase }} · {{ doc.year }}</span>
+              </div>
+              <div class="doc-status">
+                @switch (doc.status) {
+                  @case ('validated') {
+                    <span class="status-badge status-badge--validated">Validated</span>
+                  }
+                  @case ('analyzing') {
+                    <span class="status-badge status-badge--analyzing">Analyzing</span>
+                  }
+                  @case ('analyzed') {
+                    <span class="status-badge status-badge--analyzed">Analyzed</span>
+                  }
+                  @default {
+                    <span class="status-badge">{{ doc.status | titlecase }}</span>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Preview modal -->
+@if (previewDocument(); as doc) {
+  <app-document-preview-modal
+    [documentId]="doc.id"
+    [documentName]="doc.name"
+    (close)="closePreview()"
+  ></app-document-preview-modal>
+}

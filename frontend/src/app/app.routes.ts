@@ -14,23 +14,30 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/home/home.component').then(m => m.HomeComponent),
   },
+  // Engagements routes removed - functionality integrated elsewhere
+  // Redirect old engagement URLs to home
   {
     path: 'app/engagements',
-    loadComponent: () =>
-      import('./features/engagements/engagements.component').then(m => m.EngagementsComponent),
+    redirectTo: '/app',
+    pathMatch: 'full',
   },
   {
     path: 'app/engagements/:id',
-    loadComponent: () =>
-      import('./features/engagement-detail/engagement-detail.component').then(
-        m => m.EngagementDetailComponent
-      ),
+    redirectTo: '/app',
+    pathMatch: 'full',
   },
   {
     path: 'app/services/:id',
     loadComponent: () =>
       import('./features/service-detail/service-detail.component').then(
         m => m.ServiceDetailComponent
+      ),
+  },
+  {
+    path: 'app/entities/:entityId',
+    loadComponent: () =>
+      import('./features/entity-detail/entity-detail.component').then(
+        m => m.EntityDetailComponent
       ),
   },
   {
@@ -43,10 +50,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/documents/documents.component').then(m => m.DocumentsComponent),
   },
+  // Insights route removed - functionality integrated into entity detail page
   {
     path: 'app/insights',
-    loadComponent: () =>
-      import('./features/insights/insights.component').then(m => m.InsightsComponent),
+    redirectTo: '/app',
+    pathMatch: 'full',
   },
   {
     path: 'app/eve',

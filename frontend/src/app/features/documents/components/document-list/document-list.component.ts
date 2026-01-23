@@ -99,9 +99,12 @@ export class DocumentListComponent {
 
   getStatusVariant(status: string): 'success' | 'warning' | 'error' | 'info' {
     const variants: Record<string, 'success' | 'warning' | 'error' | 'info'> = {
+      missing: 'error',      // Red - consistent with filter button
       pending: 'warning',
+      uploaded: 'warning',
       analyzing: 'info',
       analyzed: 'success',
+      validated: 'success',
       error: 'error',
     };
     return variants[status] || 'info';

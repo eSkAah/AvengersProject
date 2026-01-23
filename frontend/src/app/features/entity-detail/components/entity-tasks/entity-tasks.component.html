@@ -1,0 +1,179 @@
+<div class="tasks-panel">
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-item__value">{{ stats().completed }}</span>
+      <span class="stat-item__label">Completed</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item stat-item--warning">
+      <span class="stat-item__value">{{ stats().inProgress }}</span>
+      <span class="stat-item__label">In Progress</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-item__value">{{ stats().pending }}</span>
+      <span class="stat-item__label">Pending</span>
+    </div>
+    @if (stats().blocked > 0) {
+      <div class="stat-divider"></div>
+      <div class="stat-item stat-item--danger">
+        <span class="stat-item__value">{{ stats().blocked }}</span>
+        <span class="stat-item__label">Blocked</span>
+      </div>
+    }
+  </div>
+
+  <!-- Task Sections -->
+  <div class="tasks-sections">
+    <!-- Blocked Tasks -->
+    @if (blockedTasks().length > 0) {
+      <section class="task-section task-section--blocked">
+        <h3 class="task-section__title">
+          <lucide-icon [img]="AlertTriangle" [size]="16"></lucide-icon>
+          Blocked
+        </h3>
+        <div class="task-list">
+          @for (task of blockedTasks(); track task.id) {
+            <div class="task-card task-card--blocked">
+              <div class="task-card__icon" [class]="'icon--' + task.category">
+                <lucide-icon [img]="getCategoryIcon(task.category)" [size]="18"></lucide-icon>
+              </div>
+              <div class="task-card__content">
+                <div class="task-card__header">
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <span class="task-card__priority priority--{{ task.priority }}">{{ task.priority }}</span>
+                </div>
+                <p class="task-card__description">{{ task.description }}</p>
+                @if (task.blockedReason) {
+                  <div class="task-card__blocked-reason">
+                    <lucide-icon [img]="AlertTriangle" [size]="14"></lucide-icon>
+                    {{ task.blockedReason }}
+                  </div>
+                }
+                <div class="task-card__meta">
+                  @if (task.assignee) {
+                    <span class="task-card__assignee">
+                      <lucide-icon [img]="User" [size]="14"></lucide-icon>
+                      {{ task.assignee }}
+                    </span>
+                  }
+                  <span class="task-card__due" [class.overdue]="isOverdue(task.dueDate)">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- In Progress Tasks -->
+    @if (inProgressTasks().length > 0) {
+      <section class="task-section task-section--progress">
+        <h3 class="task-section__title">
+          <lucide-icon [img]="Clock" [size]="16"></lucide-icon>
+          In Progress
+        </h3>
+        <div class="task-list">
+          @for (task of inProgressTasks(); track task.id) {
+            <div class="task-card task-card--progress">
+              <div class="task-card__icon" [class]="'icon--' + task.category">
+                <lucide-icon [img]="getCategoryIcon(task.category)" [size]="18"></lucide-icon>
+              </div>
+              <div class="task-card__content">
+                <div class="task-card__header">
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <span class="task-card__priority priority--{{ task.priority }}">{{ task.priority }}</span>
+                </div>
+                <p class="task-card__description">{{ task.description }}</p>
+                <div class="task-card__meta">
+                  @if (task.assignee) {
+                    <span class="task-card__assignee">
+                      <lucide-icon [img]="User" [size]="14"></lucide-icon>
+                      {{ task.assignee }}
+                    </span>
+                  }
+                  <span class="task-card__due" [class.overdue]="isOverdue(task.dueDate)">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Pending Tasks -->
+    @if (pendingTasks().length > 0) {
+      <section class="task-section">
+        <h3 class="task-section__title">
+          <lucide-icon [img]="Circle" [size]="16"></lucide-icon>
+          Pending
+        </h3>
+        <div class="task-list">
+          @for (task of pendingTasks(); track task.id) {
+            <div class="task-card">
+              <div class="task-card__icon" [class]="'icon--' + task.category">
+                <lucide-icon [img]="getCategoryIcon(task.category)" [size]="18"></lucide-icon>
+              </div>
+              <div class="task-card__content">
+                <div class="task-card__header">
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <span class="task-card__priority priority--{{ task.priority }}">{{ task.priority }}</span>
+                </div>
+                <p class="task-card__description">{{ task.description }}</p>
+                <div class="task-card__meta">
+                  @if (task.assignee) {
+                    <span class="task-card__assignee">
+                      <lucide-icon [img]="User" [size]="14"></lucide-icon>
+                      {{ task.assignee }}
+                    </span>
+                  }
+                  <span class="task-card__due" [class.overdue]="isOverdue(task.dueDate)">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Completed Tasks -->
+    @if (completedTasks().length > 0) {
+      <section class="task-section task-section--completed">
+        <h3 class="task-section__title">
+          <lucide-icon [img]="CheckCircle2" [size]="16"></lucide-icon>
+          Completed
+        </h3>
+        <div class="task-list">
+          @for (task of completedTasks(); track task.id) {
+            <div class="task-card task-card--completed">
+              <div class="task-card__icon" [class]="'icon--' + task.category">
+                <lucide-icon [img]="getCategoryIcon(task.category)" [size]="18"></lucide-icon>
+              </div>
+              <div class="task-card__content">
+                <div class="task-card__header">
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                </div>
+                <p class="task-card__description">{{ task.description }}</p>
+                <div class="task-card__meta">
+                  @if (task.assignee) {
+                    <span class="task-card__assignee">
+                      <lucide-icon [img]="User" [size]="14"></lucide-icon>
+                      {{ task.assignee }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>

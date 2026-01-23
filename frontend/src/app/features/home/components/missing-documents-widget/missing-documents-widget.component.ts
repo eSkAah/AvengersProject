@@ -795,7 +795,7 @@ export class MissingDocumentsWidgetComponent {
 
   viewAllMissing(): void {
     this.router.navigate(['/app/documents'], {
-      queryParams: { filter: 'missing' }
+      queryParams: { status: 'missing' }
     });
   }
 

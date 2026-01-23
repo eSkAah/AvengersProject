@@ -783,7 +783,7 @@ export class SignoffWidgetComponent {
 
   viewAllToSignOff(): void {
     this.router.navigate(['/app/documents'], {
-      queryParams: { filter: 'pending-approval' }
+      queryParams: { status: 'uploaded' }
     });
   }
 }

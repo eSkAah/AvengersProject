@@ -36,8 +36,18 @@ export interface TreeNode {
   parentYear?: number;
 }
 
-// Country flags mapping
+// Country flags mapping - Tristan Capital Partners entities
 const ENTITY_FLAGS: Record<string, string> = {
+  // CCP 5 Fund entities
+  'CCP 5 Paris Office SPV': '\u{1F1EB}\u{1F1F7}',
+  'CCP 5 Munich Logistics PropCo': '\u{1F1E9}\u{1F1EA}',
+  'CCP 5 Amsterdam Retail BV': '\u{1F1F3}\u{1F1F1}',
+  // EPISO 6 Fund entities
+  'EPISO 6 Luxembourg HoldCo': '\u{1F1F1}\u{1F1FA}',
+  'EPISO 6 Madrid Residential SL': '\u{1F1EA}\u{1F1F8}',
+  'EPISO 6 Milan Mixed-Use Srl': '\u{1F1EE}\u{1F1F9}',
+  'EPISO 6 Brussels Industrial SA': '\u{1F1E7}\u{1F1EA}',
+  // Legacy names (backwards compatibility)
   'France SPV': '\u{1F1EB}\u{1F1F7}',
   'Germany PropCo': '\u{1F1E9}\u{1F1EA}',
   'Netherlands BV': '\u{1F1F3}\u{1F1F1}',

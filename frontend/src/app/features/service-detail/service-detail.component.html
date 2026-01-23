@@ -97,7 +97,7 @@
             </thead>
             <tbody>
               @for (entity of entities(); track entity.id) {
-                <tr class="entity-row">
+                <tr class="entity-row entity-row--clickable" (click)="navigateToEntity(entity.engagementId)">
                   <td class="entity-cell">
                     <span class="entity-flag">{{ entity.countryFlag }}</span>
                     <span class="entity-name">{{ entity.name }}</span>
@@ -121,6 +121,7 @@
                   </td>
                   <td class="date-cell">
                     {{ formatDate(entity.lastUpdated) }}
+                    <lucide-icon [img]="icons.chevronRight" [size]="16" class="row-arrow"></lucide-icon>
                   </td>
                 </tr>
               }

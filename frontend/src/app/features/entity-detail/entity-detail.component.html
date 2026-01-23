@@ -1,0 +1,143 @@
+<div class="entity-detail">
+  <!-- Back Button -->
+  <button class="back-btn" (click)="goBack()">
+    <lucide-icon [img]="ArrowLeft" [size]="18"></lucide-icon>
+    <span>Back to Service</span>
+  </button>
+
+  @if (loading()) {
+    <!-- Loading Skeleton -->
+    <div class="skeleton-header">
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--subtitle"></div>
+    </div>
+    <div class="skeleton-card">
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+      <div class="skeleton skeleton--line"></div>
+    </div>
+  } @else if (entity()) {
+    <!-- Entity Header -->
+    <header class="entity-header">
+      <div class="entity-header__main">
+        <span class="entity-header__flag">{{ entity()!.countryFlag }}</span>
+        <div class="entity-header__info">
+          <h1 class="entity-header__name">{{ entity()!.name }}</h1>
+          <p class="entity-header__service">{{ entity()!.service }}</p>
+        </div>
+      </div>
+      <div class="entity-header__status" [class]="'status--' + entity()!.status">
+        {{ entity()!.status | titlecase }}
+      </div>
+    </header>
+
+    <!-- Metadata Card -->
+    <div class="metadata-card">
+      <div class="metadata-grid">
+        <div class="metadata-item">
+          <div class="metadata-item__icon">
+            <lucide-icon [img]="Building2" [size]="16"></lucide-icon>
+          </div>
+          <div class="metadata-item__content">
+            <span class="metadata-item__label">Legal Name</span>
+            <span class="metadata-item__value">{{ entity()!.metadata.legalName }}</span>
+          </div>
+        </div>
+
+        <div class="metadata-item">
+          <div class="metadata-item__icon">
+            <lucide-icon [img]="Hash" [size]="16"></lucide-icon>
+          </div>
+          <div class="metadata-item__content">
+            <span class="metadata-item__label">Registration</span>
+            <span class="metadata-item__value">{{ entity()!.metadata.registrationNumber }}</span>
+          </div>
+        </div>
+
+        <div class="metadata-item">
+          <div class="metadata-item__icon">
+            <lucide-icon [img]="FileText" [size]="16"></lucide-icon>
+          </div>
+          <div class="metadata-item__content">
+            <span class="metadata-item__label">VAT Number</span>
+            <span class="metadata-item__value">{{ entity()!.metadata.vatNumber || 'N/A' }}</span>
+          </div>
+        </div>
+
+        <div class="metadata-item">
+          <div class="metadata-item__icon">
+            <lucide-icon [img]="Calendar" [size]="16"></lucide-icon>
+          </div>
+          <div class="metadata-item__content">
+            <span class="metadata-item__label">Fiscal Year End</span>
+            <span class="metadata-item__value">{{ entity()!.metadata.fiscalYearEnd }}</span>
+          </div>
+        </div>
+
+        <div class="metadata-item">
+          <div class="metadata-item__icon">
+            <lucide-icon [img]="Banknote" [size]="16"></lucide-icon>
+          </div>
+          <div class="metadata-item__content">
+            <span class="metadata-item__label">Currency</span>
+            <span class="metadata-item__value">{{ entity()!.metadata.currency }}</span>
+          </div>
+        </div>
+
+        <div class="metadata-item">
+          <div class="metadata-item__icon">
+            <lucide-icon [img]="MapPin" [size]="16"></lucide-icon>
+          </div>
+          <div class="metadata-item__content">
+            <span class="metadata-item__label">Location</span>
+            <span class="metadata-item__value">{{ entity()!.metadata.address.city }}, {{ entity()!.metadata.address.country }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <nav class="tabs-nav">
+      @for (tab of tabs(); track tab.id) {
+        <button
+          class="tabs-nav__btn"
+          [class.tabs-nav__btn--active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          {{ tab.label }}
+          @if (tab.count) {
+            <span class="tabs-nav__count">{{ tab.count }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      @switch (activeTab()) {
+        @case ('tasks') {
+          <app-entity-tasks [tasks]="entity()!.tasks"></app-entity-tasks>
+        }
+        @case ('documents') {
+          <app-entity-documents [entityId]="entity()!.id" [entityName]="entity()!.name"></app-entity-documents>
+        }
+        @case ('tax-report') {
+          <app-entity-tax-report [taxReport]="entity()!.taxReport" [entityName]="entity()!.name"></app-entity-tax-report>
+        }
+        @case ('insights') {
+          <app-entity-insights [entityId]="entity()!.id" [entityName]="entity()!.name"></app-entity-insights>
+        }
+        @case ('contacts') {
+          <app-entity-contacts [entityId]="entity()!.id"></app-entity-contacts>
+        }
+      }
+    </div>
+  } @else {
+    <!-- Not Found -->
+    <div class="not-found">
+      <h2>Entity not found</h2>
+      <p>The requested entity could not be loaded.</p>
+      <button class="btn btn--primary" (click)="goBack()">Go Back</button>
+    </div>
+  }
+</div>
