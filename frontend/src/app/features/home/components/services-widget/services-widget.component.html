@@ -7,7 +7,7 @@
 
   <div class="services-widget__list">
     @for (service of services; track service.id) {
-      <div class="service-card">
+      <div class="service-card" (click)="navigateToService(service.id)">
         <div class="service-card__icon" [class]="service.iconBgColor">
           <lucide-icon [img]="service.icon" [size]="20"></lucide-icon>
         </div>

@@ -1,0 +1,147 @@
+<div class="service-detail">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/app" class="breadcrumb__link">Home</a>
+    <lucide-icon [img]="icons.chevronRight" [size]="14" class="breadcrumb__separator"></lucide-icon>
+    <span class="breadcrumb__current">Services</span>
+    @if (service()) {
+      <lucide-icon [img]="icons.chevronRight" [size]="14" class="breadcrumb__separator"></lucide-icon>
+      <span class="breadcrumb__current">{{ service()!.name }}</span>
+    }
+  </nav>
+
+  <!-- Back button -->
+  <button class="back-button" (click)="goBack()">
+    <lucide-icon [img]="icons.arrowLeft" [size]="18"></lucide-icon>
+    <span>Back to Home</span>
+  </button>
+
+  @if (service(); as svc) {
+    <!-- Header Card -->
+    <div class="service-header">
+      <div class="service-header__icon" [class]="svc.iconBgColor">
+        <lucide-icon [img]="svc.icon" [size]="28"></lucide-icon>
+      </div>
+      <div class="service-header__content">
+        <h1 class="service-header__title">{{ svc.name }}</h1>
+        <p class="service-header__description">{{ svc.description }}</p>
+      </div>
+      <div class="service-header__stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ entities().length }}</span>
+          <span class="stat-label">Entities</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3 class="chart-card__title">Status Distribution</h3>
+        @if (pieChartData()) {
+          <app-pie-chart
+            [data]="pieChartData()"
+            [loading]="loading()"
+            [cmdClickEnabled]="false"
+            displayMode="count"
+          ></app-pie-chart>
+        }
+      </div>
+      <div class="chart-card chart-card--wide">
+        <h3 class="chart-card__title">Progress Over Time</h3>
+        <app-stacked-area-chart
+          [data]="progressionData()"
+          [loading]="loading()"
+        ></app-stacked-area-chart>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="service-tabs">
+      <button
+        class="service-tabs__tab"
+        [class.service-tabs__tab--active]="activeTab() === 'entities'"
+        (click)="setActiveTab('entities')"
+      >
+        Entities
+        <span class="service-tabs__count">{{ entities().length }}</span>
+      </button>
+      <button
+        class="service-tabs__tab"
+        [class.service-tabs__tab--active]="activeTab() === 'documents'"
+        (click)="setActiveTab('documents')"
+      >
+        Documents
+      </button>
+      <button
+        class="service-tabs__tab"
+        [class.service-tabs__tab--active]="activeTab() === 'insights'"
+        (click)="setActiveTab('insights')"
+      >
+        Insights
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      @if (activeTab() === 'entities') {
+        <div class="entities-table-wrapper">
+          <table class="entities-table">
+            <thead>
+              <tr>
+                <th>Entity</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Last Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entity of entities(); track entity.id) {
+                <tr class="entity-row">
+                  <td class="entity-cell">
+                    <span class="entity-flag">{{ entity.countryFlag }}</span>
+                    <span class="entity-name">{{ entity.name }}</span>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class]="getStatusClass(entity.status)">
+                      {{ getStatusLabel(entity.status) }}
+                    </span>
+                  </td>
+                  <td class="progress-cell">
+                    <div class="progress-wrapper">
+                      <div class="progress-bar">
+                        <div
+                          class="progress-bar__fill"
+                          [style.width.%]="entity.progress"
+                          [class.progress-bar__fill--complete]="entity.progress === 100"
+                        ></div>
+                      </div>
+                      <span class="progress-text">{{ entity.progress }}%</span>
+                    </div>
+                  </td>
+                  <td class="date-cell">
+                    {{ formatDate(entity.lastUpdated) }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @if (activeTab() === 'documents') {
+        <app-service-documents [serviceId]="serviceId()"></app-service-documents>
+      }
+
+      @if (activeTab() === 'insights') {
+        <app-service-insights [serviceId]="serviceId()"></app-service-insights>
+      }
+    </div>
+  } @else if (!loading()) {
+    <div class="not-found">
+      <h2>Service not found</h2>
+      <p>The requested service could not be found.</p>
+      <button class="btn-primary" (click)="goBack()">Go Back</button>
+    </div>
+  }
+</div>

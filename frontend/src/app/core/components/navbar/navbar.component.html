@@ -14,15 +14,53 @@
 
     <!-- Center: Navigation Items (Desktop) -->
     <div class="navbar-menu desktop-only">
-      @for (item of navItems; track item.route) {
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: item.exact }"
-          class="navbar-item"
+      <!-- Home -->
+      <a
+        routerLink="/app"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="navbar-item"
+      >
+        Home
+      </a>
+
+      <!-- My Services Dropdown -->
+      <div class="services-menu-container">
+        <button
+          class="navbar-item navbar-item--dropdown"
+          (click)="toggleServicesMenu()"
+          [class.active]="servicesMenuOpen()"
         >
-          {{ item.label }}
-        </a>
+          My Services
+          <lucide-icon [img]="icons.chevronDown" [size]="14"></lucide-icon>
+        </button>
+        @if (servicesMenuOpen()) {
+          <div class="dropdown services-dropdown">
+            @for (service of services(); track service.id) {
+              <a
+                class="dropdown-item"
+                [routerLink]="['/app/services', service.id]"
+                (click)="servicesMenuOpen.set(false)"
+              >
+                {{ service.name }}
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Other nav items (skip Home since we added it above) -->
+      @for (item of navItems; track item.route) {
+        @if (item.label !== 'Home') {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.exact }"
+            class="navbar-item"
+          >
+            {{ item.label }}
+          </a>
+        }
       }
     </div>
 

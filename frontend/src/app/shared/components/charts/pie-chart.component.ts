@@ -62,7 +62,7 @@ export interface PieClickEvent {
           <div #tooltipEl class="chartjs-tooltip"></div>
           @if (data) {
             <div class="chart-center">
-              <span class="chart-center__value">{{ formatCurrency(data.total) }}</span>
+              <span class="chart-center__value">{{ formatValue(data.total) }}</span>
               <span class="chart-center__label">Total</span>
             </div>
           }
@@ -299,6 +299,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() loading = false;
   @Input() sourceDocument: string | null = null;
   @Input() cmdClickEnabled = true;
+  @Input() displayMode: 'currency' | 'count' = 'currency';
 
   @Output() segmentClick = new EventEmitter<PieClickEvent>();
   @Output() cmdClick = new EventEmitter<PieClickEvent>();
@@ -339,6 +340,14 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
       notation: 'compact',
       maximumFractionDigits: 1,
     }).format(value);
+  }
+
+  formatCount(value: number): string {
+    return value.toString();
+  }
+
+  formatValue(value: number): string {
+    return this.displayMode === 'count' ? this.formatCount(value) : this.formatCurrency(value);
   }
 
   onLegendClick(item: PieChartItem, index: number, event: MouseEvent): void {

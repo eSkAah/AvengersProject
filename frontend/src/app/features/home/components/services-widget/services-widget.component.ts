@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { LucideAngularModule, Briefcase, FileText, Scale, Calculator, Building2 } from 'lucide-angular';
 
 interface StatusCount {
@@ -27,6 +28,8 @@ interface ClientService {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ServicesWidgetComponent {
+  private router = inject(Router);
+
   readonly icons = {
     briefcase: Briefcase,
     fileText: FileText,
@@ -81,5 +84,9 @@ export class ServicesWidgetComponent {
   getTotalEntities(service: ClientService): number {
     const s = service.status;
     return s.notStarted + s.inProgress + s.reviewing + s.completed;
+  }
+
+  navigateToService(serviceId: string): void {
+    this.router.navigate(['/app/services', serviceId]);
   }
 }

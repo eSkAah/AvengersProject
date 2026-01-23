@@ -5,3 +5,4 @@ export * from './dashboard-api.service';
 export * from './eve-api.service';
 export * from './engagement-api.service';
 export * from './notification.service';
+export * from './service-entity.service';

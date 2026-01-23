@@ -3,4 +3,5 @@ export * from './bar-chart.component';
 export * from './pie-chart.component';
 export * from './kpi-metric-card.component';
 export * from './waterfall-chart.component';
+export * from './stacked-area-chart.component';
 export * from '../gantt-chart/gantt-chart.component';

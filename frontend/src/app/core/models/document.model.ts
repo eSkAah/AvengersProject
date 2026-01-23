@@ -9,6 +9,16 @@ export type DocumentCategory = 'accounting' | 'tax' | 'financial';
 
 export type DocumentStatus = 'pending' | 'uploaded' | 'analyzing' | 'analyzed' | 'validated' | 'missing' | 'error';
 
+export type ServiceType = 'cit' | 'vat' | 'assessment' | 'accounting' | 'transfer-pricing';
+
+export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
+  'cit': 'Corporate Tax Return',
+  'vat': 'VAT Return',
+  'assessment': 'Tax Assessment',
+  'accounting': 'Accounting',
+  'transfer-pricing': 'Transfer Pricing',
+};
+
 export interface Document {
   id: string;
   name: string;
@@ -26,6 +36,7 @@ export interface Document {
   entityName: string;        // e.g., "France SPV"
   subsidiaryId?: string;     // Optional for multi-subsidiary
   subsidiaryName?: string;
+  serviceType?: ServiceType; // Link to service (cit, vat, accounting, etc.)
 }
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {

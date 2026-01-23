@@ -27,6 +27,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'app/services/:id',
+    loadComponent: () =>
+      import('./features/service-detail/service-detail.component').then(
+        m => m.ServiceDetailComponent
+      ),
+  },
+  {
     path: 'app/structure',
     loadComponent: () =>
       import('./features/structure/structure.component').then(m => m.StructureComponent),

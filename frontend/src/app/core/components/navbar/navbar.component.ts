@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, Home, Briefcase, FolderOpen, GitBranch, BarChart2, Bell, ChevronDown, User, Settings, LogOut, Menu, X } from 'lucide-angular';
 import { NotificationService } from '../../services/notification.service';
+import { ServiceEntityService } from '../../services/service-entity.service';
 
 interface NavItem {
   label: string;
@@ -32,6 +33,7 @@ interface Notification {
 export class NavbarComponent {
   private router = inject(Router);
   private notificationService = inject(NotificationService);
+  private serviceEntityService = inject(ServiceEntityService);
 
   // Icons
   readonly icons = {
@@ -55,6 +57,10 @@ export class NavbarComponent {
   userMenuOpen = signal<boolean>(false);
   notificationsOpen = signal<boolean>(false);
   mobileMenuOpen = signal<boolean>(false);
+  servicesMenuOpen = signal<boolean>(false);
+
+  // Services for dropdown
+  services = computed(() => this.serviceEntityService.getServices());
 
   // Navigation items
   navItems: NavItem[] = [
@@ -97,6 +103,11 @@ export class NavbarComponent {
     if (this.notificationsOpen() && !target.closest('.notifications-container')) {
       this.notificationsOpen.set(false);
     }
+
+    // Close services menu if click outside
+    if (this.servicesMenuOpen() && !target.closest('.services-menu-container')) {
+      this.servicesMenuOpen.set(false);
+    }
   }
 
   @HostListener('document:keydown.escape')
@@ -104,6 +115,7 @@ export class NavbarComponent {
     this.userMenuOpen.set(false);
     this.notificationsOpen.set(false);
     this.mobileMenuOpen.set(false);
+    this.servicesMenuOpen.set(false);
   }
 
   getCompanyInitials(): string {
@@ -118,11 +130,19 @@ export class NavbarComponent {
   toggleUserMenu() {
     this.userMenuOpen.update(v => !v);
     this.notificationsOpen.set(false);
+    this.servicesMenuOpen.set(false);
   }
 
   toggleNotifications() {
     this.notificationsOpen.update(v => !v);
     this.userMenuOpen.set(false);
+    this.servicesMenuOpen.set(false);
+  }
+
+  toggleServicesMenu() {
+    this.servicesMenuOpen.update(v => !v);
+    this.userMenuOpen.set(false);
+    this.notificationsOpen.set(false);
   }
 
   toggleMobileMenu() {

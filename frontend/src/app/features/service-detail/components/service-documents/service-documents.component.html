@@ -1,0 +1,203 @@
+<div class="service-documents">
+  <!-- Header with stats -->
+  <div class="documents-header">
+    <div class="documents-stats">
+      <div class="stat-pill stat-pill--total">
+        <span class="stat-value">{{ totalDocuments() }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      @if (statusCounts().validated > 0) {
+        <div class="stat-pill stat-pill--validated">
+          <span class="stat-value">{{ statusCounts().validated }}</span>
+          <span class="stat-label">Validated</span>
+        </div>
+      }
+      @if (statusCounts().analyzed > 0) {
+        <div class="stat-pill stat-pill--analyzed">
+          <span class="stat-value">{{ statusCounts().analyzed }}</span>
+          <span class="stat-label">Analyzed</span>
+        </div>
+      }
+      @if (statusCounts().analyzing > 0) {
+        <div class="stat-pill stat-pill--analyzing">
+          <span class="stat-value">{{ statusCounts().analyzing }}</span>
+          <span class="stat-label">Analyzing</span>
+        </div>
+      }
+      @if (statusCounts().pending > 0) {
+        <div class="stat-pill stat-pill--pending">
+          <span class="stat-value">{{ statusCounts().pending }}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+      }
+    </div>
+    <div class="documents-actions">
+      <button class="action-btn" (click)="expandAll()">Expand All</button>
+      <button class="action-btn" (click)="collapseAll()">Collapse All</button>
+    </div>
+  </div>
+
+  @if (totalDocuments() === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📂</div>
+      <h3>No documents yet</h3>
+      <p>Documents for this service will appear here once uploaded.</p>
+    </div>
+  } @else {
+    <div class="documents-content">
+      <!-- Tree View -->
+      <div class="tree-panel">
+        <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: treeData(), depth: 0 }"></ng-container>
+      </div>
+
+      <!-- Document Detail Panel -->
+      @if (selectedDocument(); as doc) {
+        <div class="detail-panel">
+          <div class="detail-header">
+            <div class="detail-icon">
+              <lucide-icon [img]="icons.file" [size]="24"></lucide-icon>
+            </div>
+            <div class="detail-info">
+              <h3 class="detail-name">{{ doc.name }}</h3>
+              <span class="detail-type">{{ getDocTypeLabel(doc.type) }}</span>
+            </div>
+          </div>
+
+          <div class="detail-meta">
+            <div class="meta-row">
+              <span class="meta-label">Status</span>
+              <span class="status-badge" [class]="getStatusClass(doc.status)">
+                {{ getStatusLabel(doc.status) }}
+              </span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Entity</span>
+              <span class="meta-value">{{ doc.entityName }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Year</span>
+              <span class="meta-value">{{ doc.year }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Size</span>
+              <span class="meta-value">{{ formatFileSize(doc.size) }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Uploaded</span>
+              <span class="meta-value">{{ formatDate(doc.uploadedAt) }}</span>
+            </div>
+          </div>
+
+          @if (doc.aiSummary) {
+            <div class="detail-summary">
+              <h4>AI Summary</h4>
+              <p>{{ doc.aiSummary }}</p>
+            </div>
+          }
+
+          <div class="detail-actions">
+            <button class="btn-action btn-action--primary" (click)="previewDocument(doc, $event)">
+              <lucide-icon [img]="icons.eye" [size]="16"></lucide-icon>
+              Preview
+            </button>
+            <button class="btn-action" (click)="downloadDocument(doc, $event)">
+              <lucide-icon [img]="icons.download" [size]="16"></lucide-icon>
+              Download
+            </button>
+            <button class="btn-action btn-action--eve" (click)="askEve(doc, $event)">
+              <lucide-icon [img]="icons.messageCircle" [size]="16"></lucide-icon>
+              Ask Eve
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="detail-panel detail-panel--empty">
+          <div
+            class="drop-zone"
+            [class.drop-zone--active]="isDraggingFile()"
+            (dragover)="onDropZoneDragOver($event)"
+            (dragleave)="onDropZoneDragLeave($event)"
+            (drop)="onDropZoneDrop($event)"
+            (click)="triggerFileInput()"
+          >
+            <div class="drop-zone__icon">📄</div>
+            <p class="drop-zone__text">
+              Drop file here or <strong>browse</strong>
+            </p>
+            <p class="drop-zone__hint">Drop on a folder in the tree for specific placement</p>
+          </div>
+          <input
+            #fileInput
+            type="file"
+            style="display: none"
+            (change)="onFileSelected($event)"
+            accept=".pdf,.xlsx,.xls,.doc,.docx"
+          />
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Tree Node Template -->
+<ng-template #treeNodeTemplate let-node let-depth="depth">
+  <div
+    class="tree-node"
+    [class.tree-node--root]="node.type === 'root'"
+    [class.tree-node--entity]="node.type === 'entity'"
+    [class.tree-node--year]="node.type === 'year'"
+    [class.tree-node--document]="node.type === 'document'"
+    [class.tree-node--selected]="node.type === 'document' && selectedDocument()?.id === node.id"
+    [class.tree-node--drag-over]="isDragOver(node.id)"
+    [style.padding-left.px]="depth * 16"
+    (dragover)="onDragOver($event, node.id, node.type)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event, node)"
+  >
+    <div
+      class="tree-node__content"
+      (click)="node.type === 'document' ? selectDocument(node.document) : toggleExpand(node.id, $event)"
+    >
+      @if (hasChildren(node)) {
+        <button class="tree-node__toggle" (click)="toggleExpand(node.id, $event)">
+          <lucide-icon
+            [img]="isExpanded(node.id) ? icons.chevronDown : icons.chevronRight"
+            [size]="12"
+          ></lucide-icon>
+        </button>
+      } @else {
+        <span class="tree-node__toggle-placeholder"></span>
+      }
+
+      <span class="tree-node__icon" [class.tree-node__icon--emoji]="node.isEmoji">
+        @if (node.isEmoji) {
+          {{ node.icon }}
+        } @else if (node.type === 'document') {
+          <lucide-icon [img]="icons.file" [size]="14"></lucide-icon>
+        } @else if (node.type === 'year') {
+          <lucide-icon [img]="icons.calendar" [size]="14"></lucide-icon>
+        } @else {
+          <lucide-icon [img]="icons.folder" [size]="14"></lucide-icon>
+        }
+      </span>
+
+      <span class="tree-node__label">{{ node.label }}</span>
+
+      @if (node.count !== undefined && node.type !== 'document') {
+        <span class="tree-node__count">{{ node.count }}</span>
+      }
+
+      @if (node.type === 'document' && node.document) {
+        <span class="status-dot status-dot--{{ node.document.status }}"></span>
+      }
+    </div>
+
+    @if (hasChildren(node) && isExpanded(node.id)) {
+      <div class="tree-node__children">
+        @for (child of node.children; track child.id) {
+          <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
