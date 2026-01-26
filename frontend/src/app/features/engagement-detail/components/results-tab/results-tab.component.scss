@@ -1,5 +1,12 @@
 @use 'styles/variables' as *;
 
+// EY Design System Variables
+$ey-transition: 200ms ease-out;
+$ey-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+$ey-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+$ey-card-radius: 12px;
+$ey-font-mono: 'SF Mono', Monaco, Consolas, monospace;
+
 .results-tab {
   &__empty {
     display: flex;
@@ -8,14 +15,15 @@
     justify-content: center;
     padding: $spacing-12;
     text-align: center;
-    background: $color-surface;
+    background: #FFFFFF;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
+    border-radius: $ey-card-radius;
     min-height: 300px;
+    box-shadow: $ey-card-shadow;
   }
 
   &__empty-icon {
-    color: $color-text-secondary;
+    color: #6B7280;
     margin-bottom: $spacing-4;
     opacity: 0.5;
   }
@@ -24,13 +32,13 @@
     margin: 0 0 $spacing-2;
     font-size: $font-size-xl;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
   }
 
   &__empty-text {
     margin: 0 0 $spacing-4;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #6B7280;
     max-width: 400px;
   }
 
@@ -46,9 +54,16 @@
     justify-content: space-between;
     gap: $spacing-4;
     padding: $spacing-4;
-    background: linear-gradient(135deg, rgba($ey-yellow, 0.1) 0%, rgba($ey-yellow, 0.05) 100%);
-    border: 1px solid rgba($ey-yellow, 0.3);
-    border-radius: $radius-lg;
+    background: linear-gradient(135deg, rgba($ey-yellow, 0.08) 0%, rgba($ey-yellow, 0.03) 100%);
+    border: 1px solid rgba($ey-yellow, 0.2);
+    border-radius: $ey-card-radius;
+    box-shadow: $ey-card-shadow;
+    transition: all $ey-transition;
+
+    &:hover {
+      box-shadow: $ey-card-shadow-hover;
+      transform: translateY(-1px);
+    }
   }
 
   &__header-info {
@@ -64,7 +79,7 @@
     margin: 0;
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
 
     lucide-icon {
       color: $ey-yellow;
@@ -74,7 +89,7 @@
   &__subtitle {
     margin: 0;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__section {
@@ -90,10 +105,10 @@
     margin: 0;
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
 
     lucide-icon {
-      color: $color-text-secondary;
+      color: #6B7280;
     }
   }
 
@@ -104,7 +119,7 @@
     margin-left: auto;
     font-size: $font-size-xs;
     font-weight: $font-weight-normal;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__documents {
@@ -132,14 +147,16 @@
   align-items: center;
   gap: $spacing-3;
   padding: $spacing-3 $spacing-4;
-  background: $color-surface;
+  background: #FFFFFF;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
-  transition: all $transition-fast;
+  border-radius: $ey-card-radius;
+  transition: all $ey-transition;
+  box-shadow: $ey-card-shadow;
 
   &:hover {
     border-color: $ey-yellow;
-    box-shadow: 0 2px 8px rgba($ey-yellow, 0.15);
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
   }
 
   &__icon {
@@ -154,11 +171,13 @@
     &--pdf {
       background: rgba($color-error, 0.1);
       color: $color-error;
+      border: 1px solid rgba($color-error, 0.2);
     }
 
     &--xml {
       background: rgba($color-info, 0.1);
       color: $color-info;
+      border: 1px solid rgba($color-info, 0.2);
     }
   }
 
@@ -173,7 +192,7 @@
   &__name {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    color: #2E2E38;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -181,7 +200,7 @@
 
   &__meta {
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__actions {
@@ -200,24 +219,35 @@
     background: transparent;
     border: 1px solid $color-border;
     border-radius: $radius-md;
-    color: $color-text-secondary;
+    color: #6B7280;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all $ey-transition;
 
     &:hover {
-      color: $color-text-primary;
-      border-color: $color-text-secondary;
+      color: #2E2E38;
+      border-color: #6B7280;
+      transform: scale(1.02);
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
 
     &--primary {
-      background: $ey-yellow;
+      background: transparent;
       border-color: $ey-yellow;
-      color: $ey-black;
+      border-width: 2px;
+      color: #2E2E38;
 
       &:hover {
-        background: $ey-yellow-hover;
-        border-color: $ey-yellow-hover;
-        color: $ey-black;
+        background: rgba($ey-yellow, 0.1);
+        border-color: $ey-yellow;
+        color: #2E2E38;
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
     }
   }
@@ -229,15 +259,17 @@
   align-items: flex-start;
   gap: $spacing-3;
   padding: $spacing-4;
-  background: $color-surface;
+  background: #FFFFFF;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: $ey-card-radius;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all $ey-transition;
+  box-shadow: $ey-card-shadow;
 
   &:hover {
     border-color: $ey-yellow;
-    box-shadow: 0 4px 12px rgba($ey-yellow, 0.15);
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
   }
 
   &__icon {
@@ -252,16 +284,19 @@
     &--liability {
       background: rgba($color-warning, 0.1);
       color: $color-warning;
+      border: 1px solid rgba($color-warning, 0.2);
     }
 
     &--etr {
       background: rgba($ey-yellow, 0.15);
-      color: $ey-black;
+      color: #2E2E38;
+      border: 1px solid rgba($ey-yellow, 0.3);
     }
 
     &--income {
       background: rgba($color-success, 0.1);
       color: $color-success;
+      border: 1px solid rgba($color-success, 0.2);
     }
   }
 
@@ -272,9 +307,9 @@
   }
 
   &__label {
-    font-size: $font-size-xs;
+    font-size: 11px;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: #6B7280;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -282,12 +317,14 @@
   &__value {
     font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
+    font-family: $ey-font-mono;
   }
 
   &__delta {
     font-size: $font-size-xs;
     color: $color-error;
+    font-family: $ey-font-mono;
 
     &--positive {
       color: $color-success;
@@ -298,9 +335,16 @@
 // Chart Card
 .chart-card {
   padding: $spacing-4;
-  background: $color-surface;
+  background: #FFFFFF;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: $ey-card-radius;
+  box-shadow: $ey-card-shadow;
+  transition: all $ey-transition;
+
+  &:hover {
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
+  }
 
   &--wide {
     grid-column: span 2;
@@ -310,13 +354,13 @@
     margin: 0 0 $spacing-1;
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
   }
 
   &__subtitle {
     margin: 0 0 $spacing-3;
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__content {
@@ -339,7 +383,7 @@
   align-items: center;
   gap: $spacing-2;
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: #6B7280;
 }
 
 .legend-dot {
@@ -348,11 +392,13 @@
   border-radius: $radius-full;
 
   &--current {
-    background: $ey-yellow;
+    background: transparent;
+    border: 2px solid $ey-yellow;
   }
 
   &--deferred {
-    background: $ey-black;
+    background: transparent;
+    border: 2px solid #2E2E38;
   }
 }
 

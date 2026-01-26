@@ -384,13 +384,18 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (tooltip.dataPoints && tooltip.dataPoints.length > 0) {
       const dataIndex = tooltip.dataPoints[0].dataIndex;
       const item = this.data!.items[dataIndex];
-      const formatted = this.formatCurrency(item.value);
+      const formatted = this.formatValue(item.value);  // Respects displayMode (count vs currency)
+
+      // Format display text based on mode
+      const displayText = this.displayMode === 'count'
+        ? `${formatted} ${item.value === 1 ? 'entity' : 'entities'}`
+        : formatted;
 
       let html = `<div class="chartjs-tooltip-title">${item.label}</div>`;
       html += `<div class="chartjs-tooltip-body">`;
       html += `<div class="chartjs-tooltip-body-item">`;
       html += `<span class="chartjs-tooltip-color" style="background-color: ${item.color}"></span>`;
-      html += `<span>${formatted} (${item.percentage.toFixed(1)}%)</span>`;
+      html += `<span>${displayText} (${item.percentage.toFixed(1)}%)</span>`;
       html += `</div></div>`;
 
       if (this.cmdClickEnabled) {

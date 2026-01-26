@@ -1,37 +1,47 @@
+// =============================================================================
+// Entity Tasks Component - EY Design System
+// =============================================================================
+
 .tasks-panel {
-  padding: 1.5rem;
+  padding: 0;
 }
 
-// Stats Bar
+// Stats Bar (KPI Cards Row)
 .stats-bar {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 1.5rem;
-  background: #f8f9fa;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #2e2e38;
+  border-radius: 8px;
+  margin-bottom: 24px;
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 4px;
+  padding: 0 16px;
 
   &__value {
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 700;
-    color: #2e2e38;
+    color: white;
     line-height: 1;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   &__label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #6b7280;
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.5px;
+  }
+
+  &--success .stat-item__value {
+    color: #10b981;
   }
 
   &--warning .stat-item__value {
@@ -45,28 +55,28 @@
 
 .stat-divider {
   width: 1px;
-  height: 32px;
-  background: #e5e7eb;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 // Task Sections
 .tasks-sections {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 .task-section {
   &__title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
+    gap: 8px;
+    font-size: 11px;
     font-weight: 600;
     color: #6b7280;
-    margin: 0 0 1rem;
+    margin: 0 0 12px;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.5px;
   }
 
   &--blocked .task-section__title {
@@ -82,40 +92,52 @@
   }
 }
 
-// Task List
+// Task List (Table-like)
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
 // Task Card
 .task-card {
   display: flex;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
+  gap: 16px;
+  padding: 16px 20px;
   background: #fafafa;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  transition: all 0.2s ease;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  transition: all 200ms ease-out;
 
   &:hover {
     background: #f5f5f5;
-    border-color: #e5e7eb;
+    border-color: #d4d4d4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
   }
 
   &--progress {
-    background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+    background: #eff6ff;
     border-color: #bfdbfe;
+
+    &:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
+    }
   }
 
   &--blocked {
-    background: linear-gradient(135deg, #fef2f2 0%, #fefefe 100%);
+    background: #fef2f2;
     border-color: #fecaca;
+
+    &:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
   }
 
   &--completed {
-    opacity: 0.7;
+    opacity: 0.6;
 
     .task-card__title {
       text-decoration: line-through;
@@ -124,12 +146,12 @@
   }
 
   &__icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 8px;
     flex-shrink: 0;
 
     &.icon--document {
@@ -167,80 +189,112 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.375rem;
+    gap: 16px;
+    margin-bottom: 6px;
   }
 
   &__title {
-    font-size: 0.9375rem;
+    font-size: 14px;
     font-weight: 600;
     color: #2e2e38;
     margin: 0;
+    line-height: 1.4;
   }
 
   &__priority {
-    padding: 0.25rem 0.625rem;
-    font-size: 0.6875rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    border-radius: 6px;
+    letter-spacing: 0.3px;
+    border-radius: 9999px;
 
     &.priority--high {
       background: #fee2e2;
-      color: #dc2626;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
     }
 
     &.priority--medium {
       background: #fef3c7;
-      color: #d97706;
+      color: #b45309;
+      border: 1px solid #fde68a;
     }
 
     &.priority--low {
       background: #f3f4f6;
       color: #6b7280;
+      border: 1px solid #e5e7eb;
     }
   }
 
   &__description {
-    font-size: 0.8125rem;
+    font-size: 13px;
     color: #6b7280;
-    margin: 0 0 0.75rem;
+    margin: 0 0 12px;
     line-height: 1.5;
   }
 
   &__blocked-reason {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-    padding: 0.5rem 0.75rem;
+    gap: 6px;
+    padding: 8px 12px;
     background: #fef2f2;
-    border-radius: 8px;
-    font-size: 0.8125rem;
-    color: #dc2626;
-    margin-bottom: 0.75rem;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #b91c1c;
+    margin-bottom: 12px;
+    border: 1px solid #fecaca;
   }
 
   &__meta {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    font-size: 0.8125rem;
+    gap: 16px;
+    font-size: 13px;
   }
 
   &__assignee {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: 6px;
     color: #6b7280;
+
+    // Avatar placeholder
+    &::before {
+      content: '';
+      display: none;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #e5e5e5 0%, #f5f5f5 100%);
+      border-radius: 50%;
+    }
   }
 
   &__due {
     color: #6b7280;
+    font-weight: 500;
 
     &.overdue {
-      color: #dc2626;
+      color: #b91c1c;
       font-weight: 600;
     }
   }
+}
+
+// Status Dot (for inline task status)
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d4d4d4;
+
+  &--pending { background: #d4d4d4; }
+  &--in-progress { background: #3b82f6; }
+  &--blocked { background: #ef4444; }
+  &--completed { background: #10b981; }
 }

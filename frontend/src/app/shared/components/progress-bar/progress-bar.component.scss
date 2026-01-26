@@ -1,5 +1,11 @@
-@use 'sass:color';
 @use 'styles/variables' as *;
+
+// =============================================================================
+// Progress Bar Component - EY Design System
+// =============================================================================
+// Progress indicator with risk level colors
+// Border-radius: full for pill-shaped track
+// Transitions: 300ms ease-out for fill animation
 
 .progress-bar {
   display: flex;
@@ -13,7 +19,7 @@
     }
 
     .progress-bar__label {
-      font-size: $font-size-xs;
+      font-size: 11px;
     }
   }
 
@@ -30,7 +36,7 @@
   &__track {
     flex: 1;
     height: 8px;
-    background-color: $color-border;
+    background-color: #E5E5E5; // neutral-200
     border-radius: $radius-full;
     overflow: hidden;
   }
@@ -38,25 +44,26 @@
   &__fill {
     height: 100%;
     border-radius: $radius-full;
-    transition: width 0.3s ease-out;
+    transition: width 300ms ease-out;
 
+    // Risk level colors - Using EY semantic colors
     &--high {
-      background: linear-gradient(90deg, $color-error 0%, color.adjust($color-error, $lightness: 10%) 100%);
+      background: linear-gradient(90deg, #EF4444 0%, #F87171 100%); // error gradient
     }
 
     &--medium {
-      background: linear-gradient(90deg, $color-warning 0%, color.adjust($color-warning, $lightness: 10%) 100%);
+      background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%); // warning gradient
     }
 
     &--low {
-      background: linear-gradient(90deg, $color-success 0%, color.adjust($color-success, $lightness: 10%) 100%);
+      background: linear-gradient(90deg, #10B981 0%, #34D399 100%); // success gradient
     }
   }
 
   &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: #525252; // neutral-600
     min-width: 40px;
     text-align: right;
   }

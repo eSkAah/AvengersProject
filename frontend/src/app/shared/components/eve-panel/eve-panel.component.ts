@@ -172,6 +172,15 @@ const QUICK_PROMPTS = [
     </div>
   `,
   styles: [`
+    /* ==========================================================================
+       Eve Panel Component - EY Design System
+       ==========================================================================
+       Slide panel styling per UX spec
+       Width: 400px, Border-radius: 16px 0 0 16px
+       Shadow: shadow-modal (0 8px 32px)
+       Transitions: 300ms ease-out
+    */
+
     /* Backdrop */
     .eve-backdrop {
       position: fixed;
@@ -186,35 +195,37 @@ const QUICK_PROMPTS = [
       to { opacity: 1; }
     }
 
-    /* Panel */
+    /* Panel - Per EY spec: 400px width, 16px radius on left side */
     .eve-panel {
       position: fixed;
       top: 0;
       right: 0;
+      bottom: 0;
       width: 400px;
       max-width: 100vw;
-      height: 100vh;
       background: #FFFFFF;
-      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.16); /* shadow-modal */
+      border-radius: 16px 0 0 16px; /* EY spec: radius-2xl on left corners */
       z-index: 1002;
       display: flex;
       flex-direction: column;
       transform: translateX(100%);
-      transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 300ms ease-out;
     }
 
     .eve-panel--open {
       transform: translateX(0);
     }
 
-    /* Header */
+    /* Header - Dark gradient with EY Yellow avatar */
     .eve-panel__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 16px 20px;
-      background: linear-gradient(135deg, #2E2E38 0%, #1E1E28 100%);
+      background: linear-gradient(135deg, #2E2E38 0%, #1A1A2E 100%);
       color: #FFFFFF;
+      border-radius: 16px 0 0 0; /* Match panel radius */
     }
 
     .eve-panel__header-content {
@@ -227,7 +238,7 @@ const QUICK_PROMPTS = [
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: #FFE600;
+      background: #FFE600; /* ey-yellow */
       color: #2E2E38;
       display: flex;
       align-items: center;
@@ -243,6 +254,7 @@ const QUICK_PROMPTS = [
       font-size: 18px;
       font-weight: 700;
       margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
     }
 
     .eve-panel__subtitle {
@@ -259,7 +271,7 @@ const QUICK_PROMPTS = [
     .eve-panel__action-btn {
       width: 36px;
       height: 36px;
-      border-radius: 8px;
+      border-radius: 8px; /* radius-lg */
       background: rgba(255, 255, 255, 0.1);
       color: #FFFFFF;
       border: none;
@@ -282,6 +294,7 @@ const QUICK_PROMPTS = [
       display: flex;
       flex-direction: column;
       gap: 16px;
+      background: #FAFAFA; /* neutral-50 */
     }
 
     /* Welcome State */
@@ -299,8 +312,8 @@ const QUICK_PROMPTS = [
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: #F5F5F5;
-      color: #9CA3AF;
+      background: #F5F5F5; /* neutral-100 */
+      color: #9CA3AF; /* neutral-400 */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -312,11 +325,12 @@ const QUICK_PROMPTS = [
       font-weight: 600;
       color: #2E2E38;
       margin: 0 0 8px 0;
+      font-family: 'Inter', system-ui, sans-serif;
     }
 
     .eve-panel__welcome p {
       font-size: 14px;
-      color: #6B7280;
+      color: #6B7280; /* neutral-500 */
       margin: 0 0 24px 0;
     }
 
@@ -330,11 +344,13 @@ const QUICK_PROMPTS = [
 
     .eve-panel__quick-prompt {
       padding: 8px 16px;
-      border-radius: 20px;
-      background: #F5F5F5;
+      border-radius: 9999px; /* full radius for pills */
+      background: #FFFFFF;
       color: #2E2E38;
       border: 1px solid #E5E5E5;
       font-size: 13px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 500;
       cursor: pointer;
       transition: all 200ms ease-out;
     }
@@ -342,6 +358,7 @@ const QUICK_PROMPTS = [
     .eve-panel__quick-prompt:hover {
       background: #FFE600;
       border-color: #FFE600;
+      transform: scale(1.02);
     }
 
     /* Loading Indicator */
@@ -367,8 +384,9 @@ const QUICK_PROMPTS = [
       display: flex;
       gap: 6px;
       padding: 16px;
-      background: #F5F5F5;
-      border-radius: 16px 16px 16px 4px;
+      background: #FFFFFF;
+      border-radius: 12px 12px 12px 4px; /* chat bubble radius */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); /* shadow-card */
     }
 
     .eve-panel__loading-dots span {
@@ -402,17 +420,17 @@ const QUICK_PROMPTS = [
       }
     }
 
-    /* Error Message */
+    /* Error Message - Using EY error colors */
     .eve-panel__error {
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 12px 16px;
       margin: 0 16px 8px 16px;
-      background: #FEF2F2;
-      border: 1px solid #FEE2E2;
-      border-radius: 8px;
-      color: #DC2626;
+      background: #FEE2E2; /* error-light */
+      border: 1px solid #FECACA;
+      border-radius: 8px; /* radius-lg */
+      color: #B91C1C; /* error-dark */
       font-size: 13px;
     }
 
@@ -423,10 +441,16 @@ const QUICK_PROMPTS = [
     .eve-panel__error button {
       background: none;
       border: none;
-      color: #DC2626;
+      color: #B91C1C;
       cursor: pointer;
       padding: 4px;
       display: flex;
+      border-radius: 4px;
+      transition: background 200ms ease-out;
+    }
+
+    .eve-panel__error button:hover {
+      background: rgba(185, 28, 28, 0.1);
     }
 
     /* Input Area */
@@ -435,7 +459,7 @@ const QUICK_PROMPTS = [
       gap: 12px;
       padding: 16px 20px;
       border-top: 1px solid #E5E5E5;
-      background: #FAFAFA;
+      background: #FFFFFF;
     }
 
     .eve-panel__input-field {
@@ -444,13 +468,19 @@ const QUICK_PROMPTS = [
       border: 1px solid #E5E5E5;
       border-radius: 24px;
       font-size: 14px;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #2E2E38;
       outline: none;
       transition: all 200ms ease-out;
     }
 
+    .eve-panel__input-field::placeholder {
+      color: #A3A3A3; /* neutral-400 */
+    }
+
     .eve-panel__input-field:focus {
       border-color: #FFE600;
-      box-shadow: 0 0 0 3px rgba(255, 230, 0, 0.1);
+      box-shadow: 0 0 0 3px #FFF9CC; /* ey-yellow-light focus ring */
     }
 
     .eve-panel__input-field:disabled {
@@ -473,8 +503,12 @@ const QUICK_PROMPTS = [
     }
 
     .eve-panel__send-btn:hover:not(:disabled) {
-      background: #1E1E28;
+      background: #1A1A2E;
       transform: scale(1.05);
+    }
+
+    .eve-panel__send-btn:active:not(:disabled) {
+      transform: scale(0.95);
     }
 
     .eve-panel__send-btn:disabled {
@@ -486,6 +520,11 @@ const QUICK_PROMPTS = [
     @media (max-width: 480px) {
       .eve-panel {
         width: 100vw;
+        border-radius: 0;
+      }
+
+      .eve-panel__header {
+        border-radius: 0;
       }
 
       .eve-panel__quick-prompts {

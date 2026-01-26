@@ -1,15 +1,40 @@
 @use 'styles/variables' as *;
 
-.kpi-header {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-4;
+// =============================================================================
+// EY Design System - KPI Header Row
+// Displays KPIs in horizontal row with gap 12px
+// =============================================================================
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
+.kpi-header {
+  display: flex;
+  gap: 12px; // EY spec: gap 12px for KPI row
+  flex-wrap: wrap;
+}
+
+.kpi-card-wrapper {
+  flex: 1;
+  min-width: 180px;
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .kpi-header {
+    gap: 12px;
   }
 
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+  .kpi-card-wrapper {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .kpi-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .kpi-card-wrapper {
+    flex: 1 1 100%;
   }
 }

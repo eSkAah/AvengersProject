@@ -7,7 +7,7 @@ export type DocumentType =
 
 export type DocumentCategory = 'accounting' | 'tax' | 'financial';
 
-export type DocumentStatus = 'pending' | 'uploaded' | 'analyzing' | 'analyzed' | 'validated' | 'missing' | 'error';
+export type DocumentStatus = 'pending' | 'uploaded' | 'analyzing' | 'analyzed' | 'validated' | 'missing' | 'error' | 'signed_off' | 'in_review' | 'private' | 'unclassified';
 
 export type ServiceType = 'cit' | 'vat' | 'assessment' | 'accounting' | 'transfer-pricing';
 
@@ -69,6 +69,10 @@ export const DOCUMENT_STATUS_LABELS: Record<DocumentStatus, string> = {
   validated: 'Validated',
   missing: 'Missing',
   error: 'Error',
+  signed_off: 'Signed Off',
+  in_review: 'In Review',
+  private: 'Private (EY)',
+  unclassified: 'Unclassified',
 };
 
 export interface DocumentTypeGroup {

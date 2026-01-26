@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
 import { SearchBarComponent, ButtonComponent } from '../../../../shared';
 import { DocumentType, DocumentStatus, Engagement } from '../../../../core';
 
@@ -21,7 +22,7 @@ export interface DocumentFilters {
 @Component({
   selector: 'app-document-filters',
   standalone: true,
-  imports: [CommonModule, FormsModule, SearchBarComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SearchBarComponent, ButtonComponent],
   templateUrl: './document-filters.component.html',
   styleUrl: './document-filters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,7 +47,10 @@ export class DocumentFiltersComponent {
   ];
 
   readonly documentStatuses: { value: DocumentStatus; label: string }[] = [
+    { value: 'signed_off', label: 'Signed Off' },
+    { value: 'in_review', label: 'In Review' },
     { value: 'pending', label: 'Pending' },
+    { value: 'private', label: 'Private (EY)' },
     { value: 'analyzing', label: 'Analyzing' },
     { value: 'analyzed', label: 'Analyzed' },
     { value: 'error', label: 'Error' },

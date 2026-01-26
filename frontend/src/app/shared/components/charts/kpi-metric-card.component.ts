@@ -23,6 +23,9 @@ export interface KpiClickEvent {
   isCmdClick: boolean;
 }
 
+// EY Design System color classes
+type ColorClass = 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent';
+
 @Component({
   selector: 'app-kpi-metric-card',
   standalone: true,
@@ -36,6 +39,7 @@ export interface KpiClickEvent {
       (click)="onClick($event)"
     >
       @if (loading) {
+        <!-- Skeleton Loader - EY Design System -->
         <div class="kpi-skeleton">
           <div class="skeleton-icon"></div>
           <div class="skeleton-content">
@@ -73,6 +77,12 @@ export interface KpiClickEvent {
     </div>
   `,
   styles: [`
+    /* ==========================================================================
+       EY Design System - KPI Metric Card
+       Cards: white bg, border-radius 12px, subtle shadow, hover lift
+       Transitions: 200ms ease-out
+       ========================================================================== */
+
     .kpi-metric-card {
       display: flex;
       align-items: flex-start;
@@ -100,6 +110,7 @@ export interface KpiClickEvent {
       box-shadow: none;
     }
 
+    /* Skeleton Loader - EY Design System */
     .kpi-skeleton {
       display: flex;
       align-items: flex-start;
@@ -146,6 +157,7 @@ export interface KpiClickEvent {
       100% { background-position: -200% 0; }
     }
 
+    /* Icon Styles - EY Design System */
     .kpi-icon {
       width: 48px;
       height: 48px;
@@ -154,6 +166,7 @@ export interface KpiClickEvent {
       justify-content: center;
       border-radius: 12px;
       flex-shrink: 0;
+      transition: all 200ms ease-out;
     }
 
     .kpi-icon--default {
@@ -186,6 +199,7 @@ export interface KpiClickEvent {
       color: #2E2E38;
     }
 
+    /* Content Styles */
     .kpi-content {
       flex: 1;
       min-width: 0;
@@ -203,13 +217,15 @@ export interface KpiClickEvent {
       font-weight: 700;
       color: #2E2E38;
       line-height: 1.2;
+      font-variant-numeric: tabular-nums;
     }
 
+    /* Variance Badge - EY Design System */
     .kpi-value__variance {
       display: inline-flex;
       align-items: center;
       gap: 2px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       padding: 2px 8px;
       border-radius: 9999px;
@@ -231,6 +247,7 @@ export interface KpiClickEvent {
       margin-top: 4px;
     }
 
+    /* CMD+Click Hint */
     .kpi-hint {
       font-size: 11px;
       color: #9CA3AF;
@@ -248,7 +265,7 @@ export interface KpiClickEvent {
 export class KpiMetricCardComponent {
   @Input() metric!: KpiMetric;
   @Input() loading = false;
-  @Input() colorClass: 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent' = 'default';
+  @Input() colorClass: ColorClass = 'default';
   @Input() showCmdHint = true;
 
   @Output() kpiClick = new EventEmitter<KpiClickEvent>();

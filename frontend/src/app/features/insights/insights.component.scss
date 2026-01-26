@@ -1,8 +1,15 @@
 @use 'styles/variables' as *;
 
+// EY Design System Constants
+$ey-transition: 200ms ease-out;
+$ey-card-radius: 12px;
+$ey-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+$ey-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+$ey-input-radius: 6px;
+$ey-text-dark: #2E2E38;
+$ey-text-secondary: #6B7280;
+
 .insights-page {
-  max-width: 1400px;
-  margin: 0 auto;
   padding: $spacing-4;
   display: flex;
   flex-direction: column;
@@ -28,7 +35,7 @@
   gap: $spacing-3;
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: $ey-text-dark;
   margin: 0;
 
   lucide-icon {
@@ -38,7 +45,7 @@
 
 .insights-page__subtitle {
   font-size: $font-size-base;
-  color: $color-text-secondary;
+  color: $ey-text-secondary;
   margin: 0;
 }
 
@@ -58,7 +65,7 @@
   &__label {
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: $ey-text-secondary;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -66,13 +73,13 @@
   &__select {
     padding: $spacing-2 $spacing-3;
     font-size: $font-size-sm;
-    color: $color-text-primary;
-    background: $color-surface;
+    color: $ey-text-dark;
+    background: #FFFFFF;
     border: 1px solid $color-border;
-    border-radius: $radius-md;
+    border-radius: $ey-input-radius;
     cursor: pointer;
     min-width: 100px;
-    transition: all $transition-fast;
+    transition: all $ey-transition;
 
     &:hover {
       border-color: rgba($ey-yellow, 0.5);
@@ -81,7 +88,7 @@
     &:focus {
       outline: none;
       border-color: $ey-yellow;
-      box-shadow: 0 0 0 2px rgba($ey-yellow, 0.2);
+      box-shadow: 0 0 0 3px #FFF9CC;
     }
   }
 
@@ -101,15 +108,15 @@
   padding: $spacing-1 $spacing-3;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  color: $color-text-secondary;
+  color: $ey-text-secondary;
   background: $color-background;
   border: 1px solid $color-border;
   border-radius: $radius-full;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all $ey-transition;
 
   &:hover {
-    background: $color-surface;
+    background: #FFFFFF;
     border-color: rgba($ey-yellow, 0.5);
   }
 
@@ -132,11 +139,11 @@
   padding: $spacing-2 $spacing-3;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  color: $color-text-secondary;
+  color: $ey-text-secondary;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all $ey-transition;
 
   &:hover {
     color: $color-error;
@@ -156,7 +163,7 @@
   gap: $spacing-2;
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: $ey-text-dark;
   margin: 0;
 
   lucide-icon {
@@ -193,23 +200,16 @@
   align-items: flex-start;
   gap: $spacing-4;
   padding: $spacing-5;
-  background: $color-surface;
-  border-radius: $radius-xl;
+  background: #FFFFFF;
+  border-radius: $ey-card-radius;
   border: 1px solid rgba($color-border, 0.5);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.02),
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    0 4px 8px rgba(0, 0, 0, 0.03);
+  transition: all $ey-transition;
+  box-shadow: $ey-card-shadow;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.04),
-      0 8px 16px rgba(0, 0, 0, 0.06),
-      0 16px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+    box-shadow: $ey-card-shadow-hover;
   }
 
   &__icon {
@@ -232,13 +232,13 @@
   &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: $ey-text-secondary;
   }
 
   &__value {
     font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: $ey-text-dark;
     line-height: 1.2;
   }
 
@@ -308,18 +308,20 @@
 }
 
 .chart-card {
-  background: $color-surface;
-  border-radius: $radius-xl;
+  background: #FFFFFF;
+  border-radius: $ey-card-radius;
   border: 1px solid rgba($color-border, 0.5);
   padding: $spacing-5;
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
+  box-shadow: $ey-card-shadow;
+  transition: all $ey-transition;
 
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.02),
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    0 4px 8px rgba(0, 0, 0, 0.03);
+  &:hover {
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
+  }
 
   &--wide {
     grid-column: span 2;
@@ -338,13 +340,13 @@
   &__title {
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: $ey-text-dark;
     margin: 0;
   }
 
   &__subtitle {
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: $ey-text-secondary;
     margin: 0;
     display: flex;
     align-items: center;
@@ -415,7 +417,7 @@
     align-items: center;
     gap: $spacing-2;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: $ey-text-secondary;
 
     lucide-icon {
       color: $color-text-muted;

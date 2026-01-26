@@ -45,6 +45,10 @@ export class EntityDocumentsComponent implements OnInit {
   isUploading = signal(false);
   previewDocument = signal<Document | null>(null);
   searchQuery = signal('');
+  activeStatus = signal<string>(''); // '' means all
+
+  // Status options for filter pills
+  readonly statusOptions = ['signed_off', 'in_review', 'pending', 'private', 'unclassified'];
 
   // Get entity details to find the proper entity name for filtering
   entityDisplayName = computed(() => {
@@ -66,27 +70,57 @@ export class EntityDocumentsComponent implements OnInit {
     );
   });
 
-  // Filtered by search
+  // Filtered by search and status
   filteredDocuments = computed(() => {
-    const docs = this.entityDocuments();
+    let docs = this.entityDocuments();
     const query = this.searchQuery().toLowerCase();
-    if (!query) return docs;
-    return docs.filter(doc =>
-      doc.name.toLowerCase().includes(query) ||
-      doc.type.toLowerCase().includes(query)
-    );
+    const status = this.activeStatus();
+
+    // Apply status filter
+    if (status) {
+      docs = docs.filter(doc => doc.status === status);
+    }
+
+    // Apply search filter
+    if (query) {
+      docs = docs.filter(doc =>
+        doc.name.toLowerCase().includes(query) ||
+        doc.type.toLowerCase().includes(query)
+      );
+    }
+
+    return docs;
   });
 
-  // Document stats
+  // Document stats (always from all entity documents)
   documentStats = computed(() => {
     const docs = this.entityDocuments();
     return {
       total: docs.length,
-      validated: docs.filter(d => d.status === 'validated').length,
-      analyzing: docs.filter(d => d.status === 'analyzing').length,
-      pending: docs.filter(d => d.status === 'pending' || d.status === 'uploaded').length,
+      signed_off: docs.filter(d => d.status === 'signed_off').length,
+      in_review: docs.filter(d => d.status === 'in_review').length,
+      pending: docs.filter(d => d.status === 'pending').length,
+      private: docs.filter(d => d.status === 'private').length,
+      unclassified: docs.filter(d => d.status === 'unclassified').length,
     };
   });
+
+  // Filter by status
+  onStatusFilter(status: string): void {
+    this.activeStatus.set(status);
+  }
+
+  // Get status label
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      signed_off: 'Signed Off',
+      in_review: 'In Review',
+      pending: 'Pending',
+      private: 'Private (EY)',
+      unclassified: 'Unclassified',
+    };
+    return labels[status] || status;
+  }
 
   ngOnInit(): void {
     // Expand tree to show entity content on load

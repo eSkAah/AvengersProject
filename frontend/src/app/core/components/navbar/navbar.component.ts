@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, HostListener, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Home, Briefcase, FolderOpen, GitBranch, BarChart2, Bell, ChevronDown, User, Settings, LogOut, Menu, X } from 'lucide-angular';
+import { LucideAngularModule, Home, Briefcase, FolderOpen, GitBranch, BarChart2, Bell, ChevronDown, User, Settings, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen } from 'lucide-angular';
 import { NotificationService } from '../../services/notification.service';
 import { ServiceEntityService } from '../../services/service-entity.service';
 
@@ -35,6 +35,9 @@ export class NavbarComponent {
   private notificationService = inject(NotificationService);
   private serviceEntityService = inject(ServiceEntityService);
 
+  // Output to communicate sidebar state to layout
+  @Output() sidebarStateChange = new EventEmitter<boolean>();
+
   // Icons
   readonly icons = {
     home: Home,
@@ -48,7 +51,9 @@ export class NavbarComponent {
     settings: Settings,
     logOut: LogOut,
     menu: Menu,
-    x: X
+    x: X,
+    panelLeftClose: PanelLeftClose,
+    panelLeftOpen: PanelLeftOpen,
   };
 
   // State - Tristan Capital Partners branding
@@ -58,6 +63,7 @@ export class NavbarComponent {
   notificationsOpen = signal<boolean>(false);
   mobileMenuOpen = signal<boolean>(false);
   servicesMenuOpen = signal<boolean>(false);
+  sidebarCollapsed = signal<boolean>(false);
 
   // Services for dropdown
   services = computed(() => this.serviceEntityService.getServices());
@@ -149,6 +155,15 @@ export class NavbarComponent {
 
   closeMobileMenu() {
     this.mobileMenuOpen.set(false);
+  }
+
+  toggleSidebar() {
+    this.sidebarCollapsed.update(v => !v);
+    this.sidebarStateChange.emit(this.sidebarCollapsed());
+    // Close menus when collapsing
+    if (this.sidebarCollapsed()) {
+      this.servicesMenuOpen.set(false);
+    }
   }
 
   async loadNotifications() {

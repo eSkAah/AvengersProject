@@ -1,179 +1,280 @@
+// =============================================================================
+// SERVICE DOCUMENTS COMPONENT - EY Design System
+// =============================================================================
+
+$ey-yellow: #FFE600;
+$ey-yellow-hover: #FFD000;
+$ey-yellow-light: #FFF9CC;
+$ey-black: #2E2E38;
+$color-border: #E5E5E5;
+$color-text-primary: #2E2E38;
+$color-text-secondary: #6B7280;
+$color-text-muted: #9CA3AF;
+
 .service-documents {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
 }
 
-// Header
+// -----------------------------------------------------------------------------
+// Header with Stats & Actions
+// -----------------------------------------------------------------------------
 .documents-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  padding: 16px 20px;
+  background: $ey-black;
+  border-radius: 8px;
 }
 
 .documents-stats {
   display: flex;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .stat-pill {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8125rem;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 500;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: #1F1F24;
+  border: 1px solid #404048;
+  color: white;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
 
   .stat-value {
-    font-weight: 600;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
 
   .stat-label {
-    color: #6b7280;
+    color: #9CA3AF;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
+  // KPI Card Variants (Dark theme within dark filter bar)
   &--total {
-    background: #2e2e38;
-    border-color: #2e2e38;
-    color: white;
+    background: $ey-yellow;
+    border-color: $ey-yellow;
+    color: $ey-black;
 
     .stat-label {
-      color: rgba(white, 0.7);
+      color: rgba($ey-black, 0.7);
+    }
+
+    &.stat-pill--active {
+      box-shadow: 0 0 0 2px rgba($ey-yellow, 0.5);
     }
   }
 
-  &--validated {
-    background: #ecfdf5;
-    border-color: #10b981;
-    color: #059669;
+  &--signed_off {
+    border-left: 3px solid #10B981;
+
+    .stat-value {
+      color: #10B981;
+    }
+
+    &.stat-pill--active {
+      background: #10B981;
+      border-color: #10B981;
+      .stat-value, .stat-label { color: white; }
+    }
   }
 
-  &--analyzed {
-    background: #eff6ff;
-    border-color: #3b82f6;
-    color: #2563eb;
-  }
+  &--in_review {
+    border-left: 3px solid #3B82F6;
 
-  &--analyzing {
-    background: #fef3c7;
-    border-color: #f59e0b;
-    color: #d97706;
+    .stat-value {
+      color: #3B82F6;
+    }
+
+    &.stat-pill--active {
+      background: #3B82F6;
+      border-color: #3B82F6;
+      .stat-value, .stat-label { color: white; }
+    }
   }
 
   &--pending {
-    background: #f3f4f6;
-    border-color: #9ca3af;
-    color: #6b7280;
+    border-left: 3px solid #F59E0B;
+
+    .stat-value {
+      color: #F59E0B;
+    }
+
+    &.stat-pill--active {
+      background: #F59E0B;
+      border-color: #F59E0B;
+      .stat-value, .stat-label { color: white; }
+    }
+  }
+
+  &--private {
+    border-left: 3px solid #6B7280;
+    background: #404048;
+
+    .stat-value {
+      color: white;
+    }
+
+    &.stat-pill--active {
+      background: #2E2E38;
+      border-color: #2E2E38;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+      .stat-value, .stat-label { color: white; }
+    }
+  }
+
+  &--unclassified {
+    border-left: 3px solid #9CA3AF;
+
+    .stat-value {
+      color: #9CA3AF;
+    }
+
+    &.stat-pill--active {
+      background: #6B7280;
+      border-color: #6B7280;
+      .stat-value, .stat-label { color: white; }
+    }
   }
 }
 
 .documents-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .action-btn {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
+  padding: 8px 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #4b5563;
-  background: white;
-  border: 1px solid #e5e7eb;
+  color: white;
+  background: transparent;
+  border: 1px solid #404048;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 200ms ease-out;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #606068;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $ey-yellow;
   }
 }
 
+// -----------------------------------------------------------------------------
 // Empty State
+// -----------------------------------------------------------------------------
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
-  background: #f8fafc;
+  padding: 64px 32px;
+  background: white;
   border-radius: 12px;
-  border: 1px dashed #d1d5db;
+  border: 1px dashed #D1D5DB;
+  text-align: center;
 
   .empty-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 48px;
+    margin-bottom: 16px;
   }
 
   h3 {
-    margin: 0 0 0.5rem;
-    color: #374151;
-    font-size: 1.125rem;
+    margin: 0 0 8px;
+    color: $color-text-primary;
+    font-size: 18px;
+    font-weight: 600;
   }
 
   p {
     margin: 0;
-    color: #6b7280;
-    font-size: 0.875rem;
+    color: $color-text-muted;
+    font-size: 14px;
   }
 }
 
+// -----------------------------------------------------------------------------
 // Content Layout
+// -----------------------------------------------------------------------------
 .documents-content {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 1rem;
-  min-height: 320px;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  min-height: 400px;
+  align-items: stretch;
 }
 
-// Tree Panel
+// -----------------------------------------------------------------------------
+// Tree Panel (Card Style)
+// -----------------------------------------------------------------------------
 .tree-panel {
   background: white;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid $color-border;
+  padding: 12px;
   overflow: auto;
-  max-height: 320px;
+  min-height: 400px;
+  max-height: 500px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-// Tree Node - Compact version
+// -----------------------------------------------------------------------------
+// Tree Node
+// -----------------------------------------------------------------------------
 .tree-node {
   &__content {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 200ms ease-out;
 
     &:hover {
-      background: #f3f4f6;
+      background: #F3F4F6;
     }
   }
 
   &--selected > .tree-node__content {
-    background: #ffe600;
-    color: #2e2e38;
+    background: $ey-yellow;
+    color: $ey-black;
 
     .tree-node__count {
       background: rgba(0, 0, 0, 0.1);
-      color: #2e2e38;
+      color: $ey-black;
+    }
+
+    .tree-node__icon {
+      color: $ey-black;
     }
   }
 
   // Drag & Drop states
   &--drag-over > .tree-node__content {
-    background: #dbeafe;
-    border: 2px dashed #3b82f6;
-    border-radius: 6px;
+    background: #DBEAFE;
+    border: 2px dashed #3B82F6;
+    border-radius: 8px;
   }
 
   &--dragging {
@@ -184,24 +285,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     padding: 0;
     background: none;
     border: none;
     cursor: pointer;
-    color: #9ca3af;
-    transition: color 0.15s ease;
+    color: $color-text-muted;
+    transition: color 200ms ease-out;
     flex-shrink: 0;
 
     &:hover {
-      color: #4b5563;
+      color: $color-text-primary;
     }
   }
 
   &__toggle-placeholder {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
   }
 
@@ -209,33 +310,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    color: #6b7280;
+    width: 18px;
+    height: 18px;
+    color: $color-text-secondary;
     flex-shrink: 0;
 
     &--emoji {
-      font-size: 0.8125rem;
+      font-size: 14px;
     }
   }
 
   &__label {
     flex: 1;
-    font-size: 0.75rem;
+    font-size: 13px;
     font-weight: 500;
-    color: #374151;
+    color: $color-text-primary;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &__count {
-    font-size: 0.625rem;
+    font-size: 11px;
     font-weight: 600;
-    color: #6b7280;
-    background: #f3f4f6;
-    padding: 0.0625rem 0.375rem;
-    border-radius: 8px;
+    color: $color-text-secondary;
+    background: #F3F4F6;
+    padding: 2px 8px;
+    border-radius: 10px;
     flex-shrink: 0;
   }
 
@@ -247,16 +348,17 @@
 
   &--year > .tree-node__content {
     .tree-node__icon {
-      color: #3b82f6;
+      color: #3B82F6;
     }
   }
 
   &--document > .tree-node__content {
     .tree-node__icon {
-      color: #9ca3af;
+      color: $color-text-muted;
     }
     .tree-node__label {
       font-weight: 400;
+      font-size: 12px;
     }
   }
 
@@ -265,95 +367,131 @@
   }
 }
 
+// -----------------------------------------------------------------------------
 // Drop Zone
+// -----------------------------------------------------------------------------
 .drop-zone {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border: 2px dashed #d1d5db;
-  border-radius: 10px;
+  padding: 32px;
+  background: #FAFAFA;
+  border: 2px dashed #D1D5DB;
+  border-radius: 12px;
   text-align: center;
-  transition: all 0.2s ease;
+  transition: all 200ms ease-out;
   cursor: pointer;
 
   &:hover,
   &--active {
-    background: #eff6ff;
-    border-color: #3b82f6;
+    background: #EFF6FF;
+    border-color: #3B82F6;
   }
 
   &__icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: #9ca3af;
+    font-size: 40px;
+    margin-bottom: 12px;
+    color: $color-text-muted;
   }
 
   &__text {
-    font-size: 0.8125rem;
-    color: #6b7280;
+    font-size: 14px;
+    color: $color-text-secondary;
     margin: 0;
 
     strong {
-      color: #3b82f6;
+      color: #3B82F6;
       cursor: pointer;
     }
   }
 
   &__hint {
-    font-size: 0.6875rem;
-    color: #9ca3af;
-    margin: 0.25rem 0 0;
+    font-size: 12px;
+    color: $color-text-muted;
+    margin: 8px 0 0;
   }
 }
 
-// Status Dot
+// -----------------------------------------------------------------------------
+// Status Dot (Table Indicator)
+// -----------------------------------------------------------------------------
 .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   margin-left: auto;
+  flex-shrink: 0;
 
   &--validated {
-    background: #10b981;
+    background: #10B981;
   }
 
   &--analyzed {
-    background: #3b82f6;
+    background: #3B82F6;
   }
 
   &--analyzing {
-    background: #f59e0b;
+    background: #F59E0B;
   }
 
   &--pending {
-    background: #9ca3af;
+    background: #9CA3AF;
   }
 
   &--uploaded {
-    background: #8b5cf6;
+    background: #8B5CF6;
   }
 
   &--missing {
-    background: #ef4444;
+    background: #EF4444;
   }
 
   &--error {
-    background: #ef4444;
+    background: #EF4444;
+  }
+
+  &--signed_off {
+    background: #10B981;
+  }
+
+  &--private {
+    background: #2E2E38;
+  }
+
+  &--in_review {
+    background: #3B82F6;
+  }
+
+  &--pending {
+    background: #F59E0B;
+  }
+
+  &--unclassified {
+    background: #9CA3AF;
   }
 }
 
-// Detail Panel
+// -----------------------------------------------------------------------------
+// Detail Panel (Card Style)
+// -----------------------------------------------------------------------------
 .detail-panel {
   background: white;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  padding: 1.25rem;
+  border: 1px solid $color-border;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 200ms ease-out;
+  min-height: 400px;
+  max-height: 500px;
+  overflow: auto;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
 
   &--empty {
     justify-content: center;
@@ -363,22 +501,22 @@
 
 .empty-detail {
   text-align: center;
-  color: #9ca3af;
+  color: $color-text-muted;
 
   lucide-icon {
-    margin-bottom: 0.75rem;
+    margin-bottom: 12px;
     opacity: 0.5;
   }
 
   p {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 14px;
   }
 }
 
 .detail-header {
   display: flex;
-  gap: 1rem;
+  gap: 16px;
   align-items: flex-start;
 }
 
@@ -386,11 +524,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: #f3f4f6;
+  width: 52px;
+  height: 52px;
+  background: #F3F4F6;
   border-radius: 12px;
-  color: #6b7280;
+  color: $color-text-secondary;
   flex-shrink: 0;
 }
 
@@ -400,150 +538,205 @@
 }
 
 .detail-name {
-  margin: 0 0 0.25rem;
-  font-size: 1rem;
+  margin: 0 0 4px;
+  font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: $color-text-primary;
   word-break: break-word;
+  line-height: 1.4;
 }
 
 .detail-type {
-  font-size: 0.8125rem;
-  color: #6b7280;
+  font-size: 13px;
+  color: $color-text-secondary;
 }
 
 .detail-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 10px;
+  gap: 10px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 8px;
 }
 
 .meta-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8125rem;
+  font-size: 13px;
 }
 
 .meta-label {
-  color: #6b7280;
+  color: $color-text-secondary;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 500;
 }
 
 .meta-value {
-  font-weight: 500;
-  color: #374151;
+  font-weight: 600;
+  color: $color-text-primary;
+  font-variant-numeric: tabular-nums;
 }
 
-// Status Badge
+// -----------------------------------------------------------------------------
+// Status Badge (Risk Badge Style)
+// -----------------------------------------------------------------------------
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
+  padding: 4px 10px;
+  font-size: 12px;
   font-weight: 600;
-  border-radius: 6px;
-  text-transform: capitalize;
+  border-radius: 9999px;
 
   &--validated {
-    background: #ecfdf5;
-    color: #059669;
+    background: #D1FAE5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
   }
 
   &--analyzed {
-    background: #eff6ff;
-    color: #2563eb;
+    background: #DBEAFE;
+    color: #1D4ED8;
+    border: 1px solid #BFDBFE;
   }
 
   &--analyzing {
-    background: #fef3c7;
-    color: #d97706;
+    background: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FDE68A;
   }
 
   &--pending {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: #F3F4F6;
+    color: #4B5563;
+    border: 1px solid #E5E7EB;
   }
 
   &--uploaded {
-    background: #f3e8ff;
-    color: #7c3aed;
+    background: #F3E8FF;
+    color: #7C3AED;
+    border: 1px solid #DDD6FE;
   }
 
   &--missing {
-    background: #fef2f2;
-    color: #dc2626;
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FECACA;
   }
 
   &--error {
-    background: #fef2f2;
-    color: #dc2626;
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FECACA;
+  }
+
+  &--signed_off {
+    background: #D1FAE5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
+  }
+
+  &--private {
+    background: #2E2E38;
+    color: #FFFFFF;
+    border: 1px solid #2E2E38;
+  }
+
+  &--in_review {
+    background: #DBEAFE;
+    color: #1D4ED8;
+    border: 1px solid #93C5FD;
+  }
+
+  &--pending {
+    background: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FDE68A;
+  }
+
+  &--unclassified {
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #D1D5DB;
   }
 }
 
 .detail-summary {
   h4 {
-    margin: 0 0 0.5rem;
-    font-size: 0.8125rem;
+    margin: 0 0 8px;
+    font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: $color-text-primary;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   p {
     margin: 0;
-    font-size: 0.8125rem;
-    color: #6b7280;
-    line-height: 1.5;
+    font-size: 14px;
+    color: $color-text-secondary;
+    line-height: 1.6;
   }
 }
 
 .detail-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  border-top: 1px solid $color-border;
 }
 
+// -----------------------------------------------------------------------------
+// Action Buttons (EY Design System)
+// -----------------------------------------------------------------------------
 .btn-action {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  font-size: 0.8125rem;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 13px;
   font-weight: 500;
-  color: #4b5563;
+  color: $color-text-secondary;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid $color-border;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 200ms ease-out;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &--primary {
-    background: #2e2e38;
-    border-color: #2e2e38;
+    background: $ey-black;
+    border-color: $ey-black;
     color: white;
 
     &:hover {
-      background: #1f1f27;
+      background: #1F1F27;
     }
   }
 
   &--eve {
-    background: #ffe600;
-    border-color: #ffe600;
-    color: #2e2e38;
+    background: $ey-yellow;
+    border-color: $ey-yellow;
+    color: $ey-black;
+    font-weight: 600;
 
     &:hover {
-      background: #ffd000;
-      border-color: #ffd000;
+      background: $ey-yellow-hover;
+      border-color: $ey-yellow-hover;
     }
   }
 }

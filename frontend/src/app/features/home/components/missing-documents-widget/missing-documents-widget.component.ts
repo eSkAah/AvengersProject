@@ -86,15 +86,15 @@ interface UploadingFile {
             </div>
           }
         </div>
-        @if (missingByEntity().length > 5) {
-          <div class="widget-footer">
-            <button class="view-all-btn" (click)="viewAllMissing()">
-              View All
-              <lucide-icon [img]="icons.arrowRight" [size]="14"></lucide-icon>
-            </button>
-          </div>
-        }
       }
+
+      <!-- View All footer - always shown for consistent card height -->
+      <div class="widget-footer">
+        <button class="view-all-link" (click)="viewAllMissing()">
+          View All
+          <lucide-icon [img]="icons.arrowRight" [size]="14"></lucide-icon>
+        </button>
+      </div>
     </div>
 
     <!-- Upload Modal -->
@@ -211,16 +211,27 @@ interface UploadingFile {
     }
   `,
   styles: [`
+    // =============================================================================
+    // MISSING DOCUMENTS WIDGET - EY Design System
+    // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+    // Colors: EY Yellow #FFE600 for accents, #2E2E38 dark text, #6b7280 secondary
+    // =============================================================================
+
+    :host {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
     .missing-docs-widget {
       display: flex;
       flex-direction: column;
+      height: 100%;
     }
 
     .widget-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .widget-title {
@@ -229,23 +240,25 @@ interface UploadingFile {
       gap: 8px;
 
       lucide-icon {
-        color: #f59e0b;
+        color: #F59E0B; // warning color
       }
 
       h3 {
         margin: 0;
-        font-size: 15px;
+        font-size: 15px; // close to text-body
         font-weight: 600;
         color: #2E2E38;
+        line-height: 1.4;
       }
     }
 
     .total-badge {
-      background: #fef3c7;
-      color: #92400e;
-      width: 24px;
+      background: #FEF3C7; // warning-light
+      color: #B45309; // warning-dark
+      min-width: 24px;
       height: 24px;
-      border-radius: 50%;
+      padding: 0 8px;
+      border-radius: 9999px; // radius-full
       font-size: 12px;
       font-weight: 600;
       display: flex;
@@ -259,35 +272,39 @@ interface UploadingFile {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #10b981;
-      gap: 6px;
-      padding: 16px 0;
+      color: #10B981; // success
+      gap: 8px;
+      padding: 20px 0;
 
       span {
         font-size: 13px;
+        font-weight: 500;
       }
     }
 
     .entity-list {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .entity-row {
       display: grid;
-      grid-template-columns: 1fr auto 32px;
+      grid-template-columns: minmax(120px, 1fr) auto 32px;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       padding: 10px 12px;
-      background: #f9fafb;
-      border-radius: 10px;
+      background: #FFFFFF;
+      border-radius: 8px;
       border: 1px solid #e5e7eb;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &:hover {
         border-color: #FFE600;
         background: #FFFDF5;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
       }
     }
 
@@ -299,12 +316,12 @@ interface UploadingFile {
     }
 
     .entity-flag {
-      font-size: 14px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
     .entity-name {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
       color: #2E2E38;
       white-space: nowrap;
@@ -315,21 +332,25 @@ interface UploadingFile {
     .missing-docs {
       display: flex;
       gap: 4px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-end;
     }
 
     .doc-badge {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 2px 6px;
+      background: #F3F4F6;
+      color: #4B5563;
+      padding: 3px 8px;
       border-radius: 4px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
       white-space: nowrap;
+      border: 1px solid #E5E7EB;
 
       &.more {
-        background: #f3f4f6;
+        background: #FFFFFF;
         color: #6b7280;
+        border: 1px solid #E5E7EB;
       }
     }
 
@@ -343,7 +364,7 @@ interface UploadingFile {
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       lucide-icon {
         color: #2E2E38;
@@ -351,19 +372,21 @@ interface UploadingFile {
 
       &:hover {
         background: #FFD000;
-        transform: scale(1.05);
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
     }
 
     .widget-footer {
       display: flex;
       justify-content: flex-end;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #f0f0f0;
+      margin-top: 12px;
     }
 
-    .view-all-btn {
+    .view-all-link {
       display: flex;
       align-items: center;
       gap: 4px;
@@ -373,17 +396,15 @@ interface UploadingFile {
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: all 0.2s;
+      padding: 4px 0;
+      transition: all 200ms ease-out;
 
       lucide-icon {
-        transition: transform 0.2s;
+        transition: transform 200ms ease-out;
       }
 
       &:hover {
         color: #2E2E38;
-        background: #f3f4f6;
 
         lucide-icon {
           transform: translateX(2px);
@@ -391,7 +412,10 @@ interface UploadingFile {
       }
     }
 
-    /* Modal Styles */
+    // =========================================================================
+    // MODAL STYLES - EY Design System
+    // =========================================================================
+
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -400,20 +424,20 @@ interface UploadingFile {
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 200ms ease-out;
     }
 
     .modal-content {
-      background: white;
-      border-radius: 16px;
+      background: #FFFFFF;
+      border-radius: 12px;
       width: 90%;
       max-width: 480px;
       max-height: 80vh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.3s ease-out;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
+      animation: slideUp 300ms ease-out;
     }
 
     .modal-header {
@@ -421,7 +445,7 @@ interface UploadingFile {
       align-items: center;
       justify-content: space-between;
       padding: 20px 24px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .modal-title {
@@ -437,14 +461,16 @@ interface UploadingFile {
     .modal-title-text {
       h3 {
         margin: 0;
-        font-size: 16px;
+        font-size: 18px; // text-h3
         font-weight: 600;
         color: #2E2E38;
+        line-height: 1.4;
       }
 
       .modal-subtitle {
         font-size: 13px;
         color: #6b7280;
+        line-height: 1.5;
       }
     }
 
@@ -454,25 +480,28 @@ interface UploadingFile {
       padding: 8px;
       cursor: pointer;
       color: #6b7280;
-      border-radius: 8px;
-      transition: all 0.2s;
+      border-radius: 6px;
+      transition: all 200ms ease-out;
 
       &:hover {
-        background: #f3f4f6;
+        background: #F5F5F5;
         color: #2E2E38;
       }
     }
 
     .missing-info {
       padding: 12px 24px;
-      background: #fef2f2;
-      border-bottom: 1px solid #fecaca;
+      background: #FEE2E2; // error-light
+      border-bottom: 1px solid #FECACA;
     }
 
     .missing-label {
-      font-size: 12px;
-      color: #991b1b;
-      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #B91C1C;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
       display: block;
     }
 
@@ -483,22 +512,22 @@ interface UploadingFile {
     }
 
     .missing-tag {
-      background: white;
-      color: #991b1b;
+      background: #FFFFFF;
+      color: #B91C1C;
       padding: 4px 10px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 500;
-      border: 1px solid #fecaca;
+      border: 1px solid #FECACA;
     }
 
     .drop-zone {
       margin: 20px 24px;
       position: relative;
-      border: 2px dashed #d1d5db;
+      border: 2px dashed #e5e7eb;
       border-radius: 12px;
-      background: #f9fafb;
-      transition: all 0.3s ease;
+      background: #FAFAFA;
+      transition: all 200ms ease-out;
       min-height: 140px;
 
       &:hover {
@@ -509,7 +538,7 @@ interface UploadingFile {
       &--dragover {
         border-color: #FFE600;
         border-style: solid;
-        background: #FFF9E0;
+        background: #FFF9CC;
       }
     }
 
@@ -537,10 +566,11 @@ interface UploadingFile {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: white;
-      border-radius: 14px;
+      background: #FFFFFF;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
       margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
       lucide-icon {
         color: #FFE600;
@@ -559,7 +589,7 @@ interface UploadingFile {
     }
 
     .uploading-section {
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid #e5e7eb;
     }
 
     .ai-info {
@@ -567,12 +597,13 @@ interface UploadingFile {
       align-items: center;
       gap: 8px;
       padding: 10px 24px;
-      background: #FFF9E0;
+      background: #FFF9CC; // ey-yellow-light
       font-size: 12px;
-      color: #92400e;
+      font-weight: 500;
+      color: #B45309;
 
       lucide-icon {
-        color: #f59e0b;
+        color: #F59E0B;
       }
     }
 
@@ -589,26 +620,27 @@ interface UploadingFile {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 12px;
-      background: #f9fafb;
+      padding: 12px 14px;
+      background: #FAFAFA;
       border-radius: 8px;
       border: 1px solid #e5e7eb;
+      transition: all 200ms ease-out;
 
       &--success {
-        background: #f0fdf4;
-        border-color: #86efac;
+        background: #D1FAE5; // success-light
+        border-color: #A7F3D0;
       }
 
       &--error {
-        background: #fef2f2;
-        border-color: #fecaca;
+        background: #FEE2E2; // error-light
+        border-color: #FECACA;
       }
     }
 
     .file-info {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       min-width: 0;
       flex: 1;
 
@@ -620,6 +652,7 @@ interface UploadingFile {
 
     .file-name {
       font-size: 13px;
+      font-weight: 500;
       color: #2E2E38;
       white-space: nowrap;
       overflow: hidden;
@@ -645,36 +678,40 @@ interface UploadingFile {
     .progress-fill {
       height: 100%;
       background: #FFE600;
-      transition: width 0.2s;
+      border-radius: 2px;
+      transition: width 200ms ease-out;
     }
 
     .status-classifying {
       display: flex;
       align-items: center;
-      gap: 4px;
-      color: #f59e0b;
+      gap: 6px;
+      color: #F59E0B;
       font-size: 12px;
+      font-weight: 500;
     }
 
     .status-success {
       display: flex;
       align-items: center;
-      gap: 4px;
-      color: #10b981;
+      gap: 6px;
+      color: #10B981;
       font-size: 12px;
+      font-weight: 500;
     }
 
     .status-error {
       display: flex;
       align-items: center;
-      gap: 4px;
-      color: #ef4444;
+      gap: 6px;
+      color: #EF4444;
       font-size: 12px;
+      font-weight: 500;
     }
 
     .modal-footer {
       padding: 16px 24px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid #e5e7eb;
       display: flex;
       justify-content: flex-end;
     }
@@ -683,15 +720,20 @@ interface UploadingFile {
       background: #FFE600;
       color: #2E2E38;
       border: none;
-      padding: 10px 24px;
-      border-radius: 8px;
+      padding: 12px 20px;
+      border-radius: 6px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &:hover {
         background: #FFD000;
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
     }
 

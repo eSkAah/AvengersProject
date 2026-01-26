@@ -1,68 +1,83 @@
-@use 'styles/variables' as *;
+// =============================================================================
+// RECENT ACTIVITY WIDGET - EY Design System
+// Cards: white bg, border #e5e7eb, border-radius 12px, shadow-card, hover lift
+// Typography: Inter font, 11px labels uppercase, 13-14px body
+// =============================================================================
 
 .activity-widget {
   display: flex;
   flex-direction: column;
   height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   &__header {
-    margin-bottom: $spacing-3;
+    margin-bottom: 12px;
 
     h3 {
-      font-size: 0.9375rem;
+      font-size: 15px;
       font-weight: 600;
-      color: $color-text-primary;
+      color: #2E2E38;
       margin: 0;
+      line-height: 1.4;
     }
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
   }
 }
+
+// =============================================================================
+// ACTIVITY ITEM - EY Design System
+// =============================================================================
 
 .activity-item {
   display: flex;
   align-items: center;
-  gap: $spacing-2;
-  padding: $spacing-2;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
-  transition: background 0.2s ease;
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  transition: all 200ms ease-out;
 
   &:hover {
-    background: #F1F3F5;
+    background: #FAFAFA;
+    border-color: #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   }
 
   &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     flex-shrink: 0;
 
     lucide-icon {
-      color: white;
+      color: #FFFFFF;
     }
   }
 
+  // Activity type colors - using semantic colors
   &--upload .activity-item__icon {
-    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    background: #3B82F6; // info color
   }
 
   &--approval .activity-item__icon {
-    background: linear-gradient(135deg, #10B981, #059669);
+    background: #10B981; // success color
   }
 
   &--comment .activity-item__icon {
-    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    background: #8B5CF6; // purple
   }
 
   &--alert .activity-item__icon {
-    background: linear-gradient(135deg, #F59E0B, #D97706);
+    background: #F59E0B; // warning color
   }
 
   &__content {
@@ -74,25 +89,25 @@
   }
 
   &__title {
-    font-size: 0.8125rem;
+    font-size: 13px; // text-body-sm
     font-weight: 500;
-    color: $color-text-primary;
+    color: #2E2E38;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &__entity {
-    font-size: 0.75rem;
-    color: $color-text-secondary;
+    font-size: 11px; // text-overline size
+    color: #6b7280; // secondary text
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &__time {
-    font-size: 0.6875rem;
-    color: $color-text-muted;
+    font-size: 11px;
+    color: #A3A3A3; // muted text
     white-space: nowrap;
     flex-shrink: 0;
   }

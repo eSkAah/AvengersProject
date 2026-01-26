@@ -1,47 +1,60 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// EY Design System - Engagement List
+// Cards: white bg, border-radius 12px, subtle shadow, hover lift
+// Transitions: 200ms ease-out
+// =============================================================================
+
 .engagement-list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-3;
+  gap: 12px; // EY spec: compact gap
 }
 
+// =============================================================================
+// Engagement Card - EY Design System
+// =============================================================================
 .engagement-item {
   background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: 12px; // EY spec: 12px radius for cards
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 200ms ease-out; // EY spec: 200ms ease-out
 
   &:hover {
-    border-color: rgba($ey-yellow, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // shadow-card-hover
+    transform: translateY(-1px);
+    border-color: rgba($ey-yellow, 0.4);
   }
 
   &--expanded {
     border-color: $ey-yellow;
-    box-shadow: $shadow-md;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
+  // Header row - clickable
   &__header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1.5fr auto auto;
     align-items: center;
     gap: $spacing-4;
-    padding: $spacing-4;
+    padding: $spacing-4 $spacing-5;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 200ms ease-out;
 
     &:hover {
-      background: $color-background;
+      background: rgba($color-background, 0.5);
     }
   }
 
   &__main {
     display: flex;
     flex-direction: column;
-    gap: $spacing-1;
+    gap: 2px;
   }
 
+  // Entity with flag - EY spec: flag, name, progress, status
   &__entity {
     display: flex;
     align-items: center;
@@ -49,19 +62,22 @@
   }
 
   &__flag {
-    font-size: $font-size-lg;
+    font-size: 18px;
+    line-height: 1;
   }
 
   &__name {
+    font-size: 14px;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: $ey-black;
   }
 
   &__service {
-    font-size: $font-size-sm;
+    font-size: 12px;
     color: $color-text-secondary;
   }
 
+  // Due date column
   &__due-date {
     display: flex;
     flex-direction: column;
@@ -69,37 +85,49 @@
   }
 
   &__due-label {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   &__due-value {
-    font-size: $font-size-sm;
+    font-size: 13px;
     font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    color: $ey-black;
   }
 
+  // Progress bar column
   &__progress {
     width: 100%;
   }
 
-  &__expand-icon {
-    color: $color-text-secondary;
-    font-size: $font-size-xs;
-    transition: transform 0.2s ease;
-
-    span.rotated {
-      display: inline-block;
-      transform: rotate(180deg);
-    }
+  // Risk badge
+  &__risk {
+    display: flex;
+    justify-content: center;
   }
 
-  // Expanded content
+  // Expand icon
+  &__expand-icon {
+    color: $color-text-muted;
+    transition: transform 200ms ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+  }
+
+  // =============================================================================
+  // Expanded Content
+  // =============================================================================
   &__content {
-    padding: $spacing-4;
-    padding-top: $spacing-4;
+    padding: $spacing-5;
     border-top: 1px solid $color-border;
-    animation: slideDown 0.2s ease-out;
+    background: linear-gradient(180deg, rgba($color-background, 0.3) 0%, transparent 100%);
+    animation: slideDown 200ms ease-out;
   }
 
   &__details {
@@ -111,12 +139,12 @@
 
   &__section {
     h4 {
-      font-size: $font-size-xs;
+      font-size: 11px;
       font-weight: $font-weight-semibold;
       color: $color-text-secondary;
       margin-bottom: $spacing-2;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.5px; // EY spec: uppercase labels with letter-spacing
       display: flex;
       align-items: center;
       gap: $spacing-1;
@@ -138,6 +166,7 @@
     }
   }
 
+  // Actions row
   &__actions {
     display: flex;
     gap: $spacing-3;
@@ -145,6 +174,7 @@
     border-top: 1px solid $color-border;
   }
 
+  // Empty state
   &__empty {
     display: flex;
     flex-direction: column;
@@ -156,17 +186,20 @@
     &-icon {
       font-size: 48px;
       margin-bottom: $spacing-4;
+      opacity: 0.5;
     }
   }
 }
 
-// Prediction Card - Primary focus
+// =============================================================================
+// AI Prediction Card - EY Premium Style
+// =============================================================================
 .prediction-card {
   background: linear-gradient(135deg, rgba($ey-yellow, 0.08) 0%, rgba($ey-yellow, 0.02) 100%);
   border: 1px solid rgba($ey-yellow, 0.2);
-  border-radius: $radius-lg;
+  border-radius: 8px;
   padding: $spacing-4;
-  transition: all 0.2s ease;
+  transition: all 200ms ease-out;
 
   &:hover {
     border-color: rgba($ey-yellow, 0.4);
@@ -194,13 +227,14 @@
   }
 
   &__title {
-    font-size: $font-size-sm;
+    font-size: 13px;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: $ey-black;
   }
 
   &__confidence {
     font-size: 10px;
+    font-weight: $font-weight-medium;
     padding: 2px 8px;
     border-radius: $radius-full;
     margin-left: auto;
@@ -232,12 +266,14 @@
   }
 
   &__text {
-    font-size: $font-size-base;
+    font-size: 14px;
     font-weight: $font-weight-semibold;
   }
 }
 
-// Variance Chips - Condensed display
+// =============================================================================
+// Variance Chips - EY Style
+// =============================================================================
 .variance-chips {
   display: flex;
   flex-wrap: wrap;
@@ -247,9 +283,9 @@
 .variance-chip {
   display: inline-flex;
   align-items: center;
-  padding: $spacing-1 $spacing-2;
+  padding: 4px 10px;
   border-radius: $radius-full;
-  font-size: $font-size-xs;
+  font-size: 11px;
   font-weight: $font-weight-medium;
 
   &--increase {
@@ -269,7 +305,9 @@
   }
 }
 
-// Documents Visual - Progress Ring + Checklist
+// =============================================================================
+// Documents Visual
+// =============================================================================
 .docs-visual {
   display: flex;
   align-items: flex-start;
@@ -297,13 +335,14 @@
   }
 
   &__count {
-    font-size: $font-size-lg;
+    font-size: 18px;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: $ey-black;
+    font-variant-numeric: tabular-nums;
   }
 
   &__label {
-    font-size: $font-size-sm;
+    font-size: 13px;
     color: $color-text-secondary;
   }
 
@@ -311,11 +350,37 @@
     display: flex;
     align-items: center;
     gap: $spacing-1;
-    font-size: $font-size-xs;
+    font-size: 12px;
     color: $color-error;
   }
 }
 
+// =============================================================================
+// Empty State
+// =============================================================================
+.engagement-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-12;
+  color: $color-text-muted;
+  text-align: center;
+
+  &-icon {
+    margin-bottom: $spacing-4;
+    opacity: 0.4;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// =============================================================================
+// Animations
+// =============================================================================
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -327,12 +392,15 @@
   }
 }
 
+// =============================================================================
 // Responsive
+// =============================================================================
 @media (max-width: 768px) {
   .engagement-item {
     &__header {
       grid-template-columns: 1fr auto auto;
       gap: $spacing-2;
+      padding: $spacing-3;
     }
 
     &__status,

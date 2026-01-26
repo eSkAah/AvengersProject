@@ -1,34 +1,31 @@
 <div class="service-documents">
-  <!-- Header with stats -->
+  <!-- Header with stats - Clickable filters -->
   <div class="documents-header">
     <div class="documents-stats">
-      <div class="stat-pill stat-pill--total">
+      <button
+        class="stat-pill stat-pill--total"
+        [class.stat-pill--active]="activeStatus() === ''"
+        (click)="onStatusFilter('')"
+      >
         <span class="stat-value">{{ totalDocuments() }}</span>
-        <span class="stat-label">Total</span>
-      </div>
-      @if (statusCounts().validated > 0) {
-        <div class="stat-pill stat-pill--validated">
-          <span class="stat-value">{{ statusCounts().validated }}</span>
-          <span class="stat-label">Validated</span>
-        </div>
-      }
-      @if (statusCounts().analyzed > 0) {
-        <div class="stat-pill stat-pill--analyzed">
-          <span class="stat-value">{{ statusCounts().analyzed }}</span>
-          <span class="stat-label">Analyzed</span>
-        </div>
-      }
-      @if (statusCounts().analyzing > 0) {
-        <div class="stat-pill stat-pill--analyzing">
-          <span class="stat-value">{{ statusCounts().analyzing }}</span>
-          <span class="stat-label">Analyzing</span>
-        </div>
-      }
-      @if (statusCounts().pending > 0) {
-        <div class="stat-pill stat-pill--pending">
-          <span class="stat-value">{{ statusCounts().pending }}</span>
-          <span class="stat-label">Pending</span>
-        </div>
+        <span class="stat-label">All</span>
+      </button>
+      @for (status of statusOptions; track status) {
+        @if ($any(statusCounts())[status] > 0) {
+          <button
+            class="stat-pill"
+            [class.stat-pill--active]="activeStatus() === status"
+            [class.stat-pill--signed_off]="status === 'signed_off'"
+            [class.stat-pill--in_review]="status === 'in_review'"
+            [class.stat-pill--pending]="status === 'pending'"
+            [class.stat-pill--private]="status === 'private'"
+            [class.stat-pill--unclassified]="status === 'unclassified'"
+            (click)="onStatusFilter(status)"
+          >
+            <span class="stat-value">{{ $any(statusCounts())[status] }}</span>
+            <span class="stat-label">{{ getStatusLabel(status) }}</span>
+          </button>
+        }
       }
     </div>
     <div class="documents-actions">

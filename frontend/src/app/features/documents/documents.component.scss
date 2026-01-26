@@ -1,29 +1,39 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Documents Page - EY Design System
+// Reference: UX Design Specification
+// =============================================================================
+
 .documents-page {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: $spacing-6;
   height: 100%;
   min-height: calc(100vh - 200px);
 
+  // -------------------------------------------------------------------------
+  // Sidebar
+  // -------------------------------------------------------------------------
   &__sidebar {
     background: $color-surface;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
     &-title {
-      padding: $spacing-4;
+      padding: $spacing-4 $spacing-5;
       margin: 0;
-      font-size: $font-size-sm;
-      font-weight: $font-weight-semibold;
-      color: $color-text-secondary;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 1px solid $color-border;
+      background: #f9fafb;
     }
 
     &-search {
@@ -37,10 +47,13 @@
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Main Content
+  // -------------------------------------------------------------------------
   &__main {
     display: flex;
     flex-direction: column;
-    gap: $spacing-4;
+    gap: $spacing-5;
   }
 
   &__header {
@@ -49,38 +62,46 @@
     align-items: center;
   }
 
+  // -------------------------------------------------------------------------
+  // Tabs - Sub-tabs Pattern
+  // -------------------------------------------------------------------------
   &__tabs {
     display: flex;
-    gap: $spacing-1;
-    padding: $spacing-1;
-    background: $color-background;
-    border-radius: $radius-md;
-    border: 1px solid $color-border;
+    gap: 0;
+    border-bottom: 2px solid #e5e7eb;
   }
 
   &__tab {
     display: flex;
     align-items: center;
     gap: $spacing-2;
-    padding: $spacing-2 $spacing-4;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
     background: transparent;
     border: none;
-    border-radius: $radius-sm;
     cursor: pointer;
-    transition: all $transition-fast;
+    position: relative;
+    transition: all 200ms ease-out;
 
     &:hover {
-      color: $color-text-primary;
-      background: $color-surface;
+      color: $ey-black;
     }
 
     &--active {
       color: $ey-black;
-      background: $color-surface;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $ey-yellow;
+      }
     }
   }
 
@@ -97,8 +118,9 @@
   }
 
   &__count {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
   }
 
   &__content {
@@ -110,291 +132,141 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: $spacing-3;
+    gap: $spacing-4;
     padding: $spacing-12;
-    color: $color-text-secondary;
+    color: #6b7280;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+
+    lucide-icon {
+      opacity: 0.5;
+    }
 
     p {
       margin: 0;
-      font-size: $font-size-lg;
+      font-size: 16px;
+      font-weight: 500;
     }
 
     &-action {
-      padding: $spacing-2 $spacing-4;
-      font-size: $font-size-sm;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
       color: $ey-black;
       background: $ey-yellow;
       border: none;
-      border-radius: $radius-sm;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all $transition-fast;
+      transition: all 200ms ease-out;
 
       &:hover {
         background: $ey-yellow-hover;
+        transform: scale(1.02);
       }
     }
   }
 }
 
-// Upload Section
+// =============================================================================
+// Upload Section - Card Pattern
+// =============================================================================
 .upload-section {
   padding: $spacing-6;
   background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   &__title {
     margin: 0 0 $spacing-2 0;
-    font-size: $font-size-xl;
-    font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    font-size: 22px;
+    font-weight: 600;
+    color: $ey-black;
   }
 
   &__description {
-    margin: 0 0 $spacing-4 0;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+    margin: 0 0 $spacing-5 0;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
   }
 }
 
-// Pending Files
-.pending-files {
-  padding: $spacing-6;
-  background: $color-surface;
-  border: 1px solid $color-border;
-  border-radius: $radius-lg;
-
-  &__title {
-    margin: 0 0 $spacing-4 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-text-primary;
-  }
-
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-2;
-  }
-
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: $spacing-4;
-    padding-top: $spacing-4;
-    border-top: 1px solid $color-border;
-  }
-}
-
-// Pending File Item
-.pending-file {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-3 $spacing-4;
-  background: $color-background;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  transition: all $transition-fast;
-
-  &--processing {
-    opacity: 0.7;
-    pointer-events: none;
-  }
-
-  &--high-confidence {
-    border-left: 3px solid $color-success;
-  }
-
-  &--medium-confidence {
-    border-left: 3px solid $color-warning;
-  }
-
-  &--low-confidence {
-    border-left: 3px solid $color-error;
-  }
-
-  &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: $color-surface;
-    border-radius: $radius-sm;
-    color: $color-text-secondary;
-  }
-
-  &__info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-1;
-    min-width: 0;
-  }
-
-  &__name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__size {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-  }
-
-  &__metadata {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-2;
-  }
-
-  &__tag {
-    padding: $spacing-1 $spacing-2;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    border-radius: $radius-full;
-
-    &--entity {
-      background: rgba($color-info, 0.1);
-      color: $color-info;
-    }
-
-    &--year {
-      background: rgba($color-success, 0.1);
-      color: darken($color-success, 10%);
-    }
-
-    &--type {
-      background: rgba($ey-yellow, 0.2);
-      color: $ey-black;
-    }
-  }
-
-  &__confidence {
-    margin-left: auto;
-  }
-
-  &__remove {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    color: $color-text-secondary;
-    background: transparent;
-    border: none;
-    border-radius: $radius-sm;
-    cursor: pointer;
-    transition: all $transition-fast;
-
-    &:hover {
-      color: $color-error;
-      background: rgba($color-error, 0.1);
-    }
-  }
-
-  &__spinner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    color: $ey-yellow;
-
-    lucide-icon {
-      animation: spin 1s linear infinite;
-    }
-  }
-}
-
-// Confidence Badge
-.confidence-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: $spacing-1;
-  padding: $spacing-1 $spacing-2;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
-  border-radius: $radius-full;
-
-  &--high {
-    background: rgba($color-success, 0.1);
-    color: darken($color-success, 10%);
-  }
-
-  &--medium {
-    background: rgba($color-warning, 0.1);
-    color: darken($color-warning, 15%);
-  }
-
-  &--low {
-    background: rgba($color-error, 0.1);
-    color: $color-error;
-  }
-}
-
-// Global Filters
+// =============================================================================
+// Global Filters - Dark Filter Bar Pattern
+// =============================================================================
 .global-filters {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-3 $spacing-4;
-  background: $color-surface;
-  border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #2E2E38;
+  border-radius: 8px;
 
   &__status-pills {
     display: flex;
     align-items: center;
-    gap: $spacing-2;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
   &__dropdowns {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-2;
+    gap: 12px;
     align-items: center;
   }
 
   &__select {
-    padding: $spacing-2 $spacing-3;
-    font-size: $font-size-sm;
-    color: $color-text-primary;
-    background: $color-background;
-    border: 1px solid $color-border;
-    border-radius: $radius-full;
+    padding: 8px 32px 8px 12px;
+    font-size: 13px;
+    color: white;
+    background: #1f1f24;
+    border: 1px solid #404048;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+
+    &:hover {
+      border-color: #525252;
+    }
 
     &:focus {
       outline: none;
       border-color: $ey-yellow;
       box-shadow: 0 0 0 2px rgba($ey-yellow, 0.2);
     }
+
+    option {
+      background: #1f1f24;
+      color: white;
+    }
   }
 
   &__clear {
     display: flex;
     align-items: center;
-    gap: $spacing-1;
-    padding: $spacing-2 $spacing-3;
-    font-size: $font-size-xs;
-    color: $color-error;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
     background: transparent;
-    border: 1px solid $color-error;
-    border-radius: $radius-full;
+    border: 1px solid #404048;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
 
     &:hover {
-      background: rgba($color-error, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: #ef4444;
+      color: #ef4444;
     }
   }
 
@@ -405,19 +277,20 @@
   &__download {
     display: flex;
     align-items: center;
-    gap: $spacing-2;
-    padding: $spacing-2 $spacing-4;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
+    gap: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
     color: $ey-black;
     background: $ey-yellow;
     border: none;
-    border-radius: $radius-full;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
 
     &:hover:not(:disabled) {
       background: $ey-yellow-hover;
+      transform: scale(1.02);
     }
 
     &:disabled {
@@ -427,20 +300,22 @@
   }
 }
 
-// Status Pills
+// =============================================================================
+// Status Pills - Toggle Button Group Pattern
+// =============================================================================
 .status-pill {
   display: inline-flex;
   align-items: center;
-  gap: $spacing-2;
-  padding: $spacing-2 $spacing-3;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
-  color: $color-text-secondary;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
   background: transparent;
-  border: 1px solid $color-border;
-  border-radius: $radius-full;
+  border: 1px solid #404048;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all 200ms ease-out;
 
   &__count {
     display: inline-flex;
@@ -448,15 +323,16 @@
     justify-content: center;
     min-width: 20px;
     height: 20px;
-    padding: 0 $spacing-1;
-    font-size: 10px;
-    font-weight: $font-weight-bold;
-    background: rgba($ey-black, 0.05);
-    border-radius: $radius-full;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
   }
 
   &:hover {
-    border-color: $color-text-secondary;
+    border-color: #525252;
+    color: white;
   }
 
   &--active {
@@ -465,7 +341,8 @@
     border-color: $ey-yellow;
 
     .status-pill__count {
-      background: rgba($ey-black, 0.1);
+      background: rgba(0, 0, 0, 0.15);
+      color: $ey-black;
     }
 
     &:hover {
@@ -474,63 +351,140 @@
     }
   }
 
-  &--missing {
-    &.status-pill--active {
-      color: white;
-      background: $color-error;
-      border-color: $color-error;
+  // Semantic status colors when active
+  &--missing.status-pill--active {
+    color: white;
+    background: $color-error;
+    border-color: $color-error;
 
-      .status-pill__count {
-        background: rgba(white, 0.2);
-        color: white;
-      }
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
     }
   }
 
-  &--validated {
-    &.status-pill--active {
-      color: white;
-      background: $color-success;
-      border-color: $color-success;
+  &--validated.status-pill--active {
+    color: white;
+    background: $color-success;
+    border-color: $color-success;
 
-      .status-pill__count {
-        background: rgba(white, 0.2);
-        color: white;
-      }
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--analyzed.status-pill--active {
+    color: white;
+    background: #047857;
+    border-color: #047857;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--uploaded.status-pill--active {
+    color: white;
+    background: #3b82f6;
+    border-color: #3b82f6;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--signed_off.status-pill--active {
+    color: white;
+    background: #10b981;
+    border-color: #10b981;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--private.status-pill--active {
+    color: white;
+    background: #2e2e38;
+    border-color: #2e2e38;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--in_review.status-pill--active {
+    color: white;
+    background: #3b82f6;
+    border-color: #3b82f6;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--pending.status-pill--active {
+    color: white;
+    background: #f59e0b;
+    border-color: #f59e0b;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+  }
+
+  &--unclassified.status-pill--active {
+    color: white;
+    background: #6b7280;
+    border-color: #6b7280;
+
+    .status-pill__count {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
     }
   }
 }
 
+// =============================================================================
 // Bulk Download Progress
+// =============================================================================
 .bulk-download {
   display: flex;
   align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-2 $spacing-3;
-  background: $color-background;
-  border: 1px solid $color-border;
-  border-radius: $radius-full;
+  gap: 12px;
+  padding: 8px 14px;
+  background: #1f1f24;
+  border: 1px solid #404048;
+  border-radius: 6px;
 
   &__progress {
     width: 100px;
     height: 6px;
-    background: $color-border;
-    border-radius: $radius-full;
+    background: #404048;
+    border-radius: 3px;
     overflow: hidden;
   }
 
   &__bar {
     height: 100%;
     background: $ey-yellow;
-    border-radius: $radius-full;
-    transition: width 0.3s ease;
+    border-radius: 3px;
+    transition: width 300ms ease-out;
   }
 
   &__text {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
     min-width: 40px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
   }
 
   &__cancel {
@@ -542,24 +496,27 @@
     padding: 0;
     background: none;
     border: none;
-    color: $color-text-secondary;
-    border-radius: $radius-full;
+    color: #9ca3af;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
 
     &:hover {
-      background: rgba($color-error, 0.1);
+      background: rgba($color-error, 0.2);
       color: $color-error;
     }
   }
 }
 
-// Attribution Review Table
+// =============================================================================
+// Attribution Review Table - Data Table Pattern
+// =============================================================================
 .attribution-review {
   background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   &__header {
     display: flex;
@@ -567,7 +524,7 @@
     justify-content: space-between;
     padding: $spacing-4 $spacing-5;
     border-bottom: 1px solid $color-border;
-    background: $color-background;
+    background: #f9fafb;
   }
 
   &__title {
@@ -575,14 +532,14 @@
     align-items: center;
     gap: $spacing-2;
     margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    font-size: 18px;
+    font-weight: 600;
+    color: $ey-black;
   }
 
   &__count {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+    font-size: 13px;
+    color: #6b7280;
   }
 
   &__table-wrapper {
@@ -592,27 +549,29 @@
   &__table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 12px;
   }
 
+  // Table headers - UPPERCASE with letter-spacing
   &__th {
-    padding: $spacing-3 $spacing-4;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-    color: $color-text-secondary;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
     text-align: left;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: $color-background;
+    letter-spacing: 0.3px;
+    background: #f9fafb;
     border-bottom: 1px solid $color-border;
     white-space: nowrap;
 
     &--document {
-      min-width: 200px;
+      min-width: 220px;
     }
 
     &--entity,
     &--type {
-      min-width: 150px;
+      min-width: 160px;
     }
 
     &--year {
@@ -630,10 +589,10 @@
   }
 
   &__row {
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
 
     &:hover {
-      background: rgba($ey-yellow, 0.05);
+      background: rgba($ey-yellow, 0.04);
     }
 
     &--processing {
@@ -642,7 +601,7 @@
     }
 
     &--validated {
-      background: rgba($color-success, 0.05);
+      background: rgba($color-success, 0.04);
 
       &:hover {
         background: rgba($color-success, 0.08);
@@ -650,7 +609,7 @@
     }
 
     &--incomplete {
-      background: rgba($color-warning, 0.05);
+      background: rgba($color-warning, 0.04);
 
       &:hover {
         background: rgba($color-warning, 0.08);
@@ -659,8 +618,8 @@
   }
 
   &__td {
-    padding: $spacing-3 $spacing-4;
-    border-bottom: 1px solid $color-border;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
     vertical-align: middle;
 
     &--actions {
@@ -671,10 +630,10 @@
   &__file {
     display: flex;
     align-items: center;
-    gap: $spacing-3;
+    gap: 12px;
 
     lucide-icon {
-      color: $color-text-secondary;
+      color: #6b7280;
       flex-shrink: 0;
     }
   }
@@ -687,9 +646,9 @@
   }
 
   &__file-name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    font-size: 13px;
+    font-weight: 500;
+    color: $ey-black;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -697,20 +656,22 @@
   }
 
   &__file-size {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 11px;
+    color: #6b7280;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
   }
 
   &__select,
   &__input {
     width: 100%;
-    padding: $spacing-2 $spacing-3;
-    font-size: $font-size-sm;
-    color: $color-text-primary;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: $ey-black;
     background: $color-background;
     border: 1px solid $color-border;
-    border-radius: $radius-md;
-    transition: all $transition-fast;
+    border-radius: 6px;
+    transition: all 200ms ease-out;
+    font-family: inherit;
 
     &:focus {
       outline: none;
@@ -731,13 +692,15 @@
 
   &__input {
     max-width: 100px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    text-align: right;
   }
 
   &__actions {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: $spacing-1;
+    gap: 4px;
   }
 
   &__action {
@@ -749,9 +712,9 @@
     padding: 0;
     background: transparent;
     border: 1px solid $color-border;
-    border-radius: $radius-md;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
 
     &--validate {
       color: $color-success;
@@ -772,7 +735,7 @@
     }
 
     &--remove {
-      color: $color-text-secondary;
+      color: #6b7280;
 
       &:hover {
         color: $color-error;
@@ -799,7 +762,7 @@
     justify-content: space-between;
     padding: $spacing-4 $spacing-5;
     border-top: 1px solid $color-border;
-    background: $color-background;
+    background: #f9fafb;
   }
 
   &__summary {
@@ -811,58 +774,65 @@
   &__warning {
     display: flex;
     align-items: center;
-    gap: $spacing-1;
-    font-size: $font-size-sm;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
     color: $color-warning;
   }
 
   &__validated-count {
     display: flex;
     align-items: center;
-    gap: $spacing-1;
-    font-size: $font-size-sm;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
     color: $color-success;
   }
 
   &__buttons {
     display: flex;
     align-items: center;
-    gap: $spacing-3;
+    gap: 12px;
   }
 }
 
-// Confidence Indicator (new style for table)
+// =============================================================================
+// Confidence Indicator - Status Badges
+// =============================================================================
 .confidence-indicator {
   display: inline-flex;
   align-items: center;
-  gap: $spacing-1;
-  padding: $spacing-1 $spacing-2;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
-  border-radius: $radius-full;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
   white-space: nowrap;
 
   &--high {
-    background: rgba($color-info, 0.1);
-    color: $color-info;
+    background: $color-info-light;
+    color: #1d4ed8;
   }
 
   &--medium {
-    background: rgba($color-warning, 0.1);
-    color: darken($color-warning, 15%);
+    background: $color-warning-light;
+    color: #b45309;
   }
 
   &--low {
-    background: rgba($color-error, 0.1);
-    color: $color-error;
+    background: $color-error-light;
+    color: #b91c1c;
   }
 
   &--validated {
-    background: rgba($color-success, 0.1);
-    color: darken($color-success, 10%);
+    background: $color-success-light;
+    color: #047857;
   }
 }
 
+// =============================================================================
+// Animations
+// =============================================================================
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -872,12 +842,30 @@
   }
 }
 
+// =============================================================================
+// Responsive
+// =============================================================================
 @media (max-width: 1024px) {
   .documents-page {
     grid-template-columns: 1fr;
 
     &__sidebar {
       display: none;
+    }
+  }
+
+  .global-filters {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__status-pills {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 8px;
+    }
+
+    &__actions {
+      margin-left: 0;
     }
   }
 

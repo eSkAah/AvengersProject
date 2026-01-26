@@ -1,52 +1,44 @@
 @use 'styles/variables' as *;
 
-// ============================================
-// BENTO GRID HOME - Apple/Stripe Premium Layout
-// Ultra-dense, elegant, executive-ready
-// ============================================
+// =============================================================================
+// HOME PAGE BENTO GRID - EY Design System
+// Premium corporate design with consistent card styling
+// =============================================================================
 
 .bento-home {
   min-height: 100vh;
-  background: linear-gradient(180deg, #F8F9FA 0%, #F0F1F3 100%);
-  padding: $spacing-3 $spacing-6;
+  background: #FAFAFA; // neutral-50 from design spec
+  padding: $spacing-4 $spacing-6;
 
   @media (max-width: 768px) {
     padding: $spacing-3;
   }
 }
 
-// ============================================
-// BENTO GRID - Optimized Brick Layout
-// Row 1: Welcome (2/3) + Upload (1/3)
-// Row 2: Services (1/3) + Missing (2/3)
-// Row 3: Activity (1/3) + SignOff (2/3)
-// Row 4: News (3/4) + Contacts (1/4)
-// ============================================
+// =============================================================================
+// BENTO GRID LAYOUT
+// =============================================================================
 
 .bento-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 1.2fr) 1fr 1fr 1fr;
+  grid-template-columns: repeat(12, 1fr);
   gap: $spacing-3;
-  max-width: 1400px;
-  margin: 0 auto;
 
-  // Bento brick layout with varying proportions
-  // Row 1: Welcome wider, Upload fills rest
-  // Row 2-3: Services/Activity wider, Right takes rest
-  // Row 4: News 3/4, Contacts 1/4
+  // Premium Bento Layout: 12-column grid with asymmetric ratios
+  // Row 1: 8/4 (~67%/33%), Row 2-3: 5/7 (~42%/58%), Row 4: 9/3 (75%/25%)
   grid-template-areas:
-    "welcome  welcome  upload   upload"
-    "services missing  missing  missing"
-    "activity signoff  signoff  signoff"
-    "news     news     news     contacts";
+    "welcome  welcome  welcome  welcome  welcome  welcome  welcome  welcome  upload   upload   upload   upload"
+    "services services services services services missing  missing  missing  missing  missing  missing  missing"
+    "activity activity activity activity activity signoff  signoff  signoff  signoff  signoff  signoff  signoff"
+    "news     news     news     news     news     news     news     news     news     contacts contacts contacts";
 
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr 1fr 1fr;
+  @media (max-width: $breakpoint-lg) { // 1024px - aligns with design system
+    grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "welcome  welcome  upload"
-      "services missing  missing"
-      "activity signoff  signoff"
-      "news     news     contacts";
+      "welcome  upload"
+      "services missing"
+      "activity signoff"
+      "news     contacts";
   }
 
   @media (max-width: 768px) {
@@ -54,62 +46,52 @@
     grid-template-areas:
       "welcome"
       "upload"
-      "missing"
-      "signoff"
       "services"
       "activity"
+      "missing"
+      "signoff"
       "news"
       "contacts";
   }
 }
 
-// ============================================
-// BENTO TILES - Premium Card Styling
-// ============================================
+// =============================================================================
+// BENTO TILES - EY Card Specifications
+// white bg, border #e5e7eb, border-radius 12px, shadow-card, hover lift
+// =============================================================================
 
 .bento-tile {
-  background: $color-surface;
-  border-radius: 16px;
-  padding: $spacing-4;
+  background: #FFFFFF;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); // shadow-card
 
-  // Premium subtle shadow
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.03),
-    0 4px 12px rgba(0, 0, 0, 0.04);
-
-  // Subtle border for depth
-  border: 1px solid rgba($color-border, 0.4);
-
-  // Smooth transitions
-  transition:
-    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  // Standard 200ms ease-out transitions
+  transition: all 200ms ease-out;
 
   &:hover {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.03),
-      0 8px 20px rgba(0, 0, 0, 0.06);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // shadow-card-hover
+    transform: translateY(-1px);
   }
 
-  // WELCOME - Takes 2/3 of first row, taller
+  // WELCOME TILE
   &--welcome {
     grid-area: welcome;
-    background: white;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $spacing-5 $spacing-6;
-    min-height: 88px;
+    padding: 24px 28px;
+    min-height: 100px;
 
     &:hover {
       transform: none;
     }
   }
 
-  // UPLOAD - Takes remaining space of first row, matches welcome height
+  // UPLOAD TILE - transparent wrapper
   &--upload {
     grid-area: upload;
     background: transparent;
@@ -118,75 +100,71 @@
     box-shadow: none;
     display: flex;
     align-items: stretch;
-    min-height: 88px;
+    min-height: 100px;
 
     &:hover {
       transform: none;
       box-shadow: none;
     }
 
-    // Make child fill the space
     > * {
       flex: 1;
     }
   }
 
-  // LEFT COLUMN - 1/3 width
+  // LEFT COLUMN
   &--services {
     grid-area: services;
-    background: white;
   }
 
   &--activity {
     grid-area: activity;
-    background: white;
   }
 
-  // RIGHT COLUMN - 2/3 width
+  // RIGHT COLUMN
   &--missing {
     grid-area: missing;
-    background: white;
   }
 
   &--signoff {
     grid-area: signoff;
-    background: white;
   }
 
-  // BOTTOM ROW - News 3/4, Contacts 1/4
+  // BOTTOM ROW
   &--news {
     grid-area: news;
-    background: white;
   }
 
   &--contacts {
     grid-area: contacts;
-    background: white;
   }
 }
 
-// ============================================
-// WELCOME TILE CONTENT
-// ============================================
+// =============================================================================
+// WELCOME TILE CONTENT - EY Typography
+// =============================================================================
 
 .welcome-content {
   h1 {
-    font-size: 1.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 22px; // text-h2
     font-weight: 600;
-    color: $color-text-primary;
-    margin: 0 0 2px 0;
-    letter-spacing: -0.02em;
+    color: #2E2E38; // neutral-800 / ey-black
+    margin: 0 0 4px 0;
+    line-height: 1.35;
 
     .user-name {
-      color: $ey-yellow;
+      color: #FFE600; // ey-yellow - accent only
       font-weight: 700;
     }
   }
 
   p {
-    font-size: 0.8125rem;
-    color: $color-text-secondary;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; // text-body-sm
+    color: #6b7280; // neutral-600 / secondary text
     margin: 0;
+    line-height: 1.5;
   }
 }
 
@@ -195,61 +173,21 @@
 
   .day {
     display: block;
-    font-size: 0.6875rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px; // text-overline
     font-weight: 600;
-    color: $ey-yellow;
+    color: #FFE600; // ey-yellow accent
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
   }
 
   .date {
     display: block;
-    font-size: 0.9375rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px; // text-body
     font-weight: 600;
-    color: $color-text-primary;
-  }
-}
-
-// ============================================
-// GLOBAL WIDGET STYLING OVERRIDES
-// Premium compact design system
-// ============================================
-
-:host {
-  // Widget titles - clean, premium
-  ::ng-deep .widget-title,
-  ::ng-deep h3 {
-    font-size: 0.9375rem !important;
-    font-weight: 600 !important;
-    letter-spacing: -0.01em;
-  }
-
-  // Entity names and primary text
-  ::ng-deep .entity-name,
-  ::ng-deep .file-name,
-  ::ng-deep .service-card__name {
-    font-size: 0.8125rem !important;
-    font-weight: 500 !important;
-  }
-
-  // Flags - consistent sizing
-  ::ng-deep .entity-flag {
-    font-size: 1rem !important;
-  }
-
-  // Service cards - optimized padding
-  ::ng-deep .service-card {
-    padding: 12px 14px !important;
-  }
-
-  // News cards - readable
-  ::ng-deep .news-card__title {
-    font-size: 0.875rem !important;
-    line-height: 1.4 !important;
-  }
-
-  ::ng-deep .news-card__summary {
-    font-size: 0.8125rem !important;
-    line-height: 1.5 !important;
+    color: #2E2E38;
+    line-height: 1.6;
   }
 }

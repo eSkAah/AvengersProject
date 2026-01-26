@@ -19,6 +19,14 @@ interface KpiData {
   completed: number;
 }
 
+// EY Design System: Map filters to appropriate KPI card variants
+interface KpiConfig {
+  filter: KpiFilter;
+  label: string;
+  icon: string;
+  variant: KpiVariant;
+}
+
 @Component({
   selector: 'app-kpi-header',
   standalone: true,
@@ -46,6 +54,15 @@ export class KpiHeaderComponent {
 
   activeFilter = signal<KpiFilter>('all');
 
+  // EY Design System KPI configuration
+  // Using dark/light/highlight variants appropriately
+  readonly kpiConfigs: KpiConfig[] = [
+    { filter: 'all', label: 'Total Engagements', icon: 'clipboard-list', variant: 'dark' },
+    { filter: 'processing', label: 'In Progress', icon: 'clock', variant: 'light' },
+    { filter: 'high-risk', label: 'At Risk', icon: 'alert-triangle', variant: 'highlight' },
+    { filter: 'completed', label: 'Completed', icon: 'check-circle', variant: 'light' },
+  ];
+
   onFilterClick(filter: KpiFilter): void {
     if (this.activeFilter() === filter) {
       this.activeFilter.set('all');
@@ -58,5 +75,26 @@ export class KpiHeaderComponent {
 
   isActive(filter: KpiFilter): boolean {
     return this.activeFilter() === filter;
+  }
+
+  getValue(filter: KpiFilter): number {
+    switch (filter) {
+      case 'all': return this.data.total;
+      case 'processing': return this.data.processing;
+      case 'high-risk': return this.data.highRisk;
+      case 'completed': return this.data.completed;
+      default: return 0;
+    }
+  }
+
+  // Get variant - highlight risk if count > 0, otherwise use configured variant
+  getVariant(config: KpiConfig): KpiVariant {
+    if (config.filter === 'high-risk' && this.data.highRisk > 0) {
+      return 'error'; // Show error variant when there are items at risk
+    }
+    if (config.filter === 'completed' && this.data.completed === this.data.total && this.data.total > 0) {
+      return 'success'; // Show success when all completed
+    }
+    return config.variant;
   }
 }

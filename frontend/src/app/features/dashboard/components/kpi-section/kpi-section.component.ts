@@ -24,12 +24,20 @@ import {
   KpiClickEvent,
 } from '../../../../shared/components/charts/kpi-metric-card.component';
 
+// EY Design System: KPI Card variants
+type KpiCardVariant = 'dark' | 'light' | 'highlight';
+
+interface EnhancedKpiMetric extends KpiMetric {
+  variant: KpiCardVariant;
+}
+
 @Component({
   selector: 'app-kpi-section',
   standalone: true,
   imports: [CommonModule, LucideAngularModule, KpiMetricCardComponent],
   template: `
     <div class="kpi-section">
+      <!-- Section Header -->
       <div class="kpi-section__header">
         <h2 class="kpi-section__title">
           <lucide-icon name="bar-chart-3" [size]="20"></lucide-icon>
@@ -40,18 +48,27 @@ import {
         }
       </div>
 
-      <div class="kpi-grid">
+      <!-- KPI Cards Row - EY Design System -->
+      <div class="kpi-row">
         @for (kpi of kpiMetrics(); track kpi.label) {
           <app-kpi-metric-card
             [metric]="kpi"
             [loading]="loading()"
             [colorClass]="getColorClass(kpi)"
             [showCmdHint]="showCmdHint"
+            [class]="'kpi-card-wrapper kpi-card-wrapper--' + getVariant(kpi)"
             (kpiClick)="onKpiClick($event)"
             (cmdClick)="onCmdClick($event)"
           ></app-kpi-metric-card>
         }
       </div>
+
+      <!-- Currency Note - EY Design System -->
+      @if (stats()) {
+        <div class="currency-note">
+          Values in EUR (thousands)
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -77,22 +94,64 @@ import {
     }
 
     .kpi-section__period {
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 500;
       color: #6B7280;
       padding: 4px 12px;
       background: #F5F5F5;
       border-radius: 9999px;
     }
 
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+    /* EY Design System: KPI Row with gap 12px */
+    .kpi-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    @media (min-width: 1024px) {
-      .kpi-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .kpi-card-wrapper {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* Apply variant-specific styling through wrapper class */
+    .kpi-card-wrapper--dark {
+      /* Dark variant styles handled by inner component */
+    }
+
+    .kpi-card-wrapper--light {
+      /* Light variant styles handled by inner component */
+    }
+
+    .kpi-card-wrapper--highlight {
+      /* Highlight variant styles handled by inner component */
+    }
+
+    /* Currency Note - EY Design System */
+    .currency-note {
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: #F3F4F6;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #6B7280;
+      text-align: right;
+    }
+
+    @media (max-width: 1024px) {
+      .kpi-row {
+        flex-direction: column;
+      }
+
+      .kpi-card-wrapper {
+        min-width: 100%;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .kpi-card-wrapper {
+        flex: 1;
+        min-width: 0;
       }
     }
   `],
@@ -112,7 +171,7 @@ export class KpiSectionComponent implements OnInit, OnChanges {
   readonly stats = this.dashboardApi.currentStats;
   readonly currentYear = new Date().getFullYear();
 
-  readonly kpiMetrics = computed<KpiMetric[]>(() => {
+  readonly kpiMetrics = computed<EnhancedKpiMetric[]>(() => {
     const data = this.stats();
     if (!data) {
       return this.getEmptyKpis();
@@ -126,6 +185,7 @@ export class KpiSectionComponent implements OnInit, OnChanges {
         variancePercent: data.variance_percent?.total_assets,
         icon: 'trending-up',
         sourceDocument: 'Balance Sheet',
+        variant: 'dark', // Primary metric - dark variant
       },
       {
         label: 'Total Liabilities',
@@ -134,6 +194,7 @@ export class KpiSectionComponent implements OnInit, OnChanges {
         variancePercent: data.variance_percent?.total_liabilities,
         icon: 'trending-down',
         sourceDocument: 'Balance Sheet',
+        variant: 'light', // Secondary metric - light variant
       },
       {
         label: 'Equity',
@@ -142,6 +203,7 @@ export class KpiSectionComponent implements OnInit, OnChanges {
         variancePercent: data.variance_percent?.equity,
         icon: 'wallet',
         sourceDocument: 'Balance Sheet',
+        variant: 'light', // Secondary metric - light variant
       },
       {
         label: 'Revenue',
@@ -150,6 +212,7 @@ export class KpiSectionComponent implements OnInit, OnChanges {
         variancePercent: data.variance_percent?.revenue,
         icon: 'coins',
         sourceDocument: 'Income Statement',
+        variant: this.hasSignificantVariance(data.variance_percent?.revenue) ? 'highlight' : 'light',
       },
     ];
   });
@@ -173,13 +236,22 @@ export class KpiSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  private getEmptyKpis(): KpiMetric[] {
+  private getEmptyKpis(): EnhancedKpiMetric[] {
     return [
-      { label: 'Total Assets', value: 0, icon: 'trending-up' },
-      { label: 'Total Liabilities', value: 0, icon: 'trending-down' },
-      { label: 'Equity', value: 0, icon: 'wallet' },
-      { label: 'Revenue', value: 0, icon: 'coins' },
+      { label: 'Total Assets', value: 0, icon: 'trending-up', variant: 'dark' },
+      { label: 'Total Liabilities', value: 0, icon: 'trending-down', variant: 'light' },
+      { label: 'Equity', value: 0, icon: 'wallet', variant: 'light' },
+      { label: 'Revenue', value: 0, icon: 'coins', variant: 'light' },
     ];
+  }
+
+  private hasSignificantVariance(variance: number | undefined): boolean {
+    if (variance === undefined) return false;
+    return Math.abs(variance) > 10; // More than 10% variance is significant
+  }
+
+  getVariant(kpi: EnhancedKpiMetric): KpiCardVariant {
+    return kpi.variant;
   }
 
   getColorClass(kpi: KpiMetric): 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent' {

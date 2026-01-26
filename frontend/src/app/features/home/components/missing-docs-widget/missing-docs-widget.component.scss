@@ -1,11 +1,27 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Missing Docs Widget - EY Design System
+// =============================================================================
+
 .missing-docs-widget {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: $color-surface;
+  border-radius: $radius-xl;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow $transition-normal ease-out, transform $transition-normal ease-out;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
 }
 
+// -----------------------------------------------------------------------------
+// Header
+// -----------------------------------------------------------------------------
 .missing-docs__header {
   display: flex;
   justify-content: space-between;
@@ -20,6 +36,7 @@
 
   lucide-icon {
     color: $color-error;
+    transition: color $transition-normal ease-out;
   }
 
   h3 {
@@ -30,15 +47,19 @@
   }
 }
 
+// EY Design: Error badge - #FEE2E2 bg, #B91C1C text
 .missing-docs__count {
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  color: $color-error;
-  background: rgba($color-error, 0.1);
+  color: #b91c1c;
+  background: $color-error-light;
   padding: 2px $spacing-2;
   border-radius: $radius-full;
 }
 
+// -----------------------------------------------------------------------------
+// Empty State
+// -----------------------------------------------------------------------------
 .missing-docs__empty {
   display: flex;
   flex-direction: column;
@@ -55,6 +76,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+// List
+// -----------------------------------------------------------------------------
 .missing-docs__list {
   flex: 1;
   display: flex;
@@ -64,6 +88,9 @@
   max-height: 180px;
 }
 
+// -----------------------------------------------------------------------------
+// List Item
+// -----------------------------------------------------------------------------
 .missing-doc-item {
   display: flex;
   justify-content: space-between;
@@ -73,6 +100,11 @@
   background: rgba($color-background, 0.5);
   border-radius: $radius-md;
   border-left: 2px solid $color-error;
+  transition: background $transition-normal ease-out;
+
+  &:hover {
+    background: rgba($color-background, 0.8);
+  }
 
   &__main {
     display: flex;
@@ -84,6 +116,7 @@
     lucide-icon {
       color: $color-text-secondary;
       flex-shrink: 0;
+      transition: color $transition-normal ease-out;
     }
   }
 
@@ -107,7 +140,7 @@
     color: $color-text-secondary;
     cursor: pointer;
     border-radius: $radius-sm;
-    transition: all 0.2s ease;
+    transition: all $transition-normal ease-out;
     flex-shrink: 0;
 
     &:hover {
@@ -129,6 +162,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+// Entity Flags
+// -----------------------------------------------------------------------------
 .entity-flag {
   font-size: $font-size-xs;
 }
@@ -141,6 +177,9 @@
   border-radius: $radius-full;
 }
 
+// -----------------------------------------------------------------------------
+// Buttons
+// -----------------------------------------------------------------------------
 .upload-btn {
   display: flex;
   align-items: center;
@@ -153,7 +192,7 @@
   border: none;
   border-radius: $radius-sm;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $transition-normal ease-out;
 
   &:hover {
     background: $ey-yellow-hover;
@@ -175,7 +214,7 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $transition-normal ease-out;
 
   &:hover {
     color: $ey-yellow;
@@ -188,6 +227,19 @@
   }
 
   lucide-icon {
-    transition: transform 0.2s ease;
+    transition: transform $transition-normal ease-out;
   }
+}
+
+// -----------------------------------------------------------------------------
+// Warning Badge Variant (for other states if needed)
+// EY Design: Warning - #FEF3C7 bg, #B45309 text
+// -----------------------------------------------------------------------------
+.warning-badge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: #b45309;
+  background: $color-warning-light;
+  padding: 2px $spacing-2;
+  border-radius: $radius-full;
 }

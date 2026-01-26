@@ -596,9 +596,13 @@ export class DocumentRequirementsSectionComponent implements OnChanges {
       validated: 'success',
       analyzing: 'warning',
       uploaded: 'info',
-      pending: 'info',
+      pending: 'warning',
       missing: 'warning',
       error: 'error',
+      signed_off: 'success',
+      in_review: 'info',
+      private: 'info',
+      unclassified: 'warning',
     };
     return variants[status] ?? 'info';
   }

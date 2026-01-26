@@ -4,10 +4,16 @@ import {
   computed,
   inject,
   signal,
+  ViewChild,
+  TemplateRef,
+  OnDestroy,
+  ViewContainerRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TemplatePortal, PortalModule } from '@angular/cdk/portal';
+import { Overlay, OverlayRef, OverlayModule } from '@angular/cdk/overlay';
 import {
   LucideAngularModule,
   FileCheck,
@@ -34,7 +40,7 @@ interface SignOffDocument {
 @Component({
   selector: 'app-signoff-widget',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, PortalModule, OverlayModule],
   template: `
     <div class="signoff-widget">
       <div class="widget-header">
@@ -77,19 +83,19 @@ interface SignOffDocument {
             }
           </div>
         </div>
-        @if (totalToSignOff() > 5) {
-          <div class="widget-footer">
-            <button class="view-all-btn" (click)="viewAllToSignOff()">
-              View All
-              <lucide-icon [img]="icons.arrowRight" [size]="14"></lucide-icon>
-            </button>
-          </div>
-        }
       }
+
+      <!-- View All footer - always shown for consistent card height -->
+      <div class="widget-footer">
+        <button class="view-all-link" (click)="viewAllToSignOff()">
+          View All
+          <lucide-icon [img]="icons.arrowRight" [size]="14"></lucide-icon>
+        </button>
+      </div>
     </div>
 
-    <!-- Approval Modal -->
-    @if (showApprovalModal()) {
+    <!-- Approval Modal Template (rendered via CDK Overlay to avoid parent clipping) -->
+    <ng-template #approvalModalTemplate>
       <div class="modal-overlay" (click)="closeApprovalModal()">
         <div class="modal-content" (click)="$event.stopPropagation()">
           <!-- Header -->
@@ -181,17 +187,27 @@ interface SignOffDocument {
           </div>
         </div>
       </div>
-    }
+    </ng-template>
 
-    <!-- Success Toast -->
-    @if (showSuccessToast()) {
+    <!-- Success Toast Template (rendered via CDK Overlay to avoid parent clipping) -->
+    <ng-template #successToastTemplate>
       <div class="success-toast">
         <lucide-icon [img]="icons.checkCircle" [size]="20"></lucide-icon>
         <span>Document approved successfully</span>
       </div>
-    }
+    </ng-template>
   `,
   styles: [`
+    // =============================================================================
+    // SIGNOFF WIDGET - EY Design System
+    // Cards: white bg, border #e5e7eb, border-radius 12px, shadow-card, hover lift
+    // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+    // =============================================================================
+
+    :host {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
     .signoff-widget {
       display: flex;
       flex-direction: column;
@@ -211,7 +227,7 @@ interface SignOffDocument {
       gap: 8px;
 
       lucide-icon {
-        color: #3b82f6;
+        color: #3B82F6; // info color
       }
 
       h3 {
@@ -219,15 +235,17 @@ interface SignOffDocument {
         font-size: 15px;
         font-weight: 600;
         color: #2E2E38;
+        line-height: 1.4;
       }
     }
 
     .count-badge {
-      background: #dbeafe;
-      color: #1d4ed8;
-      width: 24px;
+      background: #DBEAFE; // info-light
+      color: #1D4ED8; // info-dark
+      min-width: 24px;
       height: 24px;
-      border-radius: 50%;
+      padding: 0 8px;
+      border-radius: 9999px;
       font-size: 12px;
       font-weight: 600;
       display: flex;
@@ -241,12 +259,13 @@ interface SignOffDocument {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #10b981;
-      gap: 6px;
-      padding: 16px 0;
+      color: #10B981;
+      gap: 8px;
+      padding: 20px 0;
 
       span {
         font-size: 13px;
+        font-weight: 500;
       }
     }
 
@@ -259,59 +278,61 @@ interface SignOffDocument {
     .table-header {
       display: grid;
       grid-template-columns: 1fr 1fr 80px;
-      gap: 10px;
-      padding: 6px 10px;
-      background: #f3f4f6;
+      gap: 12px;
+      padding: 8px 12px;
+      background: #F9FAFB;
       border-radius: 6px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
 
       span {
-        font-size: 10px;
+        font-size: 11px; // text-overline
         font-weight: 600;
         color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
       }
     }
 
     .table-body {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       overflow-y: auto;
     }
 
     .table-row {
       display: grid;
       grid-template-columns: 1fr 1fr 80px;
-      gap: 10px;
-      padding: 10px;
-      background: #f9fafb;
+      gap: 12px;
+      padding: 12px 14px;
+      background: #FFFFFF;
       border-radius: 8px;
       border: 1px solid #e5e7eb;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &:hover {
-        border-color: #3b82f6;
-        background: #eff6ff;
+        border-color: #3B82F6;
+        background: #EFF6FF;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
       }
     }
 
     .col-entity {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       min-width: 0;
     }
 
     .entity-flag {
-      font-size: 13px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
     .entity-name {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
       color: #2E2E38;
       white-space: nowrap;
@@ -320,7 +341,7 @@ interface SignOffDocument {
     }
 
     .col-document {
-      font-size: 12px;
+      font-size: 13px;
       color: #2E2E38;
       display: flex;
       align-items: center;
@@ -335,31 +356,34 @@ interface SignOffDocument {
     .approve-btn {
       display: flex;
       align-items: center;
-      gap: 3px;
-      background: #3b82f6;
-      color: white;
+      gap: 4px;
+      background: #3B82F6;
+      color: #FFFFFF;
       border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
+      padding: 6px 12px;
+      border-radius: 6px;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &:hover {
-        background: #2563eb;
+        background: #2563EB;
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
     }
 
     .widget-footer {
       display: flex;
       justify-content: flex-end;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #f0f0f0;
+      margin-top: 12px;
     }
 
-    .view-all-btn {
+    .view-all-link {
       display: flex;
       align-items: center;
       gap: 4px;
@@ -369,17 +393,15 @@ interface SignOffDocument {
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: all 0.2s;
+      padding: 4px 0;
+      transition: all 200ms ease-out;
 
       lucide-icon {
-        transition: transform 0.2s;
+        transition: transform 200ms ease-out;
       }
 
       &:hover {
         color: #2E2E38;
-        background: #f3f4f6;
 
         lucide-icon {
           transform: translateX(2px);
@@ -387,29 +409,32 @@ interface SignOffDocument {
       }
     }
 
-    /* Modal Styles */
+    // =========================================================================
+    // MODAL STYLES - EY Design System
+    // =========================================================================
+
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 200ms ease-out;
     }
 
     .modal-content {
-      background: white;
-      border-radius: 16px;
+      background: #FFFFFF;
+      border-radius: 12px;
       width: 95%;
       max-width: 900px;
       max-height: 90vh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      animation: slideUp 0.3s ease-out;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+      animation: slideUp 300ms ease-out;
     }
 
     .modal-header {
@@ -417,7 +442,7 @@ interface SignOffDocument {
       align-items: center;
       justify-content: space-between;
       padding: 20px 24px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .modal-title {
@@ -426,7 +451,7 @@ interface SignOffDocument {
       gap: 12px;
 
       lucide-icon {
-        color: #3b82f6;
+        color: #3B82F6;
       }
     }
 
@@ -436,11 +461,13 @@ interface SignOffDocument {
         font-size: 18px;
         font-weight: 600;
         color: #2E2E38;
+        line-height: 1.4;
       }
 
       .modal-subtitle {
         font-size: 13px;
         color: #6b7280;
+        line-height: 1.5;
       }
     }
 
@@ -450,11 +477,11 @@ interface SignOffDocument {
       padding: 8px;
       cursor: pointer;
       color: #6b7280;
-      border-radius: 8px;
-      transition: all 0.2s;
+      border-radius: 6px;
+      transition: all 200ms ease-out;
 
       &:hover {
-        background: #f3f4f6;
+        background: #F5F5F5;
         color: #2E2E38;
       }
     }
@@ -466,9 +493,9 @@ interface SignOffDocument {
       overflow: hidden;
     }
 
-    /* PDF Preview */
+    // PDF Preview
     .pdf-preview {
-      background: #f3f4f6;
+      background: #F5F5F5;
       padding: 24px;
       overflow-y: auto;
       display: flex;
@@ -481,18 +508,19 @@ interface SignOffDocument {
     }
 
     .pdf-content {
-      background: white;
+      background: #FFFFFF;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
       overflow: hidden;
     }
 
     .pdf-header-bar {
       background: #2E2E38;
-      color: white;
+      color: #FFFFFF;
       padding: 12px 20px;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .pdf-body {
@@ -517,19 +545,21 @@ interface SignOffDocument {
 
       p {
         font-size: 13px;
-        color: #4b5563;
+        color: #6b7280;
         margin: 0 0 8px 0;
-        line-height: 1.5;
+        line-height: 1.6;
 
         strong {
           color: #2E2E38;
+          font-weight: 600;
         }
       }
     }
 
     .pdf-table {
-      background: #f9fafb;
+      background: #FAFAFA;
       border-radius: 8px;
+      border: 1px solid #e5e7eb;
       overflow: hidden;
     }
 
@@ -542,7 +572,7 @@ interface SignOffDocument {
 
       &:last-child {
         border-bottom: none;
-        background: #f3f4f6;
+        background: #F5F5F5;
         font-weight: 600;
       }
 
@@ -552,15 +582,16 @@ interface SignOffDocument {
 
       span:last-child {
         color: #2E2E38;
-        font-weight: 500;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
       }
     }
 
-    /* Comment Section */
+    // Comment Section
     .comment-section {
-      background: white;
+      background: #FFFFFF;
       padding: 24px;
-      border-left: 1px solid #f0f0f0;
+      border-left: 1px solid #e5e7eb;
       display: flex;
       flex-direction: column;
     }
@@ -571,7 +602,7 @@ interface SignOffDocument {
       gap: 8px;
       margin-bottom: 12px;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: #2E2E38;
 
       lucide-icon {
@@ -582,22 +613,23 @@ interface SignOffDocument {
     .comment-input {
       flex: 1;
       min-height: 120px;
-      padding: 12px;
+      padding: 12px 14px;
       border: 1px solid #e5e7eb;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 14px;
-      font-family: inherit;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       resize: none;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
+      color: #2E2E38;
 
       &:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #FFE600;
+        box-shadow: 0 0 0 3px #FFF9CC;
       }
 
       &::placeholder {
-        color: #9ca3af;
+        color: #A3A3A3;
       }
     }
 
@@ -607,19 +639,23 @@ interface SignOffDocument {
       justify-content: center;
       gap: 8px;
       margin-top: 20px;
-      padding: 14px 24px;
-      background: #10b981;
-      color: white;
+      padding: 12px 20px;
+      background: #10B981;
+      color: #FFFFFF;
       border: none;
-      border-radius: 10px;
-      font-size: 15px;
+      border-radius: 6px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &:hover:not(:disabled) {
         background: #059669;
-        transform: translateY(-1px);
+        transform: scale(1.02);
+      }
+
+      &:active:not(:disabled) {
+        transform: scale(0.98);
       }
 
       &:disabled {
@@ -628,7 +664,7 @@ interface SignOffDocument {
       }
     }
 
-    /* Success Toast */
+    // Success Toast
     .success-toast {
       position: fixed;
       bottom: 24px;
@@ -637,13 +673,13 @@ interface SignOffDocument {
       align-items: center;
       gap: 10px;
       padding: 16px 24px;
-      background: #10b981;
-      color: white;
-      border-radius: 12px;
+      background: #10B981;
+      color: #FFFFFF;
+      border-radius: 8px;
       font-size: 14px;
       font-weight: 500;
-      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-      animation: slideInRight 0.3s ease-out;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      animation: slideInRight 300ms ease-out;
       z-index: 1100;
     }
 
@@ -695,9 +731,21 @@ interface SignOffDocument {
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SignoffWidgetComponent {
+export class SignoffWidgetComponent implements OnDestroy {
   private readonly mockData = inject(MockDataService);
   private readonly router = inject(Router);
+  private readonly overlay = inject(Overlay);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+
+  /** Reference to the approval modal template */
+  @ViewChild('approvalModalTemplate') approvalModalTemplate!: TemplateRef<unknown>;
+  /** Reference to the success toast template */
+  @ViewChild('successToastTemplate') successToastTemplate!: TemplateRef<unknown>;
+
+  /** Overlay reference for the modal - allows rendering outside parent container */
+  private modalOverlayRef: OverlayRef | null = null;
+  /** Overlay reference for the toast */
+  private toastOverlayRef: OverlayRef | null = null;
 
   readonly icons = {
     fileCheck: FileCheck,
@@ -711,10 +759,8 @@ export class SignoffWidgetComponent {
     arrowRight: ArrowRight,
   };
 
-  readonly showApprovalModal = signal(false);
   readonly selectedDocument = signal<SignOffDocument | null>(null);
   readonly isApproving = signal(false);
-  readonly showSuccessToast = signal(false);
   comment = '';
 
   readonly documentsToSignOff = computed<SignOffDocument[]>(() => {
@@ -753,18 +799,45 @@ export class SignoffWidgetComponent {
     return count;
   });
 
-  openApprovalModal(doc: SignOffDocument): void {
-    this.selectedDocument.set(doc);
-    this.showApprovalModal.set(true);
-    this.comment = '';
+  ngOnDestroy(): void {
+    this.disposeModalOverlay();
+    this.disposeToastOverlay();
   }
 
+  /**
+   * Opens the approval modal using CDK Overlay.
+   * This renders the modal directly in the document body,
+   * avoiding any parent overflow:hidden clipping issues.
+   */
+  openApprovalModal(doc: SignOffDocument): void {
+    this.selectedDocument.set(doc);
+    this.comment = '';
+
+    // Create a global overlay that covers the entire viewport
+    this.modalOverlayRef = this.overlay.create({
+      hasBackdrop: false, // We handle our own backdrop in the template
+      positionStrategy: this.overlay.position().global(),
+      scrollStrategy: this.overlay.scrollStrategies.block(),
+      panelClass: 'approval-modal-panel',
+    });
+
+    // Attach the template to the overlay using the component's ViewContainerRef
+    const portal = new TemplatePortal(this.approvalModalTemplate, this.viewContainerRef);
+    this.modalOverlayRef.attach(portal);
+  }
+
+  /**
+   * Closes the approval modal and cleans up the overlay.
+   */
   closeApprovalModal(): void {
-    this.showApprovalModal.set(false);
+    this.disposeModalOverlay();
     this.selectedDocument.set(null);
     this.comment = '';
   }
 
+  /**
+   * Handles document approval with loading state and success feedback.
+   */
   approveDocument(): void {
     this.isApproving.set(true);
 
@@ -772,18 +845,50 @@ export class SignoffWidgetComponent {
     setTimeout(() => {
       this.isApproving.set(false);
       this.closeApprovalModal();
-      this.showSuccessToast.set(true);
-
-      // Hide toast after 3 seconds
-      setTimeout(() => {
-        this.showSuccessToast.set(false);
-      }, 3000);
+      this.showSuccessToast();
     }, 1500);
+  }
+
+  /**
+   * Shows the success toast using CDK Overlay.
+   */
+  private showSuccessToast(): void {
+    // Create overlay positioned at bottom-right
+    this.toastOverlayRef = this.overlay.create({
+      hasBackdrop: false,
+      positionStrategy: this.overlay.position()
+        .global()
+        .bottom('24px')
+        .right('24px'),
+      panelClass: 'success-toast-panel',
+    });
+
+    const portal = new TemplatePortal(this.successToastTemplate, this.viewContainerRef);
+    this.toastOverlayRef.attach(portal);
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      this.disposeToastOverlay();
+    }, 3000);
   }
 
   viewAllToSignOff(): void {
     this.router.navigate(['/app/documents'], {
       queryParams: { status: 'uploaded' }
     });
+  }
+
+  private disposeModalOverlay(): void {
+    if (this.modalOverlayRef) {
+      this.modalOverlayRef.dispose();
+      this.modalOverlayRef = null;
+    }
+  }
+
+  private disposeToastOverlay(): void {
+    if (this.toastOverlayRef) {
+      this.toastOverlayRef.dispose();
+      this.toastOverlayRef = null;
+    }
   }
 }

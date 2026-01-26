@@ -1,5 +1,10 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Classification Dialog - EY Design System
+// Modal for confirming document classification
+// =============================================================================
+
 .dialog-backdrop {
   position: fixed;
   top: 0;
@@ -11,22 +16,23 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 200ms ease-out;
+  backdrop-filter: blur(2px);
 }
 
 .dialog {
   width: 100%;
   max-width: 480px;
   background: $color-surface;
-  border-radius: $radius-xl;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s ease-out;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  animation: slideUp 300ms ease-out;
 
   &__header {
     display: flex;
     align-items: center;
-    gap: $spacing-3;
-    padding: $spacing-5;
+    gap: 12px;
+    padding: 20px 24px;
     border-bottom: 1px solid $color-border;
 
     lucide-icon {
@@ -36,9 +42,9 @@
     h3 {
       flex: 1;
       margin: 0;
-      font-size: $font-size-lg;
-      font-weight: $font-weight-semibold;
-      color: $color-text-primary;
+      font-size: 18px;
+      font-weight: 600;
+      color: $ey-black;
     }
   }
 
@@ -46,119 +52,128 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    color: $color-text-secondary;
+    width: 36px;
+    height: 36px;
+    color: #6b7280;
     background: transparent;
     border: none;
-    border-radius: $radius-sm;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 200ms ease-out;
 
     &:hover {
-      color: $color-text-primary;
-      background: $color-background;
+      color: $ey-black;
+      background: #f3f4f6;
     }
   }
 
   &__content {
-    padding: $spacing-5;
+    padding: 24px;
   }
 
   &__file-info {
     display: flex;
     align-items: center;
-    gap: $spacing-3;
-    padding: $spacing-4;
-    background: $color-background;
-    border-radius: $radius-md;
-    margin-bottom: $spacing-4;
+    gap: 16px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #f3f4f6;
 
     lucide-icon {
-      color: $color-text-secondary;
+      color: #6b7280;
     }
   }
 
   &__file-details {
     display: flex;
     flex-direction: column;
-    gap: $spacing-1;
+    gap: 4px;
   }
 
   &__file-name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    font-size: 14px;
+    font-weight: 600;
+    color: $ey-black;
   }
 
   &__file-size {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 12px;
+    color: #6b7280;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
   }
 
   &__message {
-    margin: 0 0 $spacing-4 0;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    line-height: 1.5;
+    margin: 0 0 24px 0;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
   }
 
   &__form {
     display: flex;
     flex-direction: column;
-    gap: $spacing-4;
+    gap: 20px;
   }
 
   &__field {
     display: flex;
     flex-direction: column;
-    gap: $spacing-2;
+    gap: 8px;
 
     label {
-      font-size: $font-size-sm;
-      font-weight: $font-weight-medium;
-      color: $color-text-primary;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     select,
     input {
-      padding: $spacing-3;
-      font-size: $font-size-sm;
-      color: $color-text-primary;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: $ey-black;
       background: $color-background;
       border: 1px solid $color-border;
-      border-radius: $radius-sm;
-      transition: all $transition-fast;
+      border-radius: 8px;
+      transition: all 200ms ease-out;
+      font-family: inherit;
 
       &:focus {
         outline: none;
         border-color: $ey-yellow;
-        box-shadow: 0 0 0 3px rgba($ey-yellow, 0.2);
+        box-shadow: 0 0 0 3px rgba($ey-yellow, 0.15);
       }
 
       &--missing {
         border-color: $color-error;
-        background: rgba($color-error, 0.05);
+        background: rgba($color-error, 0.03);
       }
     }
 
     &-hint {
-      font-size: $font-size-xs;
+      font-size: 12px;
       color: $color-error;
+      font-weight: 500;
     }
   }
 
   &__actions {
     display: flex;
     justify-content: flex-end;
-    gap: $spacing-3;
-    padding: $spacing-5;
+    gap: 12px;
+    padding: 20px 24px;
     border-top: 1px solid $color-border;
-    background: $color-background;
-    border-radius: 0 0 $radius-xl $radius-xl;
+    background: #f9fafb;
+    border-radius: 0 0 16px 16px;
   }
 }
 
+// =============================================================================
+// Animations
+// =============================================================================
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -171,10 +186,10 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }

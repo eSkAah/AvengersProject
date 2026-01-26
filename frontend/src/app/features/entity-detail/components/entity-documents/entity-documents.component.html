@@ -1,20 +1,33 @@
 <div class="entity-documents">
-  <!-- Header -->
+  <!-- Header - Dark bar with clickable filters -->
   <div class="documents-header">
     <div class="header-left">
       <div class="stats">
-        <span class="stat">
+        <button
+          class="stat-pill stat-pill--total"
+          [class.stat-pill--active]="activeStatus() === ''"
+          (click)="onStatusFilter('')"
+        >
           <span class="stat-value">{{ documentStats().total }}</span>
-          <span class="stat-label">Documents</span>
-        </span>
-        <span class="stat stat--validated">
-          <span class="stat-value">{{ documentStats().validated }}</span>
-          <span class="stat-label">Validated</span>
-        </span>
-        <span class="stat stat--analyzing">
-          <span class="stat-value">{{ documentStats().analyzing }}</span>
-          <span class="stat-label">Analyzing</span>
-        </span>
+          <span class="stat-label">All</span>
+        </button>
+        @for (status of statusOptions; track status) {
+          @if ($any(documentStats())[status] > 0) {
+            <button
+              class="stat-pill"
+              [class.stat-pill--active]="activeStatus() === status"
+              [class.stat-pill--signed_off]="status === 'signed_off'"
+              [class.stat-pill--in_review]="status === 'in_review'"
+              [class.stat-pill--pending]="status === 'pending'"
+              [class.stat-pill--private]="status === 'private'"
+              [class.stat-pill--unclassified]="status === 'unclassified'"
+              (click)="onStatusFilter(status)"
+            >
+              <span class="stat-value">{{ $any(documentStats())[status] }}</span>
+              <span class="stat-label">{{ getStatusLabel(status) }}</span>
+            </button>
+          }
+        }
       </div>
     </div>
 
@@ -75,8 +88,11 @@
           @for (doc of filteredDocuments(); track doc.id) {
             <div
               class="doc-card"
-              [class.doc-card--validated]="doc.status === 'validated'"
-              [class.doc-card--analyzing]="doc.status === 'analyzing'"
+              [class.doc-card--signed_off]="doc.status === 'signed_off'"
+              [class.doc-card--in_review]="doc.status === 'in_review'"
+              [class.doc-card--pending]="doc.status === 'pending'"
+              [class.doc-card--private]="doc.status === 'private'"
+              [class.doc-card--unclassified]="doc.status === 'unclassified'"
               (click)="previewDocument.set(doc)"
             >
               <div class="doc-icon">
@@ -88,14 +104,20 @@
               </div>
               <div class="doc-status">
                 @switch (doc.status) {
-                  @case ('validated') {
-                    <span class="status-badge status-badge--validated">Validated</span>
+                  @case ('signed_off') {
+                    <span class="status-badge status-badge--signed_off">Signed Off</span>
                   }
-                  @case ('analyzing') {
-                    <span class="status-badge status-badge--analyzing">Analyzing</span>
+                  @case ('in_review') {
+                    <span class="status-badge status-badge--in_review">In Review</span>
                   }
-                  @case ('analyzed') {
-                    <span class="status-badge status-badge--analyzed">Analyzed</span>
+                  @case ('pending') {
+                    <span class="status-badge status-badge--pending">Pending</span>
+                  }
+                  @case ('private') {
+                    <span class="status-badge status-badge--private">Private (EY)</span>
+                  }
+                  @case ('unclassified') {
+                    <span class="status-badge status-badge--unclassified">Unclassified</span>
                   }
                   @default {
                     <span class="status-badge">{{ doc.status | titlecase }}</span>

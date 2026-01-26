@@ -64,14 +64,18 @@ interface Contact {
     </div>
   `,
   styles: [`
+    // =============================================================================
+    // Entity Contacts Component - EY Design System
+    // =============================================================================
+
     .entity-contacts {
-      padding: 0.5rem 0;
+      padding: 0;
     }
 
     .contacts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
     }
 
     .contact-card {
@@ -79,46 +83,49 @@ interface Contact {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.5rem;
+      padding: 24px;
       background: white;
-      border: 1px solid #f0f0f5;
+      border: 1px solid #e5e5e5;
       border-radius: 12px;
       text-align: center;
-      transition: all 0.2s ease;
+      transition: all 200ms ease-out;
 
       &:hover {
-        border-color: #e5e5ea;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        border-color: #d4d4d4;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
       }
 
       &--primary {
         border-color: #ffe600;
-        background: linear-gradient(180deg, rgba(255, 230, 0, 0.03) 0%, white 100%);
+        background: linear-gradient(180deg, rgba(255, 230, 0, 0.05) 0%, white 100%);
       }
     }
 
     .primary-badge {
       position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.6875rem;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      font-size: 11px;
       font-weight: 600;
       color: #2e2e38;
       background: #ffe600;
       border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
     .contact-avatar {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 64px;
-      height: 64px;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, #f0f0f5 0%, #fafafa 100%);
+      width: 72px;
+      height: 72px;
+      margin-bottom: 16px;
+      background: #f5f5f5;
       border-radius: 50%;
-      color: #9b9bb0;
+      color: #a3a3a3;
       overflow: hidden;
 
       img {
@@ -129,26 +136,27 @@ interface Contact {
     }
 
     .contact-info {
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
     }
 
     .contact-name {
       margin: 0;
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       color: #2e2e38;
+      line-height: 1.4;
     }
 
     .contact-role {
-      margin: 0.25rem 0 0;
-      font-size: 0.875rem;
-      color: #6b6b7b;
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: #6b7280;
     }
 
     .contact-details {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 8px;
       width: 100%;
     }
 
@@ -156,22 +164,25 @@ interface Contact {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      font-size: 0.8125rem;
-      color: #6b6b7b;
+      gap: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #6b7280;
       text-decoration: none;
       background: #fafafa;
+      border: 1px solid #e5e5e5;
       border-radius: 6px;
-      transition: all 0.2s ease;
+      transition: all 200ms ease-out;
 
       &:hover {
         color: #2e2e38;
-        background: #f0f0f5;
+        background: #f5f5f5;
+        border-color: #d4d4d4;
       }
 
       lucide-icon {
         flex-shrink: 0;
+        color: #a3a3a3;
       }
     }
 
@@ -180,17 +191,17 @@ interface Contact {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
+      padding: 64px 32px;
       text-align: center;
 
       .empty-icon {
-        color: #d1d1db;
-        margin-bottom: 1rem;
+        color: #d4d4d4;
+        margin-bottom: 16px;
       }
 
       .empty-text {
-        font-size: 1rem;
-        color: #9b9bb0;
+        font-size: 14px;
+        color: #a3a3a3;
         margin: 0;
       }
     }

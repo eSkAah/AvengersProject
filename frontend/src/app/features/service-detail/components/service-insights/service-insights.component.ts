@@ -8,6 +8,8 @@ import {
   ViewChild,
   ElementRef,
   effect,
+  HostListener,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,8 +18,8 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-export type InsightView = 'summary' | 'data';
-export type InsightTab = 'dashboard' | 'multicountry';
+export type InsightSection = 'overview' | 'entities' | 'multicountry';
+export type EntityViewMode = 'cards' | 'table';
 
 export interface KpiCard {
   label: string;
@@ -75,11 +77,14 @@ export interface FilterOptions {
   styleUrl: './service-insights.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ServiceInsightsComponent implements AfterViewInit {
+export class ServiceInsightsComponent implements AfterViewInit, OnInit {
   @Input() serviceId: string | null = null;
 
   @ViewChild('taxBaseChart') taxBaseChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('corporateTaxChart') corporateTaxChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('sectionOverview') sectionOverviewRef!: ElementRef<HTMLElement>;
+  @ViewChild('sectionEntities') sectionEntitiesRef!: ElementRef<HTMLElement>;
+  @ViewChild('sectionMulticountry') sectionMulticountryRef!: ElementRef<HTMLElement>;
 
   private taxBaseChart: Chart | null = null;
   private corporateTaxChart: Chart | null = null;
@@ -93,8 +98,9 @@ export class ServiceInsightsComponent implements AfterViewInit {
     chevronDown: ChevronDown,
   };
 
-  activeTab = signal<InsightTab>('dashboard');
-  activeView = signal<InsightView>('summary');
+  // Section-based navigation (no more tabs)
+  activeSection = signal<InsightSection>('overview');
+  entityViewMode = signal<EntityViewMode>('cards');
   selectedEntityId = signal<string | null>(null);
 
   filters = signal<FilterOptions>({
@@ -107,18 +113,30 @@ export class ServiceInsightsComponent implements AfterViewInit {
   });
 
   constructor() {
-    // Effect to update charts when tab changes
+    // Effect to initialize charts after view is ready
     effect(() => {
-      if (this.activeTab() === 'multicountry') {
-        setTimeout(() => this.initCharts(), 100);
-      }
+      // Charts are always visible now (single page), init on load
+      setTimeout(() => this.initCharts(), 500);
     });
   }
 
+  ngOnInit(): void {
+    // Auto-select first entity in multicountry on load
+    setTimeout(() => {
+      const data = this.filteredMultiCountryData();
+      if (data.length > 0 && !this.selectedEntityId()) {
+        this.selectedEntityId.set(data[0].id);
+      }
+    }, 100);
+  }
+
   ngAfterViewInit(): void {
-    if (this.activeTab() === 'multicountry') {
-      this.initCharts();
-    }
+    setTimeout(() => this.initCharts(), 300);
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    this.updateActiveSectionOnScroll();
   }
 
   // Dashboard KPI Data
@@ -200,10 +218,54 @@ export class ServiceInsightsComponent implements AfterViewInit {
     },
   ]);
 
-  // Use computed to switch between KPIs based on active tab
-  readonly kpis = computed(() =>
-    this.activeTab() === 'multicountry' ? this.multicountryKpis() : this.dashboardKpis()
-  );
+  // Merged KPIs for the overview section (key metrics from both datasets)
+  readonly mergedKpis = computed<KpiCard[]>(() => [
+    // From Dashboard
+    {
+      label: 'Commercial Result',
+      value: -127620000,
+      formatted: '-127.62M',
+      trend: 'down' as const,
+      trendValue: '-12.3%',
+      color: 'red' as const,
+    },
+    {
+      label: 'Corporate Taxes',
+      value: 164050,
+      formatted: '164.05K',
+      trend: 'up' as const,
+      trendValue: '+8.2%',
+      color: 'yellow' as const,
+    },
+    {
+      label: 'Tax Base',
+      value: 136700000,
+      formatted: '136.7M',
+      color: 'yellow' as const,
+    },
+    {
+      label: 'Statutory Profit',
+      value: -179830000,
+      formatted: '-179.83M',
+      color: 'gray' as const,
+    },
+    {
+      label: 'Total Tax Losses',
+      value: 356910000,
+      formatted: '356.91M',
+      trend: 'up' as const,
+      trendValue: '+5.1%',
+      color: 'gray' as const,
+    },
+    {
+      label: 'Taxable Result',
+      value: 66790000,
+      formatted: '66.79M',
+      trend: 'up' as const,
+      trendValue: '+15.7%',
+      color: 'gray' as const,
+    },
+  ]);
 
   // Entity Tax Data (Dashboard)
   readonly taxData = signal<EntityTaxData[]>([
@@ -458,19 +520,61 @@ export class ServiceInsightsComponent implements AfterViewInit {
     const entities = this.multiCountryData().map(d => d.entity);
     return ['all', ...new Set(entities)];
   });
+  // Combined entity options for global filter
+  readonly allEntityOptions = computed(() => {
+    const dashboardEntities = this.taxData().map(d => d.entity);
+    const mcEntities = this.multiCountryData().map(d => d.entity);
+    const all = [...dashboardEntities, ...mcEntities];
+    return ['all', ...new Set(all)];
+  });
   readonly yearOptions = ['all', '2025', '2024', '2023', '2022', '2021', '2020'];
 
-  setTab(tab: InsightTab): void {
-    this.activeTab.set(tab);
+  // Section navigation methods
+  scrollToSection(section: InsightSection): void {
+    this.activeSection.set(section);
+    const element = document.getElementById(`section-${section}`);
+    if (element) {
+      const headerOffset = 120; // Account for sticky nav
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    }
   }
 
-  setView(view: InsightView): void {
-    this.activeView.set(view);
+  private updateActiveSectionOnScroll(): void {
+    const sections: InsightSection[] = ['overview', 'entities', 'multicountry'];
+    const headerOffset = 150;
+
+    for (const section of sections.reverse()) {
+      const element = document.getElementById(`section-${section}`);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (rect.top <= headerOffset) {
+          this.activeSection.set(section);
+          return;
+        }
+      }
+    }
+    this.activeSection.set('overview');
+  }
+
+  setEntityViewMode(mode: EntityViewMode): void {
+    this.entityViewMode.set(mode);
   }
 
   selectEntity(id: string): void {
-    this.selectedEntityId.set(this.selectedEntityId() === id ? null : id);
+    this.selectedEntityId.set(id);
   }
+
+  // Selected entity for detail panel (Multicountry)
+  readonly selectedMultiCountryEntity = computed(() => {
+    const id = this.selectedEntityId();
+    const data = this.filteredMultiCountryData();
+    if (!id && data.length > 0) {
+      return data[0];
+    }
+    return data.find(d => d.id === id) || data[0] || null;
+  });
 
   updateFilter(key: keyof FilterOptions, value: string): void {
     this.filters.update(f => ({ ...f, [key]: value }));
@@ -534,6 +638,13 @@ export class ServiceInsightsComponent implements AfterViewInit {
     const ctx = this.taxBaseChartRef.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // EY Chart Color Palette
+    const chartColors = {
+      primary: '#FFE600',    // EY Yellow
+      secondary: '#6B7280',  // Gray
+      tertiary: '#2E2E38',   // Dark
+    };
+
     this.taxBaseChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -542,14 +653,14 @@ export class ServiceInsightsComponent implements AfterViewInit {
           {
             label: 'Statutory Profit',
             data: [97000000, 67000000, 21000000],
-            backgroundColor: '#6B7280',
+            backgroundColor: chartColors.secondary,
             borderRadius: 4,
             barPercentage: 0.6,
           },
           {
             label: 'Tax Base',
             data: [-121000000, -83000000, -27000000],
-            backgroundColor: '#EAB308',
+            backgroundColor: chartColors.primary,
             borderRadius: 4,
             barPercentage: 0.6,
           },
@@ -560,15 +671,10 @@ export class ServiceInsightsComponent implements AfterViewInit {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 20,
-              font: { size: 11, family: "'Inter', sans-serif" },
-            },
+            display: false, // Use custom legend component per EY Design System
           },
           tooltip: {
-            backgroundColor: '#1f2937',
+            backgroundColor: '#2E2E38',
             titleFont: { size: 12, family: "'Inter', sans-serif" },
             bodyFont: { size: 11, family: "'Inter', sans-serif" },
             padding: 12,
@@ -612,6 +718,13 @@ export class ServiceInsightsComponent implements AfterViewInit {
     const ctx = this.corporateTaxChartRef.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // EY Chart Color Palette
+    const chartColors = {
+      primary: '#FFE600',    // EY Yellow
+      secondary: '#6B7280',  // Gray
+      tertiary: '#2E2E38',   // Dark
+    };
+
     this.corporateTaxChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -620,14 +733,14 @@ export class ServiceInsightsComponent implements AfterViewInit {
           {
             label: 'Total Tax Provision',
             data: [-40000000, 3000000, 2000000],
-            backgroundColor: '#EAB308',
+            backgroundColor: chartColors.primary,
             borderRadius: 4,
             barPercentage: 0.6,
           },
           {
             label: 'Estimated Total Tax Amount Due',
             data: [0, 0, 0],
-            backgroundColor: '#6B7280',
+            backgroundColor: chartColors.secondary,
             borderRadius: 4,
             barPercentage: 0.6,
           },
@@ -638,15 +751,10 @@ export class ServiceInsightsComponent implements AfterViewInit {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 20,
-              font: { size: 11, family: "'Inter', sans-serif" },
-            },
+            display: false, // Use custom legend component per EY Design System
           },
           tooltip: {
-            backgroundColor: '#1f2937',
+            backgroundColor: '#2E2E38',
             titleFont: { size: 12, family: "'Inter', sans-serif" },
             bodyFont: { size: 11, family: "'Inter', sans-serif" },
             padding: 12,

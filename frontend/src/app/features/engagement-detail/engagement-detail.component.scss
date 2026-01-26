@@ -1,8 +1,13 @@
 @use 'styles/variables' as *;
 
+// EY Design System Variables
+$ey-transition: 200ms ease-out;
+$ey-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+$ey-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+$ey-card-radius: 12px;
+$ey-font-mono: 'SF Mono', Monaco, Consolas, monospace;
+
 .engagement-detail {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: $spacing-4;
   display: flex;
   flex-direction: column;
@@ -11,24 +16,22 @@
 
 // Premium Card Styling
 .detail-card {
-  background: $color-surface;
-  border-radius: $radius-xl;
+  background: #FFFFFF;
+  border-radius: $ey-card-radius;
   padding: $spacing-5;
-
-  // Premium shadow layering
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.02),
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    0 4px 8px rgba(0, 0, 0, 0.03),
-    0 8px 16px rgba(0, 0, 0, 0.04);
-
+  box-shadow: $ey-card-shadow;
   border: 1px solid rgba($color-border, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all $ey-transition;
+
+  &:hover {
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
+  }
 
   &--header {
     background: linear-gradient(
       135deg,
-      $color-surface 0%,
+      #FFFFFF 0%,
       rgba($ey-yellow, 0.03) 100%
     );
     border-bottom: 2px solid rgba($ey-yellow, 0.3);
@@ -63,13 +66,13 @@
   &__title {
     font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
     margin: 0;
   }
 
   &__service {
     font-size: $font-size-base;
-    color: $color-text-secondary;
+    color: #6B7280;
     margin: 0;
   }
 
@@ -96,17 +99,18 @@
   h2 {
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
     margin: 0;
     flex: 1;
   }
 
   &__count {
     font-size: $font-size-sm;
-    color: $color-text-secondary;
-    background: rgba($ey-black, 0.04);
+    color: #6B7280;
+    background: rgba(#2E2E38, 0.04);
     padding: $spacing-1 $spacing-3;
     border-radius: $radius-full;
+    font-family: $ey-font-mono;
   }
 }
 
@@ -135,24 +139,33 @@
   padding: $spacing-3;
   background: rgba($color-background, 0.5);
   border-radius: $radius-md;
+  transition: all $ey-transition;
+
+  &:hover {
+    background: rgba($color-background, 0.8);
+  }
 
   &--highlight {
     grid-column: 1 / -1;
-    background: linear-gradient(135deg, rgba($ey-yellow, 0.1) 0%, rgba($ey-yellow, 0.05) 100%);
+    background: linear-gradient(135deg, rgba($ey-yellow, 0.08) 0%, rgba($ey-yellow, 0.03) 100%);
+    border: 1px solid rgba($ey-yellow, 0.2);
   }
 
   &__label {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+    font-size: 11px;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   &__value {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
     display: flex;
     align-items: center;
     gap: $spacing-2;
+    font-family: $ey-font-mono;
 
     &--positive {
       color: $color-success;
@@ -198,15 +211,16 @@
   &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: #6B7280;
     white-space: nowrap;
   }
 
   &__value {
     font-size: $font-size-base;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
     white-space: nowrap;
+    font-family: $ey-font-mono;
   }
 
   &__deadline {
@@ -214,7 +228,7 @@
     align-items: center;
     gap: $spacing-2;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #6B7280;
 
     lucide-icon {
       color: $color-text-muted;
@@ -223,6 +237,7 @@
 
   &__days {
     font-weight: $font-weight-medium;
+    font-family: $ey-font-mono;
 
     &--warning {
       color: $color-warning;
@@ -239,7 +254,7 @@
 .detail-card--analysis {
   background: linear-gradient(
     180deg,
-    $color-surface 0%,
+    #FFFFFF 0%,
     rgba($color-background, 0.3) 100%
   );
 
@@ -249,9 +264,9 @@
     gap: $spacing-1;
     font-size: $font-size-xs;
     color: $color-text-muted;
-    background: rgba($ey-black, 0.04);
+    background: rgba(#2E2E38, 0.04);
     padding: $spacing-1 $spacing-2;
-    border-radius: $radius-sm;
+    border-radius: $radius-full;
     margin-left: auto;
 
     lucide-icon {
@@ -272,14 +287,17 @@
   margin-bottom: $spacing-2;
 
   &__label {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+    font-size: 11px;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   &__value {
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
+    font-family: $ey-font-mono;
   }
 }
 
@@ -296,9 +314,14 @@
   padding: $spacing-3;
   background: rgba($color-background, 0.5);
   border-radius: $radius-md;
+  transition: all $ey-transition;
+
+  &:hover {
+    background: rgba($color-background, 0.8);
+  }
 
   lucide-icon {
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__content {
@@ -308,18 +331,22 @@
   }
 
   &__label {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 11px;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   &__value {
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
+    font-family: $ey-font-mono;
   }
 
   &--warning {
     background: rgba($color-warning, 0.1);
+    border: 1px solid rgba($color-warning, 0.3);
 
     lucide-icon {
       color: $color-warning;
@@ -332,6 +359,7 @@
 
   &--danger {
     background: rgba($color-error, 0.1);
+    border: 1px solid rgba($color-error, 0.3);
 
     lucide-icon {
       color: $color-error;
@@ -348,7 +376,7 @@
   margin-bottom: $spacing-4;
   padding: $spacing-4;
   background: rgba($color-background, 0.5);
-  border-radius: $radius-md;
+  border-radius: $ey-card-radius;
 }
 
 // Documents Grid
@@ -363,12 +391,16 @@
   align-items: center;
   gap: $spacing-3;
   padding: $spacing-3 $spacing-4;
-  background: rgba($color-background, 0.5);
-  border-radius: $radius-md;
-  transition: all 0.2s ease;
+  background: #FFFFFF;
+  border: 1px solid $color-border-light;
+  border-radius: $ey-card-radius;
+  transition: all $ey-transition;
+  box-shadow: $ey-card-shadow;
 
   &:hover {
-    background: rgba($color-background, 0.8);
+    background: rgba($color-background, 0.5);
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
   }
 
   &__icon {
@@ -387,7 +419,7 @@
   &__name {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    color: #2E2E38;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -395,7 +427,7 @@
 
   &__meta {
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 }
 
@@ -414,7 +446,7 @@
   }
 
   p {
-    color: $color-text-secondary;
+    color: #6B7280;
     margin-bottom: $spacing-4;
   }
 }
@@ -450,25 +482,31 @@
     padding: $spacing-2 $spacing-4;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: #6B7280;
     background: transparent;
     border: none;
     border-radius: $radius-md;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all $ey-transition;
 
     &:hover:not(.engagement-tabs__tab--disabled) {
-      color: $color-text-primary;
-      background: $color-surface;
+      color: #2E2E38;
+      background: #FFFFFF;
+      transform: scale(1.02);
+    }
+
+    &:active:not(.engagement-tabs__tab--disabled) {
+      transform: scale(0.98);
     }
 
     &--active {
-      color: $ey-black;
-      background: $color-surface;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: #2E2E38;
+      background: #FFFFFF;
+      border: 2px solid $ey-yellow;
+      box-shadow: $ey-card-shadow;
 
       &:hover {
-        background: $color-surface;
+        background: #FFFFFF;
       }
     }
 
@@ -482,8 +520,9 @@
     padding: 2px 6px;
     font-size: 10px;
     font-weight: $font-weight-bold;
-    color: white;
-    background: $color-success;
+    color: $color-success;
+    background: rgba($color-success, 0.1);
+    border: 1px solid rgba($color-success, 0.3);
     border-radius: $radius-full;
     text-transform: uppercase;
   }
@@ -513,35 +552,48 @@
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $ey-transition;
   border: none;
 
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
   &--primary {
-    background: $ey-yellow;
-    color: $ey-black;
+    background: transparent;
+    color: #2E2E38;
+    border: 2px solid $ey-yellow;
 
     &:hover {
-      background: $ey-yellow-hover;
-      transform: translateY(-1px);
+      background: rgba($ey-yellow, 0.1);
+      transform: scale(1.02);
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
   }
 
   &--secondary {
-    background: rgba($ey-black, 0.05);
-    color: $color-text-primary;
+    background: rgba(#2E2E38, 0.05);
+    color: #2E2E38;
 
     &:hover {
-      background: rgba($ey-black, 0.1);
+      background: rgba(#2E2E38, 0.1);
     }
   }
 
   &--outline {
     background: transparent;
     border: 1px solid rgba($color-border, 0.8);
-    color: $color-text-primary;
+    color: #2E2E38;
 
     &:hover {
-      background: rgba($ey-black, 0.03);
+      background: rgba(#2E2E38, 0.03);
       border-color: $color-border;
     }
   }
@@ -565,12 +617,12 @@
   h2 {
     font-size: $font-size-xl;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
     margin-bottom: $spacing-2;
   }
 
   p {
-    color: $color-text-secondary;
+    color: #6B7280;
     margin-bottom: $spacing-6;
   }
 }

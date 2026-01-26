@@ -136,6 +136,16 @@ export interface UploadingFile {
     }
   `,
   styles: [`
+    // =============================================================================
+    // UPLOAD PROGRESS MODAL - EY Design System
+    // Modal: border-radius 12px, shadow-modal, 300ms slide animation
+    // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+    // =============================================================================
+
+    :host {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -144,20 +154,20 @@ export interface UploadingFile {
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 200ms ease-out;
     }
 
     .modal-content {
-      background: white;
-      border-radius: 16px;
+      background: #FFFFFF;
+      border-radius: 12px;
       width: 90%;
       max-width: 520px;
       max-height: 80vh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.3s ease-out;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
+      animation: slideUp 300ms ease-out;
     }
 
     .modal-header {
@@ -165,7 +175,7 @@ export interface UploadingFile {
       align-items: center;
       justify-content: space-between;
       padding: 20px 24px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .modal-title {
@@ -179,9 +189,10 @@ export interface UploadingFile {
 
       h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 18px; // text-h3
         font-weight: 600;
         color: #2E2E38;
+        line-height: 1.4;
       }
     }
 
@@ -191,11 +202,11 @@ export interface UploadingFile {
       padding: 8px;
       cursor: pointer;
       color: #6b7280;
-      border-radius: 8px;
-      transition: all 0.2s;
+      border-radius: 6px;
+      transition: all 200ms ease-out;
 
       &:hover {
-        background: #f3f4f6;
+        background: #F5F5F5;
         color: #2E2E38;
       }
     }
@@ -205,13 +216,14 @@ export interface UploadingFile {
       align-items: center;
       gap: 8px;
       padding: 12px 24px;
-      background: linear-gradient(90deg, #FFF9E0 0%, #FFFDF5 100%);
-      border-bottom: 1px solid #f0f0f0;
+      background: #FFF9CC; // ey-yellow-light
+      border-bottom: 1px solid #e5e7eb;
       font-size: 13px;
-      color: #92400e;
+      font-weight: 500;
+      color: #B45309; // warning-dark
 
       lucide-icon {
-        color: #f59e0b;
+        color: #F59E0B; // warning
       }
     }
 
@@ -228,20 +240,20 @@ export interface UploadingFile {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
-      background: #f9fafb;
-      border-radius: 12px;
+      padding: 14px 16px;
+      background: #FAFAFA;
+      border-radius: 8px;
       border: 1px solid #e5e7eb;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &--success {
-        background: #f0fdf4;
-        border-color: #86efac;
+        background: #D1FAE5; // success-light
+        border-color: #A7F3D0;
       }
 
       &--error {
-        background: #fef2f2;
-        border-color: #fecaca;
+        background: #FEE2E2; // error-light
+        border-color: #FECACA;
       }
     }
 
@@ -262,6 +274,7 @@ export interface UploadingFile {
       display: flex;
       flex-direction: column;
       min-width: 0;
+      gap: 2px;
     }
 
     .file-name {
@@ -301,39 +314,42 @@ export interface UploadingFile {
       height: 100%;
       background: #FFE600;
       border-radius: 2px;
-      transition: width 0.2s;
+      transition: width 200ms ease-out;
     }
 
     .progress-text {
       font-size: 12px;
       color: #6b7280;
       width: 35px;
+      font-variant-numeric: tabular-nums;
     }
 
     .status-classifying {
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #f59e0b;
+      color: #F59E0B; // warning
       font-size: 13px;
+      font-weight: 500;
     }
 
     .status-classified {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #10b981;
+      color: #10B981; // success
     }
 
     .classification-result {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+      gap: 2px;
     }
 
     .entity {
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       color: #2E2E38;
     }
 
@@ -346,8 +362,9 @@ export interface UploadingFile {
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #ef4444;
+      color: #EF4444; // error
       font-size: 13px;
+      font-weight: 500;
     }
 
     .modal-footer {
@@ -355,8 +372,8 @@ export interface UploadingFile {
       align-items: center;
       justify-content: space-between;
       padding: 16px 24px;
-      border-top: 1px solid #f0f0f0;
-      background: #fafafa;
+      border-top: 1px solid #e5e7eb;
+      background: #FAFAFA;
     }
 
     .summary {
@@ -369,14 +386,15 @@ export interface UploadingFile {
       align-items: center;
       gap: 4px;
       font-size: 13px;
-      color: #10b981;
+      font-weight: 500;
+      color: #10B981; // success
 
       &.uploading {
-        color: #f59e0b;
+        color: #F59E0B; // warning
       }
 
       &.error {
-        color: #ef4444;
+        color: #EF4444; // error
       }
     }
 
@@ -384,16 +402,20 @@ export interface UploadingFile {
       background: #FFE600;
       color: #2E2E38;
       border: none;
-      padding: 10px 24px;
-      border-radius: 8px;
+      padding: 12px 20px;
+      border-radius: 6px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 200ms ease-out;
 
       &:hover {
         background: #FFD000;
-        transform: translateY(-1px);
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
     }
 

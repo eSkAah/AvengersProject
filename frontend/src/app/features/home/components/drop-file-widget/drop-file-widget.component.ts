@@ -52,10 +52,16 @@ import { UploadProgressModalComponent, UploadingFile } from '../upload-progress-
     />
   `,
   styles: [`
+    // =============================================================================
+    // DROP FILE WIDGET - EY Design System
+    // Card: white bg, border #e5e7eb, border-radius 12px, shadow-card, hover lift
+    // =============================================================================
+
     :host {
       display: block;
       width: 100%;
       height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
     .upload-bar {
@@ -63,20 +69,22 @@ import { UploadProgressModalComponent, UploadingFile } from '../upload-progress-
       width: 100%;
       height: 100%;
       min-height: 56px;
-      background: linear-gradient(180deg, #FAFAFA 0%, #F5F5F7 100%);
-      border: 1.5px dashed #D1D5DB;
-      border-radius: 14px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #FFFFFF;
+      border: 2px dashed #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: all 200ms ease-out;
       box-sizing: border-box;
 
       &:hover {
         border-color: #FFE600;
-        background: linear-gradient(180deg, #FFFEF8 0%, #FFFBEB 100%);
-        box-shadow: 0 2px 8px rgba(255, 230, 0, 0.12);
+        background: #FFFDF5;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
 
         .upload-bar__icon {
           background: #FFE600;
-          transform: scale(1.05);
+          transform: scale(1.02);
 
           lucide-icon {
             color: #2E2E38;
@@ -87,9 +95,9 @@ import { UploadProgressModalComponent, UploadingFile } from '../upload-progress-
       &--dragover {
         border-color: #FFE600;
         border-style: solid;
-        background: linear-gradient(180deg, #FFFBEB 0%, #FFF3C4 100%);
-        box-shadow: 0 4px 16px rgba(255, 230, 0, 0.2);
-        transform: scale(1.01);
+        background: #FFF9CC; // ey-yellow-light
+        box-shadow: 0 4px 12px rgba(255, 230, 0, 0.15);
+        transform: translateY(-1px);
       }
     }
 
@@ -114,41 +122,40 @@ import { UploadProgressModalComponent, UploadingFile } from '../upload-progress-
     }
 
     .upload-bar__icon {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: white;
+      background: #FFFFFF;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: all 200ms ease-out;
       flex-shrink: 0;
 
       lucide-icon {
         color: #FFE600;
-        transition: color 0.2s;
+        transition: color 200ms ease-out;
       }
     }
 
     .upload-bar__text {
-      font-size: 13px;
+      font-size: 14px; // text-body
       font-weight: 500;
       color: #2E2E38;
-      letter-spacing: -0.01em;
     }
 
     .upload-bar__separator {
       width: 1px;
       height: 16px;
-      background: #E5E7EB;
+      background: #e5e7eb;
     }
 
     .upload-bar__formats {
-      font-size: 12px;
+      font-size: 12px; // text-caption
       font-weight: 500;
-      color: #9CA3AF;
-      letter-spacing: 0.02em;
+      color: #6b7280; // secondary text
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

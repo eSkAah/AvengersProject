@@ -1,39 +1,57 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Document Grid - EY Design System
+// Card-based layout for document browsing
+// =============================================================================
+
 .document-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: $spacing-4;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
 
   &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: $spacing-8;
-    color: $color-text-secondary;
+    padding: $spacing-12;
+    color: #6b7280;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 12px;
 
     &-icon {
-      font-size: 48px;
+      opacity: 0.4;
       margin-bottom: $spacing-4;
+    }
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 500;
     }
   }
 }
 
+// =============================================================================
+// Document Card - White bg, 12px radius, subtle shadow
+// =============================================================================
 .document-card {
   display: flex;
   flex-direction: column;
-  gap: $spacing-3;
-  padding: $spacing-4;
+  gap: 12px;
+  padding: 20px;
   background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all 200ms ease-out;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: $shadow-md;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border-color: $ey-yellow;
 
     .document-card__actions {
@@ -42,49 +60,61 @@
   }
 
   &__icon {
-    font-size: 32px;
-    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: #f3f4f6;
+    border-radius: 10px;
+    color: #6b7280;
+
+    lucide-icon {
+      display: block;
+    }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    gap: $spacing-1;
+    gap: 4px;
     flex: 1;
   }
 
   &__name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    font-size: 14px;
+    font-weight: 600;
+    color: $ey-black;
     margin: 0;
     word-break: break-word;
+    line-height: 1.4;
   }
 
   &__type {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 12px;
+    color: #6b7280;
   }
 
   &__meta {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: $spacing-2;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
   }
 
   &__date {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 12px;
+    color: #9ca3af;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
   }
 
   &__actions {
     display: flex;
-    gap: $spacing-2;
-    padding-top: $spacing-2;
-    border-top: 1px solid $color-border;
+    gap: 4px;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 200ms ease-out;
   }
 
   &__action {
@@ -94,14 +124,39 @@
     width: 32px;
     height: 32px;
     border: none;
-    background: $color-background;
-    border-radius: $radius-sm;
+    background: #f3f4f6;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    color: #6b7280;
+    transition: all 200ms ease-out;
 
     &:hover {
       background: $ey-yellow;
-      transform: scale(1.1);
+      color: $ey-black;
+      transform: scale(1.05);
     }
+  }
+}
+
+// =============================================================================
+// Missing Document Card - Special styling for required but missing docs
+// =============================================================================
+.document-card--missing {
+  border-style: dashed;
+  border-color: #fecaca;
+  background: #fef2f2;
+
+  .document-card__icon {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+
+  .document-card__name {
+    color: #b91c1c;
+  }
+
+  &:hover {
+    border-color: #ef4444;
+    background: #fee2e2;
   }
 }

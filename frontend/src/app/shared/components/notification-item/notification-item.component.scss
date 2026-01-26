@@ -1,26 +1,33 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Notification Item Component - EY Design System
+// =============================================================================
+// Premium notification styling with semantic colors
+// Border-radius: 8px (radius-lg)
+// Transitions: 200ms ease-out
+
 .notification-item {
   display: flex;
   align-items: flex-start;
   gap: $spacing-3;
   padding: $spacing-3 $spacing-4;
-  border-radius: $radius-lg;
+  border-radius: $radius-lg; // 8px for cards
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: slideIn 0.3s ease-out;
+  transition: all $transition-normal ease-out;
   position: relative;
   overflow: hidden;
 
-  // Premium subtle background
-  background: rgba($color-surface, 0.6);
+  // Premium subtle background with blur
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
 
-  // Premium shadow
+  // Subtle shadow
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.02),
     0 2px 4px rgba(0, 0, 0, 0.02);
 
+  // Left accent border indicator
   &::before {
     content: '';
     position: absolute;
@@ -42,92 +49,98 @@
     transform: translateX(2px);
   }
 
+  // ==========================================================================
   // Warning variant
+  // ==========================================================================
   &--warning {
     background: linear-gradient(
       135deg,
-      rgba($color-warning, 0.08) 0%,
-      rgba($color-warning, 0.04) 100%
+      rgba(#F59E0B, 0.08) 0%,
+      rgba(#F59E0B, 0.04) 100%
     );
 
     &::before {
-      background: linear-gradient(180deg, $color-warning 0%, darken($color-warning, 10%) 100%);
+      background: linear-gradient(180deg, #F59E0B 0%, #B45309 100%);
     }
 
     .notification-item__icon {
-      color: $color-warning;
+      color: #F59E0B;
     }
 
     .notification-item__message {
-      color: darken($color-warning, 25%);
+      color: #92400E;
     }
   }
 
+  // ==========================================================================
   // Info variant
+  // ==========================================================================
   &--info {
     background: linear-gradient(
       135deg,
-      rgba($color-info, 0.08) 0%,
-      rgba($color-info, 0.04) 100%
+      rgba(#3B82F6, 0.08) 0%,
+      rgba(#3B82F6, 0.04) 100%
     );
 
     &::before {
-      background: linear-gradient(180deg, $color-info 0%, darken($color-info, 10%) 100%);
+      background: linear-gradient(180deg, #3B82F6 0%, #1D4ED8 100%);
     }
 
     .notification-item__icon {
-      color: $color-info;
+      color: #3B82F6;
     }
 
     .notification-item__message {
-      color: darken($color-info, 25%);
+      color: #1E40AF;
     }
   }
 
+  // ==========================================================================
   // Urgent variant
+  // ==========================================================================
   &--urgent {
     background: linear-gradient(
       135deg,
-      rgba($color-error, 0.1) 0%,
-      rgba($color-error, 0.05) 100%
+      rgba(#EF4444, 0.1) 0%,
+      rgba(#EF4444, 0.05) 100%
     );
-    animation: slideIn 0.3s ease-out, pulse-urgent 2s ease-in-out infinite;
+    animation: slideIn $transition-slow ease-out, pulse-urgent 2s ease-in-out infinite;
 
     &::before {
-      background: linear-gradient(180deg, $color-error 0%, darken($color-error, 10%) 100%);
+      background: linear-gradient(180deg, #EF4444 0%, #B91C1C 100%);
     }
 
     .notification-item__icon {
-      color: $color-error;
+      color: #EF4444;
     }
 
     .notification-item__message {
-      color: darken($color-error, 15%);
+      color: #991B1B;
       font-weight: $font-weight-semibold;
     }
   }
 
-  // Icon
+  // ==========================================================================
+  // Child elements
+  // ==========================================================================
   &__icon {
     flex-shrink: 0;
     margin-top: 1px;
-    transition: transform 0.2s ease;
+    transition: transform $transition-normal ease-out;
   }
 
   &:hover &__icon {
     transform: scale(1.1);
   }
 
-  // Message
   &__message {
     flex: 1;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     line-height: 1.4;
-    color: $color-text-primary;
+    color: #2E2E38;
   }
 
-  // Dismiss button
   &__dismiss {
     display: flex;
     align-items: center;
@@ -136,16 +149,16 @@
     height: 24px;
     border: none;
     background: transparent;
-    color: $color-text-muted;
+    color: #9CA3AF;
     cursor: pointer;
     border-radius: $radius-sm;
-    transition: all 0.2s ease;
+    transition: all $transition-normal ease-out;
     flex-shrink: 0;
     opacity: 0;
 
     &:hover {
-      background: rgba($ey-black, 0.08);
-      color: $color-text-primary;
+      background: rgba(#2E2E38, 0.08);
+      color: #2E2E38;
     }
   }
 
@@ -171,12 +184,12 @@
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.02),
       0 2px 4px rgba(0, 0, 0, 0.02),
-      0 0 0 0 rgba($color-error, 0.15);
+      0 0 0 0 rgba(#EF4444, 0.15);
   }
   50% {
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.02),
       0 2px 4px rgba(0, 0, 0, 0.02),
-      0 0 0 6px rgba($color-error, 0);
+      0 0 0 6px rgba(#EF4444, 0);
   }
 }

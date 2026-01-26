@@ -10,36 +10,44 @@
     [class.tree-node--entity]="node.type === 'entity'"
     [class.tree-node--year]="node.type === 'year'"
     [style.padding-left.px]="level * 16"
+    [attr.data-node-id]="node.id"
   >
     <div class="tree-node__content" (click)="selectNode(node)">
       <!-- Expand/Collapse toggle -->
-      <button
-        *ngIf="hasChildren(node)"
-        class="tree-node__toggle"
-        (click)="toggleExpand(node.id, $event)"
-      >
-        <lucide-icon [name]="isExpanded(node.id) ? 'chevron-down' : 'chevron-right'" [size]="14"></lucide-icon>
-      </button>
-      <span *ngIf="!hasChildren(node)" class="tree-node__spacer"></span>
+      @if (hasChildren(node)) {
+        <button
+          class="tree-node__toggle"
+          (click)="toggleExpand(node.id, $event)"
+        >
+          <lucide-icon [name]="isExpanded(node.id) ? 'chevron-down' : 'chevron-right'" [size]="14"></lucide-icon>
+        </button>
+      } @else {
+        <span class="tree-node__spacer"></span>
+      }
 
       <!-- Icon -->
-      <span class="tree-node__icon" *ngIf="node.isEmoji">{{ node.icon }}</span>
-      <lucide-icon *ngIf="!node.isEmoji" [name]="node.icon" class="tree-node__icon" [size]="16"></lucide-icon>
+      @if (node.isEmoji) {
+        <span class="tree-node__icon">{{ node.icon }}</span>
+      } @else {
+        <lucide-icon [name]="node.icon" class="tree-node__icon" [size]="16"></lucide-icon>
+      }
 
       <!-- Label -->
       <span class="tree-node__label">{{ node.label }}</span>
 
       <!-- Count badge -->
-      <span *ngIf="node.count !== undefined" class="tree-node__count">
-        {{ node.count }}
-      </span>
+      @if (node.count !== undefined) {
+        <span class="tree-node__count">{{ node.count }}</span>
+      }
     </div>
   </div>
 
   <!-- Children -->
-  <div class="tree-node__children" *ngIf="hasChildren(node) && isExpanded(node.id)">
-    <ng-container *ngFor="let child of node.children">
-      <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: child, level: level + 1 }"></ng-container>
-    </ng-container>
-  </div>
+  @if (hasChildren(node) && isExpanded(node.id)) {
+    <div class="tree-node__children">
+      @for (child of node.children; track child.id) {
+        <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: child, level: level + 1 }"></ng-container>
+      }
+    </div>
+  }
 </ng-template>

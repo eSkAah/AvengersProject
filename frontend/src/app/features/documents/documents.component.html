@@ -294,6 +294,11 @@
             <button
               class="status-pill"
               [class.status-pill--active]="globalFilters().status === status"
+              [class.status-pill--signed_off]="status === 'signed_off'"
+              [class.status-pill--in_review]="status === 'in_review'"
+              [class.status-pill--pending]="status === 'pending'"
+              [class.status-pill--private]="status === 'private'"
+              [class.status-pill--unclassified]="status === 'unclassified'"
               [class.status-pill--missing]="status === 'missing'"
               [class.status-pill--uploaded]="status === 'uploaded'"
               [class.status-pill--analyzed]="status === 'analyzed'"

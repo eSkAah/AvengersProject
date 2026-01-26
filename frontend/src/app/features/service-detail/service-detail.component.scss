@@ -1,26 +1,35 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// SERVICE DETAIL PAGE - EY Design System
+// =============================================================================
+
 .service-detail {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 24px;
 }
 
-// Breadcrumb
+// -----------------------------------------------------------------------------
+// Breadcrumb - Sober, consistent with shared component
+// -----------------------------------------------------------------------------
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
   font-size: 13px;
+  font-family: $font-family-base;
 
   &__link {
-    color: $ey-yellow;
+    color: $color-text-secondary;
     text-decoration: none;
     font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 150ms ease-out;
 
     &:hover {
-      text-decoration: underline;
+      background: #F5F5F5;
+      color: $color-text-primary;
     }
   }
 
@@ -29,23 +38,27 @@
   }
 
   &__current {
-    color: $color-text-secondary;
+    color: $color-text-primary;
+    font-weight: 600;
   }
 }
 
-// Back button
+// -----------------------------------------------------------------------------
+// Back Button
+// -----------------------------------------------------------------------------
 .back-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 10px 16px;
   margin-bottom: 24px;
   background: transparent;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: 6px;
   color: $color-text-secondary;
   font-size: 14px;
   font-weight: 500;
+  font-family: $font-family-base;
   cursor: pointer;
   transition: all 200ms ease-out;
 
@@ -54,19 +67,30 @@
     border-color: $ey-yellow;
     color: $color-text-primary;
   }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
-// Service Header
+// -----------------------------------------------------------------------------
+// Service Header Card
+// -----------------------------------------------------------------------------
 .service-header {
   display: flex;
   align-items: center;
   gap: 20px;
   padding: 24px;
   background: $color-surface;
-  border-radius: $radius-xl;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 4px 8px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba($color-border, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid $color-border;
   margin-bottom: 24px;
+  transition: box-shadow 200ms ease-out;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
 
   &__icon {
     display: flex;
@@ -74,7 +98,7 @@
     justify-content: center;
     width: 56px;
     height: 56px;
-    border-radius: $radius-lg;
+    border-radius: 12px;
     color: white;
     flex-shrink: 0;
 
@@ -90,50 +114,57 @@
   }
 
   &__title {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 600;
     color: $color-text-primary;
     margin: 0 0 4px 0;
-    letter-spacing: -0.02em;
+    line-height: 1.3;
+    font-family: $font-family-heading;
   }
 
   &__description {
     font-size: 14px;
     color: $color-text-secondary;
     margin: 0;
+    line-height: 1.6;
   }
 
   &__stats {
     display: flex;
-    gap: 24px;
+    gap: 16px;
   }
 }
 
+// Entity count badge - highlighted
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 20px;
-  background: rgba($ey-yellow, 0.05);
-  border-radius: $radius-lg;
+  padding: 14px 20px;
+  background: #FFF9E0;
+  border: 1px solid $ey-yellow;
+  border-radius: 8px;
+  transition: all 200ms ease-out;
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: $color-text-primary;
-  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: $color-text-muted;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
+  letter-spacing: 0.5px;
+  font-weight: 600;
 }
 
+// -----------------------------------------------------------------------------
 // Charts Row
+// -----------------------------------------------------------------------------
 .charts-row {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -147,23 +178,26 @@
 
 .chart-card {
   background: $color-surface;
-  border-radius: $radius-xl;
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 4px 8px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba($color-border, 0.4);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid $color-border;
   display: flex;
   flex-direction: column;
+  transition: all 200ms ease-out;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
 
   &__title {
     font-size: 14px;
     font-weight: 600;
     color: $color-text-primary;
     margin: 0 0 16px 0;
-    letter-spacing: -0.01em;
     flex-shrink: 0;
   }
 
-  // Chart container - let it take remaining space
   app-pie-chart,
   app-stacked-area-chart {
     flex: 1;
@@ -172,33 +206,31 @@
   }
 }
 
-// Both chart cards same height
 .charts-row > .chart-card {
   height: 420px;
 }
 
-// Tabs
+// -----------------------------------------------------------------------------
+// Sub-tabs Navigation (EY Design System)
+// -----------------------------------------------------------------------------
 .service-tabs {
   display: flex;
-  gap: 4px;
-  padding: 4px;
-  background: rgba($color-border, 0.3);
-  border-radius: $radius-lg;
+  gap: 0;
+  border-bottom: 2px solid $color-border;
   margin-bottom: 24px;
-  width: fit-content;
 
   &__tab {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: transparent;
     border: none;
-    border-radius: $radius-md;
     font-size: 14px;
     font-weight: 500;
     color: $color-text-secondary;
     cursor: pointer;
+    position: relative;
     transition: all 200ms ease-out;
 
     &:hover {
@@ -206,15 +238,24 @@
     }
 
     &--active {
-      background: $color-surface;
       color: $color-text-primary;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $ey-yellow;
+      }
     }
   }
 
   &__count {
     padding: 2px 8px;
-    background: rgba($ey-yellow, 0.1);
+    background: rgba($ey-yellow, 0.15);
     border-radius: 12px;
     font-size: 12px;
     font-weight: 600;
@@ -222,19 +263,22 @@
   }
 }
 
+// -----------------------------------------------------------------------------
 // Tab Content
+// -----------------------------------------------------------------------------
 .tab-content {
-  // Wrapper styling only for entities table
   &:has(.entities-table-wrapper) {
     background: $color-surface;
-    border-radius: $radius-xl;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 4px 8px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba($color-border, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid $color-border;
     overflow: hidden;
   }
 }
 
-// Entities Table
+// -----------------------------------------------------------------------------
+// Entities Table (EY Design System)
+// -----------------------------------------------------------------------------
 .entities-table-wrapper {
   overflow-x: auto;
 }
@@ -242,16 +286,17 @@
 .entities-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 
   th {
-    padding: 16px 20px;
+    padding: 12px 20px;
     text-align: left;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    color: $color-text-muted;
+    color: $color-text-secondary;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: rgba($color-border, 0.2);
+    letter-spacing: 0.3px;
+    background: #f9fafb;
     border-bottom: 1px solid $color-border;
   }
 
@@ -259,7 +304,7 @@
     padding: 16px 20px;
     font-size: 14px;
     color: $color-text-primary;
-    border-bottom: 1px solid rgba($color-border, 0.5);
+    border-bottom: 1px solid #f3f4f6;
   }
 
   tr:last-child td {
@@ -268,7 +313,7 @@
 }
 
 .entity-row {
-  transition: all 150ms ease-out;
+  transition: all 200ms ease-out;
 
   &--clickable {
     cursor: pointer;
@@ -276,7 +321,7 @@
     .row-arrow {
       opacity: 0;
       color: $color-text-secondary;
-      transition: opacity 150ms ease-out, transform 150ms ease-out;
+      transition: opacity 200ms ease-out, transform 200ms ease-out;
     }
 
     &:hover {
@@ -288,10 +333,6 @@
       }
     }
   }
-
-  &:hover {
-    background: rgba($ey-yellow, 0.02);
-  }
 }
 
 .date-cell {
@@ -299,6 +340,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  color: $color-text-muted;
+  font-size: 13px;
 }
 
 .entity-cell {
@@ -315,36 +358,46 @@
   font-weight: 500;
 }
 
-// Status Badge
+// -----------------------------------------------------------------------------
+// Status Badge (EY Design System - Risk Badge Style)
+// -----------------------------------------------------------------------------
 .status-badge {
   display: inline-flex;
-  padding: 4px 12px;
-  border-radius: 20px;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
   font-size: 12px;
   font-weight: 600;
 
   &--completed {
-    background: rgba(#10B981, 0.1);
-    color: #059669;
+    background: #D1FAE5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
   }
 
   &--reviewing {
-    background: rgba(#F59E0B, 0.1);
-    color: #D97706;
+    background: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FDE68A;
   }
 
   &--in-progress {
-    background: rgba(#3B82F6, 0.1);
-    color: #2563EB;
+    background: #DBEAFE;
+    color: #1D4ED8;
+    border: 1px solid #BFDBFE;
   }
 
   &--not-started {
-    background: rgba(#6B7280, 0.1);
+    background: #F3F4F6;
     color: #4B5563;
+    border: 1px solid #E5E7EB;
   }
 }
 
-// Progress Cell
+// -----------------------------------------------------------------------------
+// Progress Bar
+// -----------------------------------------------------------------------------
 .progress-cell {
   min-width: 150px;
 }
@@ -358,7 +411,7 @@
 .progress-bar {
   flex: 1;
   height: 6px;
-  background: rgba($color-border, 0.5);
+  background: #E5E7EB;
   border-radius: 3px;
   overflow: hidden;
 
@@ -380,14 +433,64 @@
   color: $color-text-secondary;
   font-variant-numeric: tabular-nums;
   min-width: 40px;
+  text-align: right;
 }
 
-.date-cell {
-  color: $color-text-muted;
-  font-size: 13px;
+// -----------------------------------------------------------------------------
+// Not Found / Empty State
+// -----------------------------------------------------------------------------
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+  background: $color-surface;
+  border-radius: 12px;
+  border: 1px solid $color-border;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: $color-text-muted;
+    margin: 0 0 24px 0;
+  }
 }
 
+// -----------------------------------------------------------------------------
+// Primary Button (EY Design System)
+// -----------------------------------------------------------------------------
+.btn-primary {
+  padding: 12px 20px;
+  background: $ey-yellow;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-primary;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+
+  &:hover {
+    background: $ey-yellow-hover;
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// -----------------------------------------------------------------------------
 // Placeholder Content
+// -----------------------------------------------------------------------------
 .placeholder-content {
   display: flex;
   flex-direction: column;
@@ -412,47 +515,5 @@
     font-size: 14px;
     color: $color-text-muted;
     margin: 0;
-  }
-}
-
-// Not Found
-.not-found {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 40px;
-  text-align: center;
-  background: $color-surface;
-  border-radius: $radius-xl;
-
-  h2 {
-    font-size: 20px;
-    font-weight: 600;
-    color: $color-text-primary;
-    margin: 0 0 8px 0;
-  }
-
-  p {
-    font-size: 14px;
-    color: $color-text-muted;
-    margin: 0 0 24px 0;
-  }
-}
-
-.btn-primary {
-  padding: 12px 24px;
-  background: $ey-yellow;
-  border: none;
-  border-radius: $radius-lg;
-  font-size: 14px;
-  font-weight: 600;
-  color: $color-text-primary;
-  cursor: pointer;
-  transition: all 200ms ease-out;
-
-  &:hover {
-    background: $ey-yellow-hover;
-    transform: translateY(-1px);
   }
 }

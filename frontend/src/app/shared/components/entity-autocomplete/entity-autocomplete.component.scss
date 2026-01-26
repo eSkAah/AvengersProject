@@ -1,13 +1,17 @@
-// Variables
-$primary-yellow: #FFE600;
-$primary-yellow-hover: #FFD000;
-$text-primary: #2E2E38;
-$text-secondary: #6B7280;
-$border-color: #E5E7EB;
-$bg-white: #FFFFFF;
-$bg-hover: #F9FAFB;
-$bg-selected: #FEF9E7;
-$shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
+// EY Design System Constants
+$ey-transition: 200ms ease-out;
+$ey-yellow: #FFE600;
+$ey-yellow-hover: #FFD000;
+$ey-text-dark: #2E2E38;
+$ey-text-secondary: #6B7280;
+$ey-border: #E5E7EB;
+$ey-bg-white: #FFFFFF;
+$ey-bg-hover: #F9FAFB;
+$ey-bg-selected: #FEF9E7;
+$ey-input-radius: 6px;
+$ey-dropdown-radius: 12px;
+$ey-shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
+$ey-focus-ring: #FFF9CC;
 
 .entity-autocomplete {
   position: relative;
@@ -18,20 +22,20 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
     position: relative;
     display: flex;
     align-items: center;
-    background: $bg-white;
-    border: 1px solid $border-color;
-    border-radius: 10px;
+    background: $ey-bg-white;
+    border: 1px solid $ey-border;
+    border-radius: $ey-input-radius;
     padding: 0 12px;
-    transition: all 0.2s ease;
+    transition: all $ey-transition;
 
     &:focus-within {
-      border-color: $primary-yellow;
-      box-shadow: 0 0 0 3px rgba(255, 230, 0, 0.15);
+      border-color: $ey-yellow;
+      box-shadow: 0 0 0 3px $ey-focus-ring;
     }
   }
 
   &__icon {
-    color: $text-secondary;
+    color: $ey-text-secondary;
     flex-shrink: 0;
   }
 
@@ -41,12 +45,12 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
     outline: none;
     padding: 10px 12px;
     font-size: 0.9375rem;
-    color: $text-primary;
+    color: $ey-text-dark;
     background: transparent;
     min-width: 0;
 
     &::placeholder {
-      color: $text-secondary;
+      color: $ey-text-secondary;
     }
   }
 
@@ -58,14 +62,14 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
     height: 24px;
     border: none;
     background: transparent;
-    color: $text-secondary;
+    color: $ey-text-secondary;
     cursor: pointer;
     border-radius: 50%;
-    transition: all 0.15s ease;
+    transition: all $ey-transition;
 
     &:hover {
       background: rgba(0, 0, 0, 0.05);
-      color: $text-primary;
+      color: $ey-text-dark;
     }
   }
 
@@ -74,10 +78,10 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: $bg-white;
-    border: 1px solid $border-color;
-    border-radius: 10px;
-    box-shadow: $shadow-dropdown;
+    background: $ey-bg-white;
+    border: 1px solid $ey-border;
+    border-radius: $ey-dropdown-radius;
+    box-shadow: $ey-shadow-dropdown;
     max-height: 300px;
     overflow-y: auto;
     z-index: 1000;
@@ -106,29 +110,29 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
     gap: 10px;
     padding: 10px 12px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: $ey-input-radius;
     font-size: 0.875rem;
-    color: $text-primary;
-    transition: background 0.15s ease;
+    color: $ey-text-dark;
+    transition: background $ey-transition;
 
     &:hover,
     &--highlighted {
-      background: $bg-hover;
+      background: $ey-bg-hover;
     }
 
     &--selected {
-      background: $bg-selected;
+      background: $ey-bg-selected;
       font-weight: 500;
     }
 
     &-icon {
-      color: $text-secondary;
+      color: $ey-text-secondary;
       flex-shrink: 0;
     }
 
     // Highlighted text (match)
     :deep(mark) {
-      background: rgba(255, 230, 0, 0.4);
+      background: rgba($ey-yellow, 0.4);
       color: inherit;
       padding: 0 2px;
       border-radius: 2px;
@@ -141,12 +145,12 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
     justify-content: center;
     gap: 8px;
     padding: 16px;
-    color: $text-secondary;
+    color: $ey-text-secondary;
     font-size: 0.875rem;
-    background: $bg-white;
-    border: 1px solid $border-color;
-    border-radius: 10px;
-    box-shadow: $shadow-dropdown;
+    background: $ey-bg-white;
+    border: 1px solid $ey-border;
+    border-radius: $ey-dropdown-radius;
+    box-shadow: $ey-shadow-dropdown;
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
@@ -157,8 +161,8 @@ $shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
   // Selected state styling
   &--selected {
     .entity-autocomplete__input-wrapper {
-      border-color: $primary-yellow;
-      background: $bg-selected;
+      border-color: $ey-yellow;
+      background: $ey-bg-selected;
     }
 
     .entity-autocomplete__input {

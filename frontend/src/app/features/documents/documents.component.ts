@@ -157,7 +157,7 @@ export class DocumentsComponent implements OnInit {
   });
 
   readonly typeOptions = ['general_ledger', 'trial_balance', 'bank_statement', 'tax_return', 'financial_statement'];
-  readonly statusOptions = ['missing', 'uploaded', 'analyzed', 'validated'];
+  readonly statusOptions = ['signed_off', 'in_review', 'pending', 'private', 'unclassified', 'missing', 'uploaded', 'analyzed', 'validated'];
 
   // Bulk download state
   readonly bulkDownloadProgress = signal(0);
@@ -166,7 +166,7 @@ export class DocumentsComponent implements OnInit {
   readonly bulkDownloadCurrent = signal(0);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => {
-    const items: BreadcrumbItem[] = [{ label: 'Library', icon: '📁' }];
+    const items: BreadcrumbItem[] = [{ label: 'Document Library' }];
     return items;
   });
 
@@ -214,8 +214,13 @@ export class DocumentsComponent implements OnInit {
       : allDocs;
 
     return {
+      signed_off: filteredDocs.filter(d => d.status === 'signed_off').length,
+      in_review: filteredDocs.filter(d => d.status === 'in_review').length,
+      pending: filteredDocs.filter(d => d.status === 'pending').length,
+      private: filteredDocs.filter(d => d.status === 'private').length,
+      unclassified: filteredDocs.filter(d => d.status === 'unclassified').length,
       missing: filteredDocs.filter(d => (d as Document & { isMissing?: boolean }).isMissing).length,
-      uploaded: filteredDocs.filter(d => d.status === 'analyzing' || d.status === 'pending').length,
+      uploaded: filteredDocs.filter(d => d.status === 'uploaded' || d.status === 'analyzing').length,
       analyzed: filteredDocs.filter(d => d.status === 'analyzed').length,
       validated: filteredDocs.filter(d => d.status === 'validated').length,
     };
@@ -251,6 +256,16 @@ export class DocumentsComponent implements OnInit {
         docs = docs.filter((d) => d.status === 'analyzed');
       } else if (gf.status === 'validated') {
         docs = docs.filter((d) => d.status === 'validated');
+      } else if (gf.status === 'signed_off') {
+        docs = docs.filter((d) => d.status === 'signed_off');
+      } else if (gf.status === 'in_review') {
+        docs = docs.filter((d) => d.status === 'in_review');
+      } else if (gf.status === 'pending') {
+        docs = docs.filter((d) => d.status === 'pending');
+      } else if (gf.status === 'private') {
+        docs = docs.filter((d) => d.status === 'private');
+      } else if (gf.status === 'unclassified') {
+        docs = docs.filter((d) => d.status === 'unclassified');
       }
     }
 
@@ -728,11 +743,15 @@ export class DocumentsComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
+      signed_off: 'Signed Off',
+      in_review: 'In Review',
+      pending: 'Pending',
+      private: 'Private (EY)',
+      unclassified: 'Unclassified',
       missing: 'Missing',
       uploaded: 'Uploaded',
       analyzed: 'Analyzed',
       validated: 'Validated',
-      pending: 'Uploaded',
       analyzing: 'Uploaded',
       error: 'Error',
     };

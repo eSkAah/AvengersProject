@@ -2,6 +2,9 @@
   class="kpi-card"
   [class.kpi-card--clickable]="clickable"
   [class.kpi-card--active]="active"
+  [class.kpi-card--dark]="variant === 'dark'"
+  [class.kpi-card--light]="variant === 'light' || variant === 'default'"
+  [class.kpi-card--highlight]="variant === 'highlight'"
   [class.kpi-card--info]="variant === 'info'"
   [class.kpi-card--warning]="variant === 'warning'"
   [class.kpi-card--error]="variant === 'error'"
@@ -11,10 +14,10 @@
   [attr.tabindex]="clickable ? 0 : null"
 >
   <div class="kpi-card__icon">
-    <lucide-icon [name]="icon" [size]="24"></lucide-icon>
+    <lucide-icon [name]="icon" [size]="20"></lucide-icon>
   </div>
   <div class="kpi-card__content">
-    <span class="kpi-card__value">{{ displayValue() }}</span>
     <span class="kpi-card__label">{{ label }}</span>
+    <span class="kpi-card__value">{{ displayValue() }}{{ unit }}</span>
   </div>
 </div>
