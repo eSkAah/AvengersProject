@@ -1,4 +1,5 @@
 @use 'styles/variables' as *;
+@use 'sass:color';
 
 // =============================================================================
 // SERVICE DETAIL PAGE - EY Design System
@@ -277,6 +278,112 @@
 }
 
 // -----------------------------------------------------------------------------
+// Entities Filter Bar
+// -----------------------------------------------------------------------------
+.entities-filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 16px 20px;
+  background: $color-background;
+  border-bottom: 1px solid $color-border;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    @media (max-width: 640px) {
+      width: 100%;
+    }
+
+    label {
+      font-size: 10px;
+      font-weight: 600;
+      color: $color-text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    select {
+      padding: 8px 32px 8px 12px;
+      font-size: 13px;
+      font-family: $font-family-base;
+      color: $color-text-primary;
+      background: $color-surface;
+      border: 1px solid $color-border;
+      border-radius: 6px;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      min-width: 160px;
+      transition: all 150ms ease-out;
+
+      @media (max-width: 640px) {
+        width: 100%;
+      }
+
+      &:hover {
+        border-color: color.adjust($color-border, $lightness: -10%);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $ey-yellow;
+        box-shadow: 0 0 0 2px rgba($ey-yellow, 0.2);
+      }
+    }
+  }
+
+  .clear-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid $color-border;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transition: all 150ms ease-out;
+    white-space: nowrap;
+
+    @media (max-width: 640px) {
+      align-self: flex-start;
+    }
+
+    &:hover {
+      background: $color-surface;
+      border-color: $color-text-muted;
+      color: $color-text-primary;
+    }
+  }
+
+  .filter-results {
+    margin-left: auto;
+    font-size: 12px;
+    color: $color-text-muted;
+    white-space: nowrap;
+
+    @media (max-width: 640px) {
+      margin-left: 0;
+      text-align: center;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 // Entities Table (EY Design System)
 // -----------------------------------------------------------------------------
 .entities-table-wrapper {
@@ -296,8 +403,36 @@
     color: $color-text-secondary;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    background: #f9fafb;
+    background: $color-background;
     border-bottom: 1px solid $color-border;
+
+    &.sortable-header {
+      cursor: pointer;
+      user-select: none;
+      transition: all 150ms ease-out;
+
+      > span {
+        display: inline;
+      }
+
+      .sort-icon {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 4px;
+        color: $ey-yellow;
+      }
+
+      &:hover,
+      &:focus {
+        background: color.adjust($color-background, $lightness: -2%);
+        color: $color-text-primary;
+        outline: none;
+      }
+
+      &:focus-visible {
+        box-shadow: inset 0 0 0 2px $ey-yellow;
+      }
+    }
   }
 
   td {
@@ -309,6 +444,42 @@
 
   tr:last-child td {
     border-bottom: none;
+  }
+}
+
+.empty-row {
+  td {
+    padding: 0 !important;
+    border-bottom: none !important;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+
+  p {
+    font-size: 14px;
+    color: $color-text-muted;
+    margin: 0 0 12px 0;
+  }
+
+  .clear-filters-link {
+    background: none;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: $color-info;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 

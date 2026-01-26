@@ -8,9 +8,10 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LucideAngularModule, ArrowLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronRight, ChevronUp, ChevronDown, X } from 'lucide-angular';
 import { ServiceEntityService, Service, ServiceEntity, EntityStatus } from '../../core/services/service-entity.service';
 import { PieChartComponent, PieChartData } from '../../shared/components/charts/pie-chart.component';
 import { StackedBarChartComponent, StackedBarDataPoint } from '../../shared/components/charts/stacked-bar-chart.component';
@@ -24,6 +25,7 @@ export type ServiceTab = 'entities' | 'documents' | 'insights';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     LucideAngularModule,
     PieChartComponent,
@@ -44,7 +46,26 @@ export class ServiceDetailComponent implements OnInit {
   readonly icons = {
     arrowLeft: ArrowLeft,
     chevronRight: ChevronRight,
+    chevronUp: ChevronUp,
+    chevronDown: ChevronDown,
+    x: X,
   };
+
+  // Filter state
+  readonly countryFilter = signal<string>('');
+  readonly statusFilter = signal<EntityStatus | ''>('');
+
+  // Sort state
+  readonly sortColumn = signal<'name' | 'status' | 'progress' | 'lastUpdated'>('name');
+  readonly sortDirection = signal<'asc' | 'desc'>('asc');
+
+  // Status options for filter dropdown
+  readonly statusOptions: { value: EntityStatus; label: string }[] = [
+    { value: 'not-started', label: 'Not Started' },
+    { value: 'in-progress', label: 'In Progress' },
+    { value: 'reviewing', label: 'Reviewing' },
+    { value: 'completed', label: 'Completed' },
+  ];
 
   readonly serviceId = signal<string | null>(null);
   readonly activeTab = signal<ServiceTab>('entities');
@@ -60,6 +81,70 @@ export class ServiceDetailComponent implements OnInit {
     const id = this.serviceId();
     if (!id) return [];
     return this.serviceEntityService.getEntitiesByService(id);
+  });
+
+  readonly uniqueCountries = computed<{ flag: string; name: string }[]>(() => {
+    const entityList = this.entities();
+    const countryMap = new Map<string, string>();
+
+    entityList.forEach(entity => {
+      if (!countryMap.has(entity.countryFlag)) {
+        // Extract country name from entity name or use flag as fallback
+        const countryName = this.getCountryName(entity.countryFlag);
+        countryMap.set(entity.countryFlag, countryName);
+      }
+    });
+
+    return Array.from(countryMap.entries())
+      .map(([flag, name]) => ({ flag, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  readonly filteredAndSortedEntities = computed<ServiceEntity[]>(() => {
+    let result = [...this.entities()];
+
+    // Apply country filter (exact match for single-country, or contains for multi-country entities)
+    const country = this.countryFilter();
+    if (country) {
+      result = result.filter(e => e.countryFlag === country || e.countryFlag.length > 4 && e.countryFlag.includes(country));
+    }
+
+    // Apply status filter
+    const status = this.statusFilter();
+    if (status) {
+      result = result.filter(e => e.status === status);
+    }
+
+    // Apply sorting
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+
+    result.sort((a, b) => {
+      let comparison = 0;
+
+      switch (column) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'status':
+          comparison = this.getStatusOrder(a.status) - this.getStatusOrder(b.status);
+          break;
+        case 'progress':
+          comparison = a.progress - b.progress;
+          break;
+        case 'lastUpdated':
+          comparison = new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
+          break;
+      }
+
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    return result;
+  });
+
+  readonly hasActiveFilters = computed<boolean>(() => {
+    return this.countryFilter() !== '' || this.statusFilter() !== '';
   });
 
   readonly progressionData = computed<StackedBarDataPoint[]>(() => {
@@ -154,5 +239,68 @@ export class ServiceDetailComponent implements OnInit {
 
   navigateToEntity(engagementId: string): void {
     this.router.navigate(['/app/entities', engagementId]);
+  }
+
+  toggleSort(column: 'name' | 'status' | 'progress' | 'lastUpdated'): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+  }
+
+  onSortKeydown(event: KeyboardEvent, column: 'name' | 'status' | 'progress' | 'lastUpdated'): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggleSort(column);
+    }
+  }
+
+  getAriaSortValue(column: 'name' | 'status' | 'progress' | 'lastUpdated'): 'ascending' | 'descending' | 'none' {
+    if (this.sortColumn() !== column) return 'none';
+    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  clearFilters(): void {
+    this.countryFilter.set('');
+    this.statusFilter.set('');
+  }
+
+  private getStatusOrder(status: EntityStatus): number {
+    const order: Record<EntityStatus, number> = {
+      'not-started': 0,
+      'in-progress': 1,
+      'reviewing': 2,
+      'completed': 3,
+    };
+    return order[status];
+  }
+
+  /**
+   * Maps flag emoji to country name.
+   * Note: Country flag emojis are composed of two regional indicator symbols,
+   * each being a surrogate pair (2 UTF-16 code units), totaling 4 characters.
+   */
+  private getCountryName(flag: string): string {
+    const countryNames: Record<string, string> = {
+      '🇫🇷': 'France',
+      '🇩🇪': 'Germany',
+      '🇳🇱': 'Netherlands',
+      '🇱🇺': 'Luxembourg',
+      '🇪🇸': 'Spain',
+      '🇧🇪': 'Belgium',
+      '🇮🇹': 'Italy',
+      '🇵🇹': 'Portugal',
+      '🇦🇹': 'Austria',
+      '🇨🇭': 'Switzerland',
+      '🇬🇧': 'United Kingdom',
+      '🇮🇪': 'Ireland',
+      '🇵🇱': 'Poland',
+    };
+    // Extract first flag from multi-flag strings (e.g., 🇫🇷🇩🇪 → 🇫🇷)
+    // Each flag emoji = 4 UTF-16 code units (2 regional indicators × 2 surrogates each)
+    const firstFlag = flag.slice(0, 4);
+    return countryNames[firstFlag] || flag;
   }
 }
