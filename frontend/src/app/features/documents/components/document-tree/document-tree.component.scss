@@ -5,6 +5,41 @@
 // Hierarchical navigation with entity flags and document type icons
 // =============================================================================
 
+// Search input container
+.document-tree__search {
+  padding: $spacing-3;
+  padding-bottom: $spacing-2;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+// Empty state (no search results)
+.document-tree__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-8 $spacing-4;
+  text-align: center;
+  color: #9ca3af;
+
+  lucide-icon {
+    margin-bottom: $spacing-3;
+    color: #d1d5db;
+  }
+
+  p {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0 0 $spacing-1 0;
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: #9ca3af;
+  }
+}
+
 .document-tree {
   padding: $spacing-2;
   flex: 1;

@@ -1,6 +1,27 @@
-<div class="document-tree">
-  <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: treeData(), level: 0 }"></ng-container>
+<!-- Search Input -->
+<div class="document-tree__search">
+  <app-search-bar
+    placeholder="Search entities or documents..."
+    [debounceMs]="0"
+    (valueChange)="onSearchChange($event)"
+  ></app-search-bar>
 </div>
+
+<!-- Empty State (no search results) -->
+@if (searchQuery() && !hasSearchResults()) {
+  <div class="document-tree__empty">
+    <lucide-icon name="search-x" [size]="32"></lucide-icon>
+    <p>No results found</p>
+    <span>Try a different search term</span>
+  </div>
+}
+
+<!-- Tree View -->
+@if (filteredTreeData(); as tree) {
+  <div class="document-tree">
+    <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: tree, level: 0 }"></ng-container>
+  </div>
+}
 
 <ng-template #treeNodeTpl let-node="node" let-level="level">
   <div

@@ -8,6 +8,7 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import {
   Document,
@@ -17,6 +18,7 @@ import {
   DOCUMENT_CATEGORY_LABELS,
   DOCUMENT_TYPE_LABELS,
 } from '../../../../core';
+import { SearchBarComponent } from '../../../../shared';
 
 export interface TreeNode {
   id: string;
@@ -58,7 +60,7 @@ const ENTITY_FLAGS: Record<string, string> = {
 @Component({
   selector: 'app-document-tree',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SearchBarComponent],
   templateUrl: './document-tree.component.html',
   styleUrl: './document-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,6 +84,9 @@ export class DocumentTreeComponent {
   selectedNodeId = signal<string | null>(null);
   highlightedNodeId = signal<string | null>(null);
 
+  // Search state
+  searchQuery = signal<string>('');
+
   private typeIcons: Record<string, string> = {
     general_ledger: 'book-open',
     trial_balance: 'bar-chart-3',
@@ -101,6 +106,47 @@ export class DocumentTreeComponent {
     // Build from documents list using new Entity → Year → Type hierarchy
     const documents = this.documentsSignal();
     return this.buildTreeFromDocuments(documents);
+  });
+
+  /**
+   * Filtered tree data based on search query
+   * Returns null if no matches found
+   */
+  filteredTreeData = computed<TreeNode | null>(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    const tree = this.treeData();
+
+    if (!query) {
+      return tree;
+    }
+
+    return this.filterTreeNode(tree, query);
+  });
+
+  /**
+   * Whether the search has results
+   */
+  hasSearchResults = computed<boolean>(() => {
+    return this.filteredTreeData() !== null;
+  });
+
+  /**
+   * When searching, auto-expand all nodes in the filtered tree
+   */
+  searchExpandedNodes = computed<Set<string>>(() => {
+    const query = this.searchQuery().trim();
+    if (!query) {
+      return new Set<string>();
+    }
+
+    const filtered = this.filteredTreeData();
+    if (!filtered) {
+      return new Set<string>();
+    }
+
+    const nodeIds = new Set<string>();
+    this.collectAllNodeIds(filtered, nodeIds);
+    return nodeIds;
   });
 
   /**
@@ -270,7 +316,61 @@ export class DocumentTreeComponent {
     return icons[category] || 'folder';
   }
 
+  /**
+   * Recursively filter tree nodes based on search query
+   * Returns the node with filtered children, or null if no match
+   */
+  private filterTreeNode(node: TreeNode, query: string): TreeNode | null {
+    const labelMatches = node.label.toLowerCase().includes(query);
+
+    // If node has no children, return it only if label matches
+    if (!node.children || node.children.length === 0) {
+      return labelMatches ? { ...node } : null;
+    }
+
+    // Recursively filter children
+    const filteredChildren = node.children
+      .map(child => this.filterTreeNode(child, query))
+      .filter((child): child is TreeNode => child !== null);
+
+    // If label matches, include all children (show full subtree)
+    if (labelMatches) {
+      return { ...node, children: node.children };
+    }
+
+    // If any children matched, return node with filtered children
+    if (filteredChildren.length > 0) {
+      return { ...node, children: filteredChildren };
+    }
+
+    // No match
+    return null;
+  }
+
+  /**
+   * Collect all node IDs from a tree (for auto-expansion during search)
+   */
+  private collectAllNodeIds(node: TreeNode, ids: Set<string>): void {
+    ids.add(node.id);
+    if (node.children) {
+      for (const child of node.children) {
+        this.collectAllNodeIds(child, ids);
+      }
+    }
+  }
+
+  /**
+   * Handle search query change
+   */
+  onSearchChange(query: string): void {
+    this.searchQuery.set(query);
+  }
+
   isExpanded(nodeId: string): boolean {
+    // When searching, use auto-expanded nodes
+    if (this.searchQuery().trim()) {
+      return this.searchExpandedNodes().has(nodeId);
+    }
     return this.expandedNodes().has(nodeId);
   }
 
