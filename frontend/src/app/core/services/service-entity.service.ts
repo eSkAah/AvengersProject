@@ -116,43 +116,136 @@ export class ServiceEntityService {
     return this.entitiesByService[serviceId] ?? [];
   }
 
+  /**
+   * Generates yearly progression history (12 months) where:
+   * - 'completed' only increases (never decreases)
+   * - 'notStarted' only decreases (never increases)
+   * - Entities flow: Not Started → In Progress → Reviewing → Completed
+   * - End of year: ALL entities are Completed (100% for demo)
+   */
   getProgressionHistory(serviceId: string): ProgressionDataPoint[] {
     const entities = this.getEntitiesByService(serviceId);
     const total = entities.length;
+    if (total === 0) return [];
 
-    // Generate 12 weeks of mock progression data
-    const weeks: ProgressionDataPoint[] = [];
-    const today = new Date();
+    const months: ProgressionDataPoint[] = [];
+    const numMonths = 12;
+    const currentMonth = new Date().getMonth(); // 0-11
 
-    for (let i = 11; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - (i * 7));
-      const weekLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    // Month labels
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-      // Simulate progression over time (more completed as we get closer to today)
-      const progressFactor = (12 - i) / 12;
-      const completed = Math.floor(total * progressFactor * 0.4);
-      const reviewing = Math.floor(total * progressFactor * 0.2);
-      const inProgress = Math.floor(total * progressFactor * 0.3);
-      const notStarted = total - completed - reviewing - inProgress;
+    // Each entity completes at a different month (staggered for realistic progression)
+    // All entities must be completed by December (month 11)
+    const entityTimelines = entities.map((entity, idx) => {
+      // Spread entity completions across months 4-11 (May to Dec)
+      // Earlier indexed entities complete earlier
+      const completionMonth = Math.min(
+        11, // Latest: December
+        4 + Math.floor((idx / total) * 7) + (idx % 2) // May (4) to Dec (11)
+      );
 
-      weeks.push({
-        date: weekLabel,
-        notStarted: Math.max(0, notStarted),
-        inProgress: Math.max(0, inProgress),
-        reviewing: Math.max(0, reviewing),
-        completed: Math.max(0, completed)
+      // Each entity starts 3-4 months before completion
+      const startMonth = Math.max(0, completionMonth - 3 - (idx % 2));
+
+      // Reviewing starts 1-2 months before completion
+      const reviewMonth = Math.max(startMonth + 1, completionMonth - 1 - (idx % 2));
+
+      return { startMonth, reviewMonth, completionMonth };
+    });
+
+    // Generate each month's state
+    for (let monthIdx = 0; monthIdx < numMonths; monthIdx++) {
+      let notStarted = 0;
+      let inProgress = 0;
+      let reviewing = 0;
+      let completed = 0;
+
+      // For each entity, calculate its status at this month
+      entityTimelines.forEach(timeline => {
+        if (monthIdx < timeline.startMonth) {
+          notStarted++;
+        } else if (monthIdx < timeline.reviewMonth) {
+          inProgress++;
+        } else if (monthIdx < timeline.completionMonth) {
+          reviewing++;
+        } else {
+          completed++;
+        }
+      });
+
+      months.push({
+        date: monthNames[monthIdx],
+        notStarted,
+        inProgress,
+        reviewing,
+        completed
       });
     }
 
-    // Make the last point match actual current state
-    const currentState = this.getStatusCounts(serviceId);
-    weeks[weeks.length - 1] = {
-      date: weeks[weeks.length - 1].date,
-      ...currentState
+    // Apply monotonic smoothing to ensure no regressions
+    this.ensureMonotonicProgression(months);
+
+    // Final month should be 100% completed for demo
+    months[numMonths - 1] = {
+      date: monthNames[numMonths - 1],
+      notStarted: 0,
+      inProgress: 0,
+      reviewing: 0,
+      completed: total
     };
 
-    return weeks;
+    return months;
+  }
+
+  /**
+   * Ensures monotonic progression: completed never decreases, notStarted never increases.
+   * Adjusts intermediate values to create smooth, realistic progression.
+   */
+  private ensureMonotonicProgression(weeks: ProgressionDataPoint[]): void {
+    const total = weeks[0].notStarted + weeks[0].inProgress + weeks[0].reviewing + weeks[0].completed;
+
+    // Forward pass: ensure completed never decreases
+    for (let i = 1; i < weeks.length; i++) {
+      if (weeks[i].completed < weeks[i - 1].completed) {
+        weeks[i].completed = weeks[i - 1].completed;
+      }
+    }
+
+    // Forward pass: ensure notStarted never increases
+    for (let i = 1; i < weeks.length; i++) {
+      if (weeks[i].notStarted > weeks[i - 1].notStarted) {
+        weeks[i].notStarted = weeks[i - 1].notStarted;
+      }
+    }
+
+    // Rebalance inProgress and reviewing to maintain total
+    for (let i = 0; i < weeks.length; i++) {
+      const currentTotal = weeks[i].notStarted + weeks[i].inProgress + weeks[i].reviewing + weeks[i].completed;
+      const diff = total - currentTotal;
+
+      if (diff !== 0) {
+        // Distribute difference to inProgress and reviewing
+        // Prefer inProgress for positive diff, reviewing for balancing
+        if (diff > 0) {
+          weeks[i].inProgress += Math.ceil(diff / 2);
+          weeks[i].reviewing += Math.floor(diff / 2);
+        } else {
+          // Need to reduce - take from inProgress first, then reviewing
+          const reduction = Math.abs(diff);
+          const fromInProgress = Math.min(weeks[i].inProgress, reduction);
+          weeks[i].inProgress -= fromInProgress;
+          weeks[i].reviewing -= (reduction - fromInProgress);
+        }
+      }
+
+      // Ensure no negative values
+      weeks[i].notStarted = Math.max(0, weeks[i].notStarted);
+      weeks[i].inProgress = Math.max(0, weeks[i].inProgress);
+      weeks[i].reviewing = Math.max(0, weeks[i].reviewing);
+      weeks[i].completed = Math.max(0, weeks[i].completed);
+    }
   }
 
   private getStatusCounts(serviceId: string): { notStarted: number; inProgress: number; reviewing: number; completed: number } {

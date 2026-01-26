@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule, ArrowLeft, ChevronRight } from 'lucide-angular';
 import { ServiceEntityService, Service, ServiceEntity, EntityStatus } from '../../core/services/service-entity.service';
 import { PieChartComponent, PieChartData } from '../../shared/components/charts/pie-chart.component';
-import { StackedAreaChartComponent, StackedAreaDataPoint } from '../../shared/components/charts/stacked-area-chart.component';
+import { StackedBarChartComponent, StackedBarDataPoint } from '../../shared/components/charts/stacked-bar-chart.component';
 import { ServiceDocumentsComponent } from './components/service-documents/service-documents.component';
 import { ServiceInsightsComponent } from './components/service-insights/service-insights.component';
 
@@ -27,7 +27,7 @@ export type ServiceTab = 'entities' | 'documents' | 'insights';
     RouterLink,
     LucideAngularModule,
     PieChartComponent,
-    StackedAreaChartComponent,
+    StackedBarChartComponent,
     ServiceDocumentsComponent,
     ServiceInsightsComponent,
   ],
@@ -62,7 +62,7 @@ export class ServiceDetailComponent implements OnInit {
     return this.serviceEntityService.getEntitiesByService(id);
   });
 
-  readonly progressionData = computed<StackedAreaDataPoint[]>(() => {
+  readonly progressionData = computed<StackedBarDataPoint[]>(() => {
     const id = this.serviceId();
     if (!id) return [];
     return this.serviceEntityService.getProgressionHistory(id);
