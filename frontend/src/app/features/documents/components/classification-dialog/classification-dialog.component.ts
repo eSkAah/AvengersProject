@@ -39,15 +39,13 @@ export interface ClassificationResult {
             <lucide-icon name="file-text" [size]="32"></lucide-icon>
             <div class="dialog__file-details">
               <span class="dialog__file-name">{{ file.name }}</span>
-              <span class="dialog__file-size">
-                {{ (file.size / 1024 / 1024).toFixed(2) }} MB
-              </span>
+              <span class="dialog__file-size"> {{ (file.size / 1024 / 1024).toFixed(2) }} MB </span>
             </div>
           </div>
 
           <p class="dialog__message">
-            The application could not automatically identify all information.
-            Please complete or correct the classification.
+            The application could not automatically identify all information. Please complete or
+            correct the classification.
           </p>
 
           <div class="dialog__form">
@@ -106,14 +104,8 @@ export interface ClassificationResult {
         </div>
 
         <div class="dialog__actions">
-          <app-button variant="secondary" (clicked)="cancel.emit()">
-            Cancel
-          </app-button>
-          <app-button
-            variant="primary"
-            [disabled]="!isValid()"
-            (clicked)="onConfirm()"
-          >
+          <app-button variant="secondary" (clicked)="cancel.emit()"> Cancel </app-button>
+          <app-button variant="primary" [disabled]="!isValid()" (clicked)="onConfirm()">
             <lucide-icon name="check" [size]="16"></lucide-icon>
             Confirm
           </app-button>
@@ -151,11 +143,7 @@ export class ClassificationDialogComponent implements OnInit {
   }
 
   isValid(): boolean {
-    return !!(
-      this.selectedEntity() &&
-      this.selectedYear() &&
-      this.selectedType()
-    );
+    return !!(this.selectedEntity() && this.selectedYear() && this.selectedType());
   }
 
   onConfirm(): void {

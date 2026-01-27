@@ -1,9 +1,22 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Donut Widget - EY Design System
+// =============================================================================
+
 .donut-widget {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: $color-surface;
+  border-radius: $radius-xl;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow $transition-normal ease-out, transform $transition-normal ease-out;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
 
   &__header {
     display: flex;
@@ -13,6 +26,7 @@
 
     lucide-icon {
       color: $ey-yellow;
+      transition: color $transition-normal ease-out;
     }
 
     h3 {
@@ -40,6 +54,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+// Donut Chart Container
+// -----------------------------------------------------------------------------
 .donut-chart {
   position: relative;
 
@@ -48,6 +65,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+// Custom Legend (EY Design - 10px dots, 11px Inter labels)
+// -----------------------------------------------------------------------------
 .donut-legend {
   display: flex;
   flex-direction: column;
@@ -64,7 +84,7 @@
   border: 1px solid transparent;
   border-radius: $radius-md;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $transition-normal ease-out;
   text-align: left;
   width: 100%;
 
@@ -83,16 +103,19 @@
     opacity: 0.5;
   }
 
+  // EY Design: 10px colored dots
   &__dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: $radius-full;
     flex-shrink: 0;
   }
 
+  // EY Design: 11px Inter labels
   &__label {
     flex: 1;
-    font-size: $font-size-sm;
+    font-size: 11px;
+    font-family: $font-family-base;
     font-weight: $font-weight-medium;
     color: $color-text-primary;
   }

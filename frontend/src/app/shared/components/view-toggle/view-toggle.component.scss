@@ -1,11 +1,19 @@
 @use 'styles/variables' as *;
 
+// EY Design System Constants
+$ey-transition: 200ms ease-out;
+$ey-toggle-bg: #F5F5F5;
+$ey-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+$ey-text-dark: #2E2E38;
+$ey-text-secondary: #6B7280;
+
 .view-toggle {
   display: inline-flex;
-  background: $color-background;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  overflow: hidden;
+  background: $ey-toggle-bg;
+  border: none;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
 
   &__btn {
     display: flex;
@@ -15,22 +23,20 @@
     height: 36px;
     border: none;
     background: transparent;
-    color: $color-text-secondary;
+    color: $ey-text-secondary;
     cursor: pointer;
-    transition: all 0.2s ease;
+    border-radius: 6px;
+    transition: all $ey-transition;
 
     &:hover:not(&--active) {
-      background: rgba($ey-black, 0.05);
-      color: $color-text-primary;
+      background: rgba(0, 0, 0, 0.05);
+      color: $ey-text-dark;
     }
 
     &--active {
-      background: $ey-yellow;
-      color: $ey-black;
-    }
-
-    &:first-child {
-      border-right: 1px solid $color-border;
+      background: #FFFFFF;
+      color: $ey-text-dark;
+      box-shadow: $ey-active-shadow;
     }
   }
 

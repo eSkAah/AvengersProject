@@ -1,5 +1,12 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Toast Component - EY Design System
+// =============================================================================
+// Semantic colors for success/error/warning/info
+// Border-radius: 8px (radius-lg) for toast cards
+// Transitions: 200ms ease-out
+
 .toast-container {
   position: fixed;
   top: $spacing-4;
@@ -16,9 +23,9 @@
   align-items: center;
   gap: $spacing-3;
   padding: $spacing-3 $spacing-4;
-  border-radius: $radius-md;
-  box-shadow: $shadow-lg;
-  animation: slideIn $transition-normal $transition-timing;
+  border-radius: $radius-lg; // 8px for cards/toast
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); // shadow-dropdown
+  animation: slideIn $transition-normal ease-out;
 
   &__icon {
     flex-shrink: 0;
@@ -27,14 +34,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-bold;
   }
 
   &__message {
     flex: 1;
     font-size: $font-size-sm;
-    line-height: $line-height-normal;
+    font-weight: $font-weight-medium;
+    line-height: 1.5;
   }
 
   &__close {
@@ -44,33 +50,52 @@
     border: none;
     cursor: pointer;
     opacity: 0.7;
-    transition: opacity $transition-fast;
-    font-size: $font-size-sm;
+    transition: opacity $transition-fast ease-out;
+    border-radius: $radius-sm;
 
     &:hover {
       opacity: 1;
+      background: rgba(255, 255, 255, 0.2);
     }
   }
 
-  // Variants
+  // ==========================================================================
+  // Semantic Variants - Using EY design system colors
+  // ==========================================================================
   &--success {
-    background-color: $color-success;
+    background-color: #10B981; // success
     color: white;
+
+    .toast__close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
   }
 
   &--error {
-    background-color: $color-error;
+    background-color: #EF4444; // error
     color: white;
+
+    .toast__close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
   }
 
   &--warning {
-    background-color: $color-warning;
-    color: $ey-black;
+    background-color: #F59E0B; // warning
+    color: #2E2E38; // ey-black (dark text for visibility)
+
+    .toast__close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
   }
 
   &--info {
-    background-color: $color-info;
+    background-color: #3B82F6; // info
     color: white;
+
+    .toast__close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
   }
 }
 

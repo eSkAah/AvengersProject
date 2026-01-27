@@ -1,39 +1,67 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Input,
   Output,
   EventEmitter,
   signal,
   computed,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import {
   Document,
   DocumentLibrary,
   DocumentCategory,
   DocumentType,
+  ServiceType,
   DOCUMENT_CATEGORY_LABELS,
   DOCUMENT_TYPE_LABELS,
+  SERVICE_TYPE_LABELS,
+  SERVICE_TYPE_ICONS,
+  DOCUMENT_TYPE_TO_SERVICE,
 } from '../../../../core';
+import { SearchBarComponent } from '../../../../shared';
 
 export interface TreeNode {
   id: string;
   label: string;
   icon: string;
   isEmoji?: boolean;
-  type: 'library' | 'entity' | 'year' | 'doctype' | 'document';
+  type: 'library' | 'entity' | 'year' | 'service' | 'folder' | 'document' | 'custom';
   children?: TreeNode[];
   count?: number;
   documentId?: string;
   docType?: DocumentType;
+  serviceType?: ServiceType;
   category?: DocumentCategory;
   entityId?: string;
   year?: number;
   // Parent context for filtering
   parentEntity?: string;
   parentYear?: number;
+  parentService?: ServiceType;
+  // For drag & drop
+  isDropTarget?: boolean;
+}
+
+export interface CustomFolder {
+  id: string;
+  name: string;
+  entityName: string;
+  year: number;
+  documentIds: string[];
+}
+
+export interface DocumentMoveEvent {
+  documentId: string;
+  documentName: string;
+  fromService: ServiceType | null;
+  toService: ServiceType;
+  toCustomFolder?: string;
 }
 
 // Country flags mapping - Tristan Capital Partners entities
@@ -58,29 +86,50 @@ const ENTITY_FLAGS: Record<string, string> = {
 @Component({
   selector: 'app-document-tree',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SearchBarComponent],
   templateUrl: './document-tree.component.html',
   styleUrl: './document-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentTreeComponent {
+  private readonly cdr = inject(ChangeDetectorRef);
+
   @Input() set library(value: DocumentLibrary | null) {
     this.librarySignal.set(value);
+    this.cdr.markForCheck();
   }
 
   @Input() set documents(value: Document[]) {
     this.documentsSignal.set(value);
+    // Force change detection to ensure tree updates properly with OnPush
+    this.cdr.markForCheck();
   }
 
   @Output() nodeSelect = new EventEmitter<TreeNode>();
   @Output() documentSelect = new EventEmitter<Document>();
+  @Output() documentMoved = new EventEmitter<DocumentMoveEvent>();
+  @Output() folderCreated = new EventEmitter<CustomFolder>();
 
   private librarySignal = signal<DocumentLibrary | null>(null);
   private documentsSignal = signal<Document[]>([]);
 
-  expandedNodes = signal<Set<string>>(new Set(['root']));
+  expandedNodes = signal<Set<string>>(new Set());
   selectedNodeId = signal<string | null>(null);
   highlightedNodeId = signal<string | null>(null);
+
+  // Search state
+  searchQuery = signal<string>('');
+
+  // Drag & Drop state
+  draggedNode = signal<TreeNode | null>(null);
+  dropTargetId = signal<string | null>(null);
+
+  // Custom folders state
+  customFolders = signal<CustomFolder[]>([]);
+
+  // Creating folder state
+  creatingFolderFor = signal<{ entityName: string; year: number } | null>(null);
+  newFolderName = signal<string>('');
 
   private typeIcons: Record<string, string> = {
     general_ledger: 'book-open',
@@ -90,74 +139,118 @@ export class DocumentTreeComponent {
     financial_statement: 'file-text',
   };
 
-  treeData = computed<TreeNode>(() => {
-    const library = this.librarySignal();
-
-    // If we have a library from the API, use it (legacy mode)
-    if (library) {
-      return this.buildTreeFromLibrary(library);
-    }
-
-    // Build from documents list using new Entity → Year → Type hierarchy
+  /**
+   * Build tree data - returns entity nodes directly (no root wrapper)
+   */
+  treeData = computed<TreeNode[]>(() => {
     const documents = this.documentsSignal();
     return this.buildTreeFromDocuments(documents);
   });
 
   /**
-   * Legacy tree builder - uses category-based hierarchy
+   * Filtered tree data based on search query
    */
-  private buildTreeFromLibrary(library: DocumentLibrary): TreeNode {
-    const categoryNodes: TreeNode[] = library.categories.map((cat) => ({
-      id: `category-${cat.category}`,
-      label: cat.categoryLabel,
-      icon: this.getCategoryIcon(cat.category),
-      isEmoji: false,
-      type: 'doctype' as const,
-      category: cat.category as DocumentCategory,
-      count: cat.totalCount,
-      children: cat.types.map((typeGroup) => ({
-        id: `type-${typeGroup.type}`,
-        label: typeGroup.typeLabel,
-        icon: this.typeIcons[typeGroup.type] || 'file-text',
-        isEmoji: false,
-        type: 'doctype' as const,
-        docType: typeGroup.type as DocumentType,
-        count: typeGroup.count,
-        children: typeGroup.documents.map((doc) => ({
-          id: doc.id,
-          label: doc.name,
-          icon: this.typeIcons[doc.type] || 'file-text',
-          isEmoji: false,
-          type: 'document' as const,
-          documentId: doc.id,
-        })),
-      })),
-    }));
+  filteredTreeData = computed<TreeNode[]>(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    const tree = this.treeData();
 
-    return {
-      id: 'root',
-      label: 'Document Library',
-      icon: 'folder-open',
-      isEmoji: false,
-      type: 'library',
-      count: library.totalCount,
-      children: categoryNodes,
-    };
-  }
+    if (!query) {
+      return tree;
+    }
+
+    return tree
+      .map(node => this.filterTreeNode(node, query))
+      .filter((node): node is TreeNode => node !== null);
+  });
 
   /**
-   * New tree builder: Entity → Year → Type hierarchy
+   * Whether the search has results
    */
-  private buildTreeFromDocuments(documents: Document[]): TreeNode {
-    // Group documents by entity → year → type
-    const entityMap = new Map<string, Map<number, Map<DocumentType, Document[]>>>();
+  hasSearchResults = computed<boolean>(() => {
+    return this.filteredTreeData().length > 0;
+  });
+
+  /**
+   * When searching, auto-expand all nodes in the filtered tree
+   */
+  searchExpandedNodes = computed<Set<string>>(() => {
+    const query = this.searchQuery().trim();
+    if (!query) {
+      return new Set<string>();
+    }
+
+    const filtered = this.filteredTreeData();
+    const nodeIds = new Set<string>();
+
+    for (const node of filtered) {
+      this.collectAllNodeIds(node, nodeIds);
+    }
+
+    return nodeIds;
+  });
+
+  /**
+   * Effective expanded nodes - combines manual expansion and search auto-expansion
+   * This is the reactive signal that should be used in the template
+   */
+  effectiveExpandedNodes = computed<Set<string>>(() => {
+    const query = this.searchQuery().trim();
+    if (query) {
+      return this.searchExpandedNodes();
+    }
+    return this.expandedNodes();
+  });
+
+  /**
+   * Get service from document type
+   */
+  private getServiceForDocument(doc: Document): ServiceType {
+    // If document has explicit serviceType, use it
+    if (doc.serviceType) {
+      return doc.serviceType;
+    }
+
+    // If document is unclassified, put in Others
+    if (doc.status === 'unclassified') {
+      return 'others';
+    }
+
+    // Map document type to service
+    return DOCUMENT_TYPE_TO_SERVICE[doc.type] || 'others';
+  }
+
+  // All services to display (always visible, even if empty)
+  private readonly ALL_SERVICES: ServiceType[] = [
+    'cit',
+    'vat',
+    'assessment',
+    'transfer-pricing',
+    'others',
+  ];
+
+  /**
+   * New tree builder: Entity → Year → Service hierarchy (no root node)
+   * All 4 main services + Others are always shown, even if empty
+   */
+  private buildTreeFromDocuments(documents: Document[]): TreeNode[] {
+    // Group documents by entity → year → service
+    const entityMap = new Map<string, Map<number, Map<ServiceType, Document[]>>>();
+
+    // First, collect all unique entity-year combinations
+    const entityYears = new Map<string, Set<number>>();
 
     for (const doc of documents) {
-      if (!doc.entityName || !doc.year || !doc.type) continue;
+      if (!doc.entityName || !doc.year) continue;
 
       const entityName = doc.entityName;
       const year = doc.year;
-      const docType = doc.type;
+      const service = this.getServiceForDocument(doc);
+
+      // Track entity-year combinations
+      if (!entityYears.has(entityName)) {
+        entityYears.set(entityName, new Set());
+      }
+      entityYears.get(entityName)!.add(year);
 
       if (!entityMap.has(entityName)) {
         entityMap.set(entityName, new Map());
@@ -168,15 +261,15 @@ export class DocumentTreeComponent {
         yearMap.set(year, new Map());
       }
 
-      const typeMap = yearMap.get(year)!;
-      if (!typeMap.has(docType)) {
-        typeMap.set(docType, []);
+      const serviceMap = yearMap.get(year)!;
+      if (!serviceMap.has(service)) {
+        serviceMap.set(service, []);
       }
 
-      typeMap.get(docType)!.push(doc);
+      serviceMap.get(service)!.push(doc);
     }
 
-    // Build tree nodes
+    // Build tree nodes (no root wrapper)
     const entityNodes: TreeNode[] = [];
 
     for (const [entityName, yearMap] of entityMap) {
@@ -187,24 +280,101 @@ export class DocumentTreeComponent {
       const sortedYears = Array.from(yearMap.keys()).sort((a, b) => b - a);
 
       for (const year of sortedYears) {
-        const typeMap = yearMap.get(year)!;
-        const typeNodes: TreeNode[] = [];
+        const serviceMap = yearMap.get(year)!;
+        const serviceNodes: TreeNode[] = [];
         let yearTotal = 0;
 
-        for (const [docType, docs] of typeMap) {
-          typeNodes.push({
-            id: `type-${entityName}-${year}-${docType}`,
-            label: DOCUMENT_TYPE_LABELS[docType] || docType,
-            icon: this.typeIcons[docType] || 'file-text',
+        // Build ALL service nodes (even empty ones)
+        // Each service has two folders: Documents and Results
+        for (const service of this.ALL_SERVICES) {
+          const docs = serviceMap.get(service) || [];
+
+          // Create document nodes for the Documents folder
+          const documentNodes: TreeNode[] = docs.map(doc => ({
+            id: doc.id,
+            label: doc.name,
+            icon: 'file-text',
             isEmoji: false,
-            type: 'doctype',
-            docType,
-            entityId: docs[0]?.entityId,
+            type: 'document' as const,
+            documentId: doc.id,
+            docType: doc.type,
+            serviceType: service,
+            entityId: doc.entityId,
+            year: doc.year,
+            parentEntity: entityName,
+            parentYear: year,
+            parentService: service,
+          }));
+
+          // Create the two folders: Documents and Results
+          const serviceFolders: TreeNode[] = [
+            {
+              id: `folder-${entityName}-${year}-${service}-documents`,
+              label: 'Documents',
+              icon: 'folder',
+              isEmoji: false,
+              type: 'folder',
+              serviceType: service,
+              entityId: entityName,
+              year,
+              count: docs.length,
+              parentEntity: entityName,
+              parentYear: year,
+              parentService: service,
+              children: documentNodes,
+            },
+            {
+              id: `folder-${entityName}-${year}-${service}-results`,
+              label: 'Results',
+              icon: 'folder-output',
+              isEmoji: false,
+              type: 'folder',
+              serviceType: service,
+              entityId: entityName,
+              year,
+              count: 0, // Results folder starts empty
+              parentEntity: entityName,
+              parentYear: year,
+              parentService: service,
+              children: [],
+            },
+          ];
+
+          serviceNodes.push({
+            id: `service-${entityName}-${year}-${service}`,
+            label: SERVICE_TYPE_LABELS[service],
+            icon: SERVICE_TYPE_ICONS[service],
+            isEmoji: false,
+            type: 'service',
+            serviceType: service,
+            entityId: docs[0]?.entityId || entityName,
             year,
             count: docs.length,
             parentEntity: entityName,
             parentYear: year,
-            children: docs.map((doc) => ({
+            children: serviceFolders,
+          });
+          yearTotal += docs.length;
+        }
+
+        // Add custom folders for this year
+        const customFoldersForYear = this.customFolders().filter(
+          f => f.entityName === entityName && f.year === year
+        );
+        for (const folder of customFoldersForYear) {
+          const folderDocs = documents.filter(d => folder.documentIds.includes(d.id));
+          serviceNodes.push({
+            id: `custom-${folder.id}`,
+            label: folder.name,
+            icon: 'folder',
+            isEmoji: false,
+            type: 'custom',
+            entityId: entityName,
+            year,
+            count: folderDocs.length,
+            parentEntity: entityName,
+            parentYear: year,
+            children: folderDocs.map(doc => ({
               id: doc.id,
               label: doc.name,
               icon: this.typeIcons[doc.type] || 'file-text',
@@ -218,7 +388,6 @@ export class DocumentTreeComponent {
               parentYear: year,
             })),
           });
-          yearTotal += docs.length;
         }
 
         yearNodes.push({
@@ -231,13 +400,13 @@ export class DocumentTreeComponent {
           entityId: entityName,
           count: yearTotal,
           parentEntity: entityName,
-          children: typeNodes,
+          children: serviceNodes,
         });
 
         entityTotal += yearTotal;
       }
 
-      const flag = ENTITY_FLAGS[entityName] || '';
+      const flag = ENTITY_FLAGS[entityName] || '🏢';
       entityNodes.push({
         id: `entity-${entityName}`,
         label: entityName,
@@ -250,28 +419,60 @@ export class DocumentTreeComponent {
       });
     }
 
-    return {
-      id: 'root',
-      label: 'Document Library',
-      icon: 'folder-open',
-      isEmoji: false,
-      type: 'library',
-      count: documents.length,
-      children: entityNodes,
-    };
+    return entityNodes;
   }
 
-  private getCategoryIcon(category: string): string {
-    const icons: Record<string, string> = {
-      accounting: 'book-open',
-      tax: 'clipboard-list',
-      financial: 'landmark',
-    };
-    return icons[category] || 'folder';
+  /**
+   * Recursively filter tree nodes based on search query
+   */
+  private filterTreeNode(node: TreeNode, query: string): TreeNode | null {
+    const labelMatches = node.label.toLowerCase().includes(query);
+
+    // If node has no children, return it only if label matches
+    if (!node.children || node.children.length === 0) {
+      return labelMatches ? { ...node } : null;
+    }
+
+    // Recursively filter children
+    const filteredChildren = node.children
+      .map(child => this.filterTreeNode(child, query))
+      .filter((child): child is TreeNode => child !== null);
+
+    // If label matches, include all children (show full subtree)
+    if (labelMatches) {
+      return { ...node, children: node.children };
+    }
+
+    // If any children matched, return node with filtered children
+    if (filteredChildren.length > 0) {
+      return { ...node, children: filteredChildren };
+    }
+
+    // No match
+    return null;
+  }
+
+  /**
+   * Collect all node IDs from a tree (for auto-expansion during search)
+   */
+  private collectAllNodeIds(node: TreeNode, ids: Set<string>): void {
+    ids.add(node.id);
+    if (node.children) {
+      for (const child of node.children) {
+        this.collectAllNodeIds(child, ids);
+      }
+    }
+  }
+
+  /**
+   * Handle search query change
+   */
+  onSearchChange(query: string): void {
+    this.searchQuery.set(query);
   }
 
   isExpanded(nodeId: string): boolean {
-    return this.expandedNodes().has(nodeId);
+    return this.effectiveExpandedNodes().has(nodeId);
   }
 
   isSelected(nodeId: string): boolean {
@@ -282,9 +483,13 @@ export class DocumentTreeComponent {
     return this.highlightedNodeId() === nodeId;
   }
 
+  isDropTarget(nodeId: string): boolean {
+    return this.dropTargetId() === nodeId;
+  }
+
   toggleExpand(nodeId: string, event: Event): void {
     event.stopPropagation();
-    this.expandedNodes.update((set) => {
+    this.expandedNodes.update(set => {
       const newSet = new Set(set);
       if (newSet.has(nodeId)) {
         newSet.delete(nodeId);
@@ -293,6 +498,33 @@ export class DocumentTreeComponent {
       }
       return newSet;
     });
+    // Force synchronous change detection to ensure children render properly with OnPush
+    this.cdr.detectChanges();
+  }
+
+  // Event handlers for TreeNodeComponent
+  onToggleExpand(event: { nodeId: string; event: Event }): void {
+    this.toggleExpand(event.nodeId, event.event);
+  }
+
+  onAddFolder(event: { entityName: string; year: number; event: Event }): void {
+    this.startCreatingFolder(event.entityName, event.year, event.event);
+  }
+
+  onTreeDragStart(event: { event: DragEvent; node: TreeNode }): void {
+    this.onDragStart(event.event, event.node);
+  }
+
+  onTreeDragOver(event: { event: DragEvent; node: TreeNode }): void {
+    this.onDragOver(event.event, event.node);
+  }
+
+  onTreeDragLeave(event: { event: DragEvent; node: TreeNode }): void {
+    this.onDragLeave(event.event, event.node);
+  }
+
+  onTreeDrop(event: { event: DragEvent; node: TreeNode }): void {
+    this.onDrop(event.event, event.node);
   }
 
   selectNode(node: TreeNode): void {
@@ -304,16 +536,149 @@ export class DocumentTreeComponent {
     return !!(node.children && node.children.length > 0);
   }
 
+  trackByNodeId(index: number, node: TreeNode): string {
+    return node.id;
+  }
+
+  // ============ Drag & Drop Methods ============
+
+  onDragStart(event: DragEvent, node: TreeNode): void {
+    if (node.type !== 'document') {
+      event.preventDefault();
+      return;
+    }
+
+    this.draggedNode.set(node);
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', node.id);
+    }
+  }
+
+  onDragOver(event: DragEvent, node: TreeNode): void {
+    // Only allow drop on service or custom folder nodes
+    if (node.type !== 'service' && node.type !== 'custom') {
+      return;
+    }
+
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+
+    this.dropTargetId.set(node.id);
+  }
+
+  onDragLeave(event: DragEvent, node: TreeNode): void {
+    if (this.dropTargetId() === node.id) {
+      this.dropTargetId.set(null);
+    }
+  }
+
+  onDrop(event: DragEvent, targetNode: TreeNode): void {
+    event.preventDefault();
+
+    const draggedNode = this.draggedNode();
+    if (!draggedNode || draggedNode.type !== 'document') {
+      this.resetDragState();
+      return;
+    }
+
+    // Only allow drop on service or custom folder nodes
+    if (targetNode.type !== 'service' && targetNode.type !== 'custom') {
+      this.resetDragState();
+      return;
+    }
+
+    // Don't allow drop on same service
+    if (
+      draggedNode.serviceType === targetNode.serviceType &&
+      draggedNode.parentEntity === targetNode.parentEntity &&
+      draggedNode.parentYear === targetNode.parentYear
+    ) {
+      this.resetDragState();
+      return;
+    }
+
+    // Emit move event
+    this.documentMoved.emit({
+      documentId: draggedNode.documentId!,
+      documentName: draggedNode.label,
+      fromService: draggedNode.serviceType || null,
+      toService: targetNode.serviceType || 'others',
+      toCustomFolder: targetNode.type === 'custom' ? targetNode.id : undefined,
+    });
+
+    this.resetDragState();
+  }
+
+  onDragEnd(): void {
+    this.resetDragState();
+  }
+
+  private resetDragState(): void {
+    this.draggedNode.set(null);
+    this.dropTargetId.set(null);
+  }
+
+  isDragging(nodeId: string): boolean {
+    const dragged = this.draggedNode();
+    return dragged?.id === nodeId;
+  }
+
+  canDrop(node: TreeNode): boolean {
+    return node.type === 'service' || node.type === 'custom';
+  }
+
+  // ============ Custom Folder Methods ============
+
+  startCreatingFolder(entityName: string, year: number, event: Event): void {
+    event.stopPropagation();
+    this.creatingFolderFor.set({ entityName, year });
+    this.newFolderName.set('');
+  }
+
+  cancelCreatingFolder(): void {
+    this.creatingFolderFor.set(null);
+    this.newFolderName.set('');
+  }
+
+  confirmCreateFolder(): void {
+    const creating = this.creatingFolderFor();
+    const name = this.newFolderName().trim();
+
+    if (!creating || !name) {
+      this.cancelCreatingFolder();
+      return;
+    }
+
+    const newFolder: CustomFolder = {
+      id: crypto.randomUUID(),
+      name,
+      entityName: creating.entityName,
+      year: creating.year,
+      documentIds: [],
+    };
+
+    this.customFolders.update(folders => [...folders, newFolder]);
+    this.folderCreated.emit(newFolder);
+    this.cancelCreatingFolder();
+  }
+
+  isCreatingFolderFor(entityName: string, year: number): boolean {
+    const creating = this.creatingFolderFor();
+    return creating?.entityName === entityName && creating?.year === year;
+  }
+
+  // ============ Path & Expand Methods ============
+
   /**
    * Expands the tree to show the given path
-   * @param path Array of node IDs representing the path from root to target
    */
   expandToPath(path: string[]): void {
-    this.expandedNodes.update((set) => {
+    this.expandedNodes.update(set => {
       const newSet = new Set(set);
-      // Always include root
-      newSet.add('root');
-      // Add all path nodes
       for (const nodeId of path) {
         newSet.add(nodeId);
       }
@@ -322,26 +687,22 @@ export class DocumentTreeComponent {
   }
 
   /**
-   * Builds the path to a specific document based on entity, year, and type
+   * Builds the path to a specific document based on entity, year, and service
    */
-  buildPathToDocument(entityName: string, year: number, docType: DocumentType): string[] {
+  buildPathToDocument(entityName: string, year: number, service: ServiceType): string[] {
     return [
-      'root',
       `entity-${entityName}`,
       `year-${entityName}-${year}`,
-      `type-${entityName}-${year}-${docType}`,
+      `service-${entityName}-${year}-${service}`,
     ];
   }
 
   /**
    * Highlights a node with animation for a duration
-   * @param nodeId The ID of the node to highlight
-   * @param duration Duration in ms (default 2000ms)
    */
   highlightNode(nodeId: string, duration: number = 2000): void {
     this.highlightedNodeId.set(nodeId);
 
-    // Clear highlight after duration
     setTimeout(() => {
       if (this.highlightedNodeId() === nodeId) {
         this.highlightedNodeId.set(null);
@@ -351,15 +712,14 @@ export class DocumentTreeComponent {
 
   /**
    * Expands to and highlights a document location
-   * Used after upload/classification to show where document was placed
    */
   expandAndHighlight(entityName: string, year: number, docType: DocumentType): void {
-    const path = this.buildPathToDocument(entityName, year, docType);
+    const service = DOCUMENT_TYPE_TO_SERVICE[docType] || 'others';
+    const path = this.buildPathToDocument(entityName, year, service);
     this.expandToPath(path);
 
-    // Small delay to allow expansion animation, then highlight
     setTimeout(() => {
-      const targetNodeId = `type-${entityName}-${year}-${docType}`;
+      const targetNodeId = `service-${entityName}-${year}-${service}`;
       this.highlightNode(targetNodeId);
     }, 100);
   }
@@ -367,20 +727,18 @@ export class DocumentTreeComponent {
   /**
    * Find a node by its ID recursively
    */
-  findNodeById(nodeId: string, node: TreeNode = this.treeData()): TreeNode | null {
-    if (node.id === nodeId) {
-      return node;
-    }
-
-    if (node.children) {
-      for (const child of node.children) {
-        const found = this.findNodeById(nodeId, child);
+  findNodeById(nodeId: string, nodes: TreeNode[] = this.treeData()): TreeNode | null {
+    for (const node of nodes) {
+      if (node.id === nodeId) {
+        return node;
+      }
+      if (node.children) {
+        const found = this.findNodeById(nodeId, node.children);
         if (found) {
           return found;
         }
       }
     }
-
     return null;
   }
 }

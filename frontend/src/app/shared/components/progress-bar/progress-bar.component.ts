@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  Input,
-  OnInit,
-  signal,
-  effect,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RiskLevel } from '../../../core';
 

@@ -2,6 +2,28 @@
 export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'blocked';
 export type TaskPriority = 'high' | 'medium' | 'low';
 
+// Workflow Step Model
+export type WorkflowStepId = 'collect_data' | 'processing' | 'reviewing' | 'completed';
+export type WorkflowStepStatus = 'pending' | 'in_progress' | 'completed';
+
+export interface WorkflowTask {
+  id: string;
+  title: string;
+  status: 'pending' | 'completed';
+  completedAt?: string;
+  assignee?: string;
+}
+
+export interface WorkflowStep {
+  id: WorkflowStepId;
+  label: string;
+  description: string;
+  status: WorkflowStepStatus;
+  completedAt?: string;
+  startedAt?: string;
+  tasks: WorkflowTask[];
+}
+
 export interface EntityTask {
   id: string;
   title: string;
@@ -153,6 +175,14 @@ export interface EntityMetadata {
   };
 }
 
+// Tax Period for selection
+export interface TaxPeriodOption {
+  year: number;
+  label: string;
+  startDate: string;
+  endDate: string;
+}
+
 // Full Entity Detail
 export interface EntityDetail {
   id: string;
@@ -164,4 +194,8 @@ export interface EntityDetail {
   metadata: EntityMetadata;
   tasks: EntityTask[];
   taxReport?: EntityTaxReport;
+  taxReportsByYear?: Record<number, EntityTaxReport>; // Multiple years support
+  availableTaxPeriods?: TaxPeriodOption[];
+  workflowSteps?: WorkflowStep[];
+  isApproved?: boolean;
 }

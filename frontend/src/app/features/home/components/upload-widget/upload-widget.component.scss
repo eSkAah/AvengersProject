@@ -1,10 +1,23 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Upload Widget - EY Design System
+// =============================================================================
+
 .upload-widget {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
   height: 100%;
+  background: $color-surface;
+  border-radius: $radius-xl;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow $transition-normal ease-out, transform $transition-normal ease-out;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
 
   &__header {
     display: flex;
@@ -13,6 +26,7 @@
 
     lucide-icon {
       color: $ey-yellow;
+      transition: color $transition-normal ease-out;
     }
 
     h3 {
@@ -24,26 +38,40 @@
   }
 }
 
-// Compact Upload Zone
+// -----------------------------------------------------------------------------
+// Upload Zone - EY Design System
+// Dashed border 2px #E5E5E5, hover #FFE600 border with #FFF9CC background
+// -----------------------------------------------------------------------------
 .upload-zone {
   position: relative;
   border: 2px dashed $color-border;
   border-radius: $radius-lg;
   background: rgba($color-background, 0.5);
-  transition: all 0.2s ease;
+  transition: all $transition-normal ease-out;
   cursor: pointer;
   flex: 1;
   min-height: 80px;
 
+  // Hover and drag-over state: EY yellow border with light yellow background
   &:hover,
   &--dragover {
     border-color: $ey-yellow;
-    background: rgba($ey-yellow, 0.05);
+    background: $ey-yellow-light;
 
-    lucide-icon {
+    .upload-zone__content lucide-icon {
       color: $ey-yellow;
       transform: translateY(-2px);
     }
+
+    .upload-zone__text {
+      color: $color-text-primary;
+    }
+  }
+
+  // Active drag state - more prominent
+  &--dragover {
+    border-style: solid;
+    box-shadow: 0 0 0 3px rgba($ey-yellow, 0.2);
   }
 
   &__input {
@@ -66,7 +94,7 @@
 
     lucide-icon {
       color: $color-text-secondary;
-      transition: all 0.2s ease;
+      transition: all $transition-normal ease-out;
     }
   }
 
@@ -74,5 +102,54 @@
     font-size: $font-size-xs;
     color: $color-text-secondary;
     text-align: center;
+    transition: color $transition-normal ease-out;
+  }
+
+  // Supported formats hint
+  &__hint {
+    font-size: 10px;
+    color: $color-text-muted;
+    margin-top: $spacing-1;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Upload Progress State
+// -----------------------------------------------------------------------------
+.upload-zone--uploading {
+  border-color: $ey-yellow;
+  background: rgba($ey-yellow, 0.05);
+  pointer-events: none;
+
+  .upload-zone__content {
+    opacity: 0.7;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Upload Success State
+// -----------------------------------------------------------------------------
+.upload-zone--success {
+  border-color: $color-success;
+  background: rgba($color-success, 0.05);
+
+  lucide-icon {
+    color: $color-success;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Upload Error State
+// -----------------------------------------------------------------------------
+.upload-zone--error {
+  border-color: $color-error;
+  background: $color-error-light;
+
+  lucide-icon {
+    color: $color-error;
+  }
+
+  .upload-zone__text {
+    color: #b91c1c;
   }
 }

@@ -116,7 +116,11 @@ export class EveApiService {
   readonly currentEngagementName = signal<string | null>(null);
 
   // Context switch notification
-  readonly lastContextSwitch = signal<{ from: EveContextMode; to: EveContextMode; engagement?: string } | null>(null);
+  readonly lastContextSwitch = signal<{
+    from: EveContextMode;
+    to: EveContextMode;
+    engagement?: string;
+  } | null>(null);
 
   // App context (current page, filters, etc.)
   private readonly _appContext = signal<AppContext>({ currentPage: 'home' });
@@ -235,7 +239,7 @@ export class EveApiService {
       content: message,
       timestamp: new Date().toISOString(),
     };
-    this.messages.update((msgs) => [...msgs, userMessage]);
+    this.messages.update(msgs => [...msgs, userMessage]);
 
     // Use mock mode for demo
     if (USE_MOCK_MODE) {
@@ -254,7 +258,7 @@ export class EveApiService {
     };
 
     return this.http.post<ChatResponse>(`${this.baseUrl}/eve/chat`, request).pipe(
-      tap((response) => {
+      tap(response => {
         // Handle context switch from backend (auto-switch)
         if (response.context_switched && response.mode === 'engagement') {
           this.lastContextSwitch.set({
@@ -279,16 +283,15 @@ export class EveApiService {
           context_switched: response.context_switched,
           switched_to_engagement: response.engagement_name,
         };
-        this.messages.update((msgs) => [...msgs, eveMessage]);
+        this.messages.update(msgs => [...msgs, eveMessage]);
         this.isLoading.set(false);
 
         // Increment unread if panel is closed
         if (!this.isPanelOpen()) {
-          this._unreadCount.update((count) => count + 1);
+          this._unreadCount.update(count => count + 1);
         }
       }),
-      catchError((error) => {
-        console.error('Error sending message to Eve:', error);
+      catchError(error => {
         this.isLoading.set(false);
 
         // Better error messages based on error type
@@ -315,7 +318,7 @@ export class EveApiService {
 
     return of(this.generateMockResponse(message)).pipe(
       delay(mockDelay),
-      tap((response) => {
+      tap(response => {
         const eveMessage: ConversationMessage = {
           role: 'assistant',
           content: response.message,
@@ -324,11 +327,11 @@ export class EveApiService {
           data: response.data,
           sources: response.sources,
         };
-        this.messages.update((msgs) => [...msgs, eveMessage]);
+        this.messages.update(msgs => [...msgs, eveMessage]);
         this.isLoading.set(false);
 
         if (!this.isPanelOpen()) {
-          this._unreadCount.update((count) => count + 1);
+          this._unreadCount.update(count => count + 1);
         }
       })
     );
@@ -348,13 +351,13 @@ export class EveApiService {
 
     return of(response).pipe(
       delay(mockDelay),
-      tap((res) => {
+      tap(res => {
         // Format explanation as a message
         let formattedMessage = res.explanation;
 
         if (res.breakdown && res.breakdown.length > 0) {
           formattedMessage += '\n\n**Details:**';
-          res.breakdown.forEach((item) => {
+          res.breakdown.forEach(item => {
             formattedMessage += `\n• ${item.label}: ${item.value}`;
           });
         }
@@ -381,11 +384,11 @@ export class EveApiService {
           content: formattedMessage,
           timestamp: new Date().toISOString(),
         };
-        this.messages.update((msgs) => [...msgs, eveMessage]);
+        this.messages.update(msgs => [...msgs, eveMessage]);
         this.isLoading.set(false);
 
         if (!this.isPanelOpen()) {
-          this._unreadCount.update((count) => count + 1);
+          this._unreadCount.update(count => count + 1);
         }
       })
     );
@@ -409,7 +412,7 @@ export class EveApiService {
       content: `Explain the value "${label}: ${value}"`,
       timestamp: new Date().toISOString(),
     };
-    this.messages.update((msgs) => [...msgs, userMessage]);
+    this.messages.update(msgs => [...msgs, userMessage]);
 
     // Use mock mode for demo
     if (USE_MOCK_MODE) {
@@ -424,14 +427,14 @@ export class EveApiService {
     };
 
     return this.http.post<ExplainResponse>(`${this.baseUrl}/eve/explain`, request).pipe(
-      tap((response) => {
+      tap(response => {
         // Format explanation as a message
         let formattedMessage = response.explanation;
 
         // Add breakdown if present
         if (response.breakdown && response.breakdown.length > 0) {
           formattedMessage += '\n\nDetails:';
-          response.breakdown.forEach((item) => {
+          response.breakdown.forEach(item => {
             formattedMessage += `\n- ${item.label}: ${item.value}`;
           });
         }
@@ -460,16 +463,15 @@ export class EveApiService {
           content: formattedMessage,
           timestamp: new Date().toISOString(),
         };
-        this.messages.update((msgs) => [...msgs, eveMessage]);
+        this.messages.update(msgs => [...msgs, eveMessage]);
         this.isLoading.set(false);
 
         // Increment unread if panel is closed
         if (!this.isPanelOpen()) {
-          this._unreadCount.update((count) => count + 1);
+          this._unreadCount.update(count => count + 1);
         }
       }),
-      catchError((error) => {
-        console.error('Error explaining value:', error);
+      catchError(error => {
         this.isLoading.set(false);
         this.error.set('Unable to analyze this value. Please try again.');
         return throwError(() => error);
@@ -484,16 +486,14 @@ export class EveApiService {
     return this.http
       .get<ConversationHistory>(`${this.baseUrl}/eve/conversations/${engagementId}`)
       .pipe(
-        tap((history) => {
+        tap(history => {
           this.messages.set(history.messages);
         }),
-        catchError((error) => {
+        catchError(error => {
           // 404 means no conversation exists yet - that's OK
           if (error.status === 404) {
             this.messages.set([]);
-            return throwError(() => error);
           }
-          console.error('Error fetching conversation history:', error);
           return throwError(() => error);
         })
       );
@@ -506,7 +506,7 @@ export class EveApiService {
     const engagementId = this.currentEngagementId();
     if (!engagementId) {
       this.messages.set([]);
-      return new Observable((subscriber) => {
+      return new Observable(subscriber => {
         subscriber.next();
         subscriber.complete();
       });
@@ -516,8 +516,7 @@ export class EveApiService {
       tap(() => {
         this.messages.set([]);
       }),
-      catchError((error) => {
-        console.error('Error clearing conversation:', error);
+      catchError(error => {
         return throwError(() => error);
       })
     );
@@ -539,9 +538,7 @@ export class EveApiService {
    */
   private generateMockResponse(message: string): ChatResponse {
     const engagementId = this.currentEngagementId();
-    const engagement = engagementId
-      ? MOCK_ENGAGEMENTS.find(e => e.id === engagementId)
-      : null;
+    const engagement = engagementId ? MOCK_ENGAGEMENTS.find(e => e.id === engagementId) : null;
     const docs = engagementId
       ? MOCK_DOCUMENTS.filter(d => d.engagementIds.includes(engagementId))
       : MOCK_DOCUMENTS;
@@ -551,7 +548,11 @@ export class EveApiService {
     // Context-aware responses
     if (engagement) {
       // Engagement-specific questions
-      if (lowerMessage.includes('document') || lowerMessage.includes('file') || lowerMessage.includes('missing')) {
+      if (
+        lowerMessage.includes('document') ||
+        lowerMessage.includes('file') ||
+        lowerMessage.includes('missing')
+      ) {
         return this.mockDocumentStatusResponse(engagement, docs);
       }
       if (lowerMessage.includes('risque') || lowerMessage.includes('risk')) {
@@ -560,19 +561,36 @@ export class EveApiService {
       if (lowerMessage.includes('actif') || lowerMessage.includes('assets')) {
         return this.mockAssetsResponse(engagement, docs);
       }
-      if (lowerMessage.includes('passif') || lowerMessage.includes('liabilities') || lowerMessage.includes('dette')) {
+      if (
+        lowerMessage.includes('passif') ||
+        lowerMessage.includes('liabilities') ||
+        lowerMessage.includes('dette')
+      ) {
         return this.mockLiabilitiesResponse(engagement, docs);
       }
-      if (lowerMessage.includes('chiffre') || lowerMessage.includes('revenue') || lowerMessage.includes('ca')) {
+      if (
+        lowerMessage.includes('chiffre') ||
+        lowerMessage.includes('revenue') ||
+        lowerMessage.includes('ca')
+      ) {
         return this.mockRevenueResponse(engagement, docs);
       }
-      if (lowerMessage.includes('deadline') || lowerMessage.includes('due') || lowerMessage.includes('date')) {
+      if (
+        lowerMessage.includes('deadline') ||
+        lowerMessage.includes('due') ||
+        lowerMessage.includes('date')
+      ) {
         return this.mockDeadlineResponse(engagement);
       }
       if (lowerMessage.includes('status') || lowerMessage.includes('progress')) {
         return this.mockStatusResponse(engagement, docs);
       }
-      if (lowerMessage.includes('variation') || lowerMessage.includes('n-1') || lowerMessage.includes('comparison') || lowerMessage.includes('yoy')) {
+      if (
+        lowerMessage.includes('variation') ||
+        lowerMessage.includes('n-1') ||
+        lowerMessage.includes('comparison') ||
+        lowerMessage.includes('yoy')
+      ) {
         return this.mockVariationResponse(engagement, docs);
       }
 
@@ -584,10 +602,18 @@ export class EveApiService {
     if (lowerMessage.includes('engagement') || lowerMessage.includes('list')) {
       return this.mockEngagementListResponse();
     }
-    if (lowerMessage.includes('risk') || lowerMessage.includes('critical') || lowerMessage.includes('urgent')) {
+    if (
+      lowerMessage.includes('risk') ||
+      lowerMessage.includes('critical') ||
+      lowerMessage.includes('urgent')
+    ) {
       return this.mockGlobalRiskResponse();
     }
-    if (lowerMessage.includes('bonjour') || lowerMessage.includes('hello') || lowerMessage.includes('salut')) {
+    if (
+      lowerMessage.includes('bonjour') ||
+      lowerMessage.includes('hello') ||
+      lowerMessage.includes('salut')
+    ) {
       return this.mockGreetingResponse();
     }
 
@@ -612,7 +638,10 @@ How can I help you today?`,
     };
   }
 
-  private mockDocumentStatusResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockDocumentStatusResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     const requirements = engagement.documentRequirements ?? [];
     const missing = requirements.filter(r => r.status === 'missing' && r.required);
     const uploaded = requirements.filter(r => r.status !== 'missing');
@@ -649,7 +678,7 @@ How can I help you today?`,
     };
   }
 
-  private mockRiskResponse(engagement: typeof MOCK_ENGAGEMENTS[0]): ChatResponse {
+  private mockRiskResponse(engagement: (typeof MOCK_ENGAGEMENTS)[0]): ChatResponse {
     const riskMessages: Record<string, string> = {
       high: `**HIGH Risk Level** for ${engagement.entity}
 
@@ -689,10 +718,14 @@ All indicators are green.`,
     };
   }
 
-  private mockAssetsResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockAssetsResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     const fd = engagement.financialData;
     const prevAssets = fd.previousYear?.assets ?? 0;
-    const variation = prevAssets > 0 ? ((fd.assets - prevAssets) / prevAssets * 100).toFixed(1) : 'N/A';
+    const variation =
+      prevAssets > 0 ? (((fd.assets - prevAssets) / prevAssets) * 100).toFixed(1) : 'N/A';
     const trend = fd.assets > prevAssets ? '📈 up' : '📉 down';
 
     const trialBalance = docs.find(d => d.type === 'trial_balance');
@@ -717,10 +750,14 @@ ${trialBalance ? `Source: ${trialBalance.name}` : ''}`,
     };
   }
 
-  private mockLiabilitiesResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockLiabilitiesResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     const fd = engagement.financialData;
     const prevLiab = fd.previousYear?.liabilities ?? 0;
-    const variation = prevLiab > 0 ? ((fd.liabilities - prevLiab) / prevLiab * 100).toFixed(1) : 'N/A';
+    const variation =
+      prevLiab > 0 ? (((fd.liabilities - prevLiab) / prevLiab) * 100).toFixed(1) : 'N/A';
 
     return {
       message: `**Liabilities for ${engagement.entity}**
@@ -730,7 +767,7 @@ ${trialBalance ? `Source: ${trialBalance.name}` : ''}`,
 | Total Liabilities | ${this.formatEuro(fd.liabilities)} |
 | Liabilities PY | ${this.formatEuro(prevLiab)} |
 | Variation | ${variation}% |
-| D/E Ratio | ${(fd.liabilities / (fd.assets - fd.liabilities) * 100).toFixed(0)}% |
+| D/E Ratio | ${((fd.liabilities / (fd.assets - fd.liabilities)) * 100).toFixed(0)}% |
 
 The debt level is ${fd.liabilities / fd.assets > 0.6 ? 'relatively high' : 'under control'}.`,
       timestamp: new Date().toISOString(),
@@ -739,7 +776,10 @@ The debt level is ${fd.liabilities / fd.assets > 0.6 ? 'relatively high' : 'unde
     };
   }
 
-  private mockRevenueResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockRevenueResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     const fd = engagement.financialData;
     const prevRev = fd.previousYear?.revenue ?? 0;
     const variation = fd.yoyChange;
@@ -763,7 +803,7 @@ ${variation > 10 ? 'Excellent performance compared to PY.' : variation < -5 ? 'W
     };
   }
 
-  private mockDeadlineResponse(engagement: typeof MOCK_ENGAGEMENTS[0]): ChatResponse {
+  private mockDeadlineResponse(engagement: (typeof MOCK_ENGAGEMENTS)[0]): ChatResponse {
     const dueDate = new Date(engagement.dueDate);
     const today = new Date();
     const daysRemaining = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -795,7 +835,10 @@ ${engagement.predictedCompletion ? `Predicted completion date: ${new Date(engage
     };
   }
 
-  private mockStatusResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockStatusResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     const statusLabels: Record<string, string> = {
       waiting: 'Awaiting documents',
       received: 'Documents received',
@@ -821,7 +864,10 @@ ${engagement.completionPercent === 100 ? 'Engagement completed successfully!' : 
     };
   }
 
-  private mockVariationResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockVariationResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     const fd = engagement.financialData;
     const py = fd.previousYear;
 
@@ -834,8 +880,8 @@ ${engagement.completionPercent === 100 ? 'Engagement completed successfully!' : 
       };
     }
 
-    const assetVar = ((fd.assets - py.assets) / py.assets * 100).toFixed(1);
-    const liabVar = ((fd.liabilities - py.liabilities) / py.liabilities * 100).toFixed(1);
+    const assetVar = (((fd.assets - py.assets) / py.assets) * 100).toFixed(1);
+    const liabVar = (((fd.liabilities - py.liabilities) / py.liabilities) * 100).toFixed(1);
     const revVar = fd.yoyChange.toFixed(1);
 
     return {
@@ -856,7 +902,10 @@ ${Number(assetVar) > 10 ? '- Strong asset growth (+' + assetVar + '%)\n' : ''}${
     };
   }
 
-  private mockDefaultEngagementResponse(engagement: typeof MOCK_ENGAGEMENTS[0], docs: typeof MOCK_DOCUMENTS): ChatResponse {
+  private mockDefaultEngagementResponse(
+    engagement: (typeof MOCK_ENGAGEMENTS)[0],
+    docs: typeof MOCK_DOCUMENTS
+  ): ChatResponse {
     return {
       message: `I'm Eve, your assistant for the **${engagement.entity}** engagement (${engagement.service}).
 
@@ -921,7 +970,9 @@ Ask me your question!`,
       highRisk.forEach(e => {
         const dueDate = new Date(e.dueDate);
         const today = new Date();
-        const daysRemaining = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.ceil(
+          (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
 
         message += `**${e.entity}** (${e.country})\n`;
         message += `- Service: ${e.service}\n`;
@@ -959,7 +1010,12 @@ What would you like to know?`,
   /**
    * Generate mock explain response
    */
-  private generateMockExplainResponse(label: string, value: string, engagementId: string, context?: Record<string, unknown>): ExplainResponse {
+  private generateMockExplainResponse(
+    label: string,
+    value: string,
+    engagementId: string,
+    context?: Record<string, unknown>
+  ): ExplainResponse {
     const engagement = MOCK_ENGAGEMENTS.find(e => e.id === engagementId);
     const docs = engagement
       ? MOCK_DOCUMENTS.filter(d => d.engagementIds.includes(engagementId))
@@ -984,18 +1040,26 @@ What would you like to know?`,
       if (py) {
         comparison = {
           previous_value: this.formatEuro(py.assets),
-          variance_percent: Number(((fd!.assets - py.assets) / py.assets * 100).toFixed(1)),
+          variance_percent: Number((((fd!.assets - py.assets) / py.assets) * 100).toFixed(1)),
           trend: fd!.assets > py.assets ? 'up' : fd!.assets < py.assets ? 'down' : 'stable',
         };
       }
-    } else if (label.toLowerCase().includes('passif') || label.toLowerCase().includes('liabilit') || label.toLowerCase().includes('debt')) {
+    } else if (
+      label.toLowerCase().includes('passif') ||
+      label.toLowerCase().includes('liabilit') ||
+      label.toLowerCase().includes('debt')
+    ) {
       explanation = `Liabilities for ${engagement?.entity ?? 'the entity'} represent ${value}. This includes financial debt, accounts payable, and provisions.`;
       breakdown = [
         { label: 'Financial Debt', value: this.formatEuro((fd?.liabilities ?? 0) * 0.5) },
         { label: 'Accounts Payable', value: this.formatEuro((fd?.liabilities ?? 0) * 0.35) },
         { label: 'Provisions', value: this.formatEuro((fd?.liabilities ?? 0) * 0.15) },
       ];
-    } else if (label.toLowerCase().includes('ca') || label.toLowerCase().includes('revenue') || label.toLowerCase().includes('chiffre')) {
+    } else if (
+      label.toLowerCase().includes('ca') ||
+      label.toLowerCase().includes('revenue') ||
+      label.toLowerCase().includes('chiffre')
+    ) {
       explanation = `Revenue for ${engagement?.entity ?? 'the entity'} reaches ${value} for fiscal year ${engagement?.fiscalYear ?? 'current'}.`;
       if (py) {
         comparison = {

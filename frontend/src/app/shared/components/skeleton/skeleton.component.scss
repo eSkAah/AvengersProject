@@ -1,10 +1,16 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Skeleton Loader Component - EY Design System
+// =============================================================================
+// Shimmer animation per UX spec
+// Uses exact colors from design system
+
 .skeleton {
-  background-color: $color-border-light;
+  background-color: #F5F5F5; // neutral-100
 
   &--text {
-    border-radius: $radius-sm;
+    border-radius: $radius-sm; // 4px
   }
 
   &--circular {
@@ -12,18 +18,19 @@
   }
 
   &--rectangular {
-    border-radius: $radius-md;
+    border-radius: $radius-md; // 6px
   }
 
+  // Shimmer animation per EY design spec
   &--animated {
     background: linear-gradient(
       90deg,
-      $color-border-light 25%,
-      $color-background 50%,
-      $color-border-light 75%
+      #F5F5F5 0%,     // neutral-100
+      #E5E5E5 50%,    // neutral-200
+      #F5F5F5 100%    // neutral-100
     );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: shimmer 1.5s ease-in-out infinite;
   }
 }
 

@@ -1,5 +1,11 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Breadcrumb Component - EY Design System
+// =============================================================================
+// Navigation breadcrumb styling
+// Transitions: 200ms ease-out
+
 .breadcrumb {
   &__list {
     display: flex;
@@ -17,7 +23,7 @@
   }
 
   &__separator {
-    color: $color-text-secondary;
+    color: #A3A3A3; // neutral-400
     font-size: $font-size-sm;
     user-select: none;
   }
@@ -29,16 +35,17 @@
     padding: $spacing-1 $spacing-2;
     border: none;
     background: transparent;
-    color: $color-text-secondary;
+    color: #525252; // neutral-600
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
+    font-family: $font-family-base;
     cursor: pointer;
-    border-radius: $radius-sm;
-    transition: all 0.2s ease;
+    border-radius: $radius-sm; // 4px
+    transition: all $transition-normal ease-out;
 
     &:hover {
-      background: $color-background;
-      color: $ey-black;
+      background: #F5F5F5; // neutral-100
+      color: #2E2E38; // ey-black
     }
   }
 
@@ -52,7 +59,7 @@
     align-items: center;
     gap: $spacing-1;
     padding: $spacing-1 $spacing-2;
-    color: $color-text-primary;
+    color: #2E2E38; // ey-black
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
   }

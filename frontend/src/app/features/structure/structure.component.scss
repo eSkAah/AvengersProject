@@ -1,5 +1,12 @@
 @use 'styles/variables' as *;
 
+// EY Design System Variables
+$ey-transition: 200ms ease-out;
+$ey-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+$ey-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+$ey-card-radius: 12px;
+$ey-font-mono: 'SF Mono', Monaco, Consolas, monospace;
+
 .structure-page {
   display: flex;
   flex-direction: column;
@@ -25,20 +32,27 @@
       $color-surface 0%,
       rgba($ey-yellow, 0.03) 100%
     );
-    border-radius: $radius-xl;
+    border-radius: $ey-card-radius;
     border: 1px solid rgba($color-border, 0.4);
+    box-shadow: $ey-card-shadow;
+    transition: all $ey-transition;
+
+    &:hover {
+      box-shadow: $ey-card-shadow-hover;
+      transform: translateY(-1px);
+    }
 
     &-content {
       h1 {
         font-size: $font-size-2xl;
         font-weight: $font-weight-bold;
-        color: $color-text-primary;
+        color: #2E2E38;
         margin: 0 0 $spacing-1 0;
       }
 
       p {
         font-size: $font-size-base;
-        color: $color-text-secondary;
+        color: #6B7280;
         margin: 0;
       }
     }
@@ -115,17 +129,22 @@
       .p-organizationchart-node-toggle-button {
         background: $color-surface;
         border: 1px solid $color-border;
-        color: $color-text-secondary;
+        color: #6B7280;
         width: 18px;
         height: 18px;
         border-radius: $radius-full;
-        transition: all $transition-fast;
+        transition: all $ey-transition;
         margin-top: 4px;
 
         &:hover {
           background: $color-background;
-          border-color: $color-text-secondary;
-          color: $color-text-primary;
+          border-color: #6B7280;
+          color: #2E2E38;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
         }
 
         .p-icon {
@@ -155,8 +174,8 @@
     background: rgba($color-surface, 0.95);
     border-radius: $radius-full;
     font-size: $font-size-xs;
-    color: $color-text-secondary;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: #6B7280;
+    box-shadow: $ey-card-shadow;
   }
 }
 
@@ -169,17 +188,17 @@
   padding: $spacing-4;
   min-width: 140px;
   max-width: 180px;
-  background: $color-surface;
-  border-radius: $radius-lg;
+  background: #FFFFFF;
+  border-radius: $ey-card-radius;
   border: 2px solid $color-border;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all $ey-transition;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: $ey-card-shadow;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    box-shadow: $ey-card-shadow-hover;
   }
 
   &__icon {
@@ -197,7 +216,7 @@
   &__name {
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
     text-align: center;
     line-height: 1.3;
     word-break: break-word;
@@ -206,7 +225,7 @@
 
   &__subtitle {
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: #6B7280;
     margin-top: $spacing-1;
   }
 
@@ -217,7 +236,8 @@
     margin-top: $spacing-2;
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
-    color: $color-text-secondary;
+    color: #6B7280;
+    font-family: $ey-font-mono;
   }
 
   &__risk-indicator {
@@ -241,35 +261,37 @@
 
   // Node type variants
   &--holding {
-    background: $ey-yellow;
-    border-color: color-mix(in srgb, $ey-yellow 70%, black);
+    background: #FFFFFF;
+    border-color: $ey-yellow;
+    border-width: 2px;
     min-width: 160px;
 
     .org-node__name {
-      color: $ey-black;
+      color: #2E2E38;
       font-size: $font-size-base;
     }
 
     .org-node__subtitle {
-      color: rgba($ey-black, 0.7);
+      color: #6B7280;
     }
   }
 
   &--region {
-    background: color-mix(in srgb, $color-info 12%, white);
+    background: #FFFFFF;
     border-color: color-mix(in srgb, $color-info 60%, white);
+    border-left: 3px solid $color-info;
 
     .org-node__name {
-      color: color-mix(in srgb, $color-info 80%, black);
+      color: #2E2E38;
     }
 
     .org-node__subtitle {
-      color: color-mix(in srgb, $color-info 50%, black);
+      color: #6B7280;
     }
   }
 
   &--entity {
-    background: $color-surface;
+    background: #FFFFFF;
   }
 
   // Risk level border variants for entities
@@ -305,7 +327,7 @@
   width: 400px;
   max-width: 90vw;
   height: 100vh;
-  background: $color-surface;
+  background: #FFFFFF;
   box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
   z-index: 51;
   display: flex;
@@ -322,7 +344,7 @@
     border-bottom: 1px solid $color-border-light;
     background: linear-gradient(
       135deg,
-      $color-surface 0%,
+      #FFFFFF 0%,
       rgba($ey-yellow, 0.03) 100%
     );
   }
@@ -346,13 +368,13 @@
   &__name {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
     margin: 0;
   }
 
   &__country {
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__close {
@@ -364,14 +386,19 @@
     background: none;
     border: 1px solid $color-border;
     border-radius: $radius-md;
-    color: $color-text-secondary;
+    color: #6B7280;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all $ey-transition;
 
     &:hover {
       background: $color-background;
-      color: $color-text-primary;
-      border-color: $color-text-secondary;
+      color: #2E2E38;
+      border-color: #6B7280;
+      transform: scale(1.02);
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
   }
 
@@ -393,21 +420,23 @@
     display: flex;
     align-items: center;
     gap: $spacing-2;
-    font-size: $font-size-sm;
+    font-size: 11px;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     margin: 0 0 $spacing-3 0;
     padding-bottom: $spacing-2;
     border-bottom: 1px solid $color-border-light;
 
     lucide-icon {
-      color: $color-text-secondary;
+      color: #6B7280;
     }
   }
 
   &__ownership-info {
     background: $color-background;
-    border-radius: $radius-md;
+    border-radius: $ey-card-radius;
     padding: $spacing-3;
   }
 
@@ -437,20 +466,23 @@
 
   &__label {
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__value {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    color: #2E2E38;
+    font-family: $ey-font-mono;
+    text-align: right;
 
     &--highlight {
-      color: $ey-yellow;
+      color: #2E2E38;
       font-weight: $font-weight-bold;
-      background: rgba($ey-yellow, 0.1);
+      background: rgba($ey-yellow, 0.15);
+      border: 1px solid rgba($ey-yellow, 0.3);
       padding: $spacing-1 $spacing-2;
-      border-radius: $radius-sm;
+      border-radius: $radius-full;
     }
   }
 }
@@ -462,19 +494,30 @@
   align-items: center;
   gap: $spacing-2;
   padding: $spacing-3;
-  background: $color-background;
-  border-radius: $radius-md;
+  background: #FFFFFF;
+  border-radius: $ey-card-radius;
+  border: 1px solid $color-border-light;
+  box-shadow: $ey-card-shadow;
   text-align: center;
+  transition: all $ey-transition;
+
+  &:hover {
+    box-shadow: $ey-card-shadow-hover;
+    transform: translateY(-1px);
+  }
 
   &__label {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
+    font-size: 11px;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   &__value {
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
-    color: $color-text-primary;
+    color: #2E2E38;
+    font-family: $ey-font-mono;
   }
 }
 
@@ -485,16 +528,17 @@
   gap: $spacing-3;
   width: 100%;
   padding: $spacing-3;
-  background: $color-background;
+  background: #FFFFFF;
   border: 1px solid $color-border-light;
-  border-radius: $radius-md;
+  border-radius: $ey-card-radius;
   cursor: pointer;
   text-align: left;
-  transition: all $transition-fast;
+  transition: all $ey-transition;
+  box-shadow: $ey-card-shadow;
 
   &:hover {
     border-color: $color-border;
-    background: $color-surface;
+    box-shadow: $ey-card-shadow-hover;
     transform: translateX(4px);
   }
 
@@ -526,15 +570,16 @@
   &__service {
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
   }
 
   &__year {
     font-size: $font-size-xs;
-    color: $color-text-secondary;
-    background: rgba($ey-black, 0.05);
+    color: #6B7280;
+    background: rgba(#2E2E38, 0.05);
     padding: 2px $spacing-2;
-    border-radius: $radius-sm;
+    border-radius: $radius-full;
+    font-family: $ey-font-mono;
   }
 
   &__progress {
@@ -554,15 +599,16 @@
       height: 100%;
       background: $ey-yellow;
       border-radius: $radius-full;
-      transition: width $transition-normal;
+      transition: width $ey-transition;
     }
 
     &-text {
       font-size: $font-size-xs;
       font-weight: $font-weight-medium;
-      color: $color-text-secondary;
+      color: #6B7280;
       min-width: 32px;
       text-align: right;
+      font-family: $ey-font-mono;
     }
   }
 
@@ -577,11 +623,11 @@
     align-items: center;
     gap: $spacing-1;
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: #6B7280;
   }
 
   &__arrow {
-    color: $color-text-secondary;
+    color: #6B7280;
     flex-shrink: 0;
   }
 }
@@ -598,9 +644,10 @@
     border: 1px solid $color-border;
     border-radius: $radius-sm;
     min-width: 280px;
+    transition: all $ey-transition;
 
     lucide-icon {
-      color: $color-text-secondary;
+      color: #6B7280;
       flex-shrink: 0;
     }
 
@@ -609,12 +656,17 @@
       border: none;
       background: transparent;
       font-size: $font-size-sm;
-      color: $color-text-primary;
+      color: #2E2E38;
       outline: none;
 
       &::placeholder {
-        color: $color-text-secondary;
+        color: #6B7280;
       }
+    }
+
+    &:focus-within {
+      border-color: $ey-yellow;
+      box-shadow: 0 0 0 2px rgba($ey-yellow, 0.2);
     }
 
     &-clear {
@@ -626,13 +678,18 @@
       background: $color-border-light;
       border: none;
       border-radius: $radius-full;
-      color: $color-text-secondary;
+      color: #6B7280;
       cursor: pointer;
-      transition: all $transition-fast;
+      transition: all $ey-transition;
 
       &:hover {
         background: $color-border;
-        color: $color-text-primary;
+        color: #2E2E38;
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
     }
 
@@ -642,10 +699,10 @@
       left: 0;
       right: 0;
       margin-top: $spacing-1;
-      background: $color-surface;
+      background: #FFFFFF;
       border: 1px solid $color-border;
-      border-radius: $radius-sm;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-radius: $ey-card-radius;
+      box-shadow: $ey-card-shadow-hover;
       z-index: 100;
       max-height: 300px;
       overflow-y: auto;
@@ -661,7 +718,7 @@
       border: none;
       text-align: left;
       cursor: pointer;
-      transition: background-color $transition-fast;
+      transition: background-color $ey-transition;
 
       &:hover {
         background: $color-background;
@@ -679,12 +736,12 @@
         flex: 1;
         font-size: $font-size-sm;
         font-weight: $font-weight-medium;
-        color: $color-text-primary;
+        color: #2E2E38;
       }
 
       &-country {
         font-size: $font-size-xs;
-        color: $color-text-secondary;
+        color: #6B7280;
       }
     }
   }
@@ -701,7 +758,7 @@
   align-items: center;
   gap: $spacing-2;
   font-size: $font-size-xs;
-  color: $color-text-secondary;
+  color: #6B7280;
 }
 
 .legend-dot {
@@ -710,23 +767,29 @@
   border-radius: $radius-full;
 
   &--holding {
-    background: $ey-yellow;
+    background: transparent;
+    border: 2px solid $ey-yellow;
   }
 
   &--region {
-    background: $color-info;
+    background: transparent;
+    border: 2px solid $color-info;
+    border-left-width: 3px;
   }
 
   &--low {
-    background: $color-success;
+    background: transparent;
+    border: 2px solid $color-success;
   }
 
   &--medium {
-    background: $color-warning;
+    background: transparent;
+    border: 2px solid $color-warning;
   }
 
   &--high {
-    background: $color-error;
+    background: transparent;
+    border: 2px solid $color-error;
   }
 }
 

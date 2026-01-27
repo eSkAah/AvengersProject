@@ -56,9 +56,7 @@ export class EntityAutocompleteComponent {
       return entities.slice(0, 10);
     }
 
-    return entities
-      .filter(entity => entity.toLowerCase().includes(query))
-      .slice(0, 20); // Limit to 20 results for performance
+    return entities.filter(entity => entity.toLowerCase().includes(query)).slice(0, 20); // Limit to 20 results for performance
   });
 
   hasSelection = computed(() => !!this._selectedEntity());
@@ -95,16 +93,12 @@ export class EntityAutocompleteComponent {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        this.highlightedIndex.update(i =>
-          i < filtered.length - 1 ? i + 1 : 0
-        );
+        this.highlightedIndex.update(i => (i < filtered.length - 1 ? i + 1 : 0));
         break;
 
       case 'ArrowUp':
         event.preventDefault();
-        this.highlightedIndex.update(i =>
-          i > 0 ? i - 1 : filtered.length - 1
-        );
+        this.highlightedIndex.update(i => (i > 0 ? i - 1 : filtered.length - 1));
         break;
 
       case 'Enter':
@@ -149,13 +143,25 @@ export class EntityAutocompleteComponent {
     this.highlightedIndex.set(-1);
   }
 
-  // Highlight matching text in results
+  // Highlight matching text in results (with XSS prevention)
   highlightMatch(entity: string): string {
+    // First escape HTML to prevent XSS
+    const escaped = this.escapeHtml(entity);
     const query = this.searchQuery().trim();
-    if (!query) return entity;
+    if (!query) return escaped;
 
-    const regex = new RegExp(`(${this.escapeRegex(query)})`, 'gi');
-    return entity.replace(regex, '<mark>$1</mark>');
+    // Escape the query for use in regex, then escape HTML for the replacement
+    const escapedQuery = this.escapeHtml(query);
+    const regex = new RegExp(`(${this.escapeRegex(escapedQuery)})`, 'gi');
+    return escaped.replace(regex, '<mark>$1</mark>');
+  }
+
+  private escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   private escapeRegex(str: string): string {

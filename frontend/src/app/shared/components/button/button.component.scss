@@ -1,5 +1,12 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Button Component - EY Design System
+// =============================================================================
+// Primary: #FFE600, Secondary: transparent with border
+// Border-radius: 6px (radius-md)
+// Transitions: 200ms ease-out
+
 .btn {
   position: relative;
   display: inline-flex;
@@ -7,10 +14,10 @@
   justify-content: center;
   gap: $spacing-2;
   font-family: $font-family-base;
-  font-weight: $font-weight-medium;
-  border-radius: $radius-sm;
+  font-weight: $font-weight-semibold;
+  border-radius: $radius-md; // 6px per EY spec
   cursor: pointer;
-  transition: all $transition-normal $transition-timing;
+  transition: all $transition-normal ease-out;
 
   &:focus-visible {
     outline: 2px solid $ey-yellow;
@@ -22,30 +29,30 @@
     cursor: not-allowed;
   }
 
-  // Sizes
+  // Sizes - Using EY spec padding
   &--sm {
-    padding: $spacing-2 $spacing-3;
-    font-size: $font-size-sm;
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
   &--md {
-    padding: $spacing-3 $spacing-6;
-    font-size: $font-size-sm;
+    padding: 12px 20px;
+    font-size: $font-size-sm; // 14px
   }
 
   &--lg {
-    padding: $spacing-4 $spacing-8;
-    font-size: $font-size-base;
+    padding: 14px 28px;
+    font-size: $font-size-base; // 16px
   }
 
-  // Variants
+  // Primary Button - EY Yellow
   &--primary {
-    background-color: $ey-yellow;
-    color: $ey-black;
+    background-color: #FFE600; // ey-yellow
+    color: #2E2E38;            // ey-black
     border: none;
 
     &:hover:not(:disabled) {
-      background-color: $ey-yellow-hover;
+      background-color: #FFD000; // ey-yellow-hover
       transform: scale(1.02);
     }
 
@@ -54,25 +61,35 @@
     }
   }
 
+  // Secondary Button - Transparent with border
   &--secondary {
     background-color: transparent;
-    color: $ey-black;
-    border: 1px solid $color-border;
+    color: #2E2E38; // ey-black
+    border: 1px solid #D4D4D4; // neutral-300
 
     &:hover:not(:disabled) {
-      background-color: $color-background;
-      border-color: $ey-gray;
+      background-color: #F5F5F5; // neutral-100
+      border-color: #A3A3A3;     // neutral-400
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
     }
   }
 
+  // Ghost Button
   &--ghost {
     background-color: transparent;
-    color: $color-text-secondary;
+    color: #525252; // neutral-600
     border: none;
 
     &:hover:not(:disabled) {
-      background-color: $color-background;
-      color: $color-text-primary;
+      background-color: #F5F5F5; // neutral-100
+      color: #2E2E38;            // ey-black
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
     }
   }
 

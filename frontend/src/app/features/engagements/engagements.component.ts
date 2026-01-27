@@ -1,10 +1,37 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, OnInit } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  computed,
+  signal,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, LayoutGrid, Table2, Search, Calendar, Briefcase, AlertTriangle, X, ChevronDown, ChevronRight, Eye, Upload, MessageSquare } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  LayoutGrid,
+  Table2,
+  Search,
+  Calendar,
+  Briefcase,
+  AlertTriangle,
+  X,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  Upload,
+  MessageSquare,
+} from 'lucide-angular';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { MockDataService, Engagement, DocumentType, DocumentRequirementStatus, STATUS_LABELS } from '../../core';
+import {
+  MockDataService,
+  Engagement,
+  DocumentType,
+  DocumentRequirementStatus,
+  STATUS_LABELS,
+} from '../../core';
 import { RiskBadgeComponent, ProgressBarComponent, BadgeComponent } from '../../shared';
 
 export type ViewMode = 'cards' | 'table';
@@ -29,7 +56,7 @@ const FILTERS_STORAGE_KEY = 'avengers_engagement_filters';
     LucideAngularModule,
     RiskBadgeComponent,
     ProgressBarComponent,
-    BadgeComponent
+    BadgeComponent,
   ],
   templateUrl: './engagements.component.html',
   styleUrl: './engagements.component.scss',
@@ -40,9 +67,7 @@ const FILTERS_STORAGE_KEY = 'avengers_engagement_filters';
         style({ height: 0, opacity: 0 }),
         animate('200ms ease-out', style({ height: '*', opacity: 1 })),
       ]),
-      transition(':leave', [
-        animate('150ms ease-in', style({ height: 0, opacity: 0 })),
-      ]),
+      transition(':leave', [animate('150ms ease-in', style({ height: 0, opacity: 0 }))]),
     ]),
   ],
 })
@@ -64,7 +89,7 @@ export class EngagementsComponent implements OnInit {
     chevronRight: ChevronRight,
     eye: Eye,
     upload: Upload,
-    messageSquare: MessageSquare
+    messageSquare: MessageSquare,
   };
 
   readonly statusLabels = STATUS_LABELS;
@@ -89,14 +114,14 @@ export class EngagementsComponent implements OnInit {
     { value: 'waiting', label: 'Pending' },
     { value: 'received', label: 'Received' },
     { value: 'processing', label: 'In Progress' },
-    { value: 'completed', label: 'Completed' }
+    { value: 'completed', label: 'Completed' },
   ];
   readonly serviceOptions = ['Corporate Tax', 'VAT', 'CTR'];
   readonly yearOptions = ['2025', '2024', '2023'];
   readonly riskLevelOptions = [
     { value: 'high', label: 'High', color: '#EF4444' },
     { value: 'medium', label: 'Medium', color: '#F59E0B' },
-    { value: 'low', label: 'Low', color: '#10B981' }
+    { value: 'low', label: 'Low', color: '#10B981' },
   ];
 
   // Filtered engagements
@@ -124,12 +149,18 @@ export class EngagementsComponent implements OnInit {
       }
 
       // Service filter
-      if (currentFilters.service.length > 0 && !currentFilters.service.includes(engagement.service)) {
+      if (
+        currentFilters.service.length > 0 &&
+        !currentFilters.service.includes(engagement.service)
+      ) {
         return false;
       }
 
       // Risk level filter
-      if (currentFilters.riskLevel.length > 0 && !currentFilters.riskLevel.includes(engagement.riskLevel)) {
+      if (
+        currentFilters.riskLevel.length > 0 &&
+        !currentFilters.riskLevel.includes(engagement.riskLevel)
+      ) {
         return false;
       }
 
@@ -142,7 +173,13 @@ export class EngagementsComponent implements OnInit {
 
   readonly hasActiveFilters = computed(() => {
     const f = this.filters();
-    return f.search !== '' || f.status.length > 0 || f.year !== '' || f.service.length > 0 || f.riskLevel.length > 0;
+    return (
+      f.search !== '' ||
+      f.status.length > 0 ||
+      f.year !== '' ||
+      f.service.length > 0 ||
+      f.riskLevel.length > 0
+    );
   });
 
   readonly activeFilterCount = computed(() => {
@@ -275,7 +312,10 @@ export class EngagementsComponent implements OnInit {
     return this.filters().riskLevel.includes(riskLevel);
   }
 
-  private updateFilter<K extends keyof EngagementFilters>(key: K, value: EngagementFilters[K]): void {
+  private updateFilter<K extends keyof EngagementFilters>(
+    key: K,
+    value: EngagementFilters[K]
+  ): void {
     this.filters.update(f => ({ ...f, [key]: value }));
     this.saveFiltersToSession();
   }
@@ -327,11 +367,13 @@ export class EngagementsComponent implements OnInit {
   }
 
   getDocsCount(engagement: Engagement): string {
-    const uploaded = engagement.documentRequirements?.filter(
-      r => r.status === 'uploaded' || r.status === 'validated'
-    ).length ?? engagement.documentsUploaded.length;
-    const total = engagement.documentRequirements?.filter(r => r.required).length
-      ?? engagement.documentsRequired.length;
+    const uploaded =
+      engagement.documentRequirements?.filter(
+        r => r.status === 'uploaded' || r.status === 'validated'
+      ).length ?? engagement.documentsUploaded.length;
+    const total =
+      engagement.documentRequirements?.filter(r => r.required).length ??
+      engagement.documentsRequired.length;
     return `${uploaded}/${total}`;
   }
 

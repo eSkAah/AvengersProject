@@ -1,5 +1,5 @@
-<div class="document-filters">
-  <div class="document-filters__search">
+<div class="filter-bar">
+  <div class="filter-bar__search">
     <app-search-bar
       placeholder="Search documents..."
       [value]="filters().search"
@@ -7,47 +7,51 @@
     ></app-search-bar>
   </div>
 
-  <div class="document-filters__dropdowns">
-    <select
-      class="document-filters__select"
-      [value]="filters().type || ''"
-      (change)="onTypeChange($event)"
-    >
-      <option value="">All types</option>
-      <option *ngFor="let type of documentTypes" [value]="type.value">
-        {{ type.label }}
-      </option>
-    </select>
+  <div class="filter-bar__groups">
+    <div class="filter-group">
+      <label>TYPE</label>
+      <select
+        [value]="filters().type || ''"
+        (change)="onTypeChange($event)"
+      >
+        <option value="">All types</option>
+        @for (type of documentTypes; track type.value) {
+          <option [value]="type.value">{{ type.label }}</option>
+        }
+      </select>
+    </div>
 
-    <select
-      class="document-filters__select"
-      [value]="filters().status || ''"
-      (change)="onStatusChange($event)"
-    >
-      <option value="">All statuses</option>
-      <option *ngFor="let status of documentStatuses" [value]="status.value">
-        {{ status.label }}
-      </option>
-    </select>
+    <div class="filter-group">
+      <label>STATUS</label>
+      <select
+        [value]="filters().status || ''"
+        (change)="onStatusChange($event)"
+      >
+        <option value="">All statuses</option>
+        @for (status of documentStatuses; track status.value) {
+          <option [value]="status.value">{{ status.label }}</option>
+        }
+      </select>
+    </div>
 
-    <select
-      class="document-filters__select"
-      [value]="filters().engagementId || ''"
-      (change)="onEngagementChange($event)"
-    >
-      <option value="">All engagements</option>
-      <option *ngFor="let eng of engagements" [value]="eng.id">
-        {{ eng.countryFlag }} {{ eng.entity }}
-      </option>
-    </select>
+    <div class="filter-group">
+      <label>ENGAGEMENT</label>
+      <select
+        [value]="filters().engagementId || ''"
+        (change)="onEngagementChange($event)"
+      >
+        <option value="">All engagements</option>
+        @for (eng of engagements; track eng.id) {
+          <option [value]="eng.id">{{ eng.countryFlag }} {{ eng.entity }}</option>
+        }
+      </select>
+    </div>
   </div>
 
-  <app-button
-    *ngIf="hasActiveFilters()"
-    variant="ghost"
-    size="sm"
-    (clicked)="clearFilters()"
-  >
-    Clear filters
-  </app-button>
+  @if (hasActiveFilters()) {
+    <button class="filter-bar__clear" (click)="clearFilters()">
+      <lucide-icon name="x" [size]="14"></lucide-icon>
+      Clear filters
+    </button>
+  }
 </div>

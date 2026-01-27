@@ -63,138 +63,151 @@ interface Contact {
       }
     </div>
   `,
-  styles: [`
-    .entity-contacts {
-      padding: 0.5rem 0;
-    }
+  styles: [
+    `
+      // =============================================================================
+      // Entity Contacts Component - EY Design System
+      // =============================================================================
 
-    .contacts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-    }
-
-    .contact-card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1.5rem;
-      background: white;
-      border: 1px solid #f0f0f5;
-      border-radius: 12px;
-      text-align: center;
-      transition: all 0.2s ease;
-
-      &:hover {
-        border-color: #e5e5ea;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      .entity-contacts {
+        padding: 0;
       }
 
-      &--primary {
-        border-color: #ffe600;
-        background: linear-gradient(180deg, rgba(255, 230, 0, 0.03) 0%, white 100%);
+      .contacts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
       }
-    }
 
-    .primary-badge {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      color: #2e2e38;
-      background: #ffe600;
-      border-radius: 4px;
-    }
+      .contact-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px;
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        text-align: center;
+        transition: all 200ms ease-out;
 
-    .contact-avatar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, #f0f0f5 0%, #fafafa 100%);
-      border-radius: 50%;
-      color: #9b9bb0;
-      overflow: hidden;
+        &:hover {
+          border-color: #d4d4d4;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          transform: translateY(-1px);
+        }
 
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        &--primary {
+          border-color: #ffe600;
+          background: linear-gradient(180deg, rgba(255, 230, 0, 0.05) 0%, white 100%);
+        }
       }
-    }
 
-    .contact-info {
-      margin-bottom: 1rem;
-    }
-
-    .contact-name {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #2e2e38;
-    }
-
-    .contact-role {
-      margin: 0.25rem 0 0;
-      font-size: 0.875rem;
-      color: #6b6b7b;
-    }
-
-    .contact-details {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      width: 100%;
-    }
-
-    .contact-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      font-size: 0.8125rem;
-      color: #6b6b7b;
-      text-decoration: none;
-      background: #fafafa;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-
-      &:hover {
+      .primary-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
         color: #2e2e38;
-        background: #f0f0f5;
+        background: #ffe600;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
       }
 
-      lucide-icon {
-        flex-shrink: 0;
+      .contact-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        margin-bottom: 16px;
+        background: #f5f5f5;
+        border-radius: 50%;
+        color: #a3a3a3;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
       }
-    }
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      text-align: center;
-
-      .empty-icon {
-        color: #d1d1db;
-        margin-bottom: 1rem;
+      .contact-info {
+        margin-bottom: 16px;
       }
 
-      .empty-text {
-        font-size: 1rem;
-        color: #9b9bb0;
+      .contact-name {
         margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2e2e38;
+        line-height: 1.4;
       }
-    }
-  `],
+
+      .contact-role {
+        margin: 4px 0 0;
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .contact-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .contact-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #6b7280;
+        text-decoration: none;
+        background: #fafafa;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          color: #2e2e38;
+          background: #f5f5f5;
+          border-color: #d4d4d4;
+        }
+
+        lucide-icon {
+          flex-shrink: 0;
+          color: #a3a3a3;
+        }
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 64px 32px;
+        text-align: center;
+
+        .empty-icon {
+          color: #d4d4d4;
+          margin-bottom: 16px;
+        }
+
+        .empty-text {
+          font-size: 14px;
+          color: #a3a3a3;
+          margin: 0;
+        }
+      }
+    `,
+  ],
 })
 export class EntityContactsComponent {
   // Icons

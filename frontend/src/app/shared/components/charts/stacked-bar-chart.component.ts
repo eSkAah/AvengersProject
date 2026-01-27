@@ -10,6 +10,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CHART_RENDER_DELAY_MS } from '../../../core/constants';
 import {
   Chart,
   ChartConfiguration,
@@ -54,71 +55,89 @@ export interface StackedBarDataPoint {
       }
     </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
 
-    .stacked-bar-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
+      .stacked-bar-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
 
-    .stacked-bar-container--loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 200px;
-    }
+      .stacked-bar-container--loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+      }
 
-    .chart-skeleton {
-      width: 100%;
-      height: 200px;
-      display: flex;
-      align-items: flex-end;
-      padding: 0 20px 40px;
-    }
+      .chart-skeleton {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        padding: 0 20px 40px;
+      }
 
-    .skeleton-bars {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      gap: 8px;
-    }
+      .skeleton-bars {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        gap: 8px;
+      }
 
-    .skeleton-bar {
-      flex: 1;
-      max-width: 40px;
-      height: 60%;
-      border-radius: 4px 4px 0 0;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
+      .skeleton-bar {
+        flex: 1;
+        max-width: 40px;
+        height: 60%;
+        border-radius: 4px 4px 0 0;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
 
-    .skeleton-bar:nth-child(1) { height: 30%; }
-    .skeleton-bar:nth-child(2) { height: 45%; }
-    .skeleton-bar:nth-child(3) { height: 55%; }
-    .skeleton-bar:nth-child(4) { height: 70%; }
-    .skeleton-bar:nth-child(5) { height: 85%; }
-    .skeleton-bar:nth-child(6) { height: 95%; }
+      .skeleton-bar:nth-child(1) {
+        height: 30%;
+      }
+      .skeleton-bar:nth-child(2) {
+        height: 45%;
+      }
+      .skeleton-bar:nth-child(3) {
+        height: 55%;
+      }
+      .skeleton-bar:nth-child(4) {
+        height: 70%;
+      }
+      .skeleton-bar:nth-child(5) {
+        height: 85%;
+      }
+      .skeleton-bar:nth-child(6) {
+        height: 95%;
+      }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
 
-    .chart-wrapper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-  `],
+      .chart-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StackedBarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -134,10 +153,10 @@ export class StackedBarChartComponent implements AfterViewInit, OnChanges, OnDes
 
   // Status colors matching the EY design system
   private readonly colors = {
-    completed: '#10B981',    // Green
-    reviewing: '#F59E0B',    // Amber
-    inProgress: '#3B82F6',   // Blue
-    notStarted: '#E5E7EB',   // Gray
+    completed: '#10B981', // Green
+    reviewing: '#F59E0B', // Amber
+    inProgress: '#3B82F6', // Blue
+    notStarted: '#E5E7EB', // Gray
   };
 
   ngAfterViewInit(): void {
@@ -279,6 +298,7 @@ export class StackedBarChartComponent implements AfterViewInit, OnChanges, OnDes
           legend: {
             display: true,
             position: 'bottom',
+            reverse: true,
             labels: {
               usePointStyle: true,
               pointStyle: 'rectRounded',
@@ -310,13 +330,13 @@ export class StackedBarChartComponent implements AfterViewInit, OnChanges, OnDes
             boxPadding: 4,
             usePointStyle: true,
             callbacks: {
-              title: (items) => items[0]?.label ?? '',
-              label: (context) => {
+              title: items => items[0]?.label ?? '',
+              label: context => {
                 const label = context.dataset.label ?? '';
                 const value = context.parsed.y;
                 return ` ${label}: ${value} ${value === 1 ? 'entity' : 'entities'}`;
               },
-              afterBody: (items) => {
+              afterBody: items => {
                 const total = items.reduce((sum, item) => sum + (item.parsed.y || 0), 0);
                 return `\nTotal: ${total} ${total === 1 ? 'entity' : 'entities'}`;
               },
@@ -332,7 +352,7 @@ export class StackedBarChartComponent implements AfterViewInit, OnChanges, OnDes
   private updateChart(): void {
     this.destroyChart();
     if (this.data.length > 0 && !this.loading) {
-      setTimeout(() => this.createChart(), 0);
+      setTimeout(() => this.createChart(), CHART_RENDER_DELAY_MS);
     }
   }
 

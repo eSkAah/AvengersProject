@@ -26,7 +26,10 @@ export interface DocumentStatusClickEvent {
     <div class="document-checklist">
       <div class="checklist-header">
         <span class="checklist-header__title">Required Documents</span>
-        <span class="checklist-header__count" [class]="'checklist-header__count--' + overallStatus()">
+        <span
+          class="checklist-header__count"
+          [class]="'checklist-header__count--' + overallStatus()"
+        >
           {{ uploadedCount() }}/{{ totalCount() }}
         </span>
       </div>
@@ -50,7 +53,11 @@ export interface DocumentStatusClickEvent {
                   <lucide-icon name="clock" [size]="16" class="icon--uploaded"></lucide-icon>
                 }
                 @case ('validated') {
-                  <lucide-icon name="check-circle" [size]="16" class="icon--validated"></lucide-icon>
+                  <lucide-icon
+                    name="check-circle"
+                    [size]="16"
+                    class="icon--validated"
+                  ></lucide-icon>
                 }
               }
             </div>
@@ -71,185 +78,191 @@ export interface DocumentStatusClickEvent {
                 <lucide-icon name="upload" [size]="14"></lucide-icon>
               </button>
             } @else if (req.status !== 'missing') {
-              <lucide-icon name="external-link" [size]="14" class="checklist-item__link-icon"></lucide-icon>
+              <lucide-icon
+                name="external-link"
+                [size]="14"
+                class="checklist-item__link-icon"
+              ></lucide-icon>
             }
           </div>
         }
       </div>
     </div>
   `,
-  styles: [`
-    .document-checklist {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .checklist-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 0.25rem;
-      border-bottom: 1px solid #e5e7eb;
-
-      &__title {
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      &__count {
-        font-size: 0.875rem;
-        font-weight: 600;
-
-        &--complete {
-          color: #059669;
-        }
-
-        &--partial {
-          color: #d97706;
-        }
-
-        &--empty {
-          color: #dc2626;
-        }
-      }
-    }
-
-    .checklist-items {
-      display: flex;
-      flex-direction: column;
-      gap: 0.375rem;
-    }
-
-    .checklist-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.375rem 0.5rem;
-      border-radius: 0.375rem;
-      transition: background-color 0.15s ease;
-
-      &:hover {
-        background: #f9fafb;
-      }
-
-      &__icon {
+  styles: [
+    `
+      .document-checklist {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-
-        .icon--missing {
-          color: #9ca3af;
-        }
-
-        .icon--uploaded {
-          color: #f59e0b;
-        }
-
-        .icon--validated {
-          color: #10b981;
-        }
+        flex-direction: column;
+        gap: 0.5rem;
       }
 
-      &__label {
-        flex: 1;
-        font-size: 0.8125rem;
-        color: #374151;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      &__optional {
-        font-size: 0.6875rem;
-        color: #9ca3af;
-        font-style: italic;
-        margin-left: 0.25rem;
-      }
-
-      &__upload-btn {
+      .checklist-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        border: none;
-        background: #ffe600;
-        color: #2e2e38;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        opacity: 0;
-        transform: scale(0.9);
-        transition: all 0.15s ease;
+        padding-bottom: 0.25rem;
+        border-bottom: 1px solid #e5e7eb;
 
-        &:hover {
-          background: #ffd000;
-          transform: scale(1.05);
+        &__title {
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
-      }
 
-      &:hover .checklist-item__upload-btn {
-        opacity: 1;
-        transform: scale(1);
-      }
+        &__count {
+          font-size: 0.875rem;
+          font-weight: 600;
 
-      &--clickable {
-        cursor: pointer;
+          &--complete {
+            color: #059669;
+          }
 
-        &:hover {
-          background: #f3f4f6;
+          &--partial {
+            color: #d97706;
+          }
 
-          .checklist-item__link-icon {
-            opacity: 1;
+          &--empty {
+            color: #dc2626;
           }
         }
       }
 
-      &__link-icon {
-        color: #9ca3af;
-        opacity: 0;
-        transition: opacity 0.15s ease;
-        flex-shrink: 0;
+      .checklist-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
       }
 
-      // Status-based styling
-      &--missing {
-        .checklist-item__label {
-          color: #6b7280;
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.5rem;
+        border-radius: 0.375rem;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+          background: #f9fafb;
         }
-      }
 
-      &--uploaded {
-        .checklist-item__label {
+        &__icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          .icon--missing {
+            color: #9ca3af;
+          }
+
+          .icon--uploaded {
+            color: #f59e0b;
+          }
+
+          .icon--validated {
+            color: #10b981;
+          }
+        }
+
+        &__label {
+          flex: 1;
+          font-size: 0.8125rem;
           color: #374151;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        &__optional {
+          font-size: 0.6875rem;
+          color: #9ca3af;
+          font-style: italic;
+          margin-left: 0.25rem;
+        }
+
+        &__upload-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border: none;
+          background: #ffe600;
+          color: #2e2e38;
+          border-radius: 0.25rem;
+          cursor: pointer;
+          opacity: 0;
+          transform: scale(0.9);
+          transition: all 0.15s ease;
+
+          &:hover {
+            background: #ffd000;
+            transform: scale(1.05);
+          }
+        }
+
+        &:hover .checklist-item__upload-btn {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        &--clickable {
+          cursor: pointer;
+
+          &:hover {
+            background: #f3f4f6;
+
+            .checklist-item__link-icon {
+              opacity: 1;
+            }
+          }
+        }
+
+        &__link-icon {
+          color: #9ca3af;
+          opacity: 0;
+          transition: opacity 0.15s ease;
+          flex-shrink: 0;
+        }
+
+        // Status-based styling
+        &--missing {
+          .checklist-item__label {
+            color: #6b7280;
+          }
+        }
+
+        &--uploaded {
+          .checklist-item__label {
+            color: #374151;
+          }
+        }
+
+        &--validated {
+          .checklist-item__label {
+            color: #374151;
+          }
+        }
+
+        // Required but missing - emphasize
+        &--missing.checklist-item--required {
+          background: rgba(239, 68, 68, 0.05);
+
+          .checklist-item__label {
+            color: #dc2626;
+            font-weight: 500;
+          }
+
+          .icon--missing {
+            color: #dc2626;
+          }
         }
       }
-
-      &--validated {
-        .checklist-item__label {
-          color: #374151;
-        }
-      }
-
-      // Required but missing - emphasize
-      &--missing.checklist-item--required {
-        background: rgba(239, 68, 68, 0.05);
-
-        .checklist-item__label {
-          color: #dc2626;
-          font-weight: 500;
-        }
-
-        .icon--missing {
-          color: #dc2626;
-        }
-      }
-    }
-  `],
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentChecklistComponent implements OnChanges {
@@ -267,8 +280,11 @@ export class DocumentChecklistComponent implements OnChanges {
 
   totalCount = computed(() => this.requirementsSignal().filter(r => r.required).length);
 
-  uploadedCount = computed(() =>
-    this.requirementsSignal().filter(r => r.required && (r.status === 'uploaded' || r.status === 'validated')).length
+  uploadedCount = computed(
+    () =>
+      this.requirementsSignal().filter(
+        r => r.required && (r.status === 'uploaded' || r.status === 'validated')
+      ).length
   );
 
   overallStatus = computed((): 'complete' | 'partial' | 'empty' => {

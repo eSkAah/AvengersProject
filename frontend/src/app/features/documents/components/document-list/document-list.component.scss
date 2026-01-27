@@ -1,55 +1,83 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Document List - EY Design System
+// Table-based layout with proper data table patterns
+// =============================================================================
+
 .document-list {
   background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
   &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: $spacing-8;
-    color: $color-text-secondary;
+    padding: $spacing-12;
+    color: #6b7280;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 12px;
 
     &-icon {
-      font-size: 48px;
+      opacity: 0.4;
       margin-bottom: $spacing-4;
+    }
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 500;
     }
   }
 }
 
+// =============================================================================
+// Data Table - EY Pattern
+// Headers: uppercase, letter-spacing
+// Numbers: monospace, right-aligned
+// =============================================================================
 .document-table {
   width: 100%;
   border-collapse: collapse;
 
   &__head {
-    background: $color-background;
+    background: #f9fafb;
     position: sticky;
     top: 0;
     z-index: 1;
   }
 
+  // Table headers - UPPERCASE with letter-spacing
   &__th {
-    padding: $spacing-3 $spacing-4;
+    padding: 12px 16px;
     text-align: left;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-    color: $color-text-secondary;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     border-bottom: 1px solid $color-border;
     white-space: nowrap;
 
     &.sortable {
       cursor: pointer;
       user-select: none;
+      transition: all 200ms ease-out;
 
       &:hover {
-        color: $color-text-primary;
-        background: darken($color-background, 2%);
+        color: $ey-black;
+        background: #f3f4f6;
+      }
+
+      lucide-icon {
+        margin-left: 4px;
+        opacity: 0.5;
+        vertical-align: middle;
       }
     }
   }
@@ -57,57 +85,115 @@
   &__body {
     .document-table__row {
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: all 200ms ease-out;
 
       &:hover {
-        background: rgba($ey-yellow, 0.05);
+        background: rgba($ey-yellow, 0.04);
       }
 
       &:not(:last-child) {
-        border-bottom: 1px solid $color-border;
+        .document-table__td {
+          border-bottom: 1px solid #f3f4f6;
+        }
       }
     }
   }
 
   &__td {
-    padding: $spacing-3 $spacing-4;
-    font-size: $font-size-sm;
-    color: $color-text-primary;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: $ey-black;
     vertical-align: middle;
 
     &--name {
-      max-width: 250px;
+      max-width: 280px;
+    }
+
+    // Size column - monospace, right-aligned
+    &--size {
+      text-align: right;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    // Date column - monospace
+    &--date {
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 12px;
+      color: #6b7280;
     }
 
     &--actions {
       text-align: right;
+      white-space: nowrap;
     }
   }
 }
 
+// Document name styling
 .document-name {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: $font-weight-medium;
+  font-weight: 500;
+  color: $ey-black;
 }
 
+// Action buttons
 .action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: $radius-sm;
-  transition: all 0.2s ease;
-  margin-left: $spacing-1;
+  border-radius: 6px;
+  color: #6b7280;
+  transition: all 200ms ease-out;
+  margin-left: 4px;
+
+  &:first-child {
+    margin-left: 0;
+  }
 
   &:hover {
-    background: $color-background;
-    transform: scale(1.1);
+    background: #f3f4f6;
+    color: $ey-black;
+    transform: scale(1.05);
+  }
+
+  // Specific action colors on hover
+  &[title="Download"]:hover {
+    background: rgba($color-info, 0.1);
+    color: $color-info;
+  }
+
+  &[title="Preview"]:hover {
+    background: rgba($ey-yellow, 0.15);
+    color: $ey-black;
+  }
+
+  &[title="Ask Eve"]:hover {
+    background: rgba($color-success, 0.1);
+    color: $color-success;
+  }
+}
+
+// =============================================================================
+// Missing document row styling
+// =============================================================================
+.document-table__row--missing {
+  background: #fef2f2;
+
+  &:hover {
+    background: #fee2e2 !important;
+  }
+
+  .document-name {
+    color: #b91c1c;
   }
 }

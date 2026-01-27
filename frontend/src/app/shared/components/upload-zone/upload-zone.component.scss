@@ -1,23 +1,30 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Upload Zone Component - EY Design System
+// =============================================================================
+// Dashed border, hover state with EY Yellow
+// Border-radius: 12px (radius-xl) for large feature areas
+// Transitions: 200ms ease-out
+
 .upload-zone {
   position: relative;
-  border: 2px dashed $color-border;
-  border-radius: $radius-xl;
-  background-color: $color-surface;
+  border: 2px dashed #E5E5E5; // neutral-200
+  border-radius: $radius-xl; // 12px for large cards
+  background-color: #FFFFFF;
   padding: $spacing-8;
   text-align: center;
   cursor: pointer;
   transition: all $transition-normal ease-out;
 
   &:hover:not(&--disabled):not(&--uploading) {
-    border-color: $ey-gray;
-    background-color: $color-background;
+    border-color: #A3A3A3; // neutral-400
+    background-color: #FAFAFA; // neutral-50
   }
 
   &--dragover {
-    border-color: $ey-yellow;
-    background-color: $ey-yellow-light;
+    border-color: #FFE600; // ey-yellow
+    background-color: #FFF9CC; // ey-yellow-light
     transform: scale(1.01);
   }
 
@@ -28,13 +35,13 @@
   }
 
   &--success {
-    border-color: $color-success;
-    background-color: $color-success-light;
+    border-color: #10B981; // success
+    background-color: #D1FAE5; // success-light
   }
 
   &--error {
-    border-color: $color-error;
-    background-color: $color-error-light;
+    border-color: #EF4444; // error
+    background-color: #FEE2E2; // error-light
   }
 
   &--disabled {
@@ -64,22 +71,22 @@
     width: 56px;
     height: 56px;
     border-radius: $radius-full;
-    background-color: $color-background;
-    color: $ey-gray;
+    background-color: #F5F5F5; // neutral-100
+    color: #737373; // neutral-500
     transition: all $transition-normal ease-out;
 
     .upload-zone--dragover & {
-      background-color: $ey-yellow;
-      color: $ey-black;
+      background-color: #FFE600;
+      color: #2E2E38;
     }
 
     .upload-zone--success & {
-      background-color: $color-success;
+      background-color: #10B981;
       color: white;
     }
 
     .upload-zone--error & {
-      background-color: $color-error;
+      background-color: #EF4444;
       color: white;
     }
   }
@@ -100,8 +107,8 @@
   &__spinner {
     width: 28px;
     height: 28px;
-    border: 3px solid $ey-yellow-light;
-    border-top-color: $ey-yellow;
+    border: 3px solid #FFF9CC;
+    border-top-color: #FFE600;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -113,40 +120,42 @@
   }
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: 18px; // text-h3
     font-weight: $font-weight-semibold;
-    color: $color-text-primary;
+    color: #2E2E38;
     margin: 0;
   }
 
   &__subtitle {
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #525252; // neutral-600
     margin: 0;
   }
 
   &__link {
-    color: $ey-yellow-hover;
+    color: #FFD000; // ey-yellow-hover
     font-weight: $font-weight-medium;
     text-decoration: underline;
 
     &:hover {
-      color: $ey-yellow;
+      color: #FFE600;
     }
   }
 
   &__formats {
-    font-size: $font-size-xs;
-    color: $color-text-muted;
+    font-size: 12px; // text-caption
+    color: #9CA3AF; // neutral-400/text-muted
     margin: $spacing-2 0 0 0;
   }
 
+  // ==========================================================================
   // File list section
+  // ==========================================================================
   &__files {
     margin-top: $spacing-4;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    background-color: $color-surface;
+    border: 1px solid #E5E5E5;
+    border-radius: $radius-lg; // 8px
+    background-color: #FFFFFF;
     overflow: hidden;
   }
 
@@ -155,24 +164,24 @@
     justify-content: space-between;
     align-items: center;
     padding: $spacing-3 $spacing-4;
-    background-color: $color-background;
-    border-bottom: 1px solid $color-border-light;
+    background-color: #FAFAFA;
+    border-bottom: 1px solid #F3F4F6;
   }
 
   &__files-count {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    color: #2E2E38;
   }
 
   &__files-invalid {
-    color: $color-error;
+    color: #EF4444;
     font-weight: $font-weight-normal;
   }
 
   &__clear-btn {
     font-size: $font-size-sm;
-    color: $color-text-secondary;
+    color: #525252;
     background: none;
     border: none;
     cursor: pointer;
@@ -181,8 +190,8 @@
     transition: all $transition-fast ease-out;
 
     &:hover:not(:disabled) {
-      color: $color-error;
-      background-color: $color-error-light;
+      color: #EF4444;
+      background-color: #FEE2E2;
     }
 
     &:disabled {
@@ -204,7 +213,7 @@
     align-items: center;
     gap: $spacing-3;
     padding: $spacing-3 $spacing-4;
-    border-bottom: 1px solid $color-border-light;
+    border-bottom: 1px solid #F3F4F6;
     transition: background-color $transition-fast ease-out;
 
     &:last-child {
@@ -212,11 +221,11 @@
     }
 
     &:hover {
-      background-color: $color-background;
+      background-color: #FAFAFA;
     }
 
     &--invalid {
-      background-color: $color-error-light;
+      background-color: #FEE2E2;
 
       &:hover {
         background-color: rgba(239, 68, 68, 0.15);
@@ -228,21 +237,22 @@
     }
 
     &--success {
-      background-color: $color-success-light;
+      background-color: #D1FAE5;
     }
 
     &--error {
-      background-color: $color-error-light;
+      background-color: #FEE2E2;
     }
 
     &--classifying {
-      background-color: $color-info-light;
+      background-color: #DBEAFE;
     }
   }
 
   &__file-icon {
     font-size: 1.5rem;
     flex-shrink: 0;
+    color: #525252;
   }
 
   &__file-info {
@@ -257,19 +267,19 @@
   &__file-name {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    color: #2E2E38;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &__file-meta {
-    font-size: $font-size-xs;
-    color: $color-text-muted;
+    font-size: 12px;
+    color: #9CA3AF;
   }
 
   &__file-error {
-    color: $color-error;
+    color: #EF4444;
     font-weight: $font-weight-medium;
   }
 
@@ -281,8 +291,8 @@
   &__progress-spinner {
     width: 18px;
     height: 18px;
-    border: 2px solid $ey-yellow-light;
-    border-top-color: $ey-yellow;
+    border: 2px solid #FFF9CC;
+    border-top-color: #FFE600;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -298,12 +308,12 @@
     border-radius: $radius-full;
 
     &--success {
-      background-color: $color-success;
+      background-color: #10B981;
       color: white;
     }
 
     &--error {
-      background-color: $color-error;
+      background-color: #EF4444;
       color: white;
     }
   }
@@ -319,12 +329,12 @@
     background: none;
     border-radius: $radius-full;
     cursor: pointer;
-    color: $color-text-muted;
+    color: #9CA3AF;
     transition: all $transition-fast ease-out;
 
     &:hover {
-      background-color: $color-error-light;
-      color: $color-error;
+      background-color: #FEE2E2;
+      color: #EF4444;
     }
 
     svg {
@@ -336,16 +346,16 @@
   &__warning {
     margin-top: $spacing-3;
     padding: $spacing-3 $spacing-4;
-    background-color: $color-warning-light;
-    border: 1px solid $color-warning;
-    border-radius: $radius-sm;
+    background-color: #FEF3C7;
+    border: 1px solid #F59E0B;
+    border-radius: $radius-md; // 6px
     font-size: $font-size-sm;
-    color: $ey-black;
+    color: #2E2E38;
     text-align: left;
   }
 
   &__file-classifying {
-    background-color: $color-info-light;
+    background-color: #DBEAFE;
   }
 
   &__classify-animation {
@@ -361,10 +371,10 @@
 
   &__classification-badge {
     padding: 2px 8px;
-    font-size: $font-size-xs;
+    font-size: 12px;
     font-weight: $font-weight-medium;
-    color: $color-success;
-    background-color: $color-success-light;
+    color: #047857;
+    background-color: #D1FAE5;
     border-radius: $radius-full;
     white-space: nowrap;
   }
@@ -378,37 +388,39 @@
   }
 }
 
-// Auto-detect styling (outside main block for clarity)
+// =============================================================================
+// Auto-detect styling
+// =============================================================================
 .auto-detect {
   &__label {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 10px;
-    color: #8b5cf6;
-    font-weight: 500;
+    color: #8B5CF6; // purple for AI detection
+    font-weight: $font-weight-medium;
   }
 
   &__tag {
     display: inline-block;
     padding: 1px 6px;
     font-size: 10px;
-    font-weight: 500;
-    border-radius: 4px;
+    font-weight: $font-weight-medium;
+    border-radius: $radius-sm;
 
     &--entity {
-      background-color: #dbeafe;
-      color: #1d4ed8;
+      background-color: #DBEAFE;
+      color: #1D4ED8;
     }
 
     &--year {
-      background-color: #dcfce7;
-      color: #16a34a;
+      background-color: #D1FAE5;
+      color: #047857;
     }
 
     &--type {
-      background-color: #fef3c7;
-      color: #d97706;
+      background-color: #FEF3C7;
+      color: #B45309;
     }
   }
 
@@ -419,23 +431,23 @@
     width: 16px;
     height: 16px;
     font-size: 10px;
-    font-weight: bold;
+    font-weight: $font-weight-bold;
     border-radius: 50%;
     margin-left: 4px;
 
     &--high {
-      background-color: #dcfce7;
-      color: #16a34a;
+      background-color: #D1FAE5;
+      color: #047857;
     }
 
     &--medium {
-      background-color: #fef3c7;
-      color: #d97706;
+      background-color: #FEF3C7;
+      color: #B45309;
     }
 
     &--low {
-      background-color: #f3f4f6;
-      color: #6b7280;
+      background-color: #F3F4F6;
+      color: #6B7280;
     }
   }
 }

@@ -1,8 +1,19 @@
-import { Component, ChangeDetectionStrategy, input, computed, output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  computed,
+  output,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { ConversationMessage } from '../../../core/services/eve-api.service';
-import { GanttChartComponent, GanttChartData, GanttItem } from '../gantt-chart/gantt-chart.component';
+import {
+  GanttChartComponent,
+  GanttChartData,
+  GanttItem,
+} from '../gantt-chart/gantt-chart.component';
 
 /**
  * Eve Message Bubble Component
@@ -18,11 +29,7 @@ import { GanttChartComponent, GanttChartData, GanttItem } from '../gantt-chart/g
   standalone: true,
   imports: [CommonModule, LucideAngularModule, DatePipe, GanttChartComponent],
   template: `
-    <div
-      class="message"
-      [class.message--user]="isUser()"
-      [class.message--eve]="!isUser()"
-    >
+    <div class="message" [class.message--user]="isUser()" [class.message--eve]="!isUser()">
       <!-- Eve Avatar (only for assistant messages) -->
       @if (!isUser()) {
         <div class="message__avatar">
@@ -48,144 +55,146 @@ import { GanttChartComponent, GanttChartData, GanttItem } from '../gantt-chart/g
           </div>
         }
 
-        <span class="message__time">{{ message().timestamp | date:'HH:mm' }}</span>
+        <span class="message__time">{{ message().timestamp | date: 'HH:mm' }}</span>
       </div>
     </div>
   `,
-  styles: [`
-    .message {
-      display: flex;
-      gap: 10px;
-      max-width: 100%;
-      animation: messageIn 200ms ease-out;
-    }
-
-    .message--user {
-      justify-content: flex-end;
-    }
-
-    .message--eve {
-      justify-content: flex-start;
-    }
-
-    .message__avatar {
-      width: 32px;
-      height: 32px;
-      min-width: 32px;
-      border-radius: 50%;
-      background: #2E2E38;
-      color: #FFE600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .message__bubble {
-      max-width: 85%;
-      position: relative;
-    }
-
-    .message--user .message__bubble {
-      background: #FFE600;
-      color: #2E2E38;
-      border-radius: 16px 16px 4px 16px;
-      padding: 12px 16px;
-    }
-
-    .message--eve .message__bubble {
-      background: #F5F5F5;
-      color: #2E2E38;
-      border-radius: 16px 16px 16px 4px;
-      padding: 12px 16px;
-    }
-
-    .message__content {
-      font-size: 14px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-
-    .message__content :global(strong) {
-      font-weight: 600;
-    }
-
-    .message__time {
-      display: block;
-      font-size: 11px;
-      color: #9CA3AF;
-      margin-top: 4px;
-      text-align: right;
-      opacity: 0;
-      transition: opacity 200ms ease-out;
-    }
-
-    .message__bubble:hover .message__time {
-      opacity: 1;
-    }
-
-    .message--user .message__time {
-      color: rgba(46, 46, 56, 0.6);
-    }
-
-    @keyframes messageIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
+  styles: [
+    `
+      .message {
+        display: flex;
+        gap: 10px;
+        max-width: 100%;
+        animation: messageIn 200ms ease-out;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      .message--user {
+        justify-content: flex-end;
       }
-    }
 
-    /* Gantt Chart in Message */
-    .message__bubble--wide {
-      max-width: 100% !important;
-      width: 100%;
-    }
-
-    .message__chart {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .message__export-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 12px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #2E2E38;
-      background: #FFFFFF;
-      border: 1px solid #E5E5E5;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 200ms ease-out;
-    }
-
-    .message__export-btn:hover {
-      background: #FFE600;
-      border-color: #FFE600;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .message__bubble {
-        max-width: 90%;
+      .message--eve {
+        justify-content: flex-start;
       }
 
       .message__avatar {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border-radius: 50%;
+        background: #2e2e38;
+        color: #ffe600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
-    }
-  `],
+
+      .message__bubble {
+        max-width: 85%;
+        position: relative;
+      }
+
+      .message--user .message__bubble {
+        background: #ffe600;
+        color: #2e2e38;
+        border-radius: 16px 16px 4px 16px;
+        padding: 12px 16px;
+      }
+
+      .message--eve .message__bubble {
+        background: #f5f5f5;
+        color: #2e2e38;
+        border-radius: 16px 16px 16px 4px;
+        padding: 12px 16px;
+      }
+
+      .message__content {
+        font-size: 14px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .message__content :global(strong) {
+        font-weight: 600;
+      }
+
+      .message__time {
+        display: block;
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 4px;
+        text-align: right;
+        opacity: 0;
+        transition: opacity 200ms ease-out;
+      }
+
+      .message__bubble:hover .message__time {
+        opacity: 1;
+      }
+
+      .message--user .message__time {
+        color: rgba(46, 46, 56, 0.6);
+      }
+
+      @keyframes messageIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Gantt Chart in Message */
+      .message__bubble--wide {
+        max-width: 100% !important;
+        width: 100%;
+      }
+
+      .message__chart {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .message__export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 12px;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #2e2e38;
+        background: #ffffff;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+      }
+
+      .message__export-btn:hover {
+        background: #ffe600;
+        border-color: #ffe600;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .message__bubble {
+          max-width: 90%;
+        }
+
+        .message__avatar {
+          width: 28px;
+          height: 28px;
+          min-width: 28px;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EveMessageComponent {
@@ -241,10 +250,7 @@ export class EveMessageComponent {
     let content = this.message().content;
 
     // Escape HTML to prevent XSS
-    content = content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    content = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     // Convert line breaks to <br>
     content = content.replace(/\n/g, '<br>');

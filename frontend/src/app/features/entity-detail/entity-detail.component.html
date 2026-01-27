@@ -26,8 +26,21 @@
           <p class="entity-header__service">{{ entity()!.service }}</p>
         </div>
       </div>
-      <div class="entity-header__status" [class]="'status--' + entity()!.status">
-        {{ entity()!.status | titlecase }}
+      <div class="entity-header__actions">
+        <div class="entity-header__status" [class]="'status--' + entity()!.status">
+          {{ entity()!.status | titlecase }}
+        </div>
+        @if (!isApproved()) {
+          <button class="approval-btn" (click)="openApprovalModal()">
+            <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+            <span>Approve</span>
+          </button>
+        } @else {
+          <div class="approved-badge">
+            <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+            <span>Approved</span>
+          </div>
+        }
       </div>
     </header>
 
@@ -115,6 +128,9 @@
     <!-- Tab Content -->
     <div class="tab-content">
       @switch (activeTab()) {
+        @case ('workflow') {
+          <app-entity-workflow [steps]="workflowSteps()"></app-entity-workflow>
+        }
         @case ('tasks') {
           <app-entity-tasks [tasks]="entity()!.tasks"></app-entity-tasks>
         }
@@ -122,7 +138,13 @@
           <app-entity-documents [entityId]="entity()!.id" [entityName]="entity()!.name"></app-entity-documents>
         }
         @case ('tax-report') {
-          <app-entity-tax-report [taxReport]="entity()!.taxReport" [entityName]="entity()!.name"></app-entity-tax-report>
+          <app-entity-tax-report
+            [taxReport]="selectedTaxReport()"
+            [entityName]="entity()!.name"
+            [availablePeriods]="availableTaxPeriods()"
+            [selectedYear]="selectedTaxYear()"
+            (yearChange)="onTaxYearChange($event)"
+          ></app-entity-tax-report>
         }
         @case ('insights') {
           <app-entity-insights [entityId]="entity()!.id" [entityName]="entity()!.name"></app-entity-insights>
@@ -138,6 +160,56 @@
       <h2>Entity not found</h2>
       <p>The requested entity could not be loaded.</p>
       <button class="btn btn--primary" (click)="goBack()">Go Back</button>
+    </div>
+  }
+
+  <!-- Approval Confirmation Modal -->
+  @if (showApprovalModal()) {
+    <div class="modal-overlay" (click)="closeApprovalModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-icon modal-icon--warning">
+            <lucide-icon [img]="AlertTriangle" [size]="24"></lucide-icon>
+          </div>
+          <button class="modal-close" (click)="closeApprovalModal()">
+            <lucide-icon [img]="X" [size]="20"></lucide-icon>
+          </button>
+        </div>
+
+        <div class="modal-content">
+          <h2 class="modal-title">Confirm Approval</h2>
+          <p class="modal-description">
+            You are about to approve <strong>{{ entity()?.name }}</strong>.
+          </p>
+          <div class="modal-checklist">
+            <div class="checklist-item">
+              <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+              <span>All documents have been reviewed</span>
+            </div>
+            <div class="checklist-item">
+              <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+              <span>Data accuracy has been verified</span>
+            </div>
+            <div class="checklist-item">
+              <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+              <span>Tax calculations are correct</span>
+            </div>
+          </div>
+          <p class="modal-warning">
+            This action cannot be undone. Please ensure all information has been properly verified.
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn--outline" (click)="closeApprovalModal()">
+            Cancel
+          </button>
+          <button class="btn btn--primary" (click)="confirmApproval()">
+            <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+            Yes, Approve
+          </button>
+        </div>
+      </div>
     </div>
   }
 </div>

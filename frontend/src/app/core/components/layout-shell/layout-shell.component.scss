@@ -1,6 +1,8 @@
 @use 'styles/variables' as *;
 
-$navbar-height: 64px;
+// Navbar dimensions (match navbar component)
+$navbar-height: 60px;
+$mobile-header-height: 56px;
 
 .layout {
   min-height: 100vh;
@@ -11,8 +13,8 @@ $navbar-height: 64px;
   &__main {
     flex: 1;
     padding: $spacing-6;
-    min-height: calc(100vh - #{$navbar-height});
     margin-top: $navbar-height;
+    min-height: calc(100vh - #{$navbar-height});
   }
 }
 
@@ -25,11 +27,13 @@ $navbar-height: 64px;
   }
 }
 
-// Responsive - Mobile
+// Responsive - Mobile (mobile header)
 @media (max-width: 768px) {
   .layout {
     &__main {
-      padding: $spacing-3;
+      margin-top: $mobile-header-height;
+      padding: $spacing-4;
+      min-height: calc(100vh - #{$mobile-header-height});
     }
   }
 }

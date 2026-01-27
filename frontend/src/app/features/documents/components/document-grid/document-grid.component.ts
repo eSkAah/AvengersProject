@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  Input,
-  Output,
-  EventEmitter,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { Document, DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../../../../core';
@@ -43,7 +37,7 @@ export class DocumentGridComponent {
 
   getStatusVariant(status: string): 'success' | 'warning' | 'error' | 'info' {
     const variants: Record<string, 'success' | 'warning' | 'error' | 'info'> = {
-      missing: 'error',      // Red - consistent with filter button
+      missing: 'error', // Red - consistent with filter button
       pending: 'warning',
       uploaded: 'warning',
       analyzing: 'info',

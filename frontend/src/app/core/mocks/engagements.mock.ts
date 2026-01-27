@@ -45,16 +45,23 @@ const MOCK_CTR_RESULTS_NL: CtrResults = {
 
 // Helper to create document requirements with fiscal year
 const createRequirements = (
-  types: { type: DocumentRequirement['type']; label: string; required: boolean; status: DocumentRequirement['status']; documentId?: string }[],
+  types: {
+    type: DocumentRequirement['type'];
+    label: string;
+    required: boolean;
+    status: DocumentRequirement['status'];
+    documentId?: string;
+  }[],
   fiscalYear: number
-): DocumentRequirement[] => types.map(t => ({
-  type: t.type,
-  label: t.label,
-  required: t.required,
-  status: t.status,
-  documentId: t.documentId,
-  fiscalYear,
-}));
+): DocumentRequirement[] =>
+  types.map(t => ({
+    type: t.type,
+    label: t.label,
+    required: t.required,
+    status: t.status,
+    documentId: t.documentId,
+    fiscalYear,
+  }));
 
 // ============================================
 // TRISTAN CAPITAL PARTNERS - FUND STRUCTURE
@@ -92,15 +99,47 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
         revenue: 3304000,
       },
     },
-    documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Tax Return', 'Financial Statement'],
+    documentsRequired: [
+      'General Ledger',
+      'Trial Balance',
+      'Bank Statement',
+      'Tax Return',
+      'Financial Statement',
+    ],
     documentsUploaded: ['DOC-CCP5-FR-001', 'DOC-CCP5-FR-002', 'DOC-CCP5-FR-003'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'uploaded', documentId: 'DOC-CCP5-FR-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'validated', documentId: 'DOC-CCP5-FR-002' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'uploaded', documentId: 'DOC-CCP5-FR-003' },
-      { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
-      { type: 'financial_statement', label: 'Financial Statement', required: false, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-CCP5-FR-001',
+        },
+        {
+          type: 'trial_balance',
+          label: 'Trial Balance',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-CCP5-FR-002',
+        },
+        {
+          type: 'bank_statement',
+          label: 'Bank Statement',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-CCP5-FR-003',
+        },
+        { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
+        {
+          type: 'financial_statement',
+          label: 'Financial Statement',
+          required: false,
+          status: 'missing',
+        },
+      ],
+      2025
+    ),
     scenario: 'HERO - Upload demo',
   },
   {
@@ -128,11 +167,26 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement'],
     documentsUploaded: ['DOC-CCP5-DE-001', 'DOC-CCP5-DE-002'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'uploaded', documentId: 'DOC-CCP5-DE-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'uploaded', documentId: 'DOC-CCP5-DE-002' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-CCP5-DE-001',
+        },
+        {
+          type: 'trial_balance',
+          label: 'Trial Balance',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-CCP5-DE-002',
+        },
+        { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
+      ],
+      2025
+    ),
     scenario: 'In analysis',
   },
   {
@@ -160,12 +214,39 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Tax Return'],
     documentsUploaded: ['DOC-CCP5-NL-001', 'DOC-CCP5-NL-002', 'DOC-CCP5-NL-003', 'DOC-CCP5-NL-004'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-CCP5-NL-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'validated', documentId: 'DOC-CCP5-NL-002' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'validated', documentId: 'DOC-CCP5-NL-003' },
-      { type: 'tax_return', label: 'Tax Return', required: true, status: 'validated', documentId: 'DOC-CCP5-NL-004' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-CCP5-NL-001',
+        },
+        {
+          type: 'trial_balance',
+          label: 'Trial Balance',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-CCP5-NL-002',
+        },
+        {
+          type: 'bank_statement',
+          label: 'Bank Statement',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-CCP5-NL-003',
+        },
+        {
+          type: 'tax_return',
+          label: 'Tax Return',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-CCP5-NL-004',
+        },
+      ],
+      2025
+    ),
     scenario: 'Completed',
     ctrResults: MOCK_CTR_RESULTS_NL,
   },
@@ -194,15 +275,35 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
         revenue: 4972000,
       },
     },
-    documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Financial Statement', 'Tax Return'],
+    documentsRequired: [
+      'General Ledger',
+      'Trial Balance',
+      'Bank Statement',
+      'Financial Statement',
+      'Tax Return',
+    ],
     documentsUploaded: ['DOC-EPISO6-ES-001'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'uploaded', documentId: 'DOC-EPISO6-ES-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'missing' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
-      { type: 'financial_statement', label: 'Financial Statement', required: true, status: 'missing' },
-      { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-EPISO6-ES-001',
+        },
+        { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'missing' },
+        { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
+        {
+          type: 'financial_statement',
+          label: 'Financial Statement',
+          required: true,
+          status: 'missing',
+        },
+        { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
+      ],
+      2025
+    ),
     scenario: 'Critical - alert demo',
   },
   {
@@ -230,12 +331,27 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Tax Return'],
     documentsUploaded: ['DOC-EPISO6-IT-001', 'DOC-EPISO6-IT-002'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-EPISO6-IT-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'uploaded', documentId: 'DOC-EPISO6-IT-002' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
-      { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-EPISO6-IT-001',
+        },
+        {
+          type: 'trial_balance',
+          label: 'Trial Balance',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-EPISO6-IT-002',
+        },
+        { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'missing' },
+        { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
+      ],
+      2025
+    ),
     scenario: 'Recent docs',
   },
   {
@@ -263,11 +379,20 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['General Ledger', 'Trial Balance', 'Tax Return'],
     documentsUploaded: ['DOC-EPISO6-BE-001'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-EPISO6-BE-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'missing' },
-      { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-EPISO6-BE-001',
+        },
+        { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'missing' },
+        { type: 'tax_return', label: 'Tax Return', required: true, status: 'missing' },
+      ],
+      2025
+    ),
     scenario: 'Recent docs',
   },
   {
@@ -295,12 +420,38 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
     },
     documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Financial Statement'],
     documentsUploaded: ['DOC-EPISO6-LU-001', 'DOC-EPISO6-LU-002', 'DOC-EPISO6-LU-003'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-EPISO6-LU-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'validated', documentId: 'DOC-EPISO6-LU-002' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'uploaded', documentId: 'DOC-EPISO6-LU-003' },
-      { type: 'financial_statement', label: 'Financial Statement', required: true, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-EPISO6-LU-001',
+        },
+        {
+          type: 'trial_balance',
+          label: 'Trial Balance',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-EPISO6-LU-002',
+        },
+        {
+          type: 'bank_statement',
+          label: 'Bank Statement',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-EPISO6-LU-003',
+        },
+        {
+          type: 'financial_statement',
+          label: 'Financial Statement',
+          required: true,
+          status: 'missing',
+        },
+      ],
+      2025
+    ),
     scenario: 'In analysis',
   },
 
@@ -328,15 +479,53 @@ export const MOCK_ENGAGEMENTS: Engagement[] = [
         revenue: 20675000,
       },
     },
-    documentsRequired: ['General Ledger', 'Trial Balance', 'Bank Statement', 'Tax Return', 'Financial Statement'],
+    documentsRequired: [
+      'General Ledger',
+      'Trial Balance',
+      'Bank Statement',
+      'Tax Return',
+      'Financial Statement',
+    ],
     documentsUploaded: ['DOC-TCP-UK-001', 'DOC-TCP-UK-002', 'DOC-TCP-UK-003', 'DOC-TCP-UK-004'],
-    documentRequirements: createRequirements([
-      { type: 'general_ledger', label: 'General Ledger', required: true, status: 'validated', documentId: 'DOC-TCP-UK-001' },
-      { type: 'trial_balance', label: 'Trial Balance', required: true, status: 'validated', documentId: 'DOC-TCP-UK-002' },
-      { type: 'bank_statement', label: 'Bank Statement', required: true, status: 'validated', documentId: 'DOC-TCP-UK-003' },
-      { type: 'tax_return', label: 'Tax Return', required: true, status: 'uploaded', documentId: 'DOC-TCP-UK-004' },
-      { type: 'financial_statement', label: 'Financial Statement', required: false, status: 'missing' },
-    ], 2025),
+    documentRequirements: createRequirements(
+      [
+        {
+          type: 'general_ledger',
+          label: 'General Ledger',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-TCP-UK-001',
+        },
+        {
+          type: 'trial_balance',
+          label: 'Trial Balance',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-TCP-UK-002',
+        },
+        {
+          type: 'bank_statement',
+          label: 'Bank Statement',
+          required: true,
+          status: 'validated',
+          documentId: 'DOC-TCP-UK-003',
+        },
+        {
+          type: 'tax_return',
+          label: 'Tax Return',
+          required: true,
+          status: 'uploaded',
+          documentId: 'DOC-TCP-UK-004',
+        },
+        {
+          type: 'financial_statement',
+          label: 'Financial Statement',
+          required: false,
+          status: 'missing',
+        },
+      ],
+      2025
+    ),
     scenario: 'Near completion',
   },
 

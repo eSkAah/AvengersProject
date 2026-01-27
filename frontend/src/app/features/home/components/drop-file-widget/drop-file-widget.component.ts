@@ -1,17 +1,10 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  inject,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule, Upload, FileText, CloudUpload } from 'lucide-angular';
 import {
-  LucideAngularModule,
-  Upload,
-  FileText,
-  CloudUpload,
-} from 'lucide-angular';
-import { UploadProgressModalComponent, UploadingFile } from '../upload-progress-modal/upload-progress-modal.component';
+  UploadProgressModalComponent,
+  UploadingFile,
+} from '../upload-progress-modal/upload-progress-modal.component';
 
 @Component({
   selector: 'app-drop-file-widget',
@@ -51,106 +44,120 @@ import { UploadProgressModalComponent, UploadingFile } from '../upload-progress-
       (close)="closeProgressModal()"
     />
   `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+  styles: [
+    `
+      // =============================================================================
+      // DROP FILE WIDGET - EY Design System
+      // Card: white bg, border #e5e7eb, border-radius 12px, shadow-card, hover lift
+      // =============================================================================
 
-    .upload-bar {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      min-height: 56px;
-      background: linear-gradient(180deg, #FAFAFA 0%, #F5F5F7 100%);
-      border: 1.5px dashed #D1D5DB;
-      border-radius: 14px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-sizing: border-box;
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+      }
 
-      &:hover {
-        border-color: #FFE600;
-        background: linear-gradient(180deg, #FFFEF8 0%, #FFFBEB 100%);
-        box-shadow: 0 2px 8px rgba(255, 230, 0, 0.12);
+      .upload-bar {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 56px;
+        background: #ffffff;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        transition: all 200ms ease-out;
+        box-sizing: border-box;
 
-        .upload-bar__icon {
-          background: #FFE600;
-          transform: scale(1.05);
+        &:hover {
+          border-color: #ffe600;
+          background: #fffdf5;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          transform: translateY(-1px);
 
-          lucide-icon {
-            color: #2E2E38;
+          .upload-bar__icon {
+            background: #ffe600;
+            transform: scale(1.02);
+
+            lucide-icon {
+              color: #2e2e38;
+            }
           }
+        }
+
+        &--dragover {
+          border-color: #ffe600;
+          border-style: solid;
+          background: #fff9cc; // ey-yellow-light
+          box-shadow: 0 4px 12px rgba(255, 230, 0, 0.15);
+          transform: translateY(-1px);
         }
       }
 
-      &--dragover {
-        border-color: #FFE600;
-        border-style: solid;
-        background: linear-gradient(180deg, #FFFBEB 0%, #FFF3C4 100%);
-        box-shadow: 0 4px 16px rgba(255, 230, 0, 0.2);
-        transform: scale(1.01);
+      .upload-bar__input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 1;
       }
-    }
 
-    .upload-bar__input {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 1;
-    }
-
-    .upload-bar__content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      height: 100%;
-      padding: 0 20px;
-      cursor: pointer;
-    }
-
-    .upload-bar__icon {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      flex-shrink: 0;
-
-      lucide-icon {
-        color: #FFE600;
-        transition: color 0.2s;
+      .upload-bar__content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        height: 100%;
+        padding: 0 20px;
+        cursor: pointer;
       }
-    }
 
-    .upload-bar__text {
-      font-size: 13px;
-      font-weight: 500;
-      color: #2E2E38;
-      letter-spacing: -0.01em;
-    }
+      .upload-bar__icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        transition: all 200ms ease-out;
+        flex-shrink: 0;
 
-    .upload-bar__separator {
-      width: 1px;
-      height: 16px;
-      background: #E5E7EB;
-    }
+        lucide-icon {
+          color: #ffe600;
+          transition: color 200ms ease-out;
+        }
+      }
 
-    .upload-bar__formats {
-      font-size: 12px;
-      font-weight: 500;
-      color: #9CA3AF;
-      letter-spacing: 0.02em;
-    }
-  `],
+      .upload-bar__text {
+        font-size: 14px; // text-body
+        font-weight: 500;
+        color: #2e2e38;
+      }
+
+      .upload-bar__separator {
+        width: 1px;
+        height: 16px;
+        background: #e5e7eb;
+      }
+
+      .upload-bar__formats {
+        font-size: 12px; // text-caption
+        font-weight: 500;
+        color: #6b7280; // secondary text
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropFileWidgetComponent {
@@ -234,54 +241,59 @@ export class DropFileWidgetComponent {
     files.forEach((file, index) => {
       // Simulate upload progress
       let progress = 0;
-      const uploadInterval = setInterval(() => {
-        progress += Math.random() * 30 + 10;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(uploadInterval);
+      const uploadInterval = setInterval(
+        () => {
+          progress += Math.random() * 30 + 10;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(uploadInterval);
 
-          // Update to classifying status
-          this.uploadingFiles.update(current =>
-            current.map(f =>
-              f.id === file.id ? { ...f, progress: 100, status: 'classifying' as const } : f
-            )
-          );
-
-          // Simulate classification delay
-          setTimeout(() => {
-            // Random success/error (90% success rate)
-            const isSuccess = Math.random() > 0.1;
-
+            // Update to classifying status
             this.uploadingFiles.update(current =>
               current.map(f =>
-                f.id === file.id
-                  ? isSuccess
-                    ? {
-                        ...f,
-                        status: 'classified' as const,
-                        classificationResult: {
-                          entity: entities[Math.floor(Math.random() * entities.length)],
-                          documentType: documentTypes[Math.floor(Math.random() * documentTypes.length)],
-                          fiscalYear: 2025,
-                        },
-                      }
-                    : {
-                        ...f,
-                        status: 'error' as const,
-                        errorMessage: 'Classification failed',
-                      }
-                  : f
+                f.id === file.id ? { ...f, progress: 100, status: 'classifying' as const } : f
               )
             );
-          }, 1000 + Math.random() * 1500);
-        } else {
-          this.uploadingFiles.update(current =>
-            current.map(f =>
-              f.id === file.id ? { ...f, progress: Math.min(progress, 99) } : f
-            )
-          );
-        }
-      }, 200 + index * 100);
+
+            // Simulate classification delay
+            setTimeout(
+              () => {
+                // Random success/error (90% success rate)
+                const isSuccess = Math.random() > 0.1;
+
+                this.uploadingFiles.update(current =>
+                  current.map(f =>
+                    f.id === file.id
+                      ? isSuccess
+                        ? {
+                            ...f,
+                            status: 'classified' as const,
+                            classificationResult: {
+                              entity: entities[Math.floor(Math.random() * entities.length)],
+                              documentType:
+                                documentTypes[Math.floor(Math.random() * documentTypes.length)],
+                              fiscalYear: 2025,
+                            },
+                          }
+                        : {
+                            ...f,
+                            status: 'error' as const,
+                            errorMessage: 'Classification failed',
+                          }
+                      : f
+                  )
+                );
+              },
+              1000 + Math.random() * 1500
+            );
+          } else {
+            this.uploadingFiles.update(current =>
+              current.map(f => (f.id === file.id ? { ...f, progress: Math.min(progress, 99) } : f))
+            );
+          }
+        },
+        200 + index * 100
+      );
     });
   }
 

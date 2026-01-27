@@ -1,13 +1,40 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, HostListener } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+  inject,
+  HostListener,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Home, Briefcase, FolderOpen, GitBranch, BarChart2, Bell, ChevronDown, User, Settings, LogOut, Menu, X } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  LucideIconData,
+  Home,
+  Briefcase,
+  FolderOpen,
+  GitBranch,
+  BarChart2,
+  Bell,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from 'lucide-angular';
 import { NotificationService } from '../../services/notification.service';
 import { ServiceEntityService } from '../../services/service-entity.service';
+import { ToastService } from '../../../shared/components/toast/toast.service';
 
 interface NavItem {
   label: string;
-  icon: any;
+  icon: LucideIconData;
   route: string;
   exact: boolean;
 }
@@ -28,12 +55,16 @@ interface Notification {
   imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
-  private router = inject(Router);
-  private notificationService = inject(NotificationService);
-  private serviceEntityService = inject(ServiceEntityService);
+  private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
+  private readonly serviceEntityService = inject(ServiceEntityService);
+  private readonly toastService = inject(ToastService);
+
+  // Output to communicate sidebar state to layout
+  @Output() sidebarStateChange = new EventEmitter<boolean>();
 
   // Icons
   readonly icons = {
@@ -48,7 +79,9 @@ export class NavbarComponent {
     settings: Settings,
     logOut: LogOut,
     menu: Menu,
-    x: X
+    x: X,
+    panelLeftClose: PanelLeftClose,
+    panelLeftOpen: PanelLeftOpen,
   };
 
   // State - Tristan Capital Partners branding
@@ -58,6 +91,7 @@ export class NavbarComponent {
   notificationsOpen = signal<boolean>(false);
   mobileMenuOpen = signal<boolean>(false);
   servicesMenuOpen = signal<boolean>(false);
+  sidebarCollapsed = signal<boolean>(false);
 
   // Services for dropdown
   services = computed(() => this.serviceEntityService.getServices());
@@ -103,7 +137,7 @@ export class NavbarComponent {
     }
 
     // Close services menu if click outside
-    if (this.servicesMenuOpen() && !target.closest('.services-menu-container')) {
+    if (this.servicesMenuOpen() && !target.closest('.nav-dropdown-container')) {
       this.servicesMenuOpen.set(false);
     }
   }
@@ -151,12 +185,21 @@ export class NavbarComponent {
     this.mobileMenuOpen.set(false);
   }
 
+  toggleSidebar() {
+    this.sidebarCollapsed.update(v => !v);
+    this.sidebarStateChange.emit(this.sidebarCollapsed());
+    // Close menus when collapsing
+    if (this.sidebarCollapsed()) {
+      this.servicesMenuOpen.set(false);
+    }
+  }
+
   async loadNotifications() {
     try {
       const response = await this.notificationService.getNotifications();
       this.notifications.set(response.slice(0, 5));
-    } catch (error) {
-      console.error('Failed to load notifications', error);
+    } catch {
+      // Silent fail for initial load - notifications will show empty
     }
   }
 
@@ -165,8 +208,8 @@ export class NavbarComponent {
     try {
       await this.notificationService.dismissNotification(id);
       this.notifications.update(list => list.filter(n => n.id !== id));
-    } catch (error) {
-      console.error('Failed to dismiss notification', error);
+    } catch {
+      this.toastService.error('Failed to dismiss notification');
     }
   }
 
@@ -175,8 +218,8 @@ export class NavbarComponent {
       await this.notificationService.dismissAllNotifications();
       this.notifications.set([]);
       this.notificationsOpen.set(false);
-    } catch (error) {
-      console.error('Failed to dismiss all notifications', error);
+    } catch {
+      this.toastService.error('Failed to dismiss notifications');
     }
   }
 
@@ -187,7 +230,7 @@ export class NavbarComponent {
     }
   }
 
-  getNotificationIcon(type: string): any {
+  getNotificationIcon(type: string): string {
     switch (type) {
       case 'RISK_ESCALATION':
         return 'alert-triangle';

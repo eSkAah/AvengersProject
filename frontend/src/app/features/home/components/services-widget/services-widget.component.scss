@@ -1,29 +1,30 @@
-@use 'styles/variables' as *;
-
-// ============================================
-// SERVICES WIDGET - Apple/Stripe Premium Style
-// ============================================
+// =============================================================================
+// SERVICES WIDGET - EY Design System
+// Cards: white bg, border #e5e7eb, border-radius 12px, shadow-card, hover lift
+// Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+// =============================================================================
 
 .services-widget {
   display: flex;
   flex-direction: column;
   height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   &__header {
-    margin-bottom: $spacing-3;
+    margin-bottom: 12px;
   }
 
   &__title {
     display: flex;
     align-items: center;
-    gap: $spacing-2;
+    gap: 8px;
 
     h3 {
-      font-size: 0.9375rem;
+      font-size: 15px;
       font-weight: 600;
-      color: $color-text-primary;
+      color: #2E2E38;
       margin: 0;
-      letter-spacing: -0.01em;
+      line-height: 1.4;
     }
   }
 
@@ -35,27 +36,27 @@
   }
 }
 
-// ============================================
-// SERVICE CARD - Premium Aligned Layout
-// ============================================
+// =============================================================================
+// SERVICE CARD - EY Design System
+// =============================================================================
 
 .service-card {
   display: grid;
-  grid-template-columns: 38px 1fr auto;
+  grid-template-columns: 40px 1fr auto;
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  background: #F8F9FA;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 200ms ease-out;
   cursor: pointer;
 
   &:hover {
-    background: #F1F3F5;
-    border-color: rgba($color-border, 0.6);
-    transform: translateX(3px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    background: #FAFAFA;
+    border-color: #FFE600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
   }
 
   // Icon container
@@ -63,39 +64,34 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     flex-shrink: 0;
 
     lucide-icon {
-      color: white;
+      color: #FFFFFF;
     }
 
     // Color variants with premium gradients
     &.bg-blue {
       background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
     }
 
     &.bg-green {
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
     }
 
     &.bg-purple {
       background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
     }
 
     &.bg-orange {
       background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
     }
 
     &.bg-teal {
       background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
-      box-shadow: 0 2px 8px rgba(20, 184, 166, 0.25);
     }
   }
 
@@ -104,23 +100,22 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
   }
 
   &__name {
-    font-size: 0.8125rem;
+    font-size: 13px; // text-body-sm
     font-weight: 600;
-    color: $color-text-primary;
+    color: #2E2E38;
     margin: 0;
-    letter-spacing: -0.01em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &__description {
-    font-size: 0.6875rem;
-    color: $color-text-secondary;
+    font-size: 11px; // text-overline size
+    color: #6b7280; // secondary text
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -135,9 +130,9 @@
   }
 }
 
-// ============================================
-// STATUS ITEMS - Colored indicators
-// ============================================
+// =============================================================================
+// STATUS ITEMS - Colored indicators per EY Design System
+// =============================================================================
 
 .status-item {
   display: flex;
@@ -146,53 +141,57 @@
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
-  border-radius: 6px;
+  border-radius: 4px; // radius-sm
   cursor: help;
-  transition: transform 0.15s ease;
+  transition: all 200ms ease-out;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .status-count {
-    font-size: 0.6875rem;
+    font-size: 11px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
 
-  // Completed - Green
+  // Completed - Success Green
   &--completed {
-    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    background: #D1FAE5; // success-light
+    border: 1px solid #A7F3D0;
 
     .status-count {
-      color: #047857;
+      color: #047857; // success-dark
     }
   }
 
-  // Reviewing - Orange/Yellow
+  // Reviewing - Warning Orange
   &--reviewing {
-    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    background: #FEF3C7; // warning-light
+    border: 1px solid #FDE68A;
 
     .status-count {
-      color: #B45309;
+      color: #B45309; // warning-dark
     }
   }
 
-  // In Progress - Blue
+  // In Progress - Info Blue
   &--progress {
-    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    background: #DBEAFE; // info-light
+    border: 1px solid #BFDBFE;
 
     .status-count {
-      color: #1D4ED8;
+      color: #1D4ED8; // info-dark
     }
   }
 
-  // Not Started - Gray
+  // Not Started - Neutral Gray
   &--notstarted {
-    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+    background: #F5F5F5; // neutral-100
+    border: 1px solid #E5E5E5;
 
     .status-count {
-      color: #6B7280;
+      color: #6b7280; // neutral-600
     }
   }
 }

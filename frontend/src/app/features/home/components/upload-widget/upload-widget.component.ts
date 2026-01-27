@@ -8,11 +8,11 @@ import { LucideAngularModule, Upload } from 'lucide-angular';
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './upload-widget.component.html',
   styleUrl: './upload-widget.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadWidgetComponent {
   readonly icons = {
-    upload: Upload
+    upload: Upload,
   };
 
   readonly isDragOver = signal(false);

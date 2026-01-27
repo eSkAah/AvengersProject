@@ -80,6 +80,13 @@
       >
         Insights
       </button>
+      <button
+        class="service-tabs__tab"
+        [class.service-tabs__tab--active]="activeTab() === 'contacts'"
+        (click)="setActiveTab('contacts')"
+      >
+        Contacts
+      </button>
     </div>
 
     <!-- Tab Content -->
@@ -89,14 +96,82 @@
           <table class="entities-table">
             <thead>
               <tr>
-                <th>Entity</th>
-                <th>Status</th>
-                <th>Progress</th>
-                <th>Last Updated</th>
+                <th
+                  class="sortable-header"
+                  tabindex="0"
+                  role="columnheader"
+                  [attr.aria-sort]="getAriaSortValue('name')"
+                  (click)="toggleSort('name')"
+                  (keydown)="onSortKeydown($event, 'name')"
+                >
+                  <span>Entity</span>
+                  @if (sortColumn() === 'name') {
+                    <lucide-icon
+                      [img]="sortDirection() === 'asc' ? icons.chevronUp : icons.chevronDown"
+                      [size]="14"
+                      class="sort-icon"
+                      aria-hidden="true"
+                    ></lucide-icon>
+                  }
+                </th>
+                <th
+                  class="sortable-header"
+                  tabindex="0"
+                  role="columnheader"
+                  [attr.aria-sort]="getAriaSortValue('status')"
+                  (click)="toggleSort('status')"
+                  (keydown)="onSortKeydown($event, 'status')"
+                >
+                  <span>Status</span>
+                  @if (sortColumn() === 'status') {
+                    <lucide-icon
+                      [img]="sortDirection() === 'asc' ? icons.chevronUp : icons.chevronDown"
+                      [size]="14"
+                      class="sort-icon"
+                      aria-hidden="true"
+                    ></lucide-icon>
+                  }
+                </th>
+                <th
+                  class="sortable-header"
+                  tabindex="0"
+                  role="columnheader"
+                  [attr.aria-sort]="getAriaSortValue('progress')"
+                  (click)="toggleSort('progress')"
+                  (keydown)="onSortKeydown($event, 'progress')"
+                >
+                  <span>Progress</span>
+                  @if (sortColumn() === 'progress') {
+                    <lucide-icon
+                      [img]="sortDirection() === 'asc' ? icons.chevronUp : icons.chevronDown"
+                      [size]="14"
+                      class="sort-icon"
+                      aria-hidden="true"
+                    ></lucide-icon>
+                  }
+                </th>
+                <th
+                  class="sortable-header"
+                  tabindex="0"
+                  role="columnheader"
+                  [attr.aria-sort]="getAriaSortValue('lastUpdated')"
+                  (click)="toggleSort('lastUpdated')"
+                  (keydown)="onSortKeydown($event, 'lastUpdated')"
+                >
+                  <span>Last Updated</span>
+                  @if (sortColumn() === 'lastUpdated') {
+                    <lucide-icon
+                      [img]="sortDirection() === 'asc' ? icons.chevronUp : icons.chevronDown"
+                      [size]="14"
+                      class="sort-icon"
+                      aria-hidden="true"
+                    ></lucide-icon>
+                  }
+                </th>
               </tr>
             </thead>
             <tbody>
-              @for (entity of entities(); track entity.id) {
+              @for (entity of sortedEntities(); track entity.id) {
                 <tr class="entity-row entity-row--clickable" (click)="navigateToEntity(entity.engagementId)">
                   <td class="entity-cell">
                     <span class="entity-flag">{{ entity.countryFlag }}</span>
@@ -125,6 +200,15 @@
                   </td>
                 </tr>
               }
+              @empty {
+                <tr class="empty-row">
+                  <td colspan="4">
+                    <div class="empty-state">
+                      <p>No entities available for this service</p>
+                    </div>
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -136,6 +220,10 @@
 
       @if (activeTab() === 'insights') {
         <app-service-insights [serviceId]="serviceId()"></app-service-insights>
+      }
+
+      @if (activeTab() === 'contacts') {
+        <app-service-contacts [serviceId]="serviceId()"></app-service-contacts>
       }
     </div>
   } @else if (!loading()) {

@@ -1,8 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { DashboardApiService, EngagementStats } from './dashboard-api.service';
 import { environment } from '../../../environments/environment';
 
@@ -56,13 +53,11 @@ describe('DashboardApiService', () => {
 
   describe('getEngagementStats', () => {
     it('should fetch engagement stats and update signals', () => {
-      service.getEngagementStats('test-123').subscribe((stats) => {
+      service.getEngagementStats('test-123').subscribe(stats => {
         expect(stats).toEqual(mockStats);
       });
 
-      const req = httpMock.expectOne(
-        `${environment.apiUrl}/engagements/test-123/stats`
-      );
+      const req = httpMock.expectOne(`${environment.apiUrl}/engagements/test-123/stats`);
       expect(req.request.method).toBe('GET');
       req.flush(mockStats);
 
@@ -74,9 +69,7 @@ describe('DashboardApiService', () => {
       service.getEngagementStats('test-123').subscribe();
       expect(service.loadingStats()).toBe(true);
 
-      const req = httpMock.expectOne(
-        `${environment.apiUrl}/engagements/test-123/stats`
-      );
+      const req = httpMock.expectOne(`${environment.apiUrl}/engagements/test-123/stats`);
       req.flush(mockStats);
     });
 
@@ -88,9 +81,7 @@ describe('DashboardApiService', () => {
         },
       });
 
-      const req = httpMock.expectOne(
-        `${environment.apiUrl}/engagements/test-123/stats`
-      );
+      const req = httpMock.expectOne(`${environment.apiUrl}/engagements/test-123/stats`);
       req.flush('Error', { status: 500, statusText: 'Server Error' });
     });
 
@@ -100,9 +91,7 @@ describe('DashboardApiService', () => {
 
       expect(service.error()).toBeNull();
 
-      const req = httpMock.expectOne(
-        `${environment.apiUrl}/engagements/test-123/stats`
-      );
+      const req = httpMock.expectOne(`${environment.apiUrl}/engagements/test-123/stats`);
       req.flush(mockStats);
     });
   });
@@ -125,13 +114,11 @@ describe('DashboardApiService', () => {
     };
 
     it('should fetch assets chart and update signal', () => {
-      service.getAssetsChart('test-123').subscribe((data) => {
+      service.getAssetsChart('test-123').subscribe(data => {
         expect(data).toEqual(mockAssetsChart);
       });
 
-      const req = httpMock.expectOne(
-        `${environment.apiUrl}/engagements/test-123/charts/assets`
-      );
+      const req = httpMock.expectOne(`${environment.apiUrl}/engagements/test-123/charts/assets`);
       expect(req.request.method).toBe('GET');
       req.flush(mockAssetsChart);
 
@@ -158,7 +145,7 @@ describe('DashboardApiService', () => {
     };
 
     it('should fetch comparison chart and update signal', () => {
-      service.getComparisonChart('test-123').subscribe((data) => {
+      service.getComparisonChart('test-123').subscribe(data => {
         expect(data).toEqual(mockComparisonChart);
       });
 
@@ -186,13 +173,11 @@ describe('DashboardApiService', () => {
     };
 
     it('should fetch breakdown chart and update signal', () => {
-      service.getBreakdownChart('test-123').subscribe((data) => {
+      service.getBreakdownChart('test-123').subscribe(data => {
         expect(data).toEqual(mockBreakdownChart);
       });
 
-      const req = httpMock.expectOne(
-        `${environment.apiUrl}/engagements/test-123/charts/breakdown`
-      );
+      const req = httpMock.expectOne(`${environment.apiUrl}/engagements/test-123/charts/breakdown`);
       expect(req.request.method).toBe('GET');
       req.flush(mockBreakdownChart);
 

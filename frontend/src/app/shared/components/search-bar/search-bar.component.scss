@@ -1,23 +1,29 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Search Bar Component - EY Design System
+// =============================================================================
+// Input styling per EY spec
+// Border-radius: 6px (radius-md) for inputs
+// Transitions: 200ms ease-out
+
 .search-bar {
   display: flex;
   align-items: center;
   gap: $spacing-2;
-  padding: $spacing-2 $spacing-3;
-  background: $color-surface;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  transition: all 0.2s ease;
+  padding: 10px 14px;
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5; // neutral-200
+  border-radius: $radius-md; // 6px for inputs
+  transition: all $transition-normal ease-out;
 
   &:focus-within {
-    border-color: $ey-yellow;
-    box-shadow: 0 0 0 2px rgba($ey-yellow, 0.2);
+    border-color: #FFE600; // ey-yellow
+    box-shadow: 0 0 0 3px #FFF9CC; // ey-yellow-light focus ring
   }
 
   &__icon {
-    color: $color-text-secondary;
-    font-size: $font-size-sm;
+    color: #A3A3A3; // neutral-400 (placeholder color)
     flex-shrink: 0;
   }
 
@@ -26,12 +32,13 @@
     border: none;
     background: transparent;
     font-size: $font-size-sm;
-    color: $color-text-primary;
+    font-family: $font-family-base;
+    color: #2E2E38; // ey-black
     outline: none;
     min-width: 0;
 
     &::placeholder {
-      color: $color-text-secondary;
+      color: #A3A3A3; // neutral-400
     }
   }
 
@@ -42,17 +49,16 @@
     width: 20px;
     height: 20px;
     border: none;
-    background: $color-background;
-    color: $color-text-secondary;
-    font-size: $font-size-base;
+    background: #F5F5F5; // neutral-100
+    color: #525252; // neutral-600
     cursor: pointer;
     border-radius: $radius-full;
     flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: all $transition-normal ease-out;
 
     &:hover {
-      background: $color-border;
-      color: $color-text-primary;
+      background: #E5E5E5; // neutral-200
+      color: #2E2E38;
     }
   }
 }

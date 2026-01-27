@@ -22,52 +22,55 @@
       </tr>
     </thead>
     <tbody class="document-table__body">
-      <tr
-        *ngFor="let doc of sortedDocuments; trackBy: trackById"
-        class="document-table__row"
-        (click)="documentClick.emit(doc)"
-      >
-        <td class="document-table__td document-table__td--name">
-          <span class="document-name">{{ doc.name }}</span>
-        </td>
-        <td class="document-table__td">{{ typeLabels[doc.type] }}</td>
-        <td class="document-table__td">{{ getEngagementNames(doc.engagementIds) }}</td>
-        <td class="document-table__td">
-          <app-badge [variant]="getStatusVariant(doc.status)" size="sm">
-            {{ statusLabels[doc.status] }}
-          </app-badge>
-        </td>
-        <td class="document-table__td">{{ formatDate(doc.uploadedAt) }}</td>
-        <td class="document-table__td">{{ formatSize(doc.size) }}</td>
-        <td class="document-table__td document-table__td--actions">
-          <button
-            class="action-btn"
-            (click)="download.emit(doc); $event.stopPropagation()"
-            title="Download"
-          >
-            <lucide-icon name="download" [size]="16"></lucide-icon>
-          </button>
-          <button
-            class="action-btn"
-            (click)="preview.emit(doc); $event.stopPropagation()"
-            title="Preview"
-          >
-            <lucide-icon name="eye" [size]="16"></lucide-icon>
-          </button>
-          <button
-            class="action-btn"
-            (click)="askEve.emit(doc); $event.stopPropagation()"
-            title="Ask Eve"
-          >
-            <lucide-icon name="message-circle" [size]="16"></lucide-icon>
-          </button>
-        </td>
-      </tr>
+      @for (doc of sortedDocuments; track doc.id) {
+        <tr
+          class="document-table__row"
+          (click)="documentClick.emit(doc)"
+        >
+          <td class="document-table__td document-table__td--name">
+            <span class="document-name">{{ doc.name }}</span>
+          </td>
+          <td class="document-table__td">{{ typeLabels[doc.type] }}</td>
+          <td class="document-table__td">{{ getEngagementNames(doc.engagementIds) }}</td>
+          <td class="document-table__td">
+            <app-badge [variant]="getStatusVariant(doc.status)" size="sm">
+              {{ statusLabels[doc.status] }}
+            </app-badge>
+          </td>
+          <td class="document-table__td document-table__td--date">{{ formatDate(doc.uploadedAt) }}</td>
+          <td class="document-table__td document-table__td--size">{{ formatSize(doc.size) }}</td>
+          <td class="document-table__td document-table__td--actions">
+            <button
+              class="action-btn"
+              (click)="download.emit(doc); $event.stopPropagation()"
+              title="Download"
+            >
+              <lucide-icon name="download" [size]="16"></lucide-icon>
+            </button>
+            <button
+              class="action-btn"
+              (click)="preview.emit(doc); $event.stopPropagation()"
+              title="Preview"
+            >
+              <lucide-icon name="eye" [size]="16"></lucide-icon>
+            </button>
+            <button
+              class="action-btn"
+              (click)="askEve.emit(doc); $event.stopPropagation()"
+              title="Ask Eve"
+            >
+              <lucide-icon name="message-circle" [size]="16"></lucide-icon>
+            </button>
+          </td>
+        </tr>
+      }
     </tbody>
   </table>
 </div>
 
-<div class="document-list__empty" *ngIf="documents.length === 0">
-  <lucide-icon name="folder-open" class="document-list__empty-icon" [size]="48"></lucide-icon>
-  <p>No documents found</p>
-</div>
+@if (documents.length === 0) {
+  <div class="document-list__empty">
+    <lucide-icon name="folder-open" class="document-list__empty-icon" [size]="48"></lucide-icon>
+    <p>No documents found</p>
+  </div>
+}

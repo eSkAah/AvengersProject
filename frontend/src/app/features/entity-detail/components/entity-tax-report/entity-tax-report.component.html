@@ -1,6 +1,6 @@
 @if (hasReport(); as report) {
   <div class="tax-report">
-    <!-- Report Header -->
+    <!-- Report Header (Dark Filter Bar) -->
     <div class="report-header">
       <div class="report-header__info">
         <div class="report-header__item">
@@ -13,12 +13,34 @@
           <span class="value">{{ taxReport()!.taxOffice }}</span>
         </div>
         <div class="report-header__divider"></div>
-        <div class="report-header__item">
+        <div class="report-header__item report-header__item--period">
           <span class="label">Tax Period</span>
-          <span class="value">{{ formatDate(taxReport()!.taxPeriodStart) }} - {{ formatDate(taxReport()!.taxPeriodEnd) }}</span>
+          @if (hasMultiplePeriods()) {
+            <div class="period-selector">
+              <select
+                class="period-select"
+                [value]="selectedYear()"
+                (change)="onYearChange($event)"
+              >
+                @for (period of availablePeriods(); track period.year) {
+                  <option [value]="period.year">{{ formatDate(period.startDate) }} - {{ formatDate(period.endDate) }}</option>
+                }
+              </select>
+              <lucide-icon [img]="ChevronDown" [size]="14" class="period-select-icon"></lucide-icon>
+            </div>
+          } @else {
+            <span class="value">{{ formatDate(taxReport()!.taxPeriodStart) }} - {{ formatDate(taxReport()!.taxPeriodEnd) }}</span>
+          }
         </div>
       </div>
       <div class="report-header__actions">
+        <!-- Widget Menu -->
+        <app-widget-menu
+          [availableWidgets]="availableWidgets"
+          [widgetStates]="allWidgetStates()"
+          (toggleWidget)="onToggleWidget($event)"
+          (resetWidgets)="onResetWidgets()"
+        />
         <button class="action-btn">
           <lucide-icon [img]="Printer" [size]="16"></lucide-icon>
           Print
@@ -30,436 +52,585 @@
       </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="report-grid">
-      <!-- Left Column -->
-      <div class="report-column">
-        <!-- Estimated Tax Charge -->
-        <section class="report-section">
-          <h3 class="section-title">Estimated Tax Charge</h3>
-          <div class="tax-summary-grid">
-            <div class="tax-summary-card tax-summary-card--primary">
-              <span class="tax-summary-card__label">TOTAL</span>
-              <span class="tax-summary-card__value">{{ formatCurrency(taxReport()!.estimatedTaxCharge.total.amount) }}</span>
-              <div class="tax-summary-card__detail">
-                <span>Per Books: {{ formatCurrency(taxReport()!.estimatedTaxCharge.total.perBooks) }}</span>
-                <span>Difference: {{ formatCurrency(taxReport()!.estimatedTaxCharge.total.difference) }}</span>
+    <!-- Widget Grid with Drag & Drop -->
+    <div
+      class="widget-grid"
+      cdkDropList
+      cdkDropListOrientation="mixed"
+      (cdkDropListDropped)="onWidgetDrop($event)"
+    >
+      @for (widget of visibleWidgets(); track widget.id) {
+        <div
+          class="widget-item"
+          [class]="'widget-item--' + getWidgetSize(widget.id)"
+          cdkDrag
+          [cdkDragData]="widget.id"
+        >
+          <!-- Widget Content -->
+          @switch (widget.id) {
+            <!-- Estimated Tax Charge -->
+            @case (WIDGETS.ESTIMATED_TAX_CHARGE) {
+              <div class="widget-container">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Estimated Tax Charge</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.ESTIMATED_TAX_CHARGE)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="tax-summary-grid">
+                    <div class="tax-summary-card tax-summary-card--primary">
+                      <span class="tax-summary-card__label">TOTAL</span>
+                      <span class="tax-summary-card__value">{{ taxReport()!.estimatedTaxCharge.total.amount | currencyEy }}</span>
+                      <div class="tax-summary-card__detail">
+                        <span>Per Books: {{ taxReport()!.estimatedTaxCharge.total.perBooks | currencyEy }}</span>
+                        <span>Difference: {{ taxReport()!.estimatedTaxCharge.total.difference | currencyEy }}</span>
+                      </div>
+                    </div>
+                    <div class="tax-summary-card">
+                      <span class="tax-summary-card__label">Corporate Income Tax</span>
+                      <span class="tax-summary-card__value">{{ taxReport()!.estimatedTaxCharge.corporateIncomeTax.amount | currencyEy }}</span>
+                    </div>
+                    <div class="tax-summary-card">
+                      <span class="tax-summary-card__label">Municipal Business Tax</span>
+                      <span class="tax-summary-card__value">{{ taxReport()!.estimatedTaxCharge.municipalBusinessTax.amount | currencyEy }}</span>
+                    </div>
+                    <div class="tax-summary-card">
+                      <span class="tax-summary-card__label">Net Worth Tax {{ taxReport()!.fiscalYear - 1 }}</span>
+                      <span class="tax-summary-card__value">{{ taxReport()!.estimatedTaxCharge.netWorthTax2023.amount | currencyEy }}</span>
+                    </div>
+                    <div class="tax-summary-card">
+                      <span class="tax-summary-card__label">Net Worth Tax {{ taxReport()!.fiscalYear }}</span>
+                      <span class="tax-summary-card__value">{{ taxReport()!.estimatedTaxCharge.netWorthTax2024.amount | currencyEy }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="tax-summary-card">
-              <span class="tax-summary-card__label">Corporate Income Tax</span>
-              <span class="tax-summary-card__value">{{ formatCurrency(taxReport()!.estimatedTaxCharge.corporateIncomeTax.amount) }}</span>
-            </div>
-            <div class="tax-summary-card">
-              <span class="tax-summary-card__label">Municipal Business Tax</span>
-              <span class="tax-summary-card__value">{{ formatCurrency(taxReport()!.estimatedTaxCharge.municipalBusinessTax.amount) }}</span>
-            </div>
-            <div class="tax-summary-card">
-              <span class="tax-summary-card__label">Net Worth Tax {{ taxReport()!.fiscalYear - 1 }}</span>
-              <span class="tax-summary-card__value">{{ formatCurrency(taxReport()!.estimatedTaxCharge.netWorthTax2023.amount) }}</span>
-            </div>
-            <div class="tax-summary-card">
-              <span class="tax-summary-card__label">Net Worth Tax {{ taxReport()!.fiscalYear }}</span>
-              <span class="tax-summary-card__value">{{ formatCurrency(taxReport()!.estimatedTaxCharge.netWorthTax2024.amount) }}</span>
-            </div>
-          </div>
-        </section>
+            }
 
-        <!-- Tax Attributes -->
-        <section class="report-section">
-          <h3 class="section-title">Tax Attribute</h3>
-          <div class="attribute-list">
-            <div class="attribute-row">
-              <span class="attribute-row__label">Functional Currency</span>
-              <span class="attribute-row__value">{{ taxReport()!.taxAttribute.functionalCurrency }}</span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Advanced Tax Agreement</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.taxAttribute.advancedTaxAgreement)">
-                {{ formatBoolean(taxReport()!.taxAttribute.advancedTaxAgreement) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Permanent Establishment</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.taxAttribute.permanentEstablishment)">
-                {{ formatBoolean(taxReport()!.taxAttribute.permanentEstablishment) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Tax Consolidation</span>
-              <span class="attribute-row__value">{{ formatBoolean(taxReport()!.taxAttribute.taxConsolidation) }}</span>
-            </div>
-          </div>
-        </section>
+            <!-- Tax Base CIT and MBT -->
+            @case (WIDGETS.TAX_BASE) {
+              <div class="widget-container widget-container--highlight">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Tax Base - CIT and MBT for {{ taxReport()!.fiscalYear }}</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.TAX_BASE)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="tax-base-summary">
+                    <div class="tax-base-item">
+                      <span class="tax-base-item__label">Profit/Loss</span>
+                      <span class="tax-base-item__value" [class.negative]="taxReport()!.taxBase.profitLoss < 0">
+                        {{ taxReport()!.taxBase.profitLoss | currencyEy }}
+                      </span>
+                    </div>
+                    <div class="tax-base-item">
+                      <span class="tax-base-item__label">Tax Base Before TLCF</span>
+                      <span class="tax-base-item__value" [class.negative]="taxReport()!.taxBase.taxBaseBeforeTLCF < 0">
+                        {{ taxReport()!.taxBase.taxBaseBeforeTLCF | currencyEy }}
+                      </span>
+                    </div>
+                    <div class="tax-base-item">
+                      <span class="tax-base-item__label">Tax Base After TLCF</span>
+                      <span class="tax-base-item__value" [class.negative]="taxReport()!.taxBase.taxBaseAfterTLCF < 0">
+                        {{ taxReport()!.taxBase.taxBaseAfterTLCF | currencyEy }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
 
-        <!-- Financing Activity -->
-        <section class="report-section">
-          <h3 class="section-title">Financing Activity</h3>
-          <div class="attribute-list">
-            <div class="attribute-row">
-              <span class="attribute-row__label">Intercompany Transactions</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.intercompanyTransactions)">
-                {{ formatBoolean(taxReport()!.financingActivity.intercompanyTransactions) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Intercompany Financing</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.intercompanyFinancing)">
-                {{ formatBoolean(taxReport()!.financingActivity.intercompanyFinancing) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">TP Report</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.tpReport)">
-                {{ formatBoolean(taxReport()!.financingActivity.tpReport) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Margin Realized</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.marginRealized)">
-                {{ formatBoolean(taxReport()!.financingActivity.marginRealized) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">TP Adjustment</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.tpAdjustment)">
-                {{ formatBoolean(taxReport()!.financingActivity.tpAdjustment) }}
-              </span>
-            </div>
-          </div>
-        </section>
+            <!-- Additions & Deductions -->
+            @case (WIDGETS.ADDITIONS_DEDUCTIONS) {
+              <div class="widget-container">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Additions & Deductions</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.ADDITIONS_DEDUCTIONS)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="additions-deductions-grid">
+                    <div class="additions-deductions-col">
+                      <h4 class="section-subtitle section-subtitle--green">+ Additions</h4>
+                      @if (taxReport()!.taxBase.additions.length > 0) {
+                        <div class="compact-list">
+                          @for (item of taxReport()!.taxBase.additions; track item.label) {
+                            <div class="compact-list__row">
+                              <span class="compact-list__label">{{ item.label }}</span>
+                              <span class="compact-list__value">{{ item.amount | currencyEy }}</span>
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <p class="no-data">No additions</p>
+                      }
+                    </div>
+                    <div class="additions-deductions-col">
+                      <h4 class="section-subtitle section-subtitle--red">- Deductions</h4>
+                      @if (taxReport()!.taxBase.deductions.length > 0) {
+                        <div class="compact-list">
+                          @for (item of taxReport()!.taxBase.deductions; track item.label) {
+                            <div class="compact-list__row">
+                              <span class="compact-list__label">{{ item.label }}</span>
+                              <span class="compact-list__value">{{ item.amount | currencyEy }}</span>
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <p class="no-data">No deductions</p>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
 
-        <!-- Holding Activity -->
-        <section class="report-section">
-          <h3 class="section-title">Holding Activity</h3>
-          <div class="attribute-list">
-            <div class="attribute-row">
-              <span class="attribute-row__label">Qualifying Participation(s)</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.holdingActivity.qualifyingParticipations)">
-                {{ formatBoolean(taxReport()!.holdingActivity.qualifyingParticipations) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Partnerships</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.holdingActivity.partnerships)">
-                {{ formatBoolean(taxReport()!.holdingActivity.partnerships) }}
-              </span>
-            </div>
-          </div>
-        </section>
+            <!-- Corporate Income Tax -->
+            @case (WIDGETS.CORPORATE_INCOME_TAX) {
+              <div class="widget-container">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Corporate Income Tax</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.CORPORATE_INCOME_TAX)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Amount in EUR</th>
+                        <th>%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Adjusted Income</td>
+                        <td class="number" [class.negative]="taxReport()!.corporateIncomeTax.adjustedIncome < 0">
+                          {{ taxReport()!.corporateIncomeTax.adjustedIncome | currencyEy }}
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Taxable Income</td>
+                        <td class="number">{{ taxReport()!.corporateIncomeTax.taxableIncome | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Tax following tax table</td>
+                        <td class="number">{{ taxReport()!.corporateIncomeTax.taxFollowingTaxTable | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Employment tax surcharge</td>
+                        <td class="number">{{ taxReport()!.corporateIncomeTax.employmentTaxSurcharge | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>CIT liability before credits</td>
+                        <td class="number">{{ taxReport()!.corporateIncomeTax.citLiabilityBeforeCredits | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Tax credits</td>
+                        <td class="number">{{ taxReport()!.corporateIncomeTax.taxCredits | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr class="highlight-row">
+                        <td>CIT liability after tax credits</td>
+                        <td class="number">{{ taxReport()!.corporateIncomeTax.citLiabilityAfterCredits | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
 
-        <!-- Interest Limitation Rules -->
-        <section class="report-section">
-          <h3 class="section-title">Interest Limitation Rules (IR)</h3>
-          <div class="attribute-list">
-            <div class="attribute-row">
-              <span class="attribute-row__label">Art. 164bis(1) L.I.R.</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.article164bis1LIR)">
-                {{ formatBoolean(taxReport()!.interestLimitationRules.article164bis1LIR) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Exceeding borrowing costs (EBC)</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.exceedingBorrowingCosts)">
-                {{ formatBoolean(taxReport()!.interestLimitationRules.exceedingBorrowingCosts) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Non deductible EBC</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.nonDeductibleEBC)">
-                {{ formatBoolean(taxReport()!.interestLimitationRules.nonDeductibleEBC) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Carried forward EBC</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.carriedForwardEBC)">
-                {{ formatBoolean(taxReport()!.interestLimitationRules.carriedForwardEBC) }}
-              </span>
-            </div>
-          </div>
-        </section>
+            <!-- Municipal Business Tax -->
+            @case (WIDGETS.MUNICIPAL_BUSINESS_TAX) {
+              <div class="widget-container">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Municipal Business Tax</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.MUNICIPAL_BUSINESS_TAX)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Amount in EUR</th>
+                        <th>%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Adjusted Income</td>
+                        <td class="number" [class.negative]="taxReport()!.municipalBusinessTax.adjustedIncome < 0">
+                          {{ taxReport()!.municipalBusinessTax.adjustedIncome | currencyEy }}
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>./. Municipal Business Tax Rebate</td>
+                        <td class="number" [class.negative]="taxReport()!.municipalBusinessTax.municipalBusinessTaxRebate < 0">
+                          {{ taxReport()!.municipalBusinessTax.municipalBusinessTaxRebate | currencyEy }}
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Taxable Income</td>
+                        <td class="number">{{ taxReport()!.municipalBusinessTax.taxableIncome | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Taxable Income Rounded</td>
+                        <td class="number">{{ taxReport()!.municipalBusinessTax.taxableIncomeRounded | currencyEy }}</td>
+                        <td></td>
+                      </tr>
+                      <tr class="highlight-row">
+                        <td>MBT Liability</td>
+                        <td class="number">{{ taxReport()!.municipalBusinessTax.mbtLiability | currencyEy }}</td>
+                        <td class="number">{{ taxReport()!.municipalBusinessTax.mbtRate }}%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
 
-        <!-- ATAD -->
-        <section class="report-section">
-          <h3 class="section-title">ATAD</h3>
-          <div class="attribute-list">
-            <div class="attribute-row">
-              <span class="attribute-row__label">Associated enterprises (AE)</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.atadRules.associatedEnterprises)">
-                {{ formatBoolean(taxReport()!.atadRules.associatedEnterprises) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Controlled foreign companies (CFC)</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.atadRules.controlledForeignCompanies)">
-                {{ formatBoolean(taxReport()!.atadRules.controlledForeignCompanies) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">Hybrids</span>
-              <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.atadRules.hybrids)">
-                {{ formatBoolean(taxReport()!.atadRules.hybrids) }}
-              </span>
-            </div>
-            <div class="attribute-row">
-              <span class="attribute-row__label">MDR/DAC6</span>
-              <span class="attribute-row__value">{{ formatBoolean(taxReport()!.atadRules.mdrDac6) }}</span>
-            </div>
-          </div>
-        </section>
-      </div>
+            <!-- Net Worth Tax -->
+            @case (WIDGETS.NET_WORTH_TAX) {
+              <div class="widget-container">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Net Worth Tax</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.NET_WORTH_TAX)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="nwt-section">
+                    <h4 class="nwt-subtitle">1) Net worth tax due based on the unitary value 1 January {{ taxReport()!.fiscalYear }}</h4>
+                    <table class="data-table data-table--compact">
+                      <tbody>
+                        <tr>
+                          <td>Taxable worth as at 1 January {{ taxReport()!.fiscalYear }}</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.taxableWorthAt1January | currencyEy }}</td>
+                        </tr>
+                        <tr>
+                          <td>NWT:</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.nwt | currencyEy }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="nwt-section">
+                    <h4 class="nwt-subtitle">2) Minimum net worth tax as at 1 January {{ taxReport()!.fiscalYear }}</h4>
+                    <table class="data-table data-table--compact">
+                      <tbody>
+                        <tr>
+                          <td>Total of the balance sheet as at 31 December {{ taxReport()!.fiscalYear - 1 }}</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.totalBalanceSheet | currencyEy }}</td>
+                        </tr>
+                        <tr>
+                          <td>Minimum NWT</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.minimumNWT | currencyEy }}</td>
+                        </tr>
+                        <tr>
+                          <td>Reduction ({{ taxReport()!.fiscalYear - 1 }} & CIT after credits)</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.reductionCitAfterCredits | currencyEy }}</td>
+                        </tr>
+                        <tr>
+                          <td>Minimum NWT after deduction</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.minimumNWTAfterDeduction | currencyEy }}</td>
+                        </tr>
+                        <tr>
+                          <td>Highest net worth tax</td>
+                          <td class="number highlight">{{ taxReport()!.netWorthTax.highestNWTTax | currencyEy }}</td>
+                        </tr>
+                        <tr class="highlight-row">
+                          <td>Final NWT liability considering NWT reserve (if any)</td>
+                          <td class="number">{{ taxReport()!.netWorthTax.finalNWTLiability | currencyEy }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            }
 
-      <!-- Middle Column -->
-      <div class="report-column">
-        <!-- Corporate Income Tax -->
-        <section class="report-section">
-          <h3 class="section-title">Corporate Income Tax</h3>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Amount in EUR</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Adjusted Income</td>
-                <td class="number" [class.negative]="taxReport()!.corporateIncomeTax.adjustedIncome < 0">
-                  ({{ formatCurrency(Math.abs(taxReport()!.corporateIncomeTax.adjustedIncome)) }})
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Taxable Income</td>
-                <td class="number">{{ formatCurrency(taxReport()!.corporateIncomeTax.taxableIncome) }}</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Tax following tax table</td>
-                <td class="number">{{ formatCurrency(taxReport()!.corporateIncomeTax.taxFollowingTaxTable) }}</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Employment tax surcharge</td>
-                <td class="number">{{ formatCurrency(taxReport()!.corporateIncomeTax.employmentTaxSurcharge) }}</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>CIT liability before credits</td>
-                <td class="number">{{ formatCurrency(taxReport()!.corporateIncomeTax.citLiabilityBeforeCredits) }}</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Tax credits</td>
-                <td class="number">{{ formatCurrency(taxReport()!.corporateIncomeTax.taxCredits) }}</td>
-                <td></td>
-              </tr>
-              <tr class="highlight-row">
-                <td>CIT liability after tax credits</td>
-                <td class="number">{{ formatCurrency(taxReport()!.corporateIncomeTax.citLiabilityAfterCredits) }}</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+            <!-- Tax Losses Carried Forward -->
+            @case (WIDGETS.TAX_LOSSES) {
+              <div class="widget-container">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Tax Losses Carried Forward</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.TAX_LOSSES)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  @if (taxReport()!.taxLossesCarriedForward.available && taxReport()!.taxLossesCarriedForward.items) {
+                    <table class="data-table data-table--compact">
+                      <thead>
+                        <tr>
+                          <th>Year</th>
+                          <th>Amount</th>
+                          <th>Utilized</th>
+                          <th>Remaining</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (item of taxReport()!.taxLossesCarriedForward.items; track item.year) {
+                          <tr>
+                            <td>{{ item.year }}</td>
+                            <td class="number">{{ item.amount | currencyEy }}</td>
+                            <td class="number">{{ item.utilized | currencyEy }}</td>
+                            <td class="number">{{ item.remaining | currencyEy }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  } @else {
+                    <div class="no-data-box">
+                      <lucide-icon [img]="FileText" [size]="24"></lucide-icon>
+                      <span>No Data Available</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
 
-        <!-- Municipal Business Tax -->
-        <section class="report-section">
-          <h3 class="section-title">Municipal Business Tax</h3>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Amount in EUR</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Adjusted Income</td>
-                <td class="number" [class.negative]="taxReport()!.municipalBusinessTax.adjustedIncome < 0">
-                  ({{ formatCurrency(Math.abs(taxReport()!.municipalBusinessTax.adjustedIncome)) }})
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>./. Municipal Business Tax Rebate</td>
-                <td class="number" [class.negative]="taxReport()!.municipalBusinessTax.municipalBusinessTaxRebate < 0">
-                  ({{ formatCurrency(Math.abs(taxReport()!.municipalBusinessTax.municipalBusinessTaxRebate)) }})
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Taxable Income</td>
-                <td class="number">{{ formatCurrency(taxReport()!.municipalBusinessTax.taxableIncome) }}</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Taxable Income Rounded</td>
-                <td class="number">{{ formatCurrency(taxReport()!.municipalBusinessTax.taxableIncomeRounded) }}</td>
-                <td></td>
-              </tr>
-              <tr class="highlight-row">
-                <td>MBT Liability</td>
-                <td class="number">{{ formatCurrency(taxReport()!.municipalBusinessTax.mbtLiability) }}</td>
-                <td class="number">{{ formatCurrency(taxReport()!.municipalBusinessTax.mbtRate) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+            <!-- Tax Attributes -->
+            @case (WIDGETS.TAX_ATTRIBUTES) {
+              <div class="widget-container widget-container--compact">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Tax Attributes</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.TAX_ATTRIBUTES)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Functional Currency</span>
+                    <span class="attribute-row__value">{{ taxReport()!.taxAttribute.functionalCurrency }}</span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Advanced Tax Agreement</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.taxAttribute.advancedTaxAgreement)">
+                      {{ formatBoolean(taxReport()!.taxAttribute.advancedTaxAgreement) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Permanent Establishment</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.taxAttribute.permanentEstablishment)">
+                      {{ formatBoolean(taxReport()!.taxAttribute.permanentEstablishment) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Tax Consolidation</span>
+                    <span class="attribute-row__value">{{ formatBoolean(taxReport()!.taxAttribute.taxConsolidation) }}</span>
+                  </div>
+                </div>
+              </div>
+            }
 
-        <!-- Net Worth Tax -->
-        <section class="report-section">
-          <h3 class="section-title">Net Worth Tax</h3>
-          <div class="nwt-section">
-            <h4 class="nwt-subtitle">1) Net worth tax due based on the unitary value 1 January {{ taxReport()!.fiscalYear }}</h4>
-            <table class="data-table data-table--compact">
-              <tbody>
-                <tr>
-                  <td>Taxable worth as at 1 January {{ taxReport()!.fiscalYear }}</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.taxableWorthAt1January) }}</td>
-                </tr>
-                <tr>
-                  <td>NWT:</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.nwt) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+            <!-- Financing Activity -->
+            @case (WIDGETS.FINANCING_ACTIVITY) {
+              <div class="widget-container widget-container--compact">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Financing Activity</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.FINANCING_ACTIVITY)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Intercompany Transactions</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.intercompanyTransactions)">
+                      {{ formatBoolean(taxReport()!.financingActivity.intercompanyTransactions) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Intercompany Financing</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.intercompanyFinancing)">
+                      {{ formatBoolean(taxReport()!.financingActivity.intercompanyFinancing) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">TP Report</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.tpReport)">
+                      {{ formatBoolean(taxReport()!.financingActivity.tpReport) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Margin Realized</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.marginRealized)">
+                      {{ formatBoolean(taxReport()!.financingActivity.marginRealized) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">TP Adjustment</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.financingActivity.tpAdjustment)">
+                      {{ formatBoolean(taxReport()!.financingActivity.tpAdjustment) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
 
-          <div class="nwt-section">
-            <h4 class="nwt-subtitle">2) Minimum net worth tax as at 1 January {{ taxReport()!.fiscalYear }}</h4>
-            <table class="data-table data-table--compact">
-              <tbody>
-                <tr>
-                  <td>Total of the balance sheet as at 31 December {{ taxReport()!.fiscalYear - 1 }}</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.totalBalanceSheet) }}</td>
-                </tr>
-                <tr>
-                  <td>Minimum NWT</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.minimumNWT) }}</td>
-                </tr>
-                <tr>
-                  <td>Reduction ({{ taxReport()!.fiscalYear - 1 }} & CIT after credits)</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.reductionCitAfterCredits) }}</td>
-                </tr>
-                <tr>
-                  <td>Minimum NWT after deduction</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.minimumNWTAfterDeduction) }}</td>
-                </tr>
-                <tr>
-                  <td>Highest net worth tax</td>
-                  <td class="number highlight">{{ formatCurrency(taxReport()!.netWorthTax.highestNWTTax) }}</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>Final NWT liability considering NWT reserve (if any)</td>
-                  <td class="number">{{ formatCurrency(taxReport()!.netWorthTax.finalNWTLiability) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
+            <!-- Holding Activity -->
+            @case (WIDGETS.HOLDING_ACTIVITY) {
+              <div class="widget-container widget-container--compact">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Holding Activity</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.HOLDING_ACTIVITY)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Qualifying Participation(s)</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.holdingActivity.qualifyingParticipations)">
+                      {{ formatBoolean(taxReport()!.holdingActivity.qualifyingParticipations) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Partnerships</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.holdingActivity.partnerships)">
+                      {{ formatBoolean(taxReport()!.holdingActivity.partnerships) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
 
-      <!-- Right Column -->
-      <div class="report-column">
-        <!-- Tax Base CIT and MBT -->
-        <section class="report-section report-section--highlight">
-          <h3 class="section-title">Tax Base - CIT and MBT for {{ taxReport()!.fiscalYear }}</h3>
-          <div class="tax-base-summary">
-            <div class="tax-base-item">
-              <span class="tax-base-item__label">Profit/Loss</span>
-              <span class="tax-base-item__value" [class.negative]="taxReport()!.taxBase.profitLoss < 0">
-                ({{ formatCurrency(Math.abs(taxReport()!.taxBase.profitLoss)) }})
-              </span>
-            </div>
-            <div class="tax-base-item">
-              <span class="tax-base-item__label">Tax Base Before TLCF</span>
-              <span class="tax-base-item__value" [class.negative]="taxReport()!.taxBase.taxBaseBeforeTLCF < 0">
-                ({{ formatCurrency(Math.abs(taxReport()!.taxBase.taxBaseBeforeTLCF)) }})
-              </span>
-            </div>
-            <div class="tax-base-item">
-              <span class="tax-base-item__label">Tax Base After TLCF</span>
-              <span class="tax-base-item__value" [class.negative]="taxReport()!.taxBase.taxBaseAfterTLCF < 0">
-                ({{ formatCurrency(Math.abs(taxReport()!.taxBase.taxBaseAfterTLCF)) }})
-              </span>
-            </div>
-          </div>
-        </section>
+            <!-- Interest Limitation Rules -->
+            @case (WIDGETS.INTEREST_LIMITATION) {
+              <div class="widget-container widget-container--compact">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">Interest Limitation Rules (IR)</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.INTEREST_LIMITATION)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Art. 164bis(1) L.I.R.</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.article164bis1LIR)">
+                      {{ formatBoolean(taxReport()!.interestLimitationRules.article164bis1LIR) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Exceeding borrowing costs (EBC)</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.exceedingBorrowingCosts)">
+                      {{ formatBoolean(taxReport()!.interestLimitationRules.exceedingBorrowingCosts) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Non deductible EBC</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.nonDeductibleEBC)">
+                      {{ formatBoolean(taxReport()!.interestLimitationRules.nonDeductibleEBC) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Carried forward EBC</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.interestLimitationRules.carriedForwardEBC)">
+                      {{ formatBoolean(taxReport()!.interestLimitationRules.carriedForwardEBC) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
 
-        <!-- Additions -->
-        <section class="report-section">
-          <h3 class="section-title section-title--small">+ Additions</h3>
-          @if (taxReport()!.taxBase.additions.length > 0) {
-            <table class="data-table data-table--compact">
-              <tbody>
-                @for (item of taxReport()!.taxBase.additions; track item.label) {
-                  <tr>
-                    <td>{{ item.label }}</td>
-                    <td class="number">{{ formatCurrency(item.amount) }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          } @else {
-            <p class="no-data">No additions</p>
+            <!-- ATAD -->
+            @case (WIDGETS.ATAD) {
+              <div class="widget-container widget-container--compact">
+                <div class="widget-header" cdkDragHandle>
+                  <div class="widget-header__left">
+                    <lucide-icon [img]="GripVertical" [size]="16" class="drag-handle"></lucide-icon>
+                    <span class="widget-title">ATAD</span>
+                  </div>
+                  <button class="widget-close-btn" (click)="onHideWidget(WIDGETS.ATAD)">
+                    <lucide-icon [img]="X" [size]="14"></lucide-icon>
+                  </button>
+                </div>
+                <div class="widget-content">
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Associated enterprises (AE)</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.atadRules.associatedEnterprises)">
+                      {{ formatBoolean(taxReport()!.atadRules.associatedEnterprises) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Controlled foreign companies (CFC)</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.atadRules.controlledForeignCompanies)">
+                      {{ formatBoolean(taxReport()!.atadRules.controlledForeignCompanies) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">Hybrids</span>
+                    <span class="attribute-row__value" [class]="'bool--' + getBooleanClass(taxReport()!.atadRules.hybrids)">
+                      {{ formatBoolean(taxReport()!.atadRules.hybrids) }}
+                    </span>
+                  </div>
+                  <div class="attribute-row">
+                    <span class="attribute-row__label">MDR/DAC6</span>
+                    <span class="attribute-row__value">{{ formatBoolean(taxReport()!.atadRules.mdrDac6) }}</span>
+                  </div>
+                </div>
+              </div>
+            }
           }
-        </section>
-
-        <!-- Deductions -->
-        <section class="report-section">
-          <h3 class="section-title section-title--small">- Deductions</h3>
-          @if (taxReport()!.taxBase.deductions.length > 0) {
-            <table class="data-table data-table--compact">
-              <tbody>
-                @for (item of taxReport()!.taxBase.deductions; track item.label) {
-                  <tr>
-                    <td>{{ item.label }}</td>
-                    <td class="number">{{ formatCurrency(item.amount) }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          } @else {
-            <p class="no-data">No deductions</p>
-          }
-        </section>
-
-        <!-- Tax Losses Carried Forward -->
-        <section class="report-section">
-          <h3 class="section-title">Tax Losses Carried Forward</h3>
-          @if (taxReport()!.taxLossesCarriedForward.available && taxReport()!.taxLossesCarriedForward.items) {
-            <table class="data-table data-table--compact">
-              <thead>
-                <tr>
-                  <th>Year</th>
-                  <th>Amount</th>
-                  <th>Utilized</th>
-                  <th>Remaining</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (item of taxReport()!.taxLossesCarriedForward.items; track item.year) {
-                  <tr>
-                    <td>{{ item.year }}</td>
-                    <td class="number">{{ formatCurrency(item.amount) }}</td>
-                    <td class="number">{{ formatCurrency(item.utilized) }}</td>
-                    <td class="number">{{ formatCurrency(item.remaining) }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          } @else {
-            <div class="no-data-box">
-              <lucide-icon [img]="FileText" [size]="24"></lucide-icon>
-              <span>No Data Available</span>
-            </div>
-          }
-        </section>
-      </div>
+        </div>
+      }
     </div>
+
+    <!-- Empty state when no widgets are visible -->
+    @if (visibleWidgets().length === 0) {
+      <div class="empty-widgets">
+        <lucide-icon [img]="Shield" [size]="48"></lucide-icon>
+        <h3>No widgets displayed</h3>
+        <p>Click the "Widgets" button above to add widgets to your dashboard.</p>
+      </div>
+    }
   </div>
 } @else {
   <div class="empty-state">

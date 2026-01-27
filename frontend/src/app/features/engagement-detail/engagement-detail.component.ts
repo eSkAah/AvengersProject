@@ -14,6 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
 import { MockDataService, Engagement, Document, DocumentType } from '../../core';
 import { EveApiService } from '../../core/services/eve-api.service';
+import { ToastService } from '../../shared/components/toast/toast.service';
 import {
   RiskBadgeComponent,
   ProgressBarComponent,
@@ -29,15 +30,15 @@ import {
 import { Document as DocumentModel } from '../../core/models/document.model';
 import { CtrResultDocument } from '../../core/models/engagement.model';
 import { KpiSectionComponent } from '../dashboard/components/kpi-section/kpi-section.component';
-import {
-  KpiMetric,
-  KpiClickEvent,
-} from '../../shared/components/charts/kpi-metric-card.component';
+import { KpiMetric, KpiClickEvent } from '../../shared/components/charts/kpi-metric-card.component';
 import {
   ChartsSectionComponent,
   DrillDownEvent,
 } from '../dashboard/components/charts-section/charts-section.component';
-import { ResultsTabComponent, ResultsKpiClickEvent } from './components/results-tab/results-tab.component';
+import {
+  ResultsTabComponent,
+  ResultsKpiClickEvent,
+} from './components/results-tab/results-tab.component';
 
 export type EngagementTab = 'overview' | 'results';
 
@@ -68,6 +69,7 @@ export class EngagementDetailComponent implements OnInit {
   private readonly mockData = inject(MockDataService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly eveService = inject(EveApiService);
+  private readonly toastService = inject(ToastService);
 
   @ViewChild(DrillDownModalComponent) drillDownModal!: DrillDownModalComponent;
 
@@ -78,13 +80,13 @@ export class EngagementDetailComponent implements OnInit {
   readonly engagement = computed(() => {
     const id = this.engagementId();
     if (!id) return null;
-    return this.mockData.engagements().find((e) => e.id === id) ?? null;
+    return this.mockData.engagements().find(e => e.id === id) ?? null;
   });
 
   readonly documents = computed(() => {
     const id = this.engagementId();
     if (!id) return [];
-    return this.mockData.documents().filter((d) => d.engagementIds.includes(id));
+    return this.mockData.documents().filter(d => d.engagementIds.includes(id));
   });
 
   readonly documentRequirements = computed(() => {
@@ -94,17 +96,17 @@ export class EngagementDetailComponent implements OnInit {
 
   readonly breadcrumbs = computed<BreadcrumbItem[]>(() => {
     const eng = this.engagement();
-    return [
-      { label: 'Home', path: '/' },
-      { label: eng?.entity ?? 'Engagement' },
-    ];
+    return [{ label: 'Home', path: '/' }, { label: eng?.entity ?? 'Engagement' }];
   });
 
   readonly statusConfig = computed(() => {
     const eng = this.engagement();
     if (!eng) return { label: '', variant: 'neutral' as const, icon: 'circle' };
 
-    const configs: Record<string, { label: string; variant: 'success' | 'warning' | 'error' | 'info'; icon: string }> = {
+    const configs: Record<
+      string,
+      { label: string; variant: 'success' | 'warning' | 'error' | 'info'; icon: string }
+    > = {
       waiting: { label: 'Pending', variant: 'warning', icon: 'clock' },
       received: { label: 'Received', variant: 'info', icon: 'inbox' },
       processing: { label: 'In Progress', variant: 'info', icon: 'loader' },
@@ -154,18 +156,16 @@ export class EngagementDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.route.paramMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        const id = params.get('id');
-        this.engagementId.set(id);
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const id = params.get('id');
+      this.engagementId.set(id);
 
-        // Set Eve context when engagement changes
-        if (id) {
-          const engagement = this.mockData.engagements().find((e) => e.id === id);
-          this.eveService.setEngagementContext(id, engagement?.entity ?? 'Engagement');
-        }
-      });
+      // Set Eve context when engagement changes
+      if (id) {
+        const engagement = this.mockData.engagements().find(e => e.id === id);
+        this.eveService.setEngagementContext(id, engagement?.entity ?? 'Engagement');
+      }
+    });
   }
 
   formatCurrency(value: number): string {
@@ -257,10 +257,23 @@ export class EngagementDetailComponent implements OnInit {
       sourceDocument: metric.sourceDocument,
       details: [
         ...(metric.previousValue !== undefined
-          ? [{ label: 'Previous Year Value', value: metric.previousValue, type: 'currency' as const }]
+          ? [
+              {
+                label: 'Previous Year Value',
+                value: metric.previousValue,
+                type: 'currency' as const,
+              },
+            ]
           : []),
         ...(metric.variancePercent !== undefined
-          ? [{ label: 'Variation', value: metric.variancePercent, type: 'percentage' as const, highlight: true }]
+          ? [
+              {
+                label: 'Variation',
+                value: metric.variancePercent,
+                type: 'percentage' as const,
+                highlight: true,
+              },
+            ]
           : []),
       ],
     });
@@ -273,12 +286,9 @@ export class EngagementDetailComponent implements OnInit {
 
     this.eveService.openPanel();
     this.eveService
-      .explainValue(
-        this.formatCurrency(metric.value),
-        metric.label,
-        engagementId,
-        { sourceDocument: metric.sourceDocument }
-      )
+      .explainValue(this.formatCurrency(metric.value), metric.label, engagementId, {
+        sourceDocument: metric.sourceDocument,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe();
   }
@@ -288,9 +298,7 @@ export class EngagementDetailComponent implements OnInit {
     this.drillDownData.set({
       title: event.label,
       value: event.value,
-      details: [
-        { label: 'Chart Type', value: event.chartType, type: 'text' as const },
-      ],
+      details: [{ label: 'Chart Type', value: event.chartType, type: 'text' as const }],
       context: event.additionalData,
     });
     this.drillDownModal?.open();
@@ -302,15 +310,10 @@ export class EngagementDetailComponent implements OnInit {
 
     this.eveService.openPanel();
     this.eveService
-      .explainValue(
-        this.formatCurrency(event.value),
-        event.label,
-        engagementId,
-        {
-          chartType: event.chartType,
-          ...event.additionalData,
-        }
-      )
+      .explainValue(this.formatCurrency(event.value), event.label, engagementId, {
+        chartType: event.chartType,
+        ...event.additionalData,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe();
   }
@@ -347,9 +350,7 @@ export class EngagementDetailComponent implements OnInit {
     this.drillDownData.set({
       title: event.label,
       value: event.value,
-      details: [
-        { label: 'Metric Type', value: event.metric, type: 'text' as const },
-      ],
+      details: [{ label: 'Metric Type', value: event.metric, type: 'text' as const }],
     });
     this.drillDownModal?.open();
   }
@@ -359,9 +360,10 @@ export class EngagementDetailComponent implements OnInit {
     if (!engagementId) return;
 
     this.eveService.openPanel();
-    const valueStr = event.metric.includes('rate') || event.metric.includes('etr')
-      ? `${event.value.toFixed(1)}%`
-      : this.formatCurrency(event.value);
+    const valueStr =
+      event.metric.includes('rate') || event.metric.includes('etr')
+        ? `${event.value.toFixed(1)}%`
+        : this.formatCurrency(event.value);
     this.eveService
       .explainValue(valueStr, event.label, engagementId, { metric: event.metric })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -369,7 +371,6 @@ export class EngagementDetailComponent implements OnInit {
   }
 
   private toast(message: string): void {
-    // Simple toast - could integrate with ToastService
-    console.log(message);
+    this.toastService.info(message);
   }
 }

@@ -50,7 +50,7 @@ export class EngagementApiService {
   getRiskDetails(engagementId: string, useCache = true): Observable<RiskDetailsResponse> {
     // Check cache first
     if (useCache && this.riskDetailsCache.has(engagementId)) {
-      return new Observable((subscriber) => {
+      return new Observable(subscriber => {
         subscriber.next(this.riskDetailsCache.get(engagementId)!);
         subscriber.complete();
       });
@@ -59,11 +59,10 @@ export class EngagementApiService {
     return this.http
       .get<RiskDetailsResponse>(`${this.baseUrl}/engagements/${engagementId}/risk`)
       .pipe(
-        tap((details) => {
+        tap(details => {
           this.riskDetailsCache.set(engagementId, details);
         }),
-        catchError((error) => {
-          console.error('Error fetching risk details:', error);
+        catchError(error => {
           return throwError(() => error);
         })
       );
@@ -75,7 +74,7 @@ export class EngagementApiService {
   getPrediction(engagementId: string, useCache = true): Observable<PredictionResponse> {
     // Check cache first
     if (useCache && this.predictionCache.has(engagementId)) {
-      return new Observable((subscriber) => {
+      return new Observable(subscriber => {
         subscriber.next(this.predictionCache.get(engagementId)!);
         subscriber.complete();
       });
@@ -84,11 +83,10 @@ export class EngagementApiService {
     return this.http
       .get<PredictionResponse>(`${this.baseUrl}/engagements/${engagementId}/prediction`)
       .pipe(
-        tap((prediction) => {
+        tap(prediction => {
           this.predictionCache.set(engagementId, prediction);
         }),
-        catchError((error) => {
-          console.error('Error fetching prediction:', error);
+        catchError(error => {
           return throwError(() => error);
         })
       );

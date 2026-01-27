@@ -1,16 +1,36 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Input,
   signal,
   computed,
   ElementRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, ChevronRight, ChevronDown, File, Folder, Calendar, Building2, Download, Eye, MessageCircle, Upload } from 'lucide-angular';
-import { Document, ServiceType, DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../../../../core/models/document.model';
+import {
+  LucideAngularModule,
+  ChevronRight,
+  ChevronDown,
+  File,
+  Folder,
+  Calendar,
+  Building2,
+  Download,
+  Eye,
+  MessageCircle,
+  Upload,
+} from 'lucide-angular';
+import {
+  Document,
+  ServiceType,
+  DOCUMENT_TYPE_LABELS,
+  DOCUMENT_STATUS_LABELS,
+} from '../../../../core/models/document.model';
 import { MOCK_DOCUMENTS } from '../../../../core/mocks/documents.mock';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 
 export interface DocumentTreeNode {
   id: string;
@@ -47,13 +67,22 @@ const ENTITY_FLAGS: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServiceDocumentsComponent {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly toastService = inject(ToastService);
+
   @Input() set serviceId(value: string | null) {
     this.serviceIdSignal.set(value as ServiceType | null);
+    // Force change detection to ensure tree updates properly with OnPush
+    this.cdr.markForCheck();
   }
 
   private serviceIdSignal = signal<ServiceType | null>(null);
   expandedNodes = signal<Set<string>>(new Set(['root']));
   selectedDocument = signal<Document | null>(null);
+  activeStatus = signal<string>(''); // '' means all
+
+  // Status options for filter pills
+  readonly statusOptions = ['signed_off', 'in_review', 'pending', 'private', 'unclassified'];
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -73,10 +102,19 @@ export class ServiceDocumentsComponent {
   dragOverNodeId = signal<string | null>(null);
   isDraggingFile = signal<boolean>(false);
 
-  readonly documents = computed<Document[]>(() => {
+  // All documents for this service (unfiltered)
+  readonly allDocuments = computed<Document[]>(() => {
     const serviceId = this.serviceIdSignal();
     if (!serviceId) return [];
     return MOCK_DOCUMENTS.filter(doc => doc.serviceType === serviceId);
+  });
+
+  // Filtered documents based on active status
+  readonly documents = computed<Document[]>(() => {
+    const allDocs = this.allDocuments();
+    const status = this.activeStatus();
+    if (!status) return allDocs;
+    return allDocs.filter(doc => doc.status === status);
   });
 
   readonly treeData = computed<DocumentTreeNode>(() => {
@@ -84,17 +122,24 @@ export class ServiceDocumentsComponent {
     return this.buildTree(docs);
   });
 
-  readonly totalDocuments = computed(() => this.documents().length);
+  readonly totalDocuments = computed(() => this.allDocuments().length);
 
+  // Status counts (always from all documents)
   readonly statusCounts = computed(() => {
-    const docs = this.documents();
+    const docs = this.allDocuments();
     return {
-      validated: docs.filter(d => d.status === 'validated').length,
-      analyzed: docs.filter(d => d.status === 'analyzed').length,
-      analyzing: docs.filter(d => d.status === 'analyzing').length,
+      signed_off: docs.filter(d => d.status === 'signed_off').length,
+      in_review: docs.filter(d => d.status === 'in_review').length,
       pending: docs.filter(d => d.status === 'pending').length,
+      private: docs.filter(d => d.status === 'private').length,
+      unclassified: docs.filter(d => d.status === 'unclassified').length,
     };
   });
+
+  // Filter by status
+  onStatusFilter(status: string): void {
+    this.activeStatus.set(status);
+  }
 
   private buildTree(documents: Document[]): DocumentTreeNode {
     // Group by entity → year
@@ -251,17 +296,17 @@ export class ServiceDocumentsComponent {
 
   downloadDocument(doc: Document, event: Event): void {
     event.stopPropagation();
-    console.log('Download:', doc.name);
+    this.toastService.info(`Downloading ${doc.name}...`);
   }
 
   previewDocument(doc: Document, event: Event): void {
     event.stopPropagation();
-    console.log('Preview:', doc.name);
+    this.toastService.info(`Opening preview for ${doc.name}...`);
   }
 
   askEve(doc: Document, event: Event): void {
     event.stopPropagation();
-    console.log('Ask Eve about:', doc.name);
+    this.toastService.info(`Opening Eve for ${doc.name}...`);
   }
 
   // Drag & Drop handlers
@@ -295,8 +340,6 @@ export class ServiceDocumentsComponent {
     const entityName = targetNode.entityName || targetNode.label;
     const year = targetNode.year || new Date().getFullYear();
 
-    console.log(`Uploading ${file.name} to ${entityName} / ${year}`);
-
     // Expand to show the target location
     if (targetNode.type === 'entity') {
       this.expandedNodes.update(set => {
@@ -313,8 +356,10 @@ export class ServiceDocumentsComponent {
       });
     }
 
-    // In a real app, this would upload the file
-    alert(`Document "${file.name}" will be uploaded to:\n\nEntity: ${entityName}\nYear: ${year}`);
+    // Show upload confirmation toast
+    this.toastService.success(
+      `Document "${file.name}" will be uploaded to ${entityName} (${year})`
+    );
   }
 
   // Drop zone handlers

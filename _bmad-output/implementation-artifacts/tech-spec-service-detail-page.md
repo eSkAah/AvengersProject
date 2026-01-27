@@ -136,7 +136,7 @@ Chart.register(LineController, LineElement, PointElement, Filler, CategoryScale,
 
 ### Technical Decisions
 
-1. **Route structure:** `/app/services/:id` where id = cit, vat, assessment, accounting, transfer-pricing
+1. **Route structure:** `/app/services/:id` where id = cit, vat, assessment, transfer-pricing
 2. **Service data:** New `ServiceEntityService` injectable with mock data
 3. **Stacked Area Chart:** Chart.js with `fill: 'origin'` for stacking effect
 4. **Navbar position:** "My Services" added after "Home" in navItems
@@ -322,7 +322,7 @@ Chart.register(LineController, LineElement, PointElement, Filler, CategoryScale,
 
 - [ ] **AC6:** Given I am on the service detail page, when I click the "Insights" tab, then I see a "Coming soon" placeholder message
 
-- [ ] **AC7:** Given I am logged in and viewing any page, when I click "My Services" in the navbar, then I see a dropdown with 5 services: Corporate Tax Return, VAT Return, Tax Assessment, Accounting, Transfer Pricing
+- [ ] **AC7:** Given I am logged in and viewing any page, when I click "My Services" in the navbar, then I see a dropdown with 4 services: Corporate Tax Return, VAT Return, Tax Assessment, Transfer Pricing
 
 - [ ] **AC8:** Given the "My Services" dropdown is open, when I click on "VAT Return", then the dropdown closes and I am navigated to `/app/services/vat`
 

@@ -1,6 +1,14 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, FileUp, FileCheck, MessageSquare, AlertCircle, Clock } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  LucideIconData,
+  FileUp,
+  FileCheck,
+  MessageSquare,
+  AlertCircle,
+  Clock,
+} from 'lucide-angular';
 
 interface Activity {
   id: string;
@@ -8,7 +16,7 @@ interface Activity {
   title: string;
   entity: string;
   time: string;
-  icon: any;
+  icon: LucideIconData;
 }
 
 @Component({
@@ -17,7 +25,7 @@ interface Activity {
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './recent-activity-widget.component.html',
   styleUrl: './recent-activity-widget.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecentActivityWidgetComponent {
   readonly icons = {
@@ -25,7 +33,7 @@ export class RecentActivityWidgetComponent {
     fileCheck: FileCheck,
     message: MessageSquare,
     alert: AlertCircle,
-    clock: Clock
+    clock: Clock,
   };
 
   readonly activities: Activity[] = [
@@ -35,7 +43,7 @@ export class RecentActivityWidgetComponent {
       title: 'Bank Statement uploaded',
       entity: 'CCP 5 Paris Office SPV',
       time: '2 min ago',
-      icon: this.icons.fileUp
+      icon: this.icons.fileUp,
     },
     {
       id: '2',
@@ -43,7 +51,7 @@ export class RecentActivityWidgetComponent {
       title: 'General Ledger approved',
       entity: 'CCP 5 Munich PropCo',
       time: '15 min ago',
-      icon: this.icons.fileCheck
+      icon: this.icons.fileCheck,
     },
     {
       id: '3',
@@ -51,7 +59,7 @@ export class RecentActivityWidgetComponent {
       title: 'New comment on Tax Return',
       entity: 'EPISO 6 Madrid SL',
       time: '1 hour ago',
-      icon: this.icons.message
+      icon: this.icons.message,
     },
     {
       id: '4',
@@ -59,7 +67,7 @@ export class RecentActivityWidgetComponent {
       title: 'Document deadline approaching',
       entity: 'EPISO 6 Brussels SA',
       time: '2 hours ago',
-      icon: this.icons.alert
+      icon: this.icons.alert,
     },
     {
       id: '5',
@@ -67,7 +75,7 @@ export class RecentActivityWidgetComponent {
       title: 'Trial Balance uploaded',
       entity: 'EPISO 6 Milan Srl',
       time: '3 hours ago',
-      icon: this.icons.fileUp
+      icon: this.icons.fileUp,
     },
     {
       id: '6',
@@ -75,8 +83,8 @@ export class RecentActivityWidgetComponent {
       title: 'VAT Return approved',
       entity: 'Luxembourg HoldCo',
       time: '5 hours ago',
-      icon: this.icons.fileCheck
-    }
+      icon: this.icons.fileCheck,
+    },
   ];
 
   getTypeClass(type: Activity['type']): string {

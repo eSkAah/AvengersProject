@@ -10,6 +10,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CHART_RENDER_DELAY_MS } from '../../../core/constants';
 import {
   Chart,
   ChartConfiguration,
@@ -24,7 +25,16 @@ import {
 } from 'chart.js';
 
 // Register Chart.js components
-Chart.register(LineController, LineElement, PointElement, Filler, CategoryScale, LinearScale, Tooltip, Legend);
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  Filler,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+);
 
 export interface StackedAreaDataPoint {
   date: string;
@@ -51,54 +61,60 @@ export interface StackedAreaDataPoint {
       }
     </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
 
-    .stacked-area-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
+      .stacked-area-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
 
-    .stacked-area-container--loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 200px;
-    }
+      .stacked-area-container--loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+      }
 
-    .chart-skeleton {
-      width: 100%;
-      height: 200px;
-      display: flex;
-      align-items: flex-end;
-      padding: 0 20px;
-    }
+      .chart-skeleton {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        padding: 0 20px;
+      }
 
-    .skeleton-rect {
-      width: 100%;
-      height: 80%;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
+      .skeleton-rect {
+        width: 100%;
+        height: 80%;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
 
-    .chart-wrapper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-  `],
+      .chart-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StackedAreaChartComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -111,10 +127,10 @@ export class StackedAreaChartComponent implements AfterViewInit, OnChanges, OnDe
 
   // Status colors matching the design system
   private readonly colors = {
-    completed: '#10B981',    // Green
-    reviewing: '#F59E0B',    // Yellow/Amber
-    inProgress: '#3B82F6',   // Blue
-    notStarted: '#E5E7EB',   // Gray
+    completed: '#10B981', // Green
+    reviewing: '#F59E0B', // Yellow/Amber
+    inProgress: '#3B82F6', // Blue
+    notStarted: '#E5E7EB', // Gray
   };
 
   ngAfterViewInit(): void {
@@ -294,8 +310,8 @@ export class StackedAreaChartComponent implements AfterViewInit, OnChanges, OnDe
             boxPadding: 4,
             usePointStyle: true,
             callbacks: {
-              title: (items) => items[0]?.label ?? '',
-              label: (context) => {
+              title: items => items[0]?.label ?? '',
+              label: context => {
                 const label = context.dataset.label ?? '';
                 const value = context.parsed.y;
                 return ` ${label}: ${value} ${value === 1 ? 'entity' : 'entities'}`;
@@ -312,7 +328,7 @@ export class StackedAreaChartComponent implements AfterViewInit, OnChanges, OnDe
   private updateChart(): void {
     this.destroyChart();
     if (this.data.length > 0 && !this.loading) {
-      setTimeout(() => this.createChart(), 0);
+      setTimeout(() => this.createChart(), CHART_RENDER_DELAY_MS);
     }
   }
 

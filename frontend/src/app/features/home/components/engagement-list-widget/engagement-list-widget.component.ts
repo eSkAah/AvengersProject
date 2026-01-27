@@ -1,7 +1,13 @@
 import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Briefcase, ChevronRight, AlertTriangle, Calendar } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Briefcase,
+  ChevronRight,
+  AlertTriangle,
+  Calendar,
+} from 'lucide-angular';
 import { Engagement, MockDataService, STATUS_LABELS } from '../../../../core';
 import { DonutSegment } from '../donut-widget/donut-widget.component';
 
@@ -11,7 +17,7 @@ import { DonutSegment } from '../donut-widget/donut-widget.component';
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './engagement-list-widget.component.html',
   styleUrl: './engagement-list-widget.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EngagementListWidgetComponent {
   private readonly mockData = inject(MockDataService);
@@ -21,7 +27,7 @@ export class EngagementListWidgetComponent {
     briefcase: Briefcase,
     chevronRight: ChevronRight,
     alertTriangle: AlertTriangle,
-    calendar: Calendar
+    calendar: Calendar,
   };
 
   readonly statusLabels = STATUS_LABELS;
@@ -73,7 +79,7 @@ export class EngagementListWidgetComponent {
       all: 'All Engagements',
       late: 'Late Engagements',
       soon: 'Approaching Deadline',
-      in_progress: 'In Progress'
+      in_progress: 'In Progress',
     };
     return labels[this.filter()];
   });
@@ -101,7 +107,7 @@ export class EngagementListWidgetComponent {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
       day: '2-digit',
-      month: 'short'
+      month: 'short',
     });
   }
 }

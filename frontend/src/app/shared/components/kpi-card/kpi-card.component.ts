@@ -10,7 +10,16 @@ import {
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 
-export type KpiVariant = 'default' | 'info' | 'warning' | 'error' | 'success';
+// EY Design System KPI Variants
+export type KpiVariant =
+  | 'default'
+  | 'dark'
+  | 'light'
+  | 'highlight'
+  | 'info'
+  | 'warning'
+  | 'error'
+  | 'success';
 
 @Component({
   selector: 'app-kpi-card',
@@ -24,10 +33,11 @@ export class KpiCardComponent implements OnInit {
   @Input({ required: true }) value!: number;
   @Input({ required: true }) label!: string;
   @Input() icon = 'bar-chart-3';
-  @Input() variant: KpiVariant = 'default';
+  @Input() variant: KpiVariant = 'light';
   @Input() clickable = true;
   @Input() active = false;
   @Input() animate = true;
+  @Input() unit = '';
 
   @Output() cardClick = new EventEmitter<void>();
 

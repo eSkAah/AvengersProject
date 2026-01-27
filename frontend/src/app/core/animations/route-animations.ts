@@ -1,11 +1,4 @@
-import {
-  trigger,
-  transition,
-  style,
-  query,
-  animate,
-  group,
-} from '@angular/animations';
+import { trigger, transition, style, query, animate, group } from '@angular/animations';
 
 /**
  * Route transition animations for smooth page navigation
@@ -15,35 +8,53 @@ export const routeAnimations = trigger('routeAnimations', [
   // Fade transition for all routes
   transition('* <=> *', [
     // Set initial state
-    query(':enter, :leave', [
-      style({
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        opacity: 1,
-      }),
-    ], { optional: true }),
+    query(
+      ':enter, :leave',
+      [
+        style({
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          opacity: 1,
+        }),
+      ],
+      { optional: true }
+    ),
 
     // Animate out the leaving component
-    query(':leave', [
-      animate('200ms ease-out', style({
-        opacity: 0,
-        transform: 'translateY(-10px)',
-      })),
-    ], { optional: true }),
+    query(
+      ':leave',
+      [
+        animate(
+          '200ms ease-out',
+          style({
+            opacity: 0,
+            transform: 'translateY(-10px)',
+          })
+        ),
+      ],
+      { optional: true }
+    ),
 
     // Animate in the entering component
-    query(':enter', [
-      style({
-        opacity: 0,
-        transform: 'translateY(10px)',
-      }),
-      animate('300ms ease-out', style({
-        opacity: 1,
-        transform: 'translateY(0)',
-      })),
-    ], { optional: true }),
+    query(
+      ':enter',
+      [
+        style({
+          opacity: 0,
+          transform: 'translateY(10px)',
+        }),
+        animate(
+          '300ms ease-out',
+          style({
+            opacity: 1,
+            transform: 'translateY(0)',
+          })
+        ),
+      ],
+      { optional: true }
+    ),
   ]),
 ]);
 
@@ -51,10 +62,7 @@ export const routeAnimations = trigger('routeAnimations', [
  * Fade in animation for elements appearing on screen
  */
 export const fadeIn = trigger('fadeIn', [
-  transition(':enter', [
-    style({ opacity: 0 }),
-    animate('300ms ease-out', style({ opacity: 1 })),
-  ]),
+  transition(':enter', [style({ opacity: 0 }), animate('300ms ease-out', style({ opacity: 1 }))]),
 ]);
 
 /**
@@ -95,10 +103,14 @@ export const scaleIn = trigger('scaleIn', [
  */
 export const staggerList = trigger('staggerList', [
   transition('* => *', [
-    query(':enter', [
-      style({ opacity: 0, transform: 'translateY(10px)' }),
-      animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
-    ], { optional: true }),
+    query(
+      ':enter',
+      [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ],
+      { optional: true }
+    ),
   ]),
 ]);
 

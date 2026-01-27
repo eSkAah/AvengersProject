@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
@@ -86,15 +80,15 @@ interface UploadingFile {
             </div>
           }
         </div>
-        @if (missingByEntity().length > 5) {
-          <div class="widget-footer">
-            <button class="view-all-btn" (click)="viewAllMissing()">
-              View All
-              <lucide-icon [img]="icons.arrowRight" [size]="14"></lucide-icon>
-            </button>
-          </div>
-        }
       }
+
+      <!-- View All footer - always shown for consistent card height -->
+      <div class="widget-footer">
+        <button class="view-all-link" (click)="viewAllMissing()">
+          View All
+          <lucide-icon [img]="icons.arrowRight" [size]="14"></lucide-icon>
+        </button>
+      </div>
     </div>
 
     <!-- Upload Modal -->
@@ -160,7 +154,11 @@ interface UploadingFile {
 
               <div class="files-list">
                 @for (file of uploadingFiles(); track file.id) {
-                  <div class="file-item" [class.file-item--success]="file.status === 'classified'" [class.file-item--error]="file.status === 'error'">
+                  <div
+                    class="file-item"
+                    [class.file-item--success]="file.status === 'classified'"
+                    [class.file-item--error]="file.status === 'error'"
+                  >
                     <div class="file-info">
                       <lucide-icon [img]="icons.fileText" [size]="16"></lucide-icon>
                       <span class="file-name">{{ file.name }}</span>
@@ -210,516 +208,573 @@ interface UploadingFile {
       </div>
     }
   `,
-  styles: [`
-    .missing-docs-widget {
-      display: flex;
-      flex-direction: column;
-    }
+  styles: [
+    `
+      // =============================================================================
+      // MISSING DOCUMENTS WIDGET - EY Design System
+      // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+      // Colors: EY Yellow #FFE600 for accents, #2E2E38 dark text, #6b7280 secondary
+      // =============================================================================
 
-    .widget-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .widget-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      lucide-icon {
-        color: #f59e0b;
+      :host {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
       }
 
-      h3 {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 600;
-        color: #2E2E38;
-      }
-    }
-
-    .total-badge {
-      background: #fef3c7;
-      color: #92400e;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #10b981;
-      gap: 6px;
-      padding: 16px 0;
-
-      span {
-        font-size: 13px;
-      }
-    }
-
-    .entity-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .entity-row {
-      display: grid;
-      grid-template-columns: 1fr auto 32px;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: #f9fafb;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      transition: all 0.2s;
-
-      &:hover {
-        border-color: #FFE600;
-        background: #FFFDF5;
-      }
-    }
-
-    .entity-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .entity-flag {
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .entity-name {
-      font-size: 12px;
-      font-weight: 500;
-      color: #2E2E38;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .missing-docs {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
-
-    .doc-badge {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 500;
-      white-space: nowrap;
-
-      &.more {
-        background: #f3f4f6;
-        color: #6b7280;
-      }
-    }
-
-    .upload-btn {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #FFE600;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      lucide-icon {
-        color: #2E2E38;
+      .missing-docs-widget {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
       }
 
-      &:hover {
-        background: #FFD000;
-        transform: scale(1.05);
-      }
-    }
-
-    .widget-footer {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #f0f0f0;
-    }
-
-    .view-all-btn {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      background: transparent;
-      border: none;
-      color: #6b7280;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: all 0.2s;
-
-      lucide-icon {
-        transition: transform 0.2s;
+      .widget-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
       }
 
-      &:hover {
-        color: #2E2E38;
-        background: #f3f4f6;
+      .widget-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
 
         lucide-icon {
-          transform: translateX(2px);
+          color: #f59e0b; // warning color
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 15px; // close to text-body
+          font-weight: 600;
+          color: #2e2e38;
+          line-height: 1.4;
         }
       }
-    }
 
-    /* Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 480px;
-      max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.3s ease-out;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .modal-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      lucide-icon {
-        color: #FFE600;
-      }
-    }
-
-    .modal-title-text {
-      h3 {
-        margin: 0;
-        font-size: 16px;
+      .total-badge {
+        background: #fef3c7; // warning-light
+        color: #b45309; // warning-dark
+        min-width: 24px;
+        height: 24px;
+        padding: 0 8px;
+        border-radius: 9999px; // radius-full
+        font-size: 12px;
         font-weight: 600;
-        color: #2E2E38;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .modal-subtitle {
+      .empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #10b981; // success
+        gap: 8px;
+        padding: 20px 0;
+
+        span {
+          font-size: 13px;
+          font-weight: 500;
+        }
+      }
+
+      .entity-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .entity-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) auto 32px;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          border-color: #ffe600;
+          background: #fffdf5;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          transform: translateY(-1px);
+        }
+      }
+
+      .entity-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .entity-flag {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .entity-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #2e2e38;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .missing-docs {
+        display: flex;
+        gap: 4px;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .doc-badge {
+        background: #f3f4f6;
+        color: #4b5563;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+        border: 1px solid #e5e7eb;
+
+        &.more {
+          background: #ffffff;
+          color: #6b7280;
+          border: 1px solid #e5e7eb;
+        }
+      }
+
+      .upload-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffe600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+
+        lucide-icon {
+          color: #2e2e38;
+        }
+
+        &:hover {
+          background: #ffd000;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      .widget-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+
+      .view-all-link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 4px 0;
+        transition: all 200ms ease-out;
+
+        lucide-icon {
+          transition: transform 200ms ease-out;
+        }
+
+        &:hover {
+          color: #2e2e38;
+
+          lucide-icon {
+            transform: translateX(2px);
+          }
+        }
+      }
+
+      // =========================================================================
+      // MODAL STYLES - EY Design System
+      // =========================================================================
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 200ms ease-out;
+      }
+
+      .modal-content {
+        background: #ffffff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 480px;
+        max-height: 80vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
+        animation: slideUp 300ms ease-out;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        lucide-icon {
+          color: #ffe600;
+        }
+      }
+
+      .modal-title-text {
+        h3 {
+          margin: 0;
+          font-size: 18px; // text-h3
+          font-weight: 600;
+          color: #2e2e38;
+          line-height: 1.4;
+        }
+
+        .modal-subtitle {
+          font-size: 13px;
+          color: #6b7280;
+          line-height: 1.5;
+        }
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        color: #6b7280;
+        border-radius: 6px;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #f5f5f5;
+          color: #2e2e38;
+        }
+      }
+
+      .missing-info {
+        padding: 12px 24px;
+        background: #fee2e2; // error-light
+        border-bottom: 1px solid #fecaca;
+      }
+
+      .missing-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #b91c1c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .missing-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .missing-tag {
+        background: #ffffff;
+        color: #b91c1c;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid #fecaca;
+      }
+
+      .drop-zone {
+        margin: 20px 24px;
+        position: relative;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        background: #fafafa;
+        transition: all 200ms ease-out;
+        min-height: 140px;
+
+        &:hover {
+          border-color: #ffe600;
+          background: #fffdf5;
+        }
+
+        &--dragover {
+          border-color: #ffe600;
+          border-style: solid;
+          background: #fff9cc;
+        }
+      }
+
+      .drop-zone__input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .drop-zone__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 140px;
+        cursor: pointer;
+      }
+
+      .drop-zone__icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+        lucide-icon {
+          color: #ffe600;
+        }
+      }
+
+      .drop-zone__title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2e2e38;
+      }
+
+      .drop-zone__subtitle {
         font-size: 13px;
         color: #6b7280;
       }
-    }
 
-    .close-btn {
-      background: none;
-      border: none;
-      padding: 8px;
-      cursor: pointer;
-      color: #6b7280;
-      border-radius: 8px;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #f3f4f6;
-        color: #2E2E38;
-      }
-    }
-
-    .missing-info {
-      padding: 12px 24px;
-      background: #fef2f2;
-      border-bottom: 1px solid #fecaca;
-    }
-
-    .missing-label {
-      font-size: 12px;
-      color: #991b1b;
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .missing-tags {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .missing-tag {
-      background: white;
-      color: #991b1b;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      border: 1px solid #fecaca;
-    }
-
-    .drop-zone {
-      margin: 20px 24px;
-      position: relative;
-      border: 2px dashed #d1d5db;
-      border-radius: 12px;
-      background: #f9fafb;
-      transition: all 0.3s ease;
-      min-height: 140px;
-
-      &:hover {
-        border-color: #FFE600;
-        background: #FFFDF5;
+      .uploading-section {
+        border-top: 1px solid #e5e7eb;
       }
 
-      &--dragover {
-        border-color: #FFE600;
-        border-style: solid;
-        background: #FFF9E0;
-      }
-    }
+      .ai-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: #fff9cc; // ey-yellow-light
+        font-size: 12px;
+        font-weight: 500;
+        color: #b45309;
 
-    .drop-zone__input {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .drop-zone__content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 140px;
-      cursor: pointer;
-    }
-
-    .drop-zone__icon {
-      width: 56px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-
-      lucide-icon {
-        color: #FFE600;
-      }
-    }
-
-    .drop-zone__title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #2E2E38;
-    }
-
-    .drop-zone__subtitle {
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .uploading-section {
-      border-top: 1px solid #f0f0f0;
-    }
-
-    .ai-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 24px;
-      background: #FFF9E0;
-      font-size: 12px;
-      color: #92400e;
-
-      lucide-icon {
-        color: #f59e0b;
-      }
-    }
-
-    .files-list {
-      padding: 12px 24px;
-      max-height: 200px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      background: #f9fafb;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-
-      &--success {
-        background: #f0fdf4;
-        border-color: #86efac;
+        lucide-icon {
+          color: #f59e0b;
+        }
       }
 
-      &--error {
-        background: #fef2f2;
-        border-color: #fecaca;
+      .files-list {
+        padding: 12px 24px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
-    }
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-      flex: 1;
+      .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: #fafafa;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 200ms ease-out;
 
-      lucide-icon {
+        &--success {
+          background: #d1fae5; // success-light
+          border-color: #a7f3d0;
+        }
+
+        &--error {
+          background: #fee2e2; // error-light
+          border-color: #fecaca;
+        }
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+
+        lucide-icon {
+          color: #6b7280;
+          flex-shrink: 0;
+        }
+      }
+
+      .file-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #2e2e38;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .status-uploading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
         color: #6b7280;
-        flex-shrink: 0;
       }
-    }
 
-    .file-name {
-      font-size: 13px;
-      color: #2E2E38;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .status-uploading {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .progress-bar {
-      width: 60px;
-      height: 4px;
-      background: #e5e7eb;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #FFE600;
-      transition: width 0.2s;
-    }
-
-    .status-classifying {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: #f59e0b;
-      font-size: 12px;
-    }
-
-    .status-success {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: #10b981;
-      font-size: 12px;
-    }
-
-    .status-error {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: #ef4444;
-      font-size: 12px;
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid #f0f0f0;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .done-btn {
-      background: #FFE600;
-      color: #2E2E38;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #FFD000;
+      .progress-bar {
+        width: 60px;
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
       }
-    }
 
-    .spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+      .progress-fill {
+        height: 100%;
+        background: #ffe600;
+        border-radius: 2px;
+        transition: width 200ms ease-out;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `],
+      .status-classifying {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #f59e0b;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-success {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #10b981;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #ef4444;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .done-btn {
+        background: #ffe600;
+        color: #2e2e38;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #ffd000;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MissingDocumentsWidgetComponent {
@@ -783,10 +838,7 @@ export class MissingDocumentsWidgetComponent {
   });
 
   readonly totalMissing = computed(() => {
-    return this.missingByEntity().reduce(
-      (sum, entity) => sum + entity.missingDocuments.length,
-      0
-    );
+    return this.missingByEntity().reduce((sum, entity) => sum + entity.missingDocuments.length, 0);
   });
 
   readonly displayedEntities = computed(() => {
@@ -795,7 +847,7 @@ export class MissingDocumentsWidgetComponent {
 
   viewAllMissing(): void {
     this.router.navigate(['/app/documents'], {
-      queryParams: { status: 'missing' }
+      queryParams: { status: 'missing' },
     });
   }
 
@@ -866,43 +918,47 @@ export class MissingDocumentsWidgetComponent {
 
     files.forEach((file, index) => {
       let progress = 0;
-      const uploadInterval = setInterval(() => {
-        progress += Math.random() * 30 + 10;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(uploadInterval);
+      const uploadInterval = setInterval(
+        () => {
+          progress += Math.random() * 30 + 10;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(uploadInterval);
 
-          this.uploadingFiles.update(current =>
-            current.map(f =>
-              f.id === file.id ? { ...f, progress: 100, status: 'classifying' as const } : f
-            )
-          );
-
-          setTimeout(() => {
             this.uploadingFiles.update(current =>
               current.map(f =>
-                f.id === file.id
-                  ? {
-                      ...f,
-                      status: 'classified' as const,
-                      classificationResult: {
-                        entity: entity?.entity || 'Unknown',
-                        documentType: missingDocs[index % missingDocs.length] || 'Document',
-                        fiscalYear: 2025,
-                      },
-                    }
-                  : f
+                f.id === file.id ? { ...f, progress: 100, status: 'classifying' as const } : f
               )
             );
-          }, 1000 + Math.random() * 1000);
-        } else {
-          this.uploadingFiles.update(current =>
-            current.map(f =>
-              f.id === file.id ? { ...f, progress: Math.min(progress, 99) } : f
-            )
-          );
-        }
-      }, 200 + index * 100);
+
+            setTimeout(
+              () => {
+                this.uploadingFiles.update(current =>
+                  current.map(f =>
+                    f.id === file.id
+                      ? {
+                          ...f,
+                          status: 'classified' as const,
+                          classificationResult: {
+                            entity: entity?.entity || 'Unknown',
+                            documentType: missingDocs[index % missingDocs.length] || 'Document',
+                            fiscalYear: 2025,
+                          },
+                        }
+                      : f
+                  )
+                );
+              },
+              1000 + Math.random() * 1000
+            );
+          } else {
+            this.uploadingFiles.update(current =>
+              current.map(f => (f.id === file.id ? { ...f, progress: Math.min(progress, 99) } : f))
+            );
+          }
+        },
+        200 + index * 100
+      );
     });
   }
 }

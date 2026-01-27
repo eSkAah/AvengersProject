@@ -1,52 +1,239 @@
 @use 'styles/variables' as *;
 
+// =============================================================================
+// Document Tree - EY Design System
+// Hierarchical navigation: Entity → Year → Service → Documents
+// With drag & drop and custom folder support
+// =============================================================================
+
+// Search input container
+.document-tree__search {
+  padding: $spacing-3;
+  padding-bottom: $spacing-2;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+// Empty state (no search results)
+.document-tree__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-8 $spacing-4;
+  text-align: center;
+  color: #9ca3af;
+
+  lucide-icon {
+    margin-bottom: $spacing-3;
+    color: #d1d5db;
+  }
+
+  p {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0 0 $spacing-1 0;
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: #9ca3af;
+  }
+}
+
 .document-tree {
   padding: $spacing-2;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .tree-node {
+  position: relative;
+
   &__content {
     display: flex;
     align-items: center;
-    gap: $spacing-2;
-    padding: $spacing-2 $spacing-3;
-    border-radius: $radius-md;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 200ms ease-out;
 
     &:hover {
-      background: $color-background;
+      background: #f3f4f6;
+
+      .tree-node__add-folder,
+      .tree-node__drag-handle {
+        opacity: 1;
+      }
     }
   }
 
+  // Selected state
   &--selected > .tree-node__content {
-    background: rgba($ey-yellow, 0.15);
-    border-left: 2px solid $ey-yellow;
-    margin-left: -2px;
+    background: rgba($ey-yellow, 0.12);
+    border-left: 3px solid $ey-yellow;
+    margin-left: -3px;
+    padding-left: 9px;
   }
 
   // Highlighted state for placement animation
   &--highlighted > .tree-node__content {
-    background: rgba($ey-yellow, 0.25);
+    background: rgba($ey-yellow, 0.2);
     border-left: 3px solid $ey-yellow;
     margin-left: -3px;
-    animation: highlightPulse 0.5s ease-out 3;
+    padding-left: 9px;
+    animation: highlightPulse 500ms ease-out 3;
   }
 
-  // Entity node styling
+  // Entity node styling (top level with flags)
   &--entity > .tree-node__content {
-    font-weight: $font-weight-semibold;
+    font-weight: 600;
 
     .tree-node__icon {
-      font-size: 1.2rem;
+      font-size: 18px;
+    }
+
+    .tree-node__label {
+      color: $ey-black;
     }
   }
 
   // Year node styling
   &--year > .tree-node__content {
     .tree-node__label {
-      color: $color-text-secondary;
-      font-weight: $font-weight-medium;
+      color: #6b7280;
+      font-weight: 500;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    }
+  }
+
+  // Service node styling
+  &--service > .tree-node__content {
+    .tree-node__icon {
+      color: #3b82f6;
+    }
+
+    .tree-node__label {
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .tree-node__count {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+  }
+
+  // Empty service folder styling (count = 0)
+  &--service &--empty > .tree-node__content,
+  &--service.tree-node--empty > .tree-node__content {
+    opacity: 0.6;
+
+    .tree-node__icon {
+      color: #9ca3af;
+    }
+
+    .tree-node__label {
+      color: #9ca3af;
+    }
+
+    .tree-node__count {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+  }
+
+  // Custom folder styling
+  &--custom > .tree-node__content {
+    .tree-node__icon {
+      color: #f59e0b;
+    }
+
+    .tree-node__label {
+      font-weight: 500;
+      color: #92400e;
+    }
+
+    .tree-node__count {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+
+  // Folder node styling (Documents/Results folders under services)
+  &--folder > .tree-node__content {
+    .tree-node__icon {
+      color: #6b7280;
+    }
+
+    .tree-node__label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #6b7280;
+    }
+
+    .tree-node__count {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+  }
+
+  // Empty folder styling
+  &--folder.tree-node--empty > .tree-node__content {
+    opacity: 0.6;
+
+    .tree-node__count {
+      background: #f9fafb;
+      color: #9ca3af;
+    }
+  }
+
+  // Document node styling
+  &--document > .tree-node__content {
+    cursor: grab;
+
+    .tree-node__label {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    &:hover {
+      .tree-node__label {
+        color: $ey-black;
+      }
+    }
+  }
+
+  // ==========================================================================
+  // Drag & Drop States
+  // ==========================================================================
+
+  // When dragging a document
+  &--dragging {
+    opacity: 0.5;
+
+    > .tree-node__content {
+      background: #fef3c7;
+      border: 1px dashed #f59e0b;
+    }
+  }
+
+  // Valid drop target indicator
+  &--drop-target > .tree-node__content {
+    background: rgba(#10b981, 0.15);
+    border: 2px dashed #10b981;
+    border-radius: 6px;
+
+    .tree-node__icon {
+      color: #10b981;
+    }
+  }
+
+  // Show drop zone hint when dragging
+  &--can-drop {
+    .tree-node__drop-zone {
+      display: flex;
     }
   }
 
@@ -54,60 +241,203 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border: none;
     background: transparent;
-    color: $color-text-secondary;
-    font-size: 8px;
+    color: #9ca3af;
     cursor: pointer;
     padding: 0;
     flex-shrink: 0;
-    transition: transform 0.2s ease;
+    border-radius: 4px;
+    transition: all 200ms ease-out;
 
-    span.rotated {
-      display: inline-block;
-      transform: rotate(90deg);
+    &:hover {
+      color: $ey-black;
+      background: #e5e7eb;
     }
   }
 
   &__spacer {
-    width: 16px;
+    width: 18px;
     flex-shrink: 0;
   }
 
   &__icon {
-    font-size: $font-size-base;
+    font-size: 14px;
     flex-shrink: 0;
+    color: #6b7280;
+
+    &--emoji {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    lucide-icon {
+      display: block;
+    }
   }
 
   &__label {
-    font-size: $font-size-sm;
-    color: $color-text-primary;
+    font-size: 13px;
+    color: $ey-black;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.4;
   }
 
   &__count {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-    background: $color-background;
-    padding: 2px $spacing-2;
-    border-radius: $radius-full;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 10px;
     flex-shrink: 0;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  }
+
+  // Add folder button (appears on hover for year nodes)
+  &__add-folder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 200ms ease-out;
+
+    &:hover {
+      color: #f59e0b;
+      background: #fef3c7;
+    }
+  }
+
+  // Drag handle (appears on hover for documents)
+  &__drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+    flex-shrink: 0;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  // Drop zone indicator
+  &__drop-zone {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #10b981;
+    padding: 4px 8px;
+    margin-left: 26px;
+    background: rgba(#10b981, 0.1);
+    border-radius: 4px;
+    animation: fadeIn 150ms ease-out;
+  }
+
+  // ==========================================================================
+  // Create Folder Input
+  // ==========================================================================
+  &__create-folder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #fef3c7;
+    border-radius: 6px;
+    margin: 4px 0;
+    animation: slideDown 200ms ease-out;
+
+    lucide-icon {
+      color: #f59e0b;
+      flex-shrink: 0;
+    }
+  }
+
+  &__folder-input {
+    flex: 1;
+    border: none;
+    background: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: $ey-black;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(#f59e0b, 0.3);
+    }
+  }
+
+  &__folder-confirm,
+  &__folder-cancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+    transition: all 150ms ease-out;
+  }
+
+  &__folder-confirm {
+    color: #10b981;
+
+    &:hover {
+      background: #d1fae5;
+    }
+  }
+
+  &__folder-cancel {
+    color: #ef4444;
+
+    &:hover {
+      background: #fee2e2;
+    }
   }
 
   &__children {
-    animation: slideDown 0.2s ease-out;
+    animation: slideDown 200ms ease-out;
   }
 }
 
+// =============================================================================
+// Animations
+// =============================================================================
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -117,15 +447,24 @@
 
 @keyframes highlightPulse {
   0% {
-    background: rgba($ey-yellow, 0.25);
+    background: rgba($ey-yellow, 0.2);
     transform: scale(1);
   }
   50% {
-    background: rgba($ey-yellow, 0.4);
-    transform: scale(1.02);
+    background: rgba($ey-yellow, 0.35);
+    transform: scale(1.01);
   }
   100% {
-    background: rgba($ey-yellow, 0.25);
+    background: rgba($ey-yellow, 0.2);
     transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

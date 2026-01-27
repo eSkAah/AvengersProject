@@ -61,7 +61,11 @@ export interface UploadingFile {
           <!-- Files List -->
           <div class="files-list">
             @for (file of files(); track file.id) {
-              <div class="file-item" [class.file-item--success]="file.status === 'classified'" [class.file-item--error]="file.status === 'error'">
+              <div
+                class="file-item"
+                [class.file-item--success]="file.status === 'classified'"
+                [class.file-item--error]="file.status === 'error'"
+              >
                 <div class="file-info">
                   <lucide-icon [img]="icons.fileText" [size]="18"></lucide-icon>
                   <div class="file-details">
@@ -91,7 +95,9 @@ export interface UploadingFile {
                         <lucide-icon [img]="icons.checkCircle" [size]="16"></lucide-icon>
                         <div class="classification-result">
                           <span class="entity">{{ file.classificationResult?.entity }}</span>
-                          <span class="doc-type">{{ file.classificationResult?.documentType }}</span>
+                          <span class="doc-type">{{
+                            file.classificationResult?.documentType
+                          }}</span>
                         </div>
                       </div>
                     }
@@ -135,293 +141,330 @@ export interface UploadingFile {
       </div>
     }
   `,
-  styles: [`
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
-    }
+  styles: [
+    `
+      // =============================================================================
+      // UPLOAD PROGRESS MODAL - EY Design System
+      // Modal: border-radius 12px, shadow-modal, 300ms slide animation
+      // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+      // =============================================================================
 
-    .modal-content {
-      background: white;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 520px;
-      max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.3s ease-out;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .modal-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      lucide-icon {
-        color: #FFE600;
+      :host {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
       }
 
-      h3 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 600;
-        color: #2E2E38;
-      }
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      padding: 8px;
-      cursor: pointer;
-      color: #6b7280;
-      border-radius: 8px;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #f3f4f6;
-        color: #2E2E38;
-      }
-    }
-
-    .ai-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: linear-gradient(90deg, #FFF9E0 0%, #FFFDF5 100%);
-      border-bottom: 1px solid #f0f0f0;
-      font-size: 13px;
-      color: #92400e;
-
-      lucide-icon {
-        color: #f59e0b;
-      }
-    }
-
-    .files-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      transition: all 0.2s;
-
-      &--success {
-        background: #f0fdf4;
-        border-color: #86efac;
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 200ms ease-out;
       }
 
-      &--error {
-        background: #fef2f2;
-        border-color: #fecaca;
+      .modal-content {
+        background: #ffffff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 520px;
+        max-height: 80vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
+        animation: slideUp 300ms ease-out;
       }
-    }
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-      min-width: 0;
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+      }
 
-      lucide-icon {
+      .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        lucide-icon {
+          color: #ffe600;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 18px; // text-h3
+          font-weight: 600;
+          color: #2e2e38;
+          line-height: 1.4;
+        }
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
         color: #6b7280;
+        border-radius: 6px;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #f5f5f5;
+          color: #2e2e38;
+        }
+      }
+
+      .ai-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: #fff9cc; // ey-yellow-light
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 13px;
+        font-weight: 500;
+        color: #b45309; // warning-dark
+
+        lucide-icon {
+          color: #f59e0b; // warning
+        }
+      }
+
+      .files-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        background: #fafafa;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 200ms ease-out;
+
+        &--success {
+          background: #d1fae5; // success-light
+          border-color: #a7f3d0;
+        }
+
+        &--error {
+          background: #fee2e2; // error-light
+          border-color: #fecaca;
+        }
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+
+        lucide-icon {
+          color: #6b7280;
+          flex-shrink: 0;
+        }
+      }
+
+      .file-details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 2px;
+      }
+
+      .file-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #2e2e38;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-size {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .file-status {
         flex-shrink: 0;
-      }
-    }
-
-    .file-details {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .file-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: #2E2E38;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .file-size {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .file-status {
-      flex-shrink: 0;
-      margin-left: 16px;
-    }
-
-    .status-uploading {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .progress-bar {
-      width: 80px;
-      height: 4px;
-      background: #e5e7eb;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #FFE600;
-      border-radius: 2px;
-      transition: width 0.2s;
-    }
-
-    .progress-text {
-      font-size: 12px;
-      color: #6b7280;
-      width: 35px;
-    }
-
-    .status-classifying {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #f59e0b;
-      font-size: 13px;
-    }
-
-    .status-classified {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #10b981;
-    }
-
-    .classification-result {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .entity {
-      font-size: 12px;
-      font-weight: 500;
-      color: #2E2E38;
-    }
-
-    .doc-type {
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .status-error {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #ef4444;
-      font-size: 13px;
-    }
-
-    .modal-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 24px;
-      border-top: 1px solid #f0f0f0;
-      background: #fafafa;
-    }
-
-    .summary {
-      display: flex;
-      gap: 16px;
-    }
-
-    .summary-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-      color: #10b981;
-
-      &.uploading {
-        color: #f59e0b;
+        margin-left: 16px;
       }
 
-      &.error {
-        color: #ef4444;
+      .status-uploading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-    }
 
-    .done-btn {
-      background: #FFE600;
-      color: #2E2E38;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #FFD000;
-        transform: translateY(-1px);
+      .progress-bar {
+        width: 80px;
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
       }
-    }
 
-    .spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+      .progress-fill {
+        height: 100%;
+        background: #ffe600;
+        border-radius: 2px;
+        transition: width 200ms ease-out;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `],
+      .progress-text {
+        font-size: 12px;
+        color: #6b7280;
+        width: 35px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .status-classifying {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #f59e0b; // warning
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .status-classified {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #10b981; // success
+      }
+
+      .classification-result {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+      }
+
+      .entity {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2e2e38;
+      }
+
+      .doc-type {
+        font-size: 11px;
+        color: #6b7280;
+      }
+
+      .status-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #ef4444; // error
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        background: #fafafa;
+      }
+
+      .summary {
+        display: flex;
+        gap: 16px;
+      }
+
+      .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #10b981; // success
+
+        &.uploading {
+          color: #f59e0b; // warning
+        }
+
+        &.error {
+          color: #ef4444; // error
+        }
+      }
+
+      .done-btn {
+        background: #ffe600;
+        color: #2e2e38;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #ffd000;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadProgressModalComponent {
@@ -439,21 +482,17 @@ export class UploadProgressModalComponent {
     loader2: Loader2,
   };
 
-  readonly classifiedCount = computed(() =>
-    this.files().filter(f => f.status === 'classified').length
+  readonly classifiedCount = computed(
+    () => this.files().filter(f => f.status === 'classified').length
   );
 
-  readonly uploadingCount = computed(() =>
-    this.files().filter(f => f.status === 'uploading' || f.status === 'classifying').length
+  readonly uploadingCount = computed(
+    () => this.files().filter(f => f.status === 'uploading' || f.status === 'classifying').length
   );
 
-  readonly errorCount = computed(() =>
-    this.files().filter(f => f.status === 'error').length
-  );
+  readonly errorCount = computed(() => this.files().filter(f => f.status === 'error').length);
 
-  readonly allCompleted = computed(() =>
-    this.files().length > 0 && this.uploadingCount() === 0
-  );
+  readonly allCompleted = computed(() => this.files().length > 0 && this.uploadingCount() === 0);
 
   formatFileSize(bytes: number): string {
     if (bytes < 1024) return bytes + ' B';

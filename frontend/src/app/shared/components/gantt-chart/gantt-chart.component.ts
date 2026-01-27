@@ -12,6 +12,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CHART_RENDER_DELAY_MS } from '../../../core/constants';
 import {
   Chart,
   ChartConfiguration,
@@ -65,7 +66,7 @@ export interface GanttChartData {
     <div class="gantt-chart-container" [class.gantt-chart-container--loading]="loading">
       @if (loading) {
         <div class="chart-skeleton">
-          @for (i of [1,2,3,4,5]; track i) {
+          @for (i of [1, 2, 3, 4, 5]; track i) {
             <div class="skeleton-row">
               <div class="skeleton-label"></div>
               <div class="skeleton-bar" [style.width.%]="40 + i * 10"></div>
@@ -81,71 +82,77 @@ export interface GanttChartData {
       }
     </div>
   `,
-  styles: [`
-    .gantt-chart-container {
-      position: relative;
-      width: 100%;
-      min-height: 300px;
-      max-height: 400px;
-    }
+  styles: [
+    `
+      .gantt-chart-container {
+        position: relative;
+        width: 100%;
+        min-height: 300px;
+        max-height: 400px;
+      }
 
-    .gantt-chart-container--loading {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 20px;
-    }
+      .gantt-chart-container--loading {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px;
+      }
 
-    .chart-skeleton {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-    }
+      .chart-skeleton {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
 
-    .skeleton-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+      .skeleton-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
 
-    .skeleton-label {
-      width: 120px;
-      height: 16px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-      border-radius: 4px;
-    }
+      .skeleton-label {
+        width: 120px;
+        height: 16px;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+        border-radius: 4px;
+      }
 
-    .skeleton-bar {
-      flex: 1;
-      height: 24px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-      border-radius: 4px;
-    }
+      .skeleton-bar {
+        flex: 1;
+        height: 24px;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+        border-radius: 4px;
+      }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
 
-    .empty-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 200px;
-      color: #6B7280;
-      font-size: 14px;
-    }
+      .empty-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        color: #6b7280;
+        font-size: 14px;
+      }
 
-    canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  `],
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -252,14 +259,14 @@ export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy 
             size: 12,
           },
           callbacks: {
-            title: (items) => {
+            title: items => {
               if (items.length > 0) {
                 const index = items[0].dataIndex;
                 return this.data!.items[index].entity_name;
               }
               return '';
             },
-            label: (context) => {
+            label: context => {
               const index = context.dataIndex;
               const item = this.data!.items[index];
               const lines = [
@@ -286,7 +293,7 @@ export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy 
               size: 10,
             },
             color: '#6B7280',
-            callback: (value) => {
+            callback: value => {
               // Convert days back to date
               const date = new Date(minDate + (value as number) * 24 * 60 * 60 * 1000);
               return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
@@ -353,7 +360,7 @@ export class GanttChartComponent implements AfterViewInit, OnChanges, OnDestroy 
   private updateChart(): void {
     this.destroyChart();
     if (this.data && !this.loading && this.data.items.length > 0) {
-      setTimeout(() => this.createChart(), 0);
+      setTimeout(() => this.createChart(), CHART_RENDER_DELAY_MS);
     }
   }
 

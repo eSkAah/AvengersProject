@@ -15,6 +15,8 @@
     <app-document-tree
       [documents]="filteredTreeDocuments()"
       (nodeSelect)="onTreeNodeSelect($event)"
+      (documentMoved)="onDocumentMoved($event)"
+      (folderCreated)="onFolderCreated($event)"
     ></app-document-tree>
   </aside>
 
@@ -281,7 +283,7 @@
       <!-- Library Tab Content -->
       <!-- Global Filters -->
       <div class="global-filters">
-        <!-- Status Pills -->
+        <!-- Status Pills (Simplified: All, Missing, Unclassified) -->
         <div class="global-filters__status-pills">
           <button
             class="status-pill"
@@ -290,20 +292,24 @@
           >
             All
           </button>
-          @for (status of statusOptions; track status) {
-            <button
-              class="status-pill"
-              [class.status-pill--active]="globalFilters().status === status"
-              [class.status-pill--missing]="status === 'missing'"
-              [class.status-pill--uploaded]="status === 'uploaded'"
-              [class.status-pill--analyzed]="status === 'analyzed'"
-              [class.status-pill--validated]="status === 'validated'"
-              (click)="onGlobalStatusChange(status)"
-            >
-              {{ getStatusLabel(status) }}
-              <span class="status-pill__count">{{ $any(statusCounts())[status] }}</span>
-            </button>
-          }
+          <button
+            class="status-pill"
+            [class.status-pill--active]="globalFilters().status === 'missing'"
+            [class.status-pill--missing]="true"
+            (click)="onGlobalStatusChange('missing')"
+          >
+            Missing
+            <span class="status-pill__count">{{ statusCounts().missing }}</span>
+          </button>
+          <button
+            class="status-pill"
+            [class.status-pill--active]="globalFilters().status === 'unclassified'"
+            [class.status-pill--unclassified]="true"
+            (click)="onGlobalStatusChange('unclassified')"
+          >
+            Unclassified
+            <span class="status-pill__count">{{ statusCounts().unclassified }}</span>
+          </button>
         </div>
 
         <!-- Filter Dropdowns -->

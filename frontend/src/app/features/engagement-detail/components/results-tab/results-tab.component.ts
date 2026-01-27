@@ -83,7 +83,7 @@ export class ResultsTabComponent {
     });
 
     // Intermediate adjustments (skip first which is statutory)
-    adjustments.slice(1).forEach((adj) => {
+    adjustments.slice(1).forEach(adj => {
       result.push({
         label: adj.label,
         value: adj.value,
@@ -134,11 +134,11 @@ export class ResultsTabComponent {
     if (!data) return null;
 
     return {
-      labels: data.taxByCategory.map((c) => c.category),
+      labels: data.taxByCategory.map(c => c.category),
       datasets: [
         {
           label: 'Tax Amount',
-          data: data.taxByCategory.map((c) => c.amount),
+          data: data.taxByCategory.map(c => c.amount),
           backgroundColor: '#FFE600',
         },
       ],

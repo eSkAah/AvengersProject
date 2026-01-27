@@ -17,12 +17,12 @@ interface Contact {
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './contacts-widget.component.html',
   styleUrl: './contacts-widget.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactsWidgetComponent {
   readonly icons = {
     mail: Mail,
-    phone: Phone
+    phone: Phone,
   };
 
   readonly contacts: Contact[] = [
@@ -32,7 +32,8 @@ export class ContactsWidgetComponent {
       lastName: 'Martin',
       role: 'Tax Partner',
       email: 'sophie.martin@ey.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face'
+      avatarUrl:
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
     },
     {
       id: '2',
@@ -40,7 +41,8 @@ export class ContactsWidgetComponent {
       lastName: 'Dubois',
       role: 'Senior Manager',
       email: 'thomas.dubois@ey.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
+      avatarUrl:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     },
     {
       id: '3',
@@ -48,8 +50,9 @@ export class ContactsWidgetComponent {
       lastName: 'Bernard',
       role: 'Tax Consultant',
       email: 'emma.bernard@ey.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face'
-    }
+      avatarUrl:
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+    },
   ];
 
   onContactEmail(contact: Contact): void {

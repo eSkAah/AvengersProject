@@ -23,6 +23,9 @@ export interface KpiClickEvent {
   isCmdClick: boolean;
 }
 
+// EY Design System color classes
+type ColorClass = 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent';
+
 @Component({
   selector: 'app-kpi-metric-card',
   standalone: true,
@@ -36,6 +39,7 @@ export interface KpiClickEvent {
       (click)="onClick($event)"
     >
       @if (loading) {
+        <!-- Skeleton Loader - EY Design System -->
         <div class="kpi-skeleton">
           <div class="skeleton-icon"></div>
           <div class="skeleton-content">
@@ -72,183 +76,202 @@ export interface KpiClickEvent {
       }
     </div>
   `,
-  styles: [`
-    .kpi-metric-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 20px;
-      background: #FFFFFF;
-      border: 1px solid #E5E5E5;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 200ms ease-out;
-    }
+  styles: [
+    `
+      /* ==========================================================================
+       EY Design System - KPI Metric Card
+       Cards: white bg, border-radius 12px, subtle shadow, hover lift
+       Transitions: 200ms ease-out
+       ========================================================================== */
 
-    .kpi-metric-card:hover {
-      border-color: #D4D4D4;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transform: translateY(-1px);
-    }
+      .kpi-metric-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+      }
 
-    .kpi-metric-card--loading {
-      cursor: default;
-    }
+      .kpi-metric-card:hover {
+        border-color: #d4d4d4;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
 
-    .kpi-metric-card--loading:hover {
-      transform: none;
-      box-shadow: none;
-    }
+      .kpi-metric-card--loading {
+        cursor: default;
+      }
 
-    .kpi-skeleton {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      width: 100%;
-    }
+      .kpi-metric-card--loading:hover {
+        transform: none;
+        box-shadow: none;
+      }
 
-    .skeleton-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
+      /* Skeleton Loader - EY Design System */
+      .kpi-skeleton {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        width: 100%;
+      }
 
-    .skeleton-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+      .skeleton-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
 
-    .skeleton-value {
-      height: 28px;
-      width: 120px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
+      .skeleton-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
 
-    .skeleton-label {
-      height: 16px;
-      width: 80px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
+      .skeleton-value {
+        height: 28px;
+        width: 120px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      .skeleton-label {
+        height: 16px;
+        width: 80px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
 
-    .kpi-icon {
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      flex-shrink: 0;
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
 
-    .kpi-icon--default {
-      background: #F5F5F5;
-      color: #6B7280;
-    }
+      /* Icon Styles - EY Design System */
+      .kpi-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        flex-shrink: 0;
+        transition: all 200ms ease-out;
+      }
 
-    .kpi-icon--positive {
-      background: #D1FAE5;
-      color: #047857;
-    }
+      .kpi-icon--default {
+        background: #f5f5f5;
+        color: #6b7280;
+      }
 
-    .kpi-icon--negative {
-      background: #FEE2E2;
-      color: #B91C1C;
-    }
+      .kpi-icon--positive {
+        background: #d1fae5;
+        color: #047857;
+      }
 
-    .kpi-icon--info {
-      background: #DBEAFE;
-      color: #1D4ED8;
-    }
+      .kpi-icon--negative {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
 
-    .kpi-icon--warning {
-      background: #FEF3C7;
-      color: #B45309;
-    }
+      .kpi-icon--info {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
 
-    .kpi-icon--accent {
-      background: #FFF9CC;
-      color: #2E2E38;
-    }
+      .kpi-icon--warning {
+        background: #fef3c7;
+        color: #b45309;
+      }
 
-    .kpi-content {
-      flex: 1;
-      min-width: 0;
-    }
+      .kpi-icon--accent {
+        background: #fff9cc;
+        color: #2e2e38;
+      }
 
-    .kpi-value {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+      /* Content Styles */
+      .kpi-content {
+        flex: 1;
+        min-width: 0;
+      }
 
-    .kpi-value__amount {
-      font-size: 22px;
-      font-weight: 700;
-      color: #2E2E38;
-      line-height: 1.2;
-    }
+      .kpi-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
 
-    .kpi-value__variance {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 9999px;
-    }
+      .kpi-value__amount {
+        font-size: 22px;
+        font-weight: 700;
+        color: #2e2e38;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+      }
 
-    .kpi-value__variance--positive {
-      background: #D1FAE5;
-      color: #047857;
-    }
+      /* Variance Badge - EY Design System */
+      .kpi-value__variance {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 9999px;
+      }
 
-    .kpi-value__variance--negative {
-      background: #FEE2E2;
-      color: #B91C1C;
-    }
+      .kpi-value__variance--positive {
+        background: #d1fae5;
+        color: #047857;
+      }
 
-    .kpi-label {
-      font-size: 13px;
-      color: #6B7280;
-      margin-top: 4px;
-    }
+      .kpi-value__variance--negative {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
 
-    .kpi-hint {
-      font-size: 11px;
-      color: #9CA3AF;
-      margin-top: 8px;
-      opacity: 0;
-      transition: opacity 200ms ease-out;
-    }
+      .kpi-label {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 4px;
+      }
 
-    .kpi-metric-card:hover .kpi-hint {
-      opacity: 1;
-    }
-  `],
+      /* CMD+Click Hint */
+      .kpi-hint {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 8px;
+        opacity: 0;
+        transition: opacity 200ms ease-out;
+      }
+
+      .kpi-metric-card:hover .kpi-hint {
+        opacity: 1;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KpiMetricCardComponent {
   @Input() metric!: KpiMetric;
   @Input() loading = false;
-  @Input() colorClass: 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent' = 'default';
+  @Input() colorClass: ColorClass = 'default';
   @Input() showCmdHint = true;
 
   @Output() kpiClick = new EventEmitter<KpiClickEvent>();

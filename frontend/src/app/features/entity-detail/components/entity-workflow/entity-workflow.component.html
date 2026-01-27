@@ -1,0 +1,143 @@
+<div class="workflow">
+  <!-- Header with Progress -->
+  <div class="workflow-header">
+    <div class="workflow-header__left">
+      <h3 class="workflow-header__title">Engagement Workflow</h3>
+      <p class="workflow-header__subtitle">Track the progress of this entity through the tax engagement process</p>
+    </div>
+    <div class="workflow-header__progress">
+      <div class="progress-ring">
+        <svg viewBox="0 0 36 36">
+          <path class="progress-ring__bg"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+          <path class="progress-ring__fill"
+            [attr.stroke-dasharray]="progressPercent() + ', 100'"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        </svg>
+        <span class="progress-ring__text">{{ progressPercent() | number:'1.0-0' }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+    @for (step of steps(); track step.id; let i = $index; let last = $last) {
+      <div class="timeline-item"
+           [class.timeline-item--completed]="step.status === 'completed'"
+           [class.timeline-item--active]="step.status === 'in_progress'"
+           [class.timeline-item--pending]="step.status === 'pending'">
+
+        <!-- Timeline Track -->
+        <div class="timeline-track">
+          <div class="timeline-node">
+            @if (step.status === 'completed') {
+              <lucide-icon [img]="CheckCircle2" [size]="20"></lucide-icon>
+            } @else if (step.status === 'in_progress') {
+              <div class="timeline-node__pulse"></div>
+              <lucide-icon [img]="getStepIcon(step.id)" [size]="18"></lucide-icon>
+            } @else {
+              <span class="timeline-node__number">{{ i + 1 }}</span>
+            }
+          </div>
+          @if (!last) {
+            <div class="timeline-line" [class.timeline-line--filled]="step.status === 'completed'"></div>
+          }
+        </div>
+
+        <!-- Step Content -->
+        <div class="timeline-content">
+          <!-- Step Header (Clickable) -->
+          <button class="step-header" (click)="toggleStep(step.id)" [class.step-header--expanded]="isExpanded(step.id)">
+            <div class="step-header__main">
+              <div class="step-header__icon">
+                <lucide-icon [img]="getStepIcon(step.id)" [size]="20"></lucide-icon>
+              </div>
+              <div class="step-header__info">
+                <h4 class="step-header__title">{{ step.label }}</h4>
+                <p class="step-header__description">{{ step.description }}</p>
+              </div>
+            </div>
+
+            <div class="step-header__meta">
+              <!-- Status Badge -->
+              @if (step.status === 'completed') {
+                <span class="step-badge step-badge--completed">
+                  <lucide-icon [img]="CheckCircle2" [size]="12"></lucide-icon>
+                  Completed
+                </span>
+              } @else if (step.status === 'in_progress') {
+                <span class="step-badge step-badge--active">
+                  <span class="step-badge__dot"></span>
+                  In Progress
+                </span>
+              } @else {
+                <span class="step-badge step-badge--pending">Pending</span>
+              }
+
+              <!-- Task Counter -->
+              <span class="step-tasks-count">
+                {{ getCompletedTaskCount(step) }}/{{ step.tasks.length }} tasks
+              </span>
+
+              <!-- Expand Arrow -->
+              <lucide-icon
+                [img]="ChevronDown"
+                [size]="18"
+                class="step-header__arrow"
+                [class.step-header__arrow--rotated]="isExpanded(step.id)"
+              ></lucide-icon>
+            </div>
+          </button>
+
+          <!-- Expanded Task List -->
+          @if (isExpanded(step.id)) {
+            <div class="step-tasks" @expandCollapse>
+              <div class="step-tasks__header">
+                <span class="step-tasks__title">Tasks</span>
+                @if (step.completedAt) {
+                  <span class="step-tasks__date">
+                    <lucide-icon [img]="Clock" [size]="12"></lucide-icon>
+                    Completed {{ formatShortDate(step.completedAt) }}
+                  </span>
+                } @else if (step.startedAt) {
+                  <span class="step-tasks__date step-tasks__date--active">
+                    <lucide-icon [img]="Clock" [size]="12"></lucide-icon>
+                    Started {{ formatShortDate(step.startedAt) }}
+                  </span>
+                }
+              </div>
+
+              <ul class="task-list">
+                @for (task of step.tasks; track task.id) {
+                  <li class="task-item" [class.task-item--completed]="task.status === 'completed'">
+                    <div class="task-item__check">
+                      @if (task.status === 'completed') {
+                        <lucide-icon [img]="CheckCircle2" [size]="16"></lucide-icon>
+                      } @else {
+                        <div class="task-item__circle"></div>
+                      }
+                    </div>
+                    <div class="task-item__content">
+                      <span class="task-item__title">{{ task.title }}</span>
+                      @if (task.assignee) {
+                        <span class="task-item__assignee">
+                          <lucide-icon [img]="User" [size]="10"></lucide-icon>
+                          {{ task.assignee }}
+                        </span>
+                      }
+                    </div>
+                    @if (task.completedAt) {
+                      <span class="task-item__date">{{ formatShortDate(task.completedAt) }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -88,10 +88,8 @@ export class UploadZoneComponent {
   hasFiles = computed(() => this.selectedFiles().length > 0);
   validFiles = computed(() => this.selectedFiles().filter(f => f.isValid));
   invalidFiles = computed(() => this.selectedFiles().filter(f => !f.isValid));
-  canUpload = computed(() =>
-    this.validFiles().length > 0 &&
-    this.state() !== 'uploading' &&
-    this.engagementId !== null
+  canUpload = computed(
+    () => this.validFiles().length > 0 && this.state() !== 'uploading' && this.engagementId !== null
   );
 
   get zoneClasses(): string {
@@ -212,10 +210,12 @@ export class UploadZoneComponent {
 
     // Detect document type from common patterns
     const typePatterns: Record<string, RegExp> = {
-      general_ledger: /grand[-_\s]?livre|general[-_\s]?ledger|gl[-_\s]?\d|comptabilite[-_\s]?generale/i,
+      general_ledger:
+        /grand[-_\s]?livre|general[-_\s]?ledger|gl[-_\s]?\d|comptabilite[-_\s]?generale/i,
       trial_balance: /balance|trial[-_\s]?balance|tb[-_\s]?\d/i,
       tax_return: /declaration[-_\s]?fiscal|tax[-_\s]?return|impot|liasse[-_\s]?fiscal/i,
-      financial_statement: /etats[-_\s]?financ|financial[-_\s]?statement|bilan|compte[-_\s]?de[-_\s]?resultat/i,
+      financial_statement:
+        /etats[-_\s]?financ|financial[-_\s]?statement|bilan|compte[-_\s]?de[-_\s]?resultat/i,
       bank_statement: /releve[-_\s]?banc|bank[-_\s]?statement|extrait[-_\s]?de[-_\s]?compte/i,
     };
 
@@ -240,12 +240,13 @@ export class UploadZoneComponent {
   /**
    * Update manual override for a file
    */
-  updateFileOverride(fileId: string, override: { year?: number; entity?: string; type?: string }): void {
+  updateFileOverride(
+    fileId: string,
+    override: { year?: number; entity?: string; type?: string }
+  ): void {
     this.selectedFiles.update(files =>
       files.map(f =>
-        f.id === fileId
-          ? { ...f, manualOverride: { ...f.manualOverride, ...override } }
-          : f
+        f.id === fileId ? { ...f, manualOverride: { ...f.manualOverride, ...override } } : f
       )
     );
   }
@@ -313,7 +314,9 @@ export class UploadZoneComponent {
           this.updateFileStatusForPlacement(preview.id, docType, entityName, year);
 
           // Get the file preview element for animation source
-          const fileElement = document.querySelector(`[data-file-id="${preview.id}"]`) as HTMLElement;
+          const fileElement = document.querySelector(
+            `[data-file-id="${preview.id}"]`
+          ) as HTMLElement;
           if (fileElement) {
             this.placementReady.emit({
               preview: this.selectedFiles().find(f => f.id === preview.id)!,
@@ -364,7 +367,7 @@ export class UploadZoneComponent {
               ...f,
               uploadStatus: 'placing' as const,
               uploadProgress: 90,
-              classificationData: { type: docType, entityName, year }
+              classificationData: { type: docType, entityName, year },
             }
           : f
       )
@@ -377,11 +380,7 @@ export class UploadZoneComponent {
     progress: number
   ): void {
     this.selectedFiles.update(files =>
-      files.map(f =>
-        f.id === id
-          ? { ...f, uploadStatus: status, uploadProgress: progress }
-          : f
-      )
+      files.map(f => (f.id === id ? { ...f, uploadStatus: status, uploadProgress: progress } : f))
     );
   }
 
@@ -392,9 +391,7 @@ export class UploadZoneComponent {
     docType?: string,
     aiSummary?: string
   ): void {
-    const classificationResult = docType
-      ? this.getDocumentTypeLabel(docType)
-      : 'Unclassified';
+    const classificationResult = docType ? this.getDocumentTypeLabel(docType) : 'Unclassified';
     this.selectedFiles.update(files =>
       files.map(f =>
         f.id === id
@@ -419,10 +416,7 @@ export class UploadZoneComponent {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  private validateFile(
-    file: File,
-    extension: string
-  ): { isValid: boolean; errorMessage?: string } {
+  private validateFile(file: File, extension: string): { isValid: boolean; errorMessage?: string } {
     if (!ALLOWED_EXTENSIONS.includes(extension.toLowerCase())) {
       return {
         isValid: false,

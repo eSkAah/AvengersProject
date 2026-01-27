@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpEvent } from '@angular/common/http';
-import { Observable, throwError, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Document, DocumentLibrary, DocumentCategoryGroup, DocumentTypeGroup } from '../models';
@@ -56,9 +56,6 @@ export class DocumentApiService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/documents`;
 
-  private uploadProgressSubject = new BehaviorSubject<Map<string, UploadProgress>>(new Map());
-  uploadProgress$ = this.uploadProgressSubject.asObservable();
-
   /**
    * Upload a single document to an engagement
    */
@@ -67,12 +64,9 @@ export class DocumentApiService {
     formData.append('file', file);
     formData.append('engagement_id', engagementId);
 
-    return this.http.post<DocumentUploadResponse>(
-      `${this.apiUrl}/upload`,
-      formData
-    ).pipe(
-      catchError((error: HttpErrorResponse) => this.handleUploadError(error))
-    );
+    return this.http
+      .post<DocumentUploadResponse>(`${this.apiUrl}/upload`, formData)
+      .pipe(catchError((error: HttpErrorResponse) => this.handleUploadError(error)));
   }
 
   /**
@@ -86,29 +80,25 @@ export class DocumentApiService {
     formData.append('file', file);
     formData.append('engagement_id', engagementId);
 
-    return this.http.post<DocumentUploadResponse>(
-      `${this.apiUrl}/upload`,
-      formData,
-      {
+    return this.http
+      .post<DocumentUploadResponse>(`${this.apiUrl}/upload`, formData, {
         reportProgress: true,
         observe: 'events',
-      }
-    ).pipe(
-      map((event: HttpEvent<DocumentUploadResponse>) => {
-        switch (event.type) {
-          case HttpEventType.UploadProgress:
-            const progress = event.total
-              ? Math.round((100 * event.loaded) / event.total)
-              : 0;
-            return { progress };
-          case HttpEventType.Response:
-            return { progress: 100, response: event.body ?? undefined };
-          default:
-            return { progress: 0 };
-        }
-      }),
-      catchError((error: HttpErrorResponse) => this.handleUploadError(error))
-    );
+      })
+      .pipe(
+        map((event: HttpEvent<DocumentUploadResponse>) => {
+          switch (event.type) {
+            case HttpEventType.UploadProgress:
+              const progress = event.total ? Math.round((100 * event.loaded) / event.total) : 0;
+              return { progress };
+            case HttpEventType.Response:
+              return { progress: 100, response: event.body ?? undefined };
+            default:
+              return { progress: 0 };
+          }
+        }),
+        catchError((error: HttpErrorResponse) => this.handleUploadError(error))
+      );
   }
 
   /**
@@ -140,9 +130,7 @@ export class DocumentApiService {
    * Delete a document
    */
   deleteDocument(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));
   }
 
   /**
@@ -159,12 +147,12 @@ export class DocumentApiService {
    * Link a document to an engagement
    */
   linkDocument(documentId: string, engagementId: string): Observable<DocumentLinkResponse> {
-    return this.http.post<DocumentLinkResponse>(`${this.apiUrl}/link`, {
-      document_id: documentId,
-      engagement_id: engagementId,
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<DocumentLinkResponse>(`${this.apiUrl}/link`, {
+        document_id: documentId,
+        engagement_id: engagementId,
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -184,7 +172,9 @@ export class DocumentApiService {
       extractedData: doc['extracted_data'] as Record<string, unknown> | undefined,
       filePath: doc['file_path'] as string | undefined,
       year: (doc['year'] ?? new Date().getFullYear()) as number,
-      entityId: (doc['entity_id'] ?? ((doc['engagement_ids'] as string[] | undefined)?.[0]) ?? '') as string,
+      entityId: (doc['entity_id'] ??
+        (doc['engagement_ids'] as string[] | undefined)?.[0] ??
+        '') as string,
       entityName: (doc['entity_name'] ?? '') as string,
     };
   }
@@ -265,7 +255,6 @@ export class DocumentApiService {
       errorMessage = error.error?.detail || error.message || errorMessage;
     }
 
-    console.error('DocumentApiService Error:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
 }
