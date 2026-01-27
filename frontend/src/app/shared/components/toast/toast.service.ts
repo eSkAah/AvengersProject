@@ -22,7 +22,7 @@ export class ToastService {
     const id = ++this.idCounter;
     const toast: Toast = { id, message, type, duration };
 
-    this.toastsSignal.update((toasts) => [...toasts, toast]);
+    this.toastsSignal.update(toasts => [...toasts, toast]);
 
     if (duration > 0) {
       setTimeout(() => this.dismiss(id), duration);
@@ -46,7 +46,7 @@ export class ToastService {
   }
 
   dismiss(id: number): void {
-    this.toastsSignal.update((toasts) => toasts.filter((t) => t.id !== id));
+    this.toastsSignal.update(toasts => toasts.filter(t => t.id !== id));
   }
 
   dismissAll(): void {

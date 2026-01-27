@@ -62,13 +62,13 @@
       </select>
     </div>
     <div class="filter-group">
-      <label class="filter-label">Jurisdiction</label>
+      <label class="filter-label">Country</label>
       <select
         class="filter-select"
-        [ngModel]="filters().jurisdiction"
-        (ngModelChange)="updateFilter('jurisdiction', $event)"
+        [ngModel]="filters().country"
+        (ngModelChange)="updateFilter('country', $event)"
       >
-        @for (opt of jurisdictionOptions; track opt) {
+        @for (opt of countryOptions; track opt) {
           <option [value]="opt">{{ opt === 'all' ? 'All' : opt }}</option>
         }
       </select>
@@ -144,19 +144,19 @@
               <div class="metric">
                 <span class="metric__label">Commercial</span>
                 <span class="metric__value" [class.negative]="row.commercialResult < 0">
-                  {{ formatCompact(row.commercialResult) }}
+                  {{ row.commercialResult | currencyEy:'compact' }}
                 </span>
               </div>
               <div class="metric">
                 <span class="metric__label">Taxable</span>
                 <span class="metric__value" [class.negative]="row.taxableResultBeforeTLCF < 0">
-                  {{ formatCompact(row.taxableResultBeforeTLCF) }}
+                  {{ row.taxableResultBeforeTLCF | currencyEy:'compact' }}
                 </span>
               </div>
               <div class="metric">
                 <span class="metric__label">After TLCF</span>
                 <span class="metric__value">
-                  {{ formatCompact(row.taxableResultAfterTLCF) }}
+                  {{ row.taxableResultAfterTLCF | currencyEy:'compact' }}
                 </span>
               </div>
             </div>
@@ -198,19 +198,19 @@
                   </div>
                 </td>
                 <td class="entity-table__td entity-table__td--right" [class.negative]="row.commercialResult < 0">
-                  {{ formatCurrency(row.commercialResult) }}
+                  {{ row.commercialResult | currencyEy }}
                 </td>
                 <td class="entity-table__td entity-table__td--right">
-                  {{ formatCurrency(row.taxBalanceSheetResult) }}
+                  {{ row.taxBalanceSheetResult | currencyEy }}
                 </td>
                 <td class="entity-table__td entity-table__td--right" [class.negative]="row.taxableResultBeforeTLCF < 0">
-                  {{ formatCurrency(row.taxableResultBeforeTLCF) }}
+                  {{ row.taxableResultBeforeTLCF | currencyEy }}
                 </td>
                 <td class="entity-table__td entity-table__td--right">
-                  {{ formatCurrency(row.taxableResultAfterTLCF) }}
+                  {{ row.taxableResultAfterTLCF | currencyEy }}
                 </td>
                 <td class="entity-table__td entity-table__td--right">
-                  {{ formatCurrency(row.participationIncome) }}
+                  {{ row.participationIncome | currencyEy }}
                 </td>
               </tr>
             }
@@ -224,22 +224,22 @@
       <div class="totals-bar__item">
         <span class="totals-bar__label">Total Commercial</span>
         <span class="totals-bar__value" [class.negative]="totals().commercialResult < 0">
-          {{ formatCurrency(totals().commercialResult) }}
+          {{ totals().commercialResult | currencyEy }}
         </span>
       </div>
       <div class="totals-bar__item">
         <span class="totals-bar__label">Total Tax Balance</span>
-        <span class="totals-bar__value">{{ formatCurrency(totals().taxBalanceSheetResult) }}</span>
+        <span class="totals-bar__value">{{ totals().taxBalanceSheetResult | currencyEy }}</span>
       </div>
       <div class="totals-bar__item">
         <span class="totals-bar__label">Total Taxable</span>
         <span class="totals-bar__value" [class.negative]="totals().taxableResultBeforeTLCF < 0">
-          {{ formatCurrency(totals().taxableResultBeforeTLCF) }}
+          {{ totals().taxableResultBeforeTLCF | currencyEy }}
         </span>
       </div>
       <div class="totals-bar__item">
         <span class="totals-bar__label">Total Participation</span>
-        <span class="totals-bar__value">{{ formatCurrency(totals().participationIncome) }}</span>
+        <span class="totals-bar__value">{{ totals().participationIncome | currencyEy }}</span>
       </div>
     </div>
   </section>
@@ -251,7 +251,106 @@
         <h3 class="section-title">Multicountry Analysis</h3>
         <span class="section-subtitle">Direct tax details across jurisdictions</span>
       </div>
-      <span class="section-count">{{ filteredMultiCountryData().length }} entities</span>
+      <div class="section-header__right">
+        <div class="mc-action-buttons">
+          <button class="mc-action-btn" (click)="openTableExpand()" title="Expand table">
+            <lucide-icon [img]="icons.maximize2" [size]="16"></lucide-icon>
+          </button>
+          @if (selectedCount() > 0) {
+            <button class="mc-action-btn mc-action-btn--primary" (click)="openBulkApprovalModal()" title="Approve selected">
+              <lucide-icon [img]="icons.checkCircle" [size]="16"></lucide-icon>
+              Approvals ({{ selectedCount() }})
+            </button>
+          }
+        </div>
+        <span class="section-count">{{ filteredMultiCountryData().length }} entities</span>
+      </div>
+    </div>
+
+    <!-- Multi-Country Filter Bar (Dark Theme) -->
+    <div class="multi-country-filter-bar">
+      <div class="mc-filter-group">
+        <label>YEAR</label>
+        <select
+          [ngModel]="mcFilters().year"
+          (ngModelChange)="updateMcFilter('year', $event)"
+        >
+          <option value="">All</option>
+          @for (year of mcYearOptions(); track year) {
+            <option [value]="year">{{ year }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="mc-filter-group">
+        <label>COUNTRY</label>
+        <select
+          [ngModel]="mcFilters().country"
+          (ngModelChange)="updateMcFilter('country', $event)"
+        >
+          <option value="">All</option>
+          @for (country of mcCountryOptions(); track country) {
+            <option [value]="country">{{ country }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="mc-filter-group mc-filter-group--search">
+        <label>ENTITY</label>
+        <div class="mc-autocomplete">
+          <input
+            type="text"
+            class="mc-search-input"
+            placeholder="Search entity..."
+            [ngModel]="mcFilters().searchEntity"
+            (ngModelChange)="updateMcFilter('searchEntity', $event)"
+            (focus)="onEntitySearchFocus()"
+            (blur)="onEntitySearchBlur()"
+          />
+          @if (entitySearchFocused() && entityAutocompleteSuggestions().length > 0) {
+            <div class="mc-autocomplete-dropdown">
+              @for (suggestion of entityAutocompleteSuggestions(); track suggestion) {
+                <button
+                  class="mc-autocomplete-item"
+                  (mousedown)="selectEntityFromAutocomplete(suggestion)"
+                >
+                  {{ suggestion }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="mc-filter-group">
+        <label>SUBFUND</label>
+        <select
+          [ngModel]="mcFilters().subFund"
+          (ngModelChange)="updateMcFilter('subFund', $event)"
+        >
+          <option value="">All</option>
+          @for (sf of mcSubFundOptions(); track sf) {
+            <option [value]="sf">{{ sf }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- CIT Completed Filter Toggle -->
+      <label class="mc-filter-toggle">
+        <input
+          type="checkbox"
+          [checked]="mcFilters().citCompleted"
+          (change)="toggleCitCompletedFilter()"
+        />
+        <span class="mc-filter-toggle__label">CIT Ready Only</span>
+      </label>
+
+      @if (hasMcActiveFilters()) {
+        <button class="mc-clear-filters-btn" (click)="clearMcFilters()">
+          <lucide-icon [img]="icons.filter" [size]="14"></lucide-icon>
+          Clear
+        </button>
+      }
     </div>
 
     <!-- Multicountry KPI Strip -->
@@ -264,165 +363,159 @@
       }
     </div>
 
-    <!-- Master-Detail Split View -->
-    <div class="mc-master-detail">
-      <!-- Left Panel: Entity List -->
-      <div class="mc-master-panel">
-        <div class="mc-master-header">
-          <h4 class="mc-master-title">Entities</h4>
-          <span class="mc-master-count">{{ filteredMultiCountryData().length }}</span>
-        </div>
-        <div class="mc-entity-list">
+    <!-- Horizontal Scrollable Table -->
+    <div class="mc-table-wrapper">
+      <table class="mc-table">
+        <thead>
+          <tr>
+            <th class="mc-table__th mc-table__th--checkbox">
+              <input
+                type="checkbox"
+                [checked]="allSelected()"
+                (change)="selectAllEntities($any($event.target).checked)"
+                class="mc-checkbox"
+              />
+            </th>
+            <th class="mc-table__th mc-table__th--sticky">Entity</th>
+            <th class="mc-table__th">Fund</th>
+            <th class="mc-table__th">Year</th>
+            <th class="mc-table__th">Currency</th>
+            <th class="mc-table__th">Tax Memo</th>
+            <th class="mc-table__th">IP Memo</th>
+            <th class="mc-table__th">Tax Conso</th>
+            <th class="mc-table__th mc-table__th--right">Commercial Result</th>
+            <th class="mc-table__th mc-table__th--right">Tax Balance Sheet</th>
+            <th class="mc-table__th mc-table__th--right">Net Worth Tax</th>
+            <th class="mc-table__th mc-table__th--right">SA INV</th>
+            <th class="mc-table__th mc-table__th--right">Total Tax Losses</th>
+            <th class="mc-table__th">FTA Year</th>
+            <th class="mc-table__th mc-table__th--right">Recapture</th>
+            <th class="mc-table__th">SBA Memo</th>
+            <th class="mc-table__th mc-table__th--right">Taxable Before TLCF</th>
+            <th class="mc-table__th mc-table__th--right">Taxable After TLCF</th>
+            <th class="mc-table__th mc-table__th--right">Participation Income</th>
+            <th class="mc-table__th mc-table__th--right">QSFU Parts</th>
+            <th class="mc-table__th">CIT</th>
+            <th class="mc-table__th">Status</th>
+            <th class="mc-table__th mc-table__th--actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
           @for (row of filteredMultiCountryData(); track row.id) {
-            <div
-              class="mc-list-item"
-              [class.mc-list-item--selected]="selectedMultiCountryEntity()?.id === row.id"
-              (click)="selectEntity(row.id)"
-            >
-              <div class="mc-list-item__info">
-                <span class="mc-list-item__name">{{ row.entity }}</span>
-                <div class="mc-list-item__meta">
-                  <span class="mc-list-item__badge">{{ row.subFund }}</span>
-                  <span class="mc-list-item__year">{{ row.year }}</span>
-                </div>
-              </div>
-              <div class="mc-list-item__metrics">
-                <div class="mc-list-item__metric">
-                  <span class="mc-list-item__value" [class.negative]="row.taxBase < 0">
-                    {{ formatCompact(row.taxBase) }}
-                  </span>
-                  <span class="mc-list-item__label">Tax Base</span>
-                </div>
-                <div class="mc-list-item__metric">
-                  <span class="mc-list-item__value" [class.negative]="row.statutoryProfit < 0">
-                    {{ formatCompact(row.statutoryProfit) }}
-                  </span>
-                  <span class="mc-list-item__label">Profit</span>
-                </div>
-              </div>
-            </div>
+            <tr class="mc-table__row" [class.mc-table__row--selected]="isEntitySelected(row.id)">
+              <td class="mc-table__td mc-table__td--checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isEntitySelected(row.id)"
+                  [disabled]="row.citStatus !== 'completed'"
+                  (change)="toggleEntitySelection(row.id)"
+                  class="mc-checkbox"
+                  [class.mc-checkbox--disabled]="row.citStatus !== 'completed'"
+                  [title]="row.citStatus === 'completed' ? 'Select for approval' : 'CIT not ready'"
+                />
+              </td>
+              <td class="mc-table__td mc-table__td--sticky">
+                <span class="mc-table__entity-name">{{ row.entity }}</span>
+              </td>
+              <td class="mc-table__td">{{ row.fund || '-' }}</td>
+              <td class="mc-table__td">{{ row.year }}</td>
+              <td class="mc-table__td">
+                <span class="mc-table__currency-badge">{{ row.currency || 'EUR' }}</span>
+              </td>
+              <td class="mc-table__td">
+                <span class="mc-table__memo-badge" [class]="'mc-table__memo-badge--' + getMemoClass(row.taxMemo)">
+                  {{ row.taxMemo || '-' }}
+                </span>
+              </td>
+              <td class="mc-table__td">
+                <span class="mc-table__memo-badge" [class]="'mc-table__memo-badge--' + getMemoClass(row.ipMemo)">
+                  {{ row.ipMemo || '-' }}
+                </span>
+              </td>
+              <td class="mc-table__td">{{ row.taxConso || '-' }}</td>
+              <td class="mc-table__td mc-table__td--right" [class.negative]="(row.commercialResult || 0) < 0">
+                {{ row.commercialResult | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right">
+                {{ row.taxBalanceSheetResult | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right">
+                {{ row.netWorthTax | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right">
+                {{ row.saInv | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right" [class.negative]="(row.totalTaxLosses || 0) < 0">
+                {{ row.totalTaxLosses | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td">{{ row.ftaYear || '-' }}</td>
+              <td class="mc-table__td mc-table__td--right">
+                {{ row.recapture | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td">
+                <span class="mc-table__memo-badge" [class]="'mc-table__memo-badge--' + getMemoClass(row.sbaMemo)">
+                  {{ row.sbaMemo || '-' }}
+                </span>
+              </td>
+              <td class="mc-table__td mc-table__td--right" [class.negative]="(row.taxableResultBeforeTLCF || 0) < 0">
+                {{ row.taxableResultBeforeTLCF | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right">
+                {{ row.taxableResultAfterTLCF | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right">
+                {{ row.participationIncome | currencyEy:'compact' }}
+              </td>
+              <td class="mc-table__td mc-table__td--right">{{ row.qsfuParts || 0 }}</td>
+              <td class="mc-table__td">
+                <span class="mc-table__cit-badge" [class]="'mc-table__cit-badge--' + row.citStatus">
+                  {{ row.citStatus === 'completed' ? 'Ready' : 'Pending' }}
+                </span>
+              </td>
+              <td class="mc-table__td">
+                <span class="mc-table__status-badge" [class]="'mc-table__status-badge--' + (row.approvalStatus || 'pending')">
+                  {{ row.approvalStatus || 'pending' }}
+                </span>
+              </td>
+              <td class="mc-table__td mc-table__td--actions">
+                <button
+                  class="mc-table__action-btn mc-table__action-btn--view"
+                  [class.mc-table__action-btn--disabled]="row.citStatus === 'in-progress'"
+                  [disabled]="row.citStatus === 'in-progress'"
+                  (click)="row.citStatus === 'completed' && openSingleEntityApproval(row)"
+                  [title]="row.citStatus === 'completed' ? 'Voir et approuver' : 'CIT pas encore prêt'"
+                >
+                  <lucide-icon [img]="icons.eye" [size]="16"></lucide-icon>
+                </button>
+              </td>
+            </tr>
           }
-        </div>
-      </div>
-
-      <!-- Right Panel: Detail View -->
-      <div class="mc-detail-panel">
-        @if (selectedMultiCountryEntity(); as entity) {
-          <!-- Detail Header -->
-          <div class="mc-detail-header">
-            <div class="mc-detail-title-row">
-              <h3 class="mc-detail-entity-name">{{ entity.entity }}</h3>
-              <div class="mc-detail-badges">
-                <span class="mc-detail-badge mc-detail-badge--subfund">{{ entity.subFund }}</span>
-                <span class="mc-detail-badge mc-detail-badge--year">{{ entity.year }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Key Metrics Row -->
-          <div class="mc-detail-key-metrics">
-            <div class="mc-key-metric mc-key-metric--primary">
-              <span class="mc-key-metric__value" [class.negative]="entity.taxBase < 0">
-                {{ formatCurrency(entity.taxBase) }}
-              </span>
-              <span class="mc-key-metric__label">Tax Base</span>
-            </div>
-            <div class="mc-key-metric">
-              <span class="mc-key-metric__value" [class.negative]="entity.statutoryProfit < 0">
-                {{ formatCurrency(entity.statutoryProfit) }}
-              </span>
-              <span class="mc-key-metric__label">Statutory Profit</span>
-            </div>
-            <div class="mc-key-metric">
-              <span class="mc-key-metric__value" [class.negative]="entity.taxLossCarryForward < 0">
-                {{ formatCurrency(entity.taxLossCarryForward) }}
-              </span>
-              <span class="mc-key-metric__label">Tax Loss CF</span>
-            </div>
-          </div>
-
-          <!-- Detail Grid -->
-          <div class="mc-detail-section">
-            <h4 class="mc-detail-section-title">Depreciation</h4>
-            <div class="mc-detail-grid mc-detail-grid--2col">
-              <div class="mc-detail-item">
-                <span class="mc-detail-item__label">Tax Deductible Depreciation PY</span>
-                <span class="mc-detail-item__value">{{ formatCurrency(entity.taxDeductibleDepreciationPY) }}</span>
-              </div>
-              <div class="mc-detail-item">
-                <span class="mc-detail-item__label">Tax Deductible Depreciation CY</span>
-                <span class="mc-detail-item__value" [class.negative]="entity.taxDeductibleDepreciationCY < 0">
-                  {{ formatCurrency(entity.taxDeductibleDepreciationCY) }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="mc-detail-section">
-            <h4 class="mc-detail-section-title">Income & Expenses</h4>
-            <div class="mc-detail-grid mc-detail-grid--2col">
-              <div class="mc-detail-item">
-                <span class="mc-detail-item__label">Interest Expense (Statutory)</span>
-                <span class="mc-detail-item__value">{{ formatCurrency(entity.interestExpenseFromStatutory) }}</span>
-              </div>
-              <div class="mc-detail-item">
-                <span class="mc-detail-item__label">Participation Exemption</span>
-                <span class="mc-detail-item__value">{{ formatCurrency(entity.participationExemption) }}</span>
-              </div>
-              <div class="mc-detail-item">
-                <span class="mc-detail-item__label">International Allocation</span>
-                <span class="mc-detail-item__value" [class.negative]="entity.internationalAllocation < 0">
-                  {{ formatCurrency(entity.internationalAllocation) }}
-                </span>
-              </div>
-              <div class="mc-detail-item">
-                <span class="mc-detail-item__label">Dividend or Capital</span>
-                <span class="mc-detail-item__value">{{ formatCurrency(entity.dividendOrCapital) }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="mc-detail-section">
-            <h4 class="mc-detail-section-title">Ratios</h4>
-            <div class="mc-detail-grid mc-detail-grid--1col">
-              <div class="mc-detail-item mc-detail-item--ratio">
-                <span class="mc-detail-item__label">Debt to Equity Ratio</span>
-                <span class="mc-detail-item__value mc-detail-item__value--large">{{ entity.debtToEquityRatio.toFixed(2) }}</span>
-              </div>
-            </div>
-          </div>
-        } @else {
-          <!-- Empty State -->
-          <div class="mc-detail-empty">
-            <lucide-icon [img]="icons.building" [size]="48"></lucide-icon>
-            <p>Select an entity to view details</p>
-          </div>
-        }
-      </div>
+        </tbody>
+      </table>
     </div>
 
     <!-- Multicountry Totals Bar -->
     <div class="mc-totals-bar">
       <div class="mc-total-item">
         <span class="mc-total-label">Total Tax Base</span>
-        <span class="mc-total-value">{{ formatCompact(multiCountryTotals().taxBase) }}</span>
+        <span class="mc-total-value">{{ multiCountryTotals().taxBase | currencyEy:'compact' }}</span>
       </div>
       <div class="mc-total-item">
         <span class="mc-total-label">Total Statutory Profit</span>
         <span class="mc-total-value" [class.negative]="multiCountryTotals().statutoryProfit < 0">
-          {{ formatCompact(multiCountryTotals().statutoryProfit) }}
+          {{ multiCountryTotals().statutoryProfit | currencyEy:'compact' }}
         </span>
       </div>
       <div class="mc-total-item">
         <span class="mc-total-label">Total Tax Loss CF</span>
         <span class="mc-total-value" [class.negative]="multiCountryTotals().taxLossCarryForward < 0">
-          {{ formatCompact(multiCountryTotals().taxLossCarryForward) }}
+          {{ multiCountryTotals().taxLossCarryForward | currencyEy:'compact' }}
         </span>
       </div>
       <div class="mc-total-item">
         <span class="mc-total-label">Total Int'l Allocation</span>
         <span class="mc-total-value" [class.negative]="multiCountryTotals().internationalAllocation < 0">
-          {{ formatCompact(multiCountryTotals().internationalAllocation) }}
+          {{ multiCountryTotals().internationalAllocation | currencyEy:'compact' }}
         </span>
       </div>
     </div>
@@ -463,4 +556,41 @@
       </div>
     </div>
   </section>
+
+  <!-- CIT Approval Modal (for single entity preview) -->
+  @if (showCitModal()) {
+    <app-cit-approval-modal
+      [entity]="selectedEntityForApproval()"
+      [allEntities]="[selectedEntityForApproval()!]"
+      [mode]="'preview'"
+      (close)="closeCitModal()"
+      (approve)="handleApprove($event)"
+      (reject)="handleReject($event)"
+    ></app-cit-approval-modal>
+  }
+
+  <!-- Bulk Approval Confirmation Dialog -->
+  @if (showBulkConfirmation()) {
+    <div class="bulk-confirm-overlay" (click)="cancelBulkApproval()">
+      <div class="bulk-confirm-modal" (click)="$event.stopPropagation()">
+        <div class="bulk-confirm-icon">
+          <lucide-icon [img]="icons.checkCircle" [size]="48"></lucide-icon>
+        </div>
+        <h3 class="bulk-confirm-title">Confirm Bulk Approval</h3>
+        <p class="bulk-confirm-message">
+          You are about to approve <strong>{{ bulkApprovalCount() }}</strong> CIT document(s).
+          This action cannot be undone.
+        </p>
+        <div class="bulk-confirm-actions">
+          <button class="bulk-confirm-btn bulk-confirm-btn--cancel" (click)="cancelBulkApproval()">
+            Cancel
+          </button>
+          <button class="bulk-confirm-btn bulk-confirm-btn--confirm" (click)="confirmBulkApproval()">
+            <lucide-icon [img]="icons.checkCircle" [size]="16"></lucide-icon>
+            Approve All
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

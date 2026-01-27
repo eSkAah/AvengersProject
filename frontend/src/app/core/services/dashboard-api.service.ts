@@ -113,20 +113,17 @@ export class DashboardApiService {
   getEngagementStats(engagementId: string): Observable<EngagementStats> {
     this.loadingStats.set(true);
     this.error.set(null); // Clear previous errors
-    return this.http
-      .get<EngagementStats>(`${this.baseUrl}/engagements/${engagementId}/stats`)
-      .pipe(
-        tap((stats) => {
-          this.currentStats.set(stats);
-          this.loadingStats.set(false);
-        }),
-        catchError((error) => {
-          console.error('Error fetching engagement stats:', error);
-          this.loadingStats.set(false);
-          this.error.set('Unable to load statistics. Please try again.');
-          throw error;
-        })
-      );
+    return this.http.get<EngagementStats>(`${this.baseUrl}/engagements/${engagementId}/stats`).pipe(
+      tap(stats => {
+        this.currentStats.set(stats);
+        this.loadingStats.set(false);
+      }),
+      catchError(error => {
+        this.loadingStats.set(false);
+        this.error.set('Unable to load statistics. Please try again.');
+        throw error;
+      })
+    );
   }
 
   /**
@@ -134,13 +131,10 @@ export class DashboardApiService {
    */
   getAssetsChart(engagementId: string): Observable<AssetsChartResponse> {
     return this.http
-      .get<AssetsChartResponse>(
-        `${this.baseUrl}/engagements/${engagementId}/charts/assets`
-      )
+      .get<AssetsChartResponse>(`${this.baseUrl}/engagements/${engagementId}/charts/assets`)
       .pipe(
-        tap((data) => this.assetsChart.set(data)),
-        catchError((error) => {
-          console.error('Error fetching assets chart:', error);
+        tap(data => this.assetsChart.set(data)),
+        catchError(error => {
           throw error;
         })
       );
@@ -151,13 +145,10 @@ export class DashboardApiService {
    */
   getComparisonChart(engagementId: string): Observable<ComparisonChartResponse> {
     return this.http
-      .get<ComparisonChartResponse>(
-        `${this.baseUrl}/engagements/${engagementId}/charts/comparison`
-      )
+      .get<ComparisonChartResponse>(`${this.baseUrl}/engagements/${engagementId}/charts/comparison`)
       .pipe(
-        tap((data) => this.comparisonChart.set(data)),
-        catchError((error) => {
-          console.error('Error fetching comparison chart:', error);
+        tap(data => this.comparisonChart.set(data)),
+        catchError(error => {
           throw error;
         })
       );
@@ -168,13 +159,10 @@ export class DashboardApiService {
    */
   getBreakdownChart(engagementId: string): Observable<BreakdownChartResponse> {
     return this.http
-      .get<BreakdownChartResponse>(
-        `${this.baseUrl}/engagements/${engagementId}/charts/breakdown`
-      )
+      .get<BreakdownChartResponse>(`${this.baseUrl}/engagements/${engagementId}/charts/breakdown`)
       .pipe(
-        tap((data) => this.breakdownChart.set(data)),
-        catchError((error) => {
-          console.error('Error fetching breakdown chart:', error);
+        tap(data => this.breakdownChart.set(data)),
+        catchError(error => {
           throw error;
         })
       );
@@ -197,8 +185,7 @@ export class DashboardApiService {
       .then(() => {
         this.loadingCharts.set(false);
       })
-      .catch((error) => {
-        console.error('Error loading dashboard data:', error);
+      .catch(() => {
         this.loadingCharts.set(false);
         this.error.set('Unable to load dashboard data. Please try again.');
       });

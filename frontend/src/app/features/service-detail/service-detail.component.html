@@ -80,51 +80,18 @@
       >
         Insights
       </button>
+      <button
+        class="service-tabs__tab"
+        [class.service-tabs__tab--active]="activeTab() === 'contacts'"
+        (click)="setActiveTab('contacts')"
+      >
+        Contacts
+      </button>
     </div>
 
     <!-- Tab Content -->
     <div class="tab-content">
       @if (activeTab() === 'entities') {
-        <!-- Filter Bar -->
-        <div class="entities-filter-bar">
-          <div class="filter-group">
-            <label>COUNTRY</label>
-            <select
-              [ngModel]="countryFilter()"
-              (ngModelChange)="countryFilter.set($event)"
-            >
-              <option value="">All countries</option>
-              @for (country of uniqueCountries(); track country.flag) {
-                <option [value]="country.flag">{{ country.flag }} {{ country.name }}</option>
-              }
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label>STATUS</label>
-            <select
-              [ngModel]="statusFilter()"
-              (ngModelChange)="statusFilter.set($event)"
-            >
-              <option value="">All statuses</option>
-              @for (status of statusOptions; track status.value) {
-                <option [value]="status.value">{{ status.label }}</option>
-              }
-            </select>
-          </div>
-
-          @if (hasActiveFilters()) {
-            <button class="clear-filters-btn" (click)="clearFilters()">
-              <lucide-icon [img]="icons.x" [size]="14"></lucide-icon>
-              Clear filters
-            </button>
-          }
-
-          <div class="filter-results">
-            {{ filteredAndSortedEntities().length }} of {{ entities().length }} entities
-          </div>
-        </div>
-
         <div class="entities-table-wrapper">
           <table class="entities-table">
             <thead>
@@ -204,7 +171,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (entity of filteredAndSortedEntities(); track entity.id) {
+              @for (entity of sortedEntities(); track entity.id) {
                 <tr class="entity-row entity-row--clickable" (click)="navigateToEntity(entity.engagementId)">
                   <td class="entity-cell">
                     <span class="entity-flag">{{ entity.countryFlag }}</span>
@@ -237,12 +204,7 @@
                 <tr class="empty-row">
                   <td colspan="4">
                     <div class="empty-state">
-                      @if (entities().length === 0) {
-                        <p>No entities available for this service</p>
-                      } @else {
-                        <p>No entities match your filters</p>
-                        <button class="clear-filters-link" (click)="clearFilters()">Clear filters</button>
-                      }
+                      <p>No entities available for this service</p>
                     </div>
                   </td>
                 </tr>
@@ -258,6 +220,10 @@
 
       @if (activeTab() === 'insights') {
         <app-service-insights [serviceId]="serviceId()"></app-service-insights>
+      }
+
+      @if (activeTab() === 'contacts') {
+        <app-service-contacts [serviceId]="serviceId()"></app-service-contacts>
       }
     </div>
   } @else if (!loading()) {

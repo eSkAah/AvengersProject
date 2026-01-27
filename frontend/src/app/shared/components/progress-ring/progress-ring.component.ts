@@ -46,84 +46,86 @@ type RingColor = 'red' | 'amber' | 'green' | 'neutral';
       </div>
     </div>
   `,
-  styles: [`
-    :host {
-      display: inline-block;
-    }
-
-    .progress-ring {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      &__svg {
-        transform: rotate(-90deg);
-        width: 100%;
-        height: 100%;
+  styles: [
+    `
+      :host {
+        display: inline-block;
       }
 
-      &__bg {
-        fill: none;
-        stroke: #e5e7eb; // gray-200
-      }
-
-      &__progress {
-        fill: none;
-        stroke-linecap: round;
-        transition: stroke-dashoffset 0.5s ease-out;
-
-        &--red {
-          stroke: #ef4444; // red-500
-        }
-
-        &--amber {
-          stroke: #f59e0b; // amber-500
-        }
-
-        &--green {
-          stroke: #10b981; // emerald-500
-        }
-
-        &--neutral {
-          stroke: #9ca3af; // gray-400
-        }
-      }
-
-      &__content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: column;
+      .progress-ring {
+        position: relative;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+
+        &__svg {
+          transform: rotate(-90deg);
+          width: 100%;
+          height: 100%;
+        }
+
+        &__bg {
+          fill: none;
+          stroke: #e5e7eb; // gray-200
+        }
+
+        &__progress {
+          fill: none;
+          stroke-linecap: round;
+          transition: stroke-dashoffset 0.5s ease-out;
+
+          &--red {
+            stroke: #ef4444; // red-500
+          }
+
+          &--amber {
+            stroke: #f59e0b; // amber-500
+          }
+
+          &--green {
+            stroke: #10b981; // emerald-500
+          }
+
+          &--neutral {
+            stroke: #9ca3af; // gray-400
+          }
+        }
+
+        &__content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &__count {
+          font-weight: 600;
+          font-size: 0.75rem;
+          line-height: 1;
+
+          &--red {
+            color: #ef4444;
+          }
+
+          &--amber {
+            color: #d97706;
+          }
+
+          &--green {
+            color: #059669;
+          }
+
+          &--neutral {
+            color: #6b7280;
+          }
+        }
       }
-
-      &__count {
-        font-weight: 600;
-        font-size: 0.75rem;
-        line-height: 1;
-
-        &--red {
-          color: #ef4444;
-        }
-
-        &--amber {
-          color: #d97706;
-        }
-
-        &--green {
-          color: #059669;
-        }
-
-        &--neutral {
-          color: #6b7280;
-        }
-      }
-    }
-  `],
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressRingComponent implements OnChanges {

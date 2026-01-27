@@ -91,7 +91,7 @@ export class DocumentFiltersComponent {
   }
 
   private updateFilters(partial: Partial<DocumentFilters>): void {
-    this.filters.update((current) => ({ ...current, ...partial }));
+    this.filters.update(current => ({ ...current, ...partial }));
     this.filtersChange.emit(this.filters());
   }
 }

@@ -18,11 +18,7 @@ export class SkeletonComponent {
   @Input() animation = true;
 
   get skeletonClasses(): string {
-    return [
-      'skeleton',
-      `skeleton--${this.variant}`,
-      this.animation ? 'skeleton--animated' : '',
-    ]
+    return ['skeleton', `skeleton--${this.variant}`, this.animation ? 'skeleton--animated' : '']
       .filter(Boolean)
       .join(' ');
   }

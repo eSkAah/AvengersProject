@@ -18,12 +18,7 @@ export class BadgeComponent {
   @Input() dot = false;
 
   get badgeClasses(): string {
-    return [
-      'badge',
-      `badge--${this.variant}`,
-      `badge--${this.size}`,
-      this.dot ? 'badge--dot' : '',
-    ]
+    return ['badge', `badge--${this.variant}`, `badge--${this.size}`, this.dot ? 'badge--dot' : '']
       .filter(Boolean)
       .join(' ');
   }

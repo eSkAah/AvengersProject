@@ -66,7 +66,7 @@ export interface DocumentRequirement {
   required: boolean;
   status: DocumentRequirementStatus;
   documentId?: string;
-  fiscalYear: number;  // Required fiscal year (e.g., 2025)
+  fiscalYear: number; // Required fiscal year (e.g., 2025)
 }
 
 export interface Engagement {
@@ -79,12 +79,12 @@ export interface Engagement {
   riskLevel: RiskLevel;
   completionPercent: number;
   dueDate: string;
-  fiscalYear: number;  // Target fiscal year (e.g., 2025)
+  fiscalYear: number; // Target fiscal year (e.g., 2025)
   predictedCompletion?: string;
   financialData: FinancialData;
   documentsRequired: string[];
   documentsUploaded: string[];
-  documentRequirements?: DocumentRequirement[];  // Structured requirements with status
+  documentRequirements?: DocumentRequirement[]; // Structured requirements with status
   scenario?: string;
   varianceAlerts?: VarianceAlert[];
   aiInsights?: string[];

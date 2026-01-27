@@ -3,10 +3,8 @@
   <!-- Left Section: EY Logo + Company Name -->
   <div class="navbar-left">
     <a routerLink="/app" class="navbar-brand">
-      <!-- EY Logo: White text with yellow apostrophe -->
-      <div class="ey-logo">
-        <span class="ey-logo-e">E</span><span class="ey-logo-y">Y</span>
-      </div>
+      <!-- EY Logo -->
+      <img src="/ey-logo.png" alt="EY" class="ey-logo-img" />
       <div class="navbar-divider"></div>
       <span class="navbar-company-name">{{ companyName() }}</span>
     </a>
@@ -173,9 +171,7 @@
     }
   </button>
   <a routerLink="/app" class="mobile-brand">
-    <div class="ey-logo ey-logo--small">
-      <span class="ey-logo-e">E</span><span class="ey-logo-y">Y</span>
-    </div>
+    <img src="/ey-logo.png" alt="EY" class="ey-logo-img ey-logo-img--small" />
     <span>{{ companyName() }}</span>
   </a>
   <button class="mobile-notifications-btn" (click)="toggleNotifications()">

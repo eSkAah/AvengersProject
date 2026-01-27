@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
@@ -160,7 +154,11 @@ interface UploadingFile {
 
               <div class="files-list">
                 @for (file of uploadingFiles(); track file.id) {
-                  <div class="file-item" [class.file-item--success]="file.status === 'classified'" [class.file-item--error]="file.status === 'error'">
+                  <div
+                    class="file-item"
+                    [class.file-item--success]="file.status === 'classified'"
+                    [class.file-item--error]="file.status === 'error'"
+                  >
                     <div class="file-info">
                       <lucide-icon [img]="icons.fileText" [size]="16"></lucide-icon>
                       <span class="file-name">{{ file.name }}</span>
@@ -210,558 +208,573 @@ interface UploadingFile {
       </div>
     }
   `,
-  styles: [`
-    // =============================================================================
-    // MISSING DOCUMENTS WIDGET - EY Design System
-    // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
-    // Colors: EY Yellow #FFE600 for accents, #2E2E38 dark text, #6b7280 secondary
-    // =============================================================================
+  styles: [
+    `
+      // =============================================================================
+      // MISSING DOCUMENTS WIDGET - EY Design System
+      // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+      // Colors: EY Yellow #FFE600 for accents, #2E2E38 dark text, #6b7280 secondary
+      // =============================================================================
 
-    :host {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-
-    .missing-docs-widget {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .widget-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .widget-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      lucide-icon {
-        color: #F59E0B; // warning color
+      :host {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
       }
 
-      h3 {
-        margin: 0;
-        font-size: 15px; // close to text-body
-        font-weight: 600;
-        color: #2E2E38;
-        line-height: 1.4;
-      }
-    }
-
-    .total-badge {
-      background: #FEF3C7; // warning-light
-      color: #B45309; // warning-dark
-      min-width: 24px;
-      height: 24px;
-      padding: 0 8px;
-      border-radius: 9999px; // radius-full
-      font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #10B981; // success
-      gap: 8px;
-      padding: 20px 0;
-
-      span {
-        font-size: 13px;
-        font-weight: 500;
-      }
-    }
-
-    .entity-list {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .entity-row {
-      display: grid;
-      grid-template-columns: minmax(120px, 1fr) auto 32px;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: #FFFFFF;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      transition: all 200ms ease-out;
-
-      &:hover {
-        border-color: #FFE600;
-        background: #FFFDF5;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        transform: translateY(-1px);
-      }
-    }
-
-    .entity-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .entity-flag {
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-
-    .entity-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: #2E2E38;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .missing-docs {
-      display: flex;
-      gap: 4px;
-      flex-wrap: nowrap;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .doc-badge {
-      background: #F3F4F6;
-      color: #4B5563;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 500;
-      white-space: nowrap;
-      border: 1px solid #E5E7EB;
-
-      &.more {
-        background: #FFFFFF;
-        color: #6b7280;
-        border: 1px solid #E5E7EB;
-      }
-    }
-
-    .upload-btn {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #FFE600;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 200ms ease-out;
-
-      lucide-icon {
-        color: #2E2E38;
+      .missing-docs-widget {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
       }
 
-      &:hover {
-        background: #FFD000;
-        transform: scale(1.02);
+      .widget-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
       }
 
-      &:active {
-        transform: scale(0.98);
-      }
-    }
-
-    .widget-footer {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 12px;
-    }
-
-    .view-all-link {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      background: transparent;
-      border: none;
-      color: #6b7280;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      padding: 4px 0;
-      transition: all 200ms ease-out;
-
-      lucide-icon {
-        transition: transform 200ms ease-out;
-      }
-
-      &:hover {
-        color: #2E2E38;
+      .widget-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
 
         lucide-icon {
-          transform: translateX(2px);
+          color: #f59e0b; // warning color
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 15px; // close to text-body
+          font-weight: 600;
+          color: #2e2e38;
+          line-height: 1.4;
         }
       }
-    }
 
-    // =========================================================================
-    // MODAL STYLES - EY Design System
-    // =========================================================================
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 200ms ease-out;
-    }
-
-    .modal-content {
-      background: #FFFFFF;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 480px;
-      max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
-      animation: slideUp 300ms ease-out;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .modal-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      lucide-icon {
-        color: #FFE600;
-      }
-    }
-
-    .modal-title-text {
-      h3 {
-        margin: 0;
-        font-size: 18px; // text-h3
+      .total-badge {
+        background: #fef3c7; // warning-light
+        color: #b45309; // warning-dark
+        min-width: 24px;
+        height: 24px;
+        padding: 0 8px;
+        border-radius: 9999px; // radius-full
+        font-size: 12px;
         font-weight: 600;
-        color: #2E2E38;
-        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .modal-subtitle {
-        font-size: 13px;
-        color: #6b7280;
-        line-height: 1.5;
-      }
-    }
+      .empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #10b981; // success
+        gap: 8px;
+        padding: 20px 0;
 
-    .close-btn {
-      background: none;
-      border: none;
-      padding: 8px;
-      cursor: pointer;
-      color: #6b7280;
-      border-radius: 6px;
-      transition: all 200ms ease-out;
-
-      &:hover {
-        background: #F5F5F5;
-        color: #2E2E38;
-      }
-    }
-
-    .missing-info {
-      padding: 12px 24px;
-      background: #FEE2E2; // error-light
-      border-bottom: 1px solid #FECACA;
-    }
-
-    .missing-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #B91C1C;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .missing-tags {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .missing-tag {
-      background: #FFFFFF;
-      color: #B91C1C;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      border: 1px solid #FECACA;
-    }
-
-    .drop-zone {
-      margin: 20px 24px;
-      position: relative;
-      border: 2px dashed #e5e7eb;
-      border-radius: 12px;
-      background: #FAFAFA;
-      transition: all 200ms ease-out;
-      min-height: 140px;
-
-      &:hover {
-        border-color: #FFE600;
-        background: #FFFDF5;
+        span {
+          font-size: 13px;
+          font-weight: 500;
+        }
       }
 
-      &--dragover {
-        border-color: #FFE600;
-        border-style: solid;
-        background: #FFF9CC;
-      }
-    }
-
-    .drop-zone__input {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .drop-zone__content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 140px;
-      cursor: pointer;
-    }
-
-    .drop-zone__icon {
-      width: 56px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #FFFFFF;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-
-      lucide-icon {
-        color: #FFE600;
-      }
-    }
-
-    .drop-zone__title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #2E2E38;
-    }
-
-    .drop-zone__subtitle {
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .uploading-section {
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .ai-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 24px;
-      background: #FFF9CC; // ey-yellow-light
-      font-size: 12px;
-      font-weight: 500;
-      color: #B45309;
-
-      lucide-icon {
-        color: #F59E0B;
-      }
-    }
-
-    .files-list {
-      padding: 12px 24px;
-      max-height: 200px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      background: #FAFAFA;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      transition: all 200ms ease-out;
-
-      &--success {
-        background: #D1FAE5; // success-light
-        border-color: #A7F3D0;
+      .entity-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
 
-      &--error {
-        background: #FEE2E2; // error-light
-        border-color: #FECACA;
+      .entity-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) auto 32px;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          border-color: #ffe600;
+          background: #fffdf5;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          transform: translateY(-1px);
+        }
       }
-    }
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      flex: 1;
+      .entity-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
 
-      lucide-icon {
-        color: #6b7280;
+      .entity-flag {
+        font-size: 16px;
         flex-shrink: 0;
       }
-    }
 
-    .file-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: #2E2E38;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .status-uploading {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .progress-bar {
-      width: 60px;
-      height: 4px;
-      background: #e5e7eb;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #FFE600;
-      border-radius: 2px;
-      transition: width 200ms ease-out;
-    }
-
-    .status-classifying {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #F59E0B;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .status-success {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #10B981;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .status-error {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #EF4444;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .done-btn {
-      background: #FFE600;
-      color: #2E2E38;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 200ms ease-out;
-
-      &:hover {
-        background: #FFD000;
-        transform: scale(1.02);
+      .entity-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #2e2e38;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      &:active {
-        transform: scale(0.98);
+      .missing-docs {
+        display: flex;
+        gap: 4px;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-end;
       }
-    }
 
-    .spin {
-      animation: spin 1s linear infinite;
-    }
+      .doc-badge {
+        background: #f3f4f6;
+        color: #4b5563;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+        border: 1px solid #e5e7eb;
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        &.more {
+          background: #ffffff;
+          color: #6b7280;
+          border: 1px solid #e5e7eb;
+        }
+      }
 
-    @keyframes slideUp {
-      from {
+      .upload-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffe600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+
+        lucide-icon {
+          color: #2e2e38;
+        }
+
+        &:hover {
+          background: #ffd000;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      .widget-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+
+      .view-all-link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 4px 0;
+        transition: all 200ms ease-out;
+
+        lucide-icon {
+          transition: transform 200ms ease-out;
+        }
+
+        &:hover {
+          color: #2e2e38;
+
+          lucide-icon {
+            transform: translateX(2px);
+          }
+        }
+      }
+
+      // =========================================================================
+      // MODAL STYLES - EY Design System
+      // =========================================================================
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 200ms ease-out;
+      }
+
+      .modal-content {
+        background: #ffffff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 480px;
+        max-height: 80vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
+        animation: slideUp 300ms ease-out;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        lucide-icon {
+          color: #ffe600;
+        }
+      }
+
+      .modal-title-text {
+        h3 {
+          margin: 0;
+          font-size: 18px; // text-h3
+          font-weight: 600;
+          color: #2e2e38;
+          line-height: 1.4;
+        }
+
+        .modal-subtitle {
+          font-size: 13px;
+          color: #6b7280;
+          line-height: 1.5;
+        }
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        color: #6b7280;
+        border-radius: 6px;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #f5f5f5;
+          color: #2e2e38;
+        }
+      }
+
+      .missing-info {
+        padding: 12px 24px;
+        background: #fee2e2; // error-light
+        border-bottom: 1px solid #fecaca;
+      }
+
+      .missing-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #b91c1c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .missing-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .missing-tag {
+        background: #ffffff;
+        color: #b91c1c;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid #fecaca;
+      }
+
+      .drop-zone {
+        margin: 20px 24px;
+        position: relative;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        background: #fafafa;
+        transition: all 200ms ease-out;
+        min-height: 140px;
+
+        &:hover {
+          border-color: #ffe600;
+          background: #fffdf5;
+        }
+
+        &--dragover {
+          border-color: #ffe600;
+          border-style: solid;
+          background: #fff9cc;
+        }
+      }
+
+      .drop-zone__input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         opacity: 0;
-        transform: translateY(20px);
+        cursor: pointer;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `],
+      .drop-zone__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 140px;
+        cursor: pointer;
+      }
+
+      .drop-zone__icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+        lucide-icon {
+          color: #ffe600;
+        }
+      }
+
+      .drop-zone__title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2e2e38;
+      }
+
+      .drop-zone__subtitle {
+        font-size: 13px;
+        color: #6b7280;
+      }
+
+      .uploading-section {
+        border-top: 1px solid #e5e7eb;
+      }
+
+      .ai-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: #fff9cc; // ey-yellow-light
+        font-size: 12px;
+        font-weight: 500;
+        color: #b45309;
+
+        lucide-icon {
+          color: #f59e0b;
+        }
+      }
+
+      .files-list {
+        padding: 12px 24px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: #fafafa;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 200ms ease-out;
+
+        &--success {
+          background: #d1fae5; // success-light
+          border-color: #a7f3d0;
+        }
+
+        &--error {
+          background: #fee2e2; // error-light
+          border-color: #fecaca;
+        }
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+
+        lucide-icon {
+          color: #6b7280;
+          flex-shrink: 0;
+        }
+      }
+
+      .file-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #2e2e38;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .status-uploading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .progress-bar {
+        width: 60px;
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #ffe600;
+        border-radius: 2px;
+        transition: width 200ms ease-out;
+      }
+
+      .status-classifying {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #f59e0b;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-success {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #10b981;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #ef4444;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .done-btn {
+        background: #ffe600;
+        color: #2e2e38;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #ffd000;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MissingDocumentsWidgetComponent {
@@ -825,10 +838,7 @@ export class MissingDocumentsWidgetComponent {
   });
 
   readonly totalMissing = computed(() => {
-    return this.missingByEntity().reduce(
-      (sum, entity) => sum + entity.missingDocuments.length,
-      0
-    );
+    return this.missingByEntity().reduce((sum, entity) => sum + entity.missingDocuments.length, 0);
   });
 
   readonly displayedEntities = computed(() => {
@@ -837,7 +847,7 @@ export class MissingDocumentsWidgetComponent {
 
   viewAllMissing(): void {
     this.router.navigate(['/app/documents'], {
-      queryParams: { status: 'missing' }
+      queryParams: { status: 'missing' },
     });
   }
 
@@ -908,43 +918,47 @@ export class MissingDocumentsWidgetComponent {
 
     files.forEach((file, index) => {
       let progress = 0;
-      const uploadInterval = setInterval(() => {
-        progress += Math.random() * 30 + 10;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(uploadInterval);
+      const uploadInterval = setInterval(
+        () => {
+          progress += Math.random() * 30 + 10;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(uploadInterval);
 
-          this.uploadingFiles.update(current =>
-            current.map(f =>
-              f.id === file.id ? { ...f, progress: 100, status: 'classifying' as const } : f
-            )
-          );
-
-          setTimeout(() => {
             this.uploadingFiles.update(current =>
               current.map(f =>
-                f.id === file.id
-                  ? {
-                      ...f,
-                      status: 'classified' as const,
-                      classificationResult: {
-                        entity: entity?.entity || 'Unknown',
-                        documentType: missingDocs[index % missingDocs.length] || 'Document',
-                        fiscalYear: 2025,
-                      },
-                    }
-                  : f
+                f.id === file.id ? { ...f, progress: 100, status: 'classifying' as const } : f
               )
             );
-          }, 1000 + Math.random() * 1000);
-        } else {
-          this.uploadingFiles.update(current =>
-            current.map(f =>
-              f.id === file.id ? { ...f, progress: Math.min(progress, 99) } : f
-            )
-          );
-        }
-      }, 200 + index * 100);
+
+            setTimeout(
+              () => {
+                this.uploadingFiles.update(current =>
+                  current.map(f =>
+                    f.id === file.id
+                      ? {
+                          ...f,
+                          status: 'classified' as const,
+                          classificationResult: {
+                            entity: entity?.entity || 'Unknown',
+                            documentType: missingDocs[index % missingDocs.length] || 'Document',
+                            fiscalYear: 2025,
+                          },
+                        }
+                      : f
+                  )
+                );
+              },
+              1000 + Math.random() * 1000
+            );
+          } else {
+            this.uploadingFiles.update(current =>
+              current.map(f => (f.id === file.id ? { ...f, progress: Math.min(progress, 99) } : f))
+            );
+          }
+        },
+        200 + index * 100
+      );
     });
   }
 }

@@ -14,7 +14,7 @@ export interface Notification {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   private readonly http = inject(HttpClient);
@@ -22,9 +22,7 @@ export class NotificationService {
 
   async getNotifications(): Promise<Notification[]> {
     try {
-      return await firstValueFrom(
-        this.http.get<Notification[]>(this.apiUrl)
-      );
+      return await firstValueFrom(this.http.get<Notification[]>(this.apiUrl));
     } catch {
       // Return mock data for demo
       return this.getMockNotifications();
@@ -33,9 +31,7 @@ export class NotificationService {
 
   async dismissNotification(id: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.patch<void>(`${this.apiUrl}/${id}/dismiss`, {})
-      );
+      await firstValueFrom(this.http.patch<void>(`${this.apiUrl}/${id}/dismiss`, {}));
     } catch {
       // Silent fail for demo
     }
@@ -43,9 +39,7 @@ export class NotificationService {
 
   async dismissAllNotifications(): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.patch<void>(`${this.apiUrl}/dismiss-all`, {})
-      );
+      await firstValueFrom(this.http.patch<void>(`${this.apiUrl}/dismiss-all`, {}));
     } catch {
       // Silent fail for demo
     }
@@ -60,7 +54,7 @@ export class NotificationService {
         message: 'Missing documents for deadline',
         engagement_id: 'eng-001',
         dismissed: false,
-        created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString() // 30 min ago
+        created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 min ago
       },
       {
         id: '2',
@@ -69,7 +63,7 @@ export class NotificationService {
         message: 'Germany PropCo closing soon',
         engagement_id: 'eng-002',
         dismissed: false,
-        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
+        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
       },
       {
         id: '3',
@@ -78,8 +72,8 @@ export class NotificationService {
         message: 'Tax return form received',
         engagement_id: 'eng-001',
         dismissed: false,
-        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 1 day ago
-      }
+        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+      },
     ];
   }
 }

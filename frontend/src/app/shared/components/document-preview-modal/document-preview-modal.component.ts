@@ -41,12 +41,7 @@ export interface DocumentPreviewData {
 @Component({
   selector: 'app-document-preview-modal',
   standalone: true,
-  imports: [
-    CommonModule,
-    LucideAngularModule,
-    ButtonComponent,
-    SkeletonComponent,
-  ],
+  imports: [CommonModule, LucideAngularModule, ButtonComponent, SkeletonComponent],
   template: `
     <div class="modal-overlay" (click)="onOverlayClick($event)">
       <div class="modal-content" (click)="$event.stopPropagation()">
@@ -77,16 +72,15 @@ export interface DocumentPreviewData {
             <div class="error-state">
               <lucide-icon name="alert-circle" [size]="48" class="error-icon"></lucide-icon>
               <p>{{ error() }}</p>
-              <app-button variant="secondary" (clicked)="loadPreview()">
-                Retry
-              </app-button>
+              <app-button variant="secondary" (clicked)="loadPreview()"> Retry </app-button>
             </div>
           } @else if (isTablePreview()) {
             <div class="table-preview">
               <div class="table-info">
                 <span class="sheet-name">{{ previewData()?.table_data?.sheet_name }}</span>
                 <span class="row-count">
-                  {{ previewData()?.table_data?.preview_rows }} / {{ previewData()?.table_data?.total_rows }} rows
+                  {{ previewData()?.table_data?.preview_rows }} /
+                  {{ previewData()?.table_data?.total_rows }} rows
                   @if (previewData()?.table_data?.truncated) {
                     <span class="truncated-badge">(preview)</span>
                   }
@@ -115,203 +109,205 @@ export interface DocumentPreviewData {
             </div>
           } @else if (isPdfPreview()) {
             <div class="pdf-preview">
-              <iframe
-                [src]="pdfUrl()"
-                type="application/pdf"
-                width="100%"
-                height="100%"
-              ></iframe>
+              <iframe [src]="pdfUrl()" type="application/pdf" width="100%" height="100%"></iframe>
             </div>
           }
         </main>
       </div>
     </div>
   `,
-  styles: [`
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 2rem;
-      animation: fadeIn 0.2s ease-out;
-    }
+  styles: [
+    `
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 2rem;
+        animation: fadeIn 0.2s ease-out;
+      }
 
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 1000px;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.2s ease-out;
-    }
+      .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 1000px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.2s ease-out;
+      }
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+      }
 
-    .modal-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      color: #1f2937;
-    }
-
-    .modal-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .close-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: transparent;
-      border-radius: 6px;
-      cursor: pointer;
-      color: #6b7280;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: #f3f4f6;
+      .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
         color: #1f2937;
       }
-    }
 
-    .modal-body {
-      flex: 1;
-      overflow: hidden;
-      min-height: 400px;
-    }
-
-    .loading-state,
-    .error-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      height: 100%;
-    }
-
-    .error-state {
-      gap: 1rem;
-      color: #6b7280;
-
-      .error-icon {
-        color: #ef4444;
+      .modal-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
-    }
 
-    .table-preview {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .table-info {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1.5rem;
-      background: #f9fafb;
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 0.875rem;
-    }
-
-    .sheet-name {
-      font-weight: 500;
-      color: #374151;
-    }
-
-    .row-count {
-      color: #6b7280;
-    }
-
-    .truncated-badge {
-      background: #fef3c7;
-      color: #92400e;
-      padding: 0.125rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      margin-left: 0.5rem;
-    }
-
-    .table-container {
-      flex: 1;
-      overflow: auto;
-      max-height: calc(90vh - 150px);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-    }
-
-    th, td {
-      padding: 0.625rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
-      white-space: nowrap;
-    }
-
-    th {
-      background: #f9fafb;
-      font-weight: 600;
-      color: #374151;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    td {
-      color: #4b5563;
-    }
-
-    tbody tr:hover {
-      background: #f9fafb;
-    }
-
-    .pdf-preview {
-      height: calc(90vh - 100px);
-
-      iframe {
+      .close-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
         border: none;
-      }
-    }
+        background: transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #6b7280;
+        transition: all 0.2s ease;
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        &:hover {
+          background: #f3f4f6;
+          color: #1f2937;
+        }
+      }
 
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+      .modal-body {
+        flex: 1;
+        overflow: hidden;
+        min-height: 400px;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      .loading-state,
+      .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        height: 100%;
       }
-    }
-  `],
+
+      .error-state {
+        gap: 1rem;
+        color: #6b7280;
+
+        .error-icon {
+          color: #ef4444;
+        }
+      }
+
+      .table-preview {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .table-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.5rem;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+      }
+
+      .sheet-name {
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .row-count {
+        color: #6b7280;
+      }
+
+      .truncated-badge {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 0.125rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+      }
+
+      .table-container {
+        flex: 1;
+        overflow: auto;
+        max-height: calc(90vh - 150px);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+
+      th,
+      td {
+        padding: 0.625rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+      }
+
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #374151;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
+      td {
+        color: #4b5563;
+      }
+
+      tbody tr:hover {
+        background: #f9fafb;
+      }
+
+      .pdf-preview {
+        height: calc(90vh - 100px);
+
+        iframe {
+          border: none;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentPreviewModalComponent implements OnInit, OnDestroy {
@@ -354,24 +350,36 @@ export class DocumentPreviewModalComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    this.http.get<DocumentPreviewData>(`${this.apiUrl}/documents/${this.documentId}/preview`)
+    this.http
+      .get<DocumentPreviewData>(`${this.apiUrl}/documents/${this.documentId}/preview`)
       .subscribe({
-        next: (data) => {
+        next: data => {
           this.previewData.set(data);
 
           if (data.preview_type === 'pdf' && data.content_url) {
-            // For PDF, create safe URL
+            // For PDF, create safe URL with validation
             const fullUrl = `${this.apiUrl}${data.content_url.replace('/api', '')}`;
-            this.pdfUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl));
+
+            // Validate URL is same-origin before bypassing security
+            try {
+              const url = new URL(fullUrl, window.location.origin);
+              const apiOrigin = new URL(this.apiUrl).origin;
+
+              // Only allow same-origin or API origin URLs
+              if (url.origin === window.location.origin || url.origin === apiOrigin) {
+                this.pdfUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl));
+              } else {
+                this.error.set('Invalid document URL: cross-origin not allowed');
+              }
+            } catch {
+              this.error.set('Invalid document URL format');
+            }
           }
 
           this.loading.set(false);
         },
-        error: (err) => {
-          console.error('Preview error:', err);
-          this.error.set(
-            err.error?.detail || 'Unable to load document preview.'
-          );
+        error: err => {
+          this.error.set(err.error?.detail || 'Unable to load document preview.');
           this.loading.set(false);
         },
       });

@@ -8,8 +8,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { Document, Engagement, DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../../../../core';
-import { BadgeComponent, ButtonComponent } from '../../../../shared';
+import {
+  Document,
+  Engagement,
+  DOCUMENT_TYPE_LABELS,
+  DOCUMENT_STATUS_LABELS,
+} from '../../../../core';
+import { BadgeComponent } from '../../../../shared';
 
 type SortColumn = 'name' | 'type' | 'status' | 'uploadedAt' | 'size';
 type SortDirection = 'asc' | 'desc';
@@ -17,7 +22,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-document-list',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, BadgeComponent, ButtonComponent],
+  imports: [CommonModule, LucideAngularModule, BadgeComponent],
   templateUrl: './document-list.component.html',
   styleUrl: './document-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,7 +73,7 @@ export class DocumentListComponent {
 
   onSort(column: SortColumn): void {
     if (this.sortColumn() === column) {
-      this.sortDirection.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+      this.sortDirection.update(d => (d === 'asc' ? 'desc' : 'asc'));
     } else {
       this.sortColumn.set(column);
       this.sortDirection.set('asc');
@@ -85,8 +90,8 @@ export class DocumentListComponent {
       return '-';
     }
     const names = engagementIds
-      .map((id) => {
-        const engagement = this.engagements.find((e) => e.id === id);
+      .map(id => {
+        const engagement = this.engagements.find(e => e.id === id);
         return engagement ? `${engagement.countryFlag} ${engagement.entity}` : id;
       })
       .slice(0, 2); // Show max 2
@@ -99,7 +104,7 @@ export class DocumentListComponent {
 
   getStatusVariant(status: string): 'success' | 'warning' | 'error' | 'info' {
     const variants: Record<string, 'success' | 'warning' | 'error' | 'info'> = {
-      missing: 'error',      // Red - consistent with filter button
+      missing: 'error', // Red - consistent with filter button
       pending: 'warning',
       uploaded: 'warning',
       analyzing: 'info',

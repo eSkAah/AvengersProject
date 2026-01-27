@@ -1,8 +1,11 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Engagement, Document, EngagementStatus, RiskLevel } from '../models';
+import { Engagement, Document, EngagementStatus, RiskLevel, ServiceType } from '../models';
 import { MOCK_ENGAGEMENTS } from '../mocks/engagements.mock';
 import { MOCK_DOCUMENTS } from '../mocks/documents.mock';
-import { Notification, NotificationType } from '../../shared/components/notification-item/notification-item.component';
+import {
+  Notification,
+  NotificationType,
+} from '../../shared/components/notification-item/notification-item.component';
 
 @Injectable({
   providedIn: 'root',
@@ -19,34 +22,34 @@ export class MockDataService {
   readonly engagementsByStatus = computed(() => {
     const engagements = this.engagementsSignal();
     return {
-      waiting: engagements.filter((e) => e.status === 'waiting').length,
-      received: engagements.filter((e) => e.status === 'received').length,
-      processing: engagements.filter((e) => e.status === 'processing').length,
-      completed: engagements.filter((e) => e.status === 'completed').length,
+      waiting: engagements.filter(e => e.status === 'waiting').length,
+      received: engagements.filter(e => e.status === 'received').length,
+      processing: engagements.filter(e => e.status === 'processing').length,
+      completed: engagements.filter(e => e.status === 'completed').length,
     };
   });
 
   readonly engagementsByRisk = computed(() => {
     const engagements = this.engagementsSignal();
     return {
-      high: engagements.filter((e) => e.riskLevel === 'high').length,
-      medium: engagements.filter((e) => e.riskLevel === 'medium').length,
-      low: engagements.filter((e) => e.riskLevel === 'low').length,
+      high: engagements.filter(e => e.riskLevel === 'high').length,
+      medium: engagements.filter(e => e.riskLevel === 'medium').length,
+      low: engagements.filter(e => e.riskLevel === 'low').length,
     };
   });
 
   readonly totalDocuments = computed(() => this.documentsSignal().length);
 
   getEngagementById(id: string): Engagement | undefined {
-    return this.engagementsSignal().find((e) => e.id === id);
+    return this.engagementsSignal().find(e => e.id === id);
   }
 
   getDocumentById(id: string): Document | undefined {
-    return this.documentsSignal().find((d) => d.id === id);
+    return this.documentsSignal().find(d => d.id === id);
   }
 
   getDocumentsByEngagement(engagementId: string): Document[] {
-    return this.documentsSignal().filter((d) => d.engagementIds.includes(engagementId));
+    return this.documentsSignal().filter(d => d.engagementIds.includes(engagementId));
   }
 
   filterEngagements(filters: {
@@ -54,7 +57,7 @@ export class MockDataService {
     riskLevel?: RiskLevel;
     country?: string;
   }): Engagement[] {
-    return this.engagementsSignal().filter((e) => {
+    return this.engagementsSignal().filter(e => {
       if (filters.status && e.status !== filters.status) return false;
       if (filters.riskLevel && e.riskLevel !== filters.riskLevel) return false;
       if (filters.country && e.country !== filters.country) return false;
@@ -64,8 +67,8 @@ export class MockDataService {
 
   // Simulation methods for demo
   updateEngagementStatus(id: string, status: EngagementStatus): void {
-    this.engagementsSignal.update((engagements) =>
-      engagements.map((e) => (e.id === id ? { ...e, status } : e))
+    this.engagementsSignal.update(engagements =>
+      engagements.map(e => (e.id === id ? { ...e, status } : e))
     );
   }
 
@@ -79,8 +82,8 @@ export class MockDataService {
     completionPercent: number,
     riskLevel: string
   ): void {
-    this.engagementsSignal.update((engagements) =>
-      engagements.map((e) =>
+    this.engagementsSignal.update(engagements =>
+      engagements.map(e =>
         e.id === id
           ? {
               ...e,
@@ -94,14 +97,27 @@ export class MockDataService {
   }
 
   addDocument(document: Document): void {
-    this.documentsSignal.update((documents) => [...documents, document]);
+    this.documentsSignal.update(documents => [...documents, document]);
 
     // Update engagement's documentsUploaded for all linked engagements
-    this.engagementsSignal.update((engagements) =>
-      engagements.map((e) =>
+    this.engagementsSignal.update(engagements =>
+      engagements.map(e =>
         document.engagementIds.includes(e.id)
           ? { ...e, documentsUploaded: [...e.documentsUploaded, document.id] }
           : e
+      )
+    );
+  }
+
+  /**
+   * Update document service type (for drag & drop reclassification)
+   */
+  updateDocumentServiceType(documentId: string, serviceType: ServiceType): void {
+    this.documentsSignal.update(documents =>
+      documents.map(d =>
+        d.id === documentId
+          ? { ...d, serviceType, status: serviceType === 'others' ? 'unclassified' : d.status }
+          : d
       )
     );
   }
@@ -112,7 +128,8 @@ export class MockDataService {
     const totalAssets = engagements.reduce((sum, e) => sum + e.financialData.assets, 0);
     const totalLiabilities = engagements.reduce((sum, e) => sum + e.financialData.liabilities, 0);
     const totalRevenue = engagements.reduce((sum, e) => sum + e.financialData.revenue, 0);
-    const avgCompletion = engagements.reduce((sum, e) => sum + e.completionPercent, 0) / engagements.length;
+    const avgCompletion =
+      engagements.reduce((sum, e) => sum + e.completionPercent, 0) / engagements.length;
 
     return {
       totalAssets,
@@ -128,7 +145,7 @@ export class MockDataService {
     const engagements = this.engagementsSignal();
     const notifications: Notification[] = [];
 
-    engagements.forEach((engagement) => {
+    engagements.forEach(engagement => {
       // High risk + waiting = urgent notification
       if (engagement.riskLevel === 'high' && engagement.status === 'waiting') {
         notifications.push({

@@ -76,9 +76,7 @@ export interface DrillDownDetail {
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn--outline" (click)="close()">
-              Close
-            </button>
+            <button class="btn btn--outline" (click)="close()">Close</button>
             <button class="btn btn--primary" (click)="askEve()">
               <lucide-icon name="message-circle" [size]="18"></lucide-icon>
               Ask Eve
@@ -88,184 +86,190 @@ export interface DrillDownDetail {
       </div>
     }
   `,
-  styles: [`
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      animation: fadeIn 200ms ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-container {
-      background: #FFFFFF;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 520px;
-      max-height: 90vh;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      animation: slideUp 200ms ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+  styles: [
+    `
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        animation: fadeIn 200ms ease-out;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
-    }
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid #E5E5E5;
-    }
+      .modal-container {
+        background: #ffffff;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 520px;
+        max-height: 90vh;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        animation: slideUp 200ms ease-out;
+      }
 
-    .modal-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #2E2E38;
-      margin: 0;
-    }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    .modal-close {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      border: none;
-      background: transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #6B7280;
-      transition: all 200ms ease-out;
-    }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e5e5;
+      }
 
-    .modal-close:hover {
-      background: #F5F5F5;
-      color: #2E2E38;
-    }
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2e2e38;
+        margin: 0;
+      }
 
-    .modal-content {
-      padding: 24px;
-      overflow-y: auto;
-      max-height: calc(90vh - 140px);
-    }
+      .modal-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #6b7280;
+        transition: all 200ms ease-out;
+      }
 
-    .primary-value {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #F3F4F6;
-    }
+      .modal-close:hover {
+        background: #f5f5f5;
+        color: #2e2e38;
+      }
 
-    .primary-value__amount {
-      display: block;
-      font-size: 32px;
-      font-weight: 700;
-      color: #2E2E38;
-    }
+      .modal-content {
+        padding: 24px;
+        overflow-y: auto;
+        max-height: calc(90vh - 140px);
+      }
 
-    .primary-value__source {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #9CA3AF;
-      margin-top: 8px;
-    }
+      .primary-value {
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #f3f4f6;
+      }
 
-    .details-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+      .primary-value__amount {
+        display: block;
+        font-size: 32px;
+        font-weight: 700;
+        color: #2e2e38;
+      }
 
-    .detail-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: #FAFAFA;
-      border-radius: 8px;
-    }
+      .primary-value__source {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 8px;
+      }
 
-    .detail-item--highlight {
-      background: #FFF9CC;
-    }
+      .details-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
 
-    .detail-item__label {
-      font-size: 14px;
-      color: #6B7280;
-    }
+      .detail-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #fafafa;
+        border-radius: 8px;
+      }
 
-    .detail-item__value {
-      font-size: 14px;
-      font-weight: 600;
-      color: #2E2E38;
-    }
+      .detail-item--highlight {
+        background: #fff9cc;
+      }
 
-    .modal-footer {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 16px 24px;
-      border-top: 1px solid #E5E5E5;
-      background: #FAFAFA;
-    }
+      .detail-item__label {
+        font-size: 14px;
+        color: #6b7280;
+      }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 200ms ease-out;
-      border: none;
-    }
+      .detail-item__value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2e2e38;
+      }
 
-    .btn--outline {
-      background: #FFFFFF;
-      color: #2E2E38;
-      border: 1px solid #E5E5E5;
-    }
+      .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 16px 24px;
+        border-top: 1px solid #e5e5e5;
+        background: #fafafa;
+      }
 
-    .btn--outline:hover {
-      background: #F5F5F5;
-      border-color: #D4D4D4;
-    }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+        border: none;
+      }
 
-    .btn--primary {
-      background: #FFE600;
-      color: #2E2E38;
-    }
+      .btn--outline {
+        background: #ffffff;
+        color: #2e2e38;
+        border: 1px solid #e5e5e5;
+      }
 
-    .btn--primary:hover {
-      background: #FFD000;
-    }
-  `],
+      .btn--outline:hover {
+        background: #f5f5f5;
+        border-color: #d4d4d4;
+      }
+
+      .btn--primary {
+        background: #ffe600;
+        color: #2e2e38;
+      }
+
+      .btn--primary:hover {
+        background: #ffd000;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrillDownModalComponent {

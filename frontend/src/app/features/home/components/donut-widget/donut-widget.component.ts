@@ -1,4 +1,14 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, output, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+  inject,
+  output,
+  AfterViewInit,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, PieChart } from 'lucide-angular';
 import { MockDataService } from '../../../../core';
@@ -19,13 +29,13 @@ interface SegmentData {
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './donut-widget.component.html',
   styleUrl: './donut-widget.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonutWidgetComponent implements AfterViewInit {
   private readonly mockData = inject(MockDataService);
 
   readonly icons = {
-    pieChart: PieChart
+    pieChart: PieChart,
   };
 
   readonly selectedSegment = signal<DonutSegment>('all');
@@ -40,7 +50,9 @@ export class DonutWidgetComponent implements AfterViewInit {
     // Calculate counts based on risk/deadline status
     const late = engagements.filter(e => e.riskLevel === 'high').length;
     const soon = engagements.filter(e => e.riskLevel === 'medium').length;
-    const inProgress = engagements.filter(e => e.riskLevel === 'low' && e.status !== 'completed').length;
+    const inProgress = engagements.filter(
+      e => e.riskLevel === 'low' && e.status !== 'completed'
+    ).length;
 
     return [
       {
@@ -48,22 +60,22 @@ export class DonutWidgetComponent implements AfterViewInit {
         label: 'Late',
         count: late,
         color: '#EF4444',
-        percentage: total > 0 ? Math.round((late / total) * 100) : 0
+        percentage: total > 0 ? Math.round((late / total) * 100) : 0,
       },
       {
         key: 'soon' as DonutSegment,
         label: 'Soon',
         count: soon,
         color: '#F59E0B',
-        percentage: total > 0 ? Math.round((soon / total) * 100) : 0
+        percentage: total > 0 ? Math.round((soon / total) * 100) : 0,
       },
       {
         key: 'in_progress' as DonutSegment,
         label: 'In Progress',
         count: inProgress,
         color: '#3B82F6',
-        percentage: total > 0 ? Math.round((inProgress / total) * 100) : 0
-      }
+        percentage: total > 0 ? Math.round((inProgress / total) * 100) : 0,
+      },
     ];
   });
 
@@ -121,7 +133,13 @@ export class DonutWidgetComponent implements AfterViewInit {
 
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, isSelected ? outerRadius + 4 : outerRadius, startAngle, startAngle + sliceAngle);
+      ctx.arc(
+        centerX,
+        centerY,
+        isSelected ? outerRadius + 4 : outerRadius,
+        startAngle,
+        startAngle + sliceAngle
+      );
       ctx.closePath();
 
       ctx.fillStyle = segment.color;

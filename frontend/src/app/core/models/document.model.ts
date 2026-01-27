@@ -7,16 +7,44 @@ export type DocumentType =
 
 export type DocumentCategory = 'accounting' | 'tax' | 'financial';
 
-export type DocumentStatus = 'pending' | 'uploaded' | 'analyzing' | 'analyzed' | 'validated' | 'missing' | 'error' | 'signed_off' | 'in_review' | 'private' | 'unclassified';
+export type DocumentStatus =
+  | 'pending'
+  | 'uploaded'
+  | 'analyzing'
+  | 'analyzed'
+  | 'validated'
+  | 'missing'
+  | 'error'
+  | 'signed_off'
+  | 'in_review'
+  | 'private'
+  | 'unclassified';
 
-export type ServiceType = 'cit' | 'vat' | 'assessment' | 'accounting' | 'transfer-pricing';
+export type ServiceType = 'cit' | 'vat' | 'assessment' | 'transfer-pricing' | 'others';
 
 export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
-  'cit': 'Corporate Tax Return',
-  'vat': 'VAT Return',
-  'assessment': 'Tax Assessment',
-  'accounting': 'Accounting',
+  cit: 'CIT',
+  vat: 'VAT',
+  assessment: 'Tax Assessment',
   'transfer-pricing': 'Transfer Pricing',
+  others: 'Others',
+};
+
+export const SERVICE_TYPE_ICONS: Record<ServiceType, string> = {
+  cit: 'landmark',
+  vat: 'receipt',
+  assessment: 'clipboard-check',
+  'transfer-pricing': 'arrow-left-right',
+  others: 'folder-question',
+};
+
+// Map document types to services
+export const DOCUMENT_TYPE_TO_SERVICE: Record<DocumentType, ServiceType> = {
+  general_ledger: 'cit',
+  trial_balance: 'cit',
+  tax_return: 'cit',
+  financial_statement: 'cit',
+  bank_statement: 'vat',
 };
 
 export interface Document {
@@ -31,10 +59,10 @@ export interface Document {
   aiSummary?: string;
   extractedData?: Record<string, unknown>;
   filePath?: string;
-  year: number;              // Fiscal year (2024, 2025, 2026)
-  entityId: string;          // Primary entity ID
-  entityName: string;        // e.g., "France SPV"
-  subsidiaryId?: string;     // Optional for multi-subsidiary
+  year: number; // Fiscal year (2024, 2025, 2026)
+  entityId: string; // Primary entity ID
+  entityName: string; // e.g., "France SPV"
+  subsidiaryId?: string; // Optional for multi-subsidiary
   subsidiaryName?: string;
   serviceType?: ServiceType; // Link to service (cit, vat, accounting, etc.)
 }

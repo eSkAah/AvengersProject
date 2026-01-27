@@ -12,6 +12,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CHART_RENDER_DELAY_MS } from '../../../core/constants';
 import {
   Chart,
   ChartConfiguration,
@@ -61,59 +62,66 @@ export interface WaterfallClickEvent {
       }
     </div>
   `,
-  styles: [`
-    .waterfall-chart-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      min-height: 280px;
-    }
-
-    .waterfall-chart-container--loading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .chart-skeleton {
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      width: 100%;
-      height: 220px;
-    }
-
-    .skeleton-bar {
-      flex: 1;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-      border-radius: 4px;
-
-      &--start, &--end {
-        background: linear-gradient(90deg, #FFF9CC 0%, #FFE600 50%, #FFF9CC 100%);
+  styles: [
+    `
+      .waterfall-chart-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 280px;
       }
 
-      &--positive {
-        background: linear-gradient(90deg, #DCFCE7 0%, #22C55E 50%, #DCFCE7 100%);
+      .waterfall-chart-container--loading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 20px;
       }
 
-      &--negative {
-        background: linear-gradient(90deg, #FEE2E2 0%, #EF4444 50%, #FEE2E2 100%);
+      .chart-skeleton {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        width: 100%;
+        height: 220px;
       }
-    }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      .skeleton-bar {
+        flex: 1;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+        border-radius: 4px;
 
-    canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  `],
+        &--start,
+        &--end {
+          background: linear-gradient(90deg, #fff9cc 0%, #ffe600 50%, #fff9cc 100%);
+        }
+
+        &--positive {
+          background: linear-gradient(90deg, #dcfce7 0%, #22c55e 50%, #dcfce7 100%);
+        }
+
+        &--negative {
+          background: linear-gradient(90deg, #fee2e2 0%, #ef4444 50%, #fee2e2 100%);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WaterfallChartComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -136,7 +144,7 @@ export class WaterfallChartComponent implements AfterViewInit, OnChanges, OnDest
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['data']) && this.chartCanvas) {
+    if (changes['data'] && this.chartCanvas) {
       this.updateChart();
     }
 
@@ -164,15 +172,17 @@ export class WaterfallChartComponent implements AfterViewInit, OnChanges, OnDest
 
     const chartData: ChartData<'bar'> = {
       labels: this.data.map(d => d.label),
-      datasets: [{
-        label: 'ETR Reconciliation',
-        data: datasets,
-        backgroundColor: colors,
-        borderColor: colors.map(c => c.replace('0.85', '1')),
-        borderWidth: 1,
-        borderRadius: 4,
-        borderSkipped: false,
-      }],
+      datasets: [
+        {
+          label: 'ETR Reconciliation',
+          data: datasets,
+          backgroundColor: colors,
+          borderColor: colors.map(c => c.replace('0.85', '1')),
+          borderWidth: 1,
+          borderRadius: 4,
+          borderSkipped: false,
+        },
+      ],
     };
 
     const options: ChartOptions<'bar'> = {
@@ -206,18 +216,18 @@ export class WaterfallChartComponent implements AfterViewInit, OnChanges, OnDest
             weight: 400,
           },
           callbacks: {
-            title: (items) => {
+            title: items => {
               const idx = items[0]?.dataIndex ?? 0;
               return this.data[idx]?.label || '';
             },
-            label: (context) => {
+            label: context => {
               const idx = context.dataIndex;
               const item = this.data[idx];
               const value = item.value;
               const sign = value > 0 && !item.isTotal ? '+' : '';
               return ` ${sign}${value.toFixed(1)}${this.unit}`;
             },
-            afterLabel: (context) => {
+            afterLabel: context => {
               const idx = context.dataIndex;
               const item = this.data[idx];
               if (item.description) {
@@ -270,7 +280,7 @@ export class WaterfallChartComponent implements AfterViewInit, OnChanges, OnDest
               weight: 500,
             },
             color: '#9CA3AF',
-            callback: (value) => `${value}${this.unit}`,
+            callback: value => `${value}${this.unit}`,
           },
         },
       },
@@ -344,7 +354,7 @@ export class WaterfallChartComponent implements AfterViewInit, OnChanges, OnDest
   private updateChart(): void {
     this.destroyChart();
     if (this.data.length > 0 && !this.loading) {
-      setTimeout(() => this.createChart(), 0);
+      setTimeout(() => this.createChart(), CHART_RENDER_DELAY_MS);
     }
   }
 

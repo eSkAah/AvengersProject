@@ -1,15 +1,19 @@
-import { Component, input, signal, computed, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  input,
+  signal,
+  computed,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  LucideAngularModule,
-  Check,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Filter,
-} from 'lucide-angular';
+import { LucideAngularModule, Check, X, ChevronDown, ChevronRight, Filter } from 'lucide-angular';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { CurrencyEyPipe } from '../../../../shared/pipes/currency-ey.pipe';
+import { CHART_INIT_DELAY_MS } from '../../../../core/constants';
 
 Chart.register(...registerables);
 
@@ -43,7 +47,7 @@ interface ParticipationRow {
 @Component({
   selector: 'app-entity-insights',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, CurrencyEyPipe],
   template: `
     <div class="insights-container">
       <!-- Sub-tabs -->
@@ -183,8 +187,12 @@ interface ParticipationRow {
             <div class="data-card">
               <h4 class="card-title">Commercial vs Taxable result (before TLCF)</h4>
               <div class="chart-legend">
-                <span class="legend-item"><span class="legend-dot legend-dot--gray"></span> Commercial Profit</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--yellow"></span> Taxable Profit</span>
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--gray"></span> Commercial Profit</span
+                >
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--yellow"></span> Taxable Profit</span
+                >
               </div>
               <canvas #commercialChart></canvas>
             </div>
@@ -196,8 +204,12 @@ interface ParticipationRow {
             <div class="data-card">
               <h4 class="card-title">Total tax losses vs total recaptures</h4>
               <div class="chart-legend">
-                <span class="legend-item"><span class="legend-dot legend-dot--yellow-area"></span> Total Recapture</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--gray"></span> Total Tax Losses</span>
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--yellow-area"></span> Total Recapture</span
+                >
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--gray"></span> Total Tax Losses</span
+                >
               </div>
               <div class="chart-with-table">
                 <div class="chart-container">
@@ -219,7 +231,10 @@ interface ParticipationRow {
                         <td>{{ formatNumber(row.totalTaxLosses) }}</td>
                         <td>{{ formatNumber(row.recapture) }}</td>
                         <td>
-                          <span class="status-dot" [class.status-dot--active]="row.status === 'active'"></span>
+                          <span
+                            class="status-dot"
+                            [class.status-dot--active]="row.status === 'active'"
+                          ></span>
                         </td>
                       </tr>
                     }
@@ -233,16 +248,24 @@ interface ParticipationRow {
               <div class="data-card data-card--half">
                 <h4 class="card-title">Corporate taxes vs tax provision (after TLCF)</h4>
                 <div class="chart-legend">
-                  <span class="legend-item"><span class="legend-dot legend-dot--yellow"></span> Tax Provision</span>
-                  <span class="legend-item"><span class="legend-dot legend-dot--gray"></span> Corporate tax due</span>
+                  <span class="legend-item"
+                    ><span class="legend-dot legend-dot--yellow"></span> Tax Provision</span
+                  >
+                  <span class="legend-item"
+                    ><span class="legend-dot legend-dot--gray"></span> Corporate tax due</span
+                  >
                 </div>
                 <canvas #corporateTaxChart></canvas>
               </div>
               <div class="data-card data-card--half">
                 <h4 class="card-title">Net wealth tax vs tax provision</h4>
                 <div class="chart-legend">
-                  <span class="legend-item"><span class="legend-dot legend-dot--gray"></span> NWT Provision</span>
-                  <span class="legend-item"><span class="legend-dot legend-dot--yellow"></span> Net Wealth Tax</span>
+                  <span class="legend-item"
+                    ><span class="legend-dot legend-dot--gray"></span> NWT Provision</span
+                  >
+                  <span class="legend-item"
+                    ><span class="legend-dot legend-dot--yellow"></span> Net Wealth Tax</span
+                  >
                 </div>
                 <canvas #netWealthChart></canvas>
               </div>
@@ -328,10 +351,10 @@ interface ParticipationRow {
                     </td>
                     <td class="year-cell">{{ group.year }}</td>
                     <td colspan="2" class="total-label">Totalt</td>
-                    <td class="number-cell">{{ formatCurrency(group.acquisitionPrice) }}</td>
-                    <td class="number-cell">{{ formatCurrency(group.totalValueAdjustments) }}</td>
-                    <td class="number-cell">{{ formatCurrency(group.bookValue) }}</td>
-                    <td class="number-cell">{{ formatCurrency(group.totalRecapture) }}</td>
+                    <td class="number-cell">{{ group.acquisitionPrice | currencyEy }}</td>
+                    <td class="number-cell">{{ group.totalValueAdjustments | currencyEy }}</td>
+                    <td class="number-cell">{{ group.bookValue | currencyEy }}</td>
+                    <td class="number-cell">{{ group.totalRecapture | currencyEy }}</td>
                   </tr>
                   <!-- Children rows -->
                   @if (group.isExpanded && group.children) {
@@ -344,10 +367,10 @@ interface ParticipationRow {
                           {{ child.residency }}
                         </td>
                         <td>{{ child.name }}</td>
-                        <td class="number-cell">{{ formatCurrency(child.acquisitionPrice) }}</td>
-                        <td class="number-cell">{{ formatCurrency(child.totalValueAdjustments) }}</td>
-                        <td class="number-cell">{{ formatCurrency(child.bookValue) }}</td>
-                        <td class="number-cell">{{ formatCurrency(child.totalRecapture) }}</td>
+                        <td class="number-cell">{{ child.acquisitionPrice | currencyEy }}</td>
+                        <td class="number-cell">{{ child.totalValueAdjustments | currencyEy }}</td>
+                        <td class="number-cell">{{ child.bookValue | currencyEy }}</td>
+                        <td class="number-cell">{{ child.totalRecapture | currencyEy }}</td>
                       </tr>
                     }
                   }
@@ -361,17 +384,28 @@ interface ParticipationRow {
             <div class="data-card">
               <h4 class="card-title">Financing of participation</h4>
               <div class="chart-legend">
-                <span class="legend-item"><span class="legend-dot legend-dot--gray"></span> Equity</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--yellow"></span> Debt</span>
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--gray"></span> Equity</span
+                >
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--yellow"></span> Debt</span
+                >
               </div>
               <canvas #financingChart></canvas>
             </div>
             <div class="data-card">
               <h4 class="card-title">Recapture by participation</h4>
               <div class="chart-legend">
-                <span class="legend-item"><span class="legend-dot legend-dot--yellow"></span> Total Value Adjustment</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--gray"></span> Interest And Other Expenses</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--dark"></span> Total Recapture</span>
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--yellow"></span> Total Value Adjustment</span
+                >
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--gray"></span> Interest And Other
+                  Expenses</span
+                >
+                <span class="legend-item"
+                  ><span class="legend-dot legend-dot--dark"></span> Total Recapture</span
+                >
               </div>
               <canvas #recaptureChart></canvas>
             </div>
@@ -380,453 +414,463 @@ interface ParticipationRow {
       }
     </div>
   `,
-  styles: [`
-    .insights-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Sub-tabs */
-    .sub-tabs {
-      display: flex;
-      gap: 0;
-      border-bottom: 2px solid #e5e7eb;
-    }
-
-    .sub-tab {
-      padding: 12px 24px;
-      background: transparent;
-      border: none;
-      font-size: 14px;
-      font-weight: 500;
-      color: #6b7280;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s;
-
-      &:hover {
-        color: #2E2E38;
+  styles: [
+    `
+      .insights-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
-      &--active {
-        color: #2E2E38;
-        font-weight: 600;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: #FFE600;
-        }
-      }
-    }
-
-    /* Filters */
-    .filters-row {
-      display: flex;
-      gap: 16px;
-      padding: 16px 20px;
-      background: #2E2E38;
-      border-radius: 8px;
-      flex-wrap: wrap;
-    }
-
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 120px;
-
-      label {
-        font-size: 11px;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+      /* Sub-tabs */
+      .sub-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid #e5e7eb;
       }
 
-      select {
-        padding: 8px 12px;
-        background: #1f1f24;
-        border: 1px solid #404048;
-        border-radius: 6px;
-        color: white;
-        font-size: 13px;
-        cursor: pointer;
-
-        &:focus {
-          outline: none;
-          border-color: #FFE600;
-        }
-      }
-    }
-
-    /* KPIs */
-    .kpi-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .kpi-card {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 14px 18px;
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      min-width: 120px;
-
-      &--dark {
-        background: #2E2E38;
-        border-color: #2E2E38;
-
-        .kpi-label {
-          color: #9ca3af;
-        }
-
-        .kpi-value {
-          color: white;
-        }
-      }
-
-      &--highlight {
-        background: #FFF9E0;
-        border-color: #FFE600;
-
-        .kpi-value {
-          color: #92400e;
-        }
-      }
-    }
-
-    .kpi-label {
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .kpi-value {
-      font-size: 18px;
-      font-weight: 700;
-      color: #2E2E38;
-    }
-
-    .kpi-unit {
-      font-size: 12px;
-      font-weight: 500;
-      opacity: 0.7;
-    }
-
-    .currency-note {
-      padding: 8px 16px;
-      background: #f3f4f6;
-      border-radius: 6px;
-      font-size: 12px;
-      color: #6b7280;
-      text-align: right;
-    }
-
-    /* Content Grid */
-    .content-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 16px;
-    }
-
-    .content-left, .content-right {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Data Cards */
-    .data-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 16px;
-
-      &--half {
-        flex: 1;
-      }
-    }
-
-    .card-title {
-      margin: 0 0 12px 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: #2E2E38;
-    }
-
-    /* Chart Legend */
-    .chart-legend {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-
-      &--yellow {
-        background: #FFE600;
-      }
-
-      &--yellow-area {
-        background: linear-gradient(180deg, rgba(255, 230, 0, 0.6) 0%, rgba(255, 230, 0, 0.2) 100%);
-      }
-
-      &--gray {
-        background: #9ca3af;
-      }
-
-      &--dark {
-        background: #2E2E38;
-      }
-    }
-
-    /* Attributes Table */
-    .attributes-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-
-      th, td {
-        padding: 8px 12px;
-        text-align: center;
-        border-bottom: 1px solid #f3f4f6;
-      }
-
-      th {
-        font-weight: 600;
-        color: #6b7280;
-        font-size: 11px;
-      }
-
-      .attr-name {
-        text-align: left;
+      .sub-tab {
+        padding: 12px 24px;
+        background: transparent;
+        border: none;
+        font-size: 14px;
         font-weight: 500;
-        color: #2E2E38;
-      }
-
-      .icon-check {
-        color: #10b981;
-      }
-
-      .icon-x {
-        color: #ef4444;
-      }
-
-      .na {
-        color: #d1d5db;
-      }
-    }
-
-    /* Mini Table */
-    .chart-with-table {
-      display: grid;
-      grid-template-columns: 1fr 200px;
-      gap: 16px;
-      align-items: start;
-    }
-
-    .chart-container {
-      min-height: 200px;
-    }
-
-    .mini-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-
-      th, td {
-        padding: 6px 8px;
-        text-align: right;
-        border-bottom: 1px solid #f3f4f6;
-      }
-
-      th {
-        font-weight: 600;
         color: #6b7280;
-        font-size: 10px;
-        text-align: right;
-
-        &:first-child {
-          text-align: left;
-        }
-      }
-
-      td:first-child {
-        text-align: left;
-        font-weight: 500;
-      }
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #d1d5db;
-
-      &--active {
-        background: #10b981;
-      }
-    }
-
-    /* Charts Row */
-    .charts-row {
-      display: flex;
-      gap: 16px;
-    }
-
-    /* Toggle Buttons */
-    .toggle-buttons {
-      display: flex;
-      gap: 0;
-      background: #f3f4f6;
-      border-radius: 8px;
-      padding: 4px;
-      width: fit-content;
-    }
-
-    .toggle-btn {
-      padding: 8px 20px;
-      background: transparent;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #6b7280;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &--active {
-        background: white;
-        color: #2E2E38;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-    }
-
-    /* Holding Content */
-    .holding-content {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .participation-card {
-      overflow-x: auto;
-    }
-
-    /* Participation Table */
-    .participation-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-
-      th, td {
-        padding: 10px 12px;
-        text-align: left;
-        border-bottom: 1px solid #f3f4f6;
-      }
-
-      th {
-        font-weight: 600;
-        color: #6b7280;
-        font-size: 11px;
-        background: #f9fafb;
-      }
-
-      .group-header {
-        background: #fafafa;
         cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
 
         &:hover {
-          background: #f3f4f6;
+          color: #2e2e38;
         }
 
-        td {
+        &--active {
+          color: #2e2e38;
           font-weight: 600;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ffe600;
+          }
         }
       }
 
-      .child-row {
-        td {
-          padding-left: 24px;
+      /* Filters */
+      .filters-row {
+        display: flex;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #2e2e38;
+        border-radius: 8px;
+        flex-wrap: wrap;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 120px;
+
+        label {
+          font-size: 11px;
+          color: #9ca3af;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        select {
+          padding: 8px 12px;
+          background: #1f1f24;
+          border: 1px solid #404048;
+          border-radius: 6px;
+          color: white;
+          font-size: 13px;
+          cursor: pointer;
+
+          &:focus {
+            outline: none;
+            border-color: #ffe600;
+          }
         }
       }
 
-      .year-cell {
-        font-weight: 600;
-        color: #2E2E38;
+      /* KPIs */
+      .kpi-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
       }
 
-      .total-label {
-        font-weight: 600;
-        color: #2E2E38;
+      .kpi-card {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 14px 18px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        min-width: 120px;
+
+        &--dark {
+          background: #2e2e38;
+          border-color: #2e2e38;
+
+          .kpi-label {
+            color: #9ca3af;
+          }
+
+          .kpi-value {
+            color: white;
+          }
+        }
+
+        &--highlight {
+          background: #fff9e0;
+          border-color: #ffe600;
+
+          .kpi-value {
+            color: #92400e;
+          }
+        }
       }
 
-      .number-cell {
+      .kpi-label {
+        font-size: 11px;
+        color: #6b7280;
+      }
+
+      .kpi-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2e2e38;
+      }
+
+      .kpi-unit {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: 0.7;
+      }
+
+      .currency-note {
+        padding: 8px 16px;
+        background: #f3f4f6;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #6b7280;
         text-align: right;
-        font-family: 'SF Mono', monospace;
       }
 
-      .residency-cell {
+      /* Content Grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 16px;
+      }
+
+      .content-left,
+      .content-right {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      /* Data Cards */
+      .data-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 16px;
+
+        &--half {
+          flex: 1;
+        }
+      }
+
+      .card-title {
+        margin: 0 0 12px 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: #2e2e38;
+      }
+
+      /* Chart Legend */
+      .chart-legend {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+
+      .legend-item {
         display: flex;
         align-items: center;
         gap: 6px;
+        font-size: 11px;
+        color: #6b7280;
       }
 
-      .flag {
-        font-size: 14px;
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+
+        &--yellow {
+          background: #ffe600;
+        }
+
+        &--yellow-area {
+          background: linear-gradient(
+            180deg,
+            rgba(255, 230, 0, 0.6) 0%,
+            rgba(255, 230, 0, 0.2) 100%
+          );
+        }
+
+        &--gray {
+          background: #9ca3af;
+        }
+
+        &--dark {
+          background: #2e2e38;
+        }
       }
-    }
 
-    /* Holding Charts */
-    .holding-charts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+      /* Attributes Table */
+      .attributes-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
 
-    canvas {
-      max-height: 200px;
-    }
+        th,
+        td {
+          padding: 8px 12px;
+          text-align: center;
+          border-bottom: 1px solid #f3f4f6;
+        }
 
-    @media (max-width: 1024px) {
-      .content-grid {
-        grid-template-columns: 1fr;
+        th {
+          font-weight: 600;
+          color: #6b7280;
+          font-size: 11px;
+        }
+
+        .attr-name {
+          text-align: left;
+          font-weight: 500;
+          color: #2e2e38;
+        }
+
+        .icon-check {
+          color: #10b981;
+        }
+
+        .icon-x {
+          color: #ef4444;
+        }
+
+        .na {
+          color: #d1d5db;
+        }
       }
 
+      /* Mini Table */
       .chart-with-table {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 16px;
+        align-items: start;
       }
 
+      .chart-container {
+        min-height: 200px;
+      }
+
+      .mini-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+
+        th,
+        td {
+          padding: 6px 8px;
+          text-align: right;
+          border-bottom: 1px solid #f3f4f6;
+        }
+
+        th {
+          font-weight: 600;
+          color: #6b7280;
+          font-size: 10px;
+          text-align: right;
+
+          &:first-child {
+            text-align: left;
+          }
+        }
+
+        td:first-child {
+          text-align: left;
+          font-weight: 500;
+        }
+      }
+
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #d1d5db;
+
+        &--active {
+          background: #10b981;
+        }
+      }
+
+      /* Charts Row */
       .charts-row {
-        flex-direction: column;
+        display: flex;
+        gap: 16px;
       }
 
-      .holding-charts {
-        grid-template-columns: 1fr;
+      /* Toggle Buttons */
+      .toggle-buttons {
+        display: flex;
+        gap: 0;
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 4px;
+        width: fit-content;
       }
-    }
-  `],
+
+      .toggle-btn {
+        padding: 8px 20px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &--active {
+          background: white;
+          color: #2e2e38;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+      }
+
+      /* Holding Content */
+      .holding-content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .participation-card {
+        overflow-x: auto;
+      }
+
+      /* Participation Table */
+      .participation-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+
+        th,
+        td {
+          padding: 10px 12px;
+          text-align: left;
+          border-bottom: 1px solid #f3f4f6;
+        }
+
+        th {
+          font-weight: 600;
+          color: #6b7280;
+          font-size: 11px;
+          background: #f9fafb;
+        }
+
+        .group-header {
+          background: #fafafa;
+          cursor: pointer;
+
+          &:hover {
+            background: #f3f4f6;
+          }
+
+          td {
+            font-weight: 600;
+          }
+        }
+
+        .child-row {
+          td {
+            padding-left: 24px;
+          }
+        }
+
+        .year-cell {
+          font-weight: 600;
+          color: #2e2e38;
+        }
+
+        .total-label {
+          font-weight: 600;
+          color: #2e2e38;
+        }
+
+        .number-cell {
+          text-align: right;
+          font-family: 'SF Mono', monospace;
+        }
+
+        .residency-cell {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .flag {
+          font-size: 14px;
+        }
+      }
+
+      /* Holding Charts */
+      .holding-charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      canvas {
+        max-height: 200px;
+      }
+
+      @media (max-width: 1024px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .chart-with-table {
+          grid-template-columns: 1fr;
+        }
+
+        .charts-row {
+          flex-direction: column;
+        }
+
+        .holding-charts {
+          grid-template-columns: 1fr;
+        }
+      }
+    `,
+  ],
 })
 export class EntityInsightsComponent implements OnInit, AfterViewInit {
   @ViewChild('commercialChart') commercialChartRef!: ElementRef<HTMLCanvasElement>;
@@ -857,7 +901,10 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
 
   // Tax Attributes Data
   taxAttributes: TaxAttributeRow[] = [
-    { name: 'Intercompany Transactions', years: { 2020: true, 2021: true, 2022: true, 2023: true } },
+    {
+      name: 'Intercompany Transactions',
+      years: { 2020: true, 2021: true, 2022: true, 2023: true },
+    },
     { name: 'Advance Tax Agreement', years: { 2020: false, 2021: true, 2022: true, 2023: true } },
     { name: 'Fiscal Unity', years: { 2020: false, 2021: false, 2022: true, 2023: true } },
     { name: 'Functional Currency', years: { 2020: false, 2021: false, 2022: false, 2023: true } },
@@ -882,9 +929,33 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
       totalRecapture: 24506171,
       isExpanded: false,
       children: [
-        { year: 2020, residency: 'France', name: 'Galaxy Holdings France SAS', acquisitionPrice: 600000, totalValueAdjustments: 6500, bookValue: 513500000, totalRecapture: 6500000 },
-        { year: 2020, residency: 'Germany', name: 'Galaxy Deutschland GmbH', acquisitionPrice: 10000, totalValueAdjustments: 4500, bookValue: 5500000, totalRecapture: 4400001 },
-        { year: 2020, residency: 'Luxembourg', name: 'Galaxy Finance Luxembourg S.à r.l.', acquisitionPrice: 20000, totalValueAdjustments: 5000, bookValue: 18000000, totalRecapture: 2100001 },
+        {
+          year: 2020,
+          residency: 'France',
+          name: 'Galaxy Holdings France SAS',
+          acquisitionPrice: 600000,
+          totalValueAdjustments: 6500,
+          bookValue: 513500000,
+          totalRecapture: 6500000,
+        },
+        {
+          year: 2020,
+          residency: 'Germany',
+          name: 'Galaxy Deutschland GmbH',
+          acquisitionPrice: 10000,
+          totalValueAdjustments: 4500,
+          bookValue: 5500000,
+          totalRecapture: 4400001,
+        },
+        {
+          year: 2020,
+          residency: 'Luxembourg',
+          name: 'Galaxy Finance Luxembourg S.à r.l.',
+          acquisitionPrice: 20000,
+          totalValueAdjustments: 5000,
+          bookValue: 18000000,
+          totalRecapture: 2100001,
+        },
       ],
     },
     {
@@ -897,9 +968,33 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
       totalRecapture: 7500001,
       isExpanded: true,
       children: [
-        { year: 2021, residency: 'France', name: 'Galaxy Holdings France SAS', acquisitionPrice: 458623, totalValueAdjustments: 0, bookValue: 482421004, totalRecapture: 0 },
-        { year: 2021, residency: 'Germany', name: 'Galaxy Deutschland GmbH', acquisitionPrice: 8825, totalValueAdjustments: 3973, bookValue: 4855951, totalRecapture: 4500001 },
-        { year: 2021, residency: 'Luxembourg', name: 'Galaxy Finance Luxembourg S.à r.l.', acquisitionPrice: 27650, totalValueAdjustments: 2207, bookValue: 15450750, totalRecapture: 3000001 },
+        {
+          year: 2021,
+          residency: 'France',
+          name: 'Galaxy Holdings France SAS',
+          acquisitionPrice: 458623,
+          totalValueAdjustments: 0,
+          bookValue: 482421004,
+          totalRecapture: 0,
+        },
+        {
+          year: 2021,
+          residency: 'Germany',
+          name: 'Galaxy Deutschland GmbH',
+          acquisitionPrice: 8825,
+          totalValueAdjustments: 3973,
+          bookValue: 4855951,
+          totalRecapture: 4500001,
+        },
+        {
+          year: 2021,
+          residency: 'Luxembourg',
+          name: 'Galaxy Finance Luxembourg S.à r.l.',
+          acquisitionPrice: 27650,
+          totalValueAdjustments: 2207,
+          bookValue: 15450750,
+          totalRecapture: 3000001,
+        },
       ],
     },
     {
@@ -912,7 +1007,15 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
       totalRecapture: 3502061,
       isExpanded: false,
       children: [
-        { year: 2022, residency: 'Spain', name: 'Athletico Holdco, S.L.', acquisitionPrice: 220000, totalValueAdjustments: 0, bookValue: 219959991, totalRecapture: 3502061 },
+        {
+          year: 2022,
+          residency: 'Spain',
+          name: 'Athletico Holdco, S.L.',
+          acquisitionPrice: 220000,
+          totalValueAdjustments: 0,
+          bookValue: 219959991,
+          totalRecapture: 3502061,
+        },
       ],
     },
     {
@@ -925,7 +1028,15 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
       totalRecapture: 7004121,
       isExpanded: false,
       children: [
-        { year: 2023, residency: 'Spain', name: 'Athletico Holdco, S.L.', acquisitionPrice: 440000, totalValueAdjustments: 0, bookValue: 439585971, totalRecapture: 7004121 },
+        {
+          year: 2023,
+          residency: 'Spain',
+          name: 'Athletico Holdco, S.L.',
+          acquisitionPrice: 440000,
+          totalValueAdjustments: 0,
+          bookValue: 439585971,
+          totalRecapture: 7004121,
+        },
       ],
     },
   ];
@@ -935,12 +1046,12 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.initCharts(), 100);
+    setTimeout(() => this.initCharts(), CHART_INIT_DELAY_MS);
   }
 
   setSubTab(tab: SubTab): void {
     this.activeSubTab.set(tab);
-    setTimeout(() => this.initCharts(), 100);
+    setTimeout(() => this.initCharts(), CHART_INIT_DELAY_MS);
   }
 
   setHoldingViewMode(mode: 'total' | 'year'): void {
@@ -953,23 +1064,25 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
 
   getFlag(residency: string): string {
     const flags: Record<string, string> = {
-      'France': '🇫🇷',
-      'Germany': '🇩🇪',
-      'Luxembourg': '🇱🇺',
-      'Spain': '🇪🇸',
+      France: '🇫🇷',
+      Germany: '🇩🇪',
+      Luxembourg: '🇱🇺',
+      Spain: '🇪🇸',
     };
     return flags[residency] || '🏳️';
   }
 
   formatNumber(value: number): string {
-    return new Intl.NumberFormat('en-US').format(value);
+    return new Intl.NumberFormat('en-GB').format(value) + ' €';
   }
 
   formatCurrency(value: number): string {
-    if (value >= 1000000) {
-      return new Intl.NumberFormat('fr-FR').format(value) + ' €';
-    }
-    return new Intl.NumberFormat('fr-FR').format(value) + ' €';
+    return (
+      new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(value) + ' €'
+    );
   }
 
   private initCharts(): void {
@@ -989,40 +1102,42 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
     if (this.commercialChartRef?.nativeElement) {
       const ctx = this.commercialChartRef.nativeElement.getContext('2d');
       if (ctx) {
-        this.charts.push(new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['2020', '2021', '2022', '2023'],
-            datasets: [
-              {
-                label: 'Commercial Profit',
-                data: [100, 65, 50, 0],
-                backgroundColor: '#9ca3af',
-                borderRadius: 4,
-              },
-              {
-                label: 'Taxable Profit',
-                data: [-12, 8, 1, 0],
-                backgroundColor: '#FFE600',
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: '#f3f4f6' },
-              },
-              x: {
-                grid: { display: false },
+        this.charts.push(
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['2020', '2021', '2022', '2023'],
+              datasets: [
+                {
+                  label: 'Commercial Profit',
+                  data: [100, 65, 50, 0],
+                  backgroundColor: '#9ca3af',
+                  borderRadius: 4,
+                },
+                {
+                  label: 'Taxable Profit',
+                  data: [-12, 8, 1, 0],
+                  backgroundColor: '#FFE600',
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: '#f3f4f6' },
+                },
+                x: {
+                  grid: { display: false },
+                },
               },
             },
-          },
-        }));
+          })
+        );
       }
     }
 
@@ -1030,45 +1145,47 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
     if (this.taxLossesChartRef?.nativeElement) {
       const ctx = this.taxLossesChartRef.nativeElement.getContext('2d');
       if (ctx) {
-        this.charts.push(new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['2020', '2021', '2022', '2023'],
-            datasets: [
-              {
-                type: 'line',
-                label: 'Total Recapture',
-                data: [6.5, 12, 22, 13],
-                borderColor: '#FFE600',
-                backgroundColor: 'rgba(255, 230, 0, 0.2)',
-                fill: true,
-                tension: 0.4,
-              },
-              {
-                type: 'bar',
-                label: 'Total Tax Losses',
-                data: [9, 12, 12, 11],
-                backgroundColor: '#6b7280',
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: '#f3f4f6' },
-                title: { display: true, text: 'Mn' },
-              },
-              x: {
-                grid: { display: false },
+        this.charts.push(
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['2020', '2021', '2022', '2023'],
+              datasets: [
+                {
+                  type: 'line',
+                  label: 'Total Recapture',
+                  data: [6.5, 12, 22, 13],
+                  borderColor: '#FFE600',
+                  backgroundColor: 'rgba(255, 230, 0, 0.2)',
+                  fill: true,
+                  tension: 0.4,
+                },
+                {
+                  type: 'bar',
+                  label: 'Total Tax Losses',
+                  data: [9, 12, 12, 11],
+                  backgroundColor: '#6b7280',
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: '#f3f4f6' },
+                  title: { display: true, text: 'Mn' },
+                },
+                x: {
+                  grid: { display: false },
+                },
               },
             },
-          },
-        }));
+          })
+        );
       }
     }
 
@@ -1076,38 +1193,40 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
     if (this.corporateTaxChartRef?.nativeElement) {
       const ctx = this.corporateTaxChartRef.nativeElement.getContext('2d');
       if (ctx) {
-        this.charts.push(new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['2020', '2021', '2022', '2023'],
-            datasets: [
-              {
-                label: 'Tax Provision',
-                data: [0.4, 0, 0, 0.6],
-                backgroundColor: '#FFE600',
-                borderRadius: 4,
-              },
-              {
-                label: 'Corporate tax due',
-                data: [-10, 0, -0.1, 0],
-                backgroundColor: '#9ca3af',
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                grid: { color: '#f3f4f6' },
-                title: { display: true, text: 'Mn' },
-              },
-              x: { grid: { display: false } },
+        this.charts.push(
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['2020', '2021', '2022', '2023'],
+              datasets: [
+                {
+                  label: 'Tax Provision',
+                  data: [0.4, 0, 0, 0.6],
+                  backgroundColor: '#FFE600',
+                  borderRadius: 4,
+                },
+                {
+                  label: 'Corporate tax due',
+                  data: [-10, 0, -0.1, 0],
+                  backgroundColor: '#9ca3af',
+                  borderRadius: 4,
+                },
+              ],
             },
-          },
-        }));
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  grid: { color: '#f3f4f6' },
+                  title: { display: true, text: 'Mn' },
+                },
+                x: { grid: { display: false } },
+              },
+            },
+          })
+        );
       }
     }
 
@@ -1115,39 +1234,41 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
     if (this.netWealthChartRef?.nativeElement) {
       const ctx = this.netWealthChartRef.nativeElement.getContext('2d');
       if (ctx) {
-        this.charts.push(new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['2020', '2021', '2022', '2023'],
-            datasets: [
-              {
-                label: 'NWT Provision',
-                data: [5, 6, 12, 14.4],
-                backgroundColor: '#9ca3af',
-                borderRadius: 4,
-              },
-              {
-                label: 'Net Wealth Tax',
-                data: [0.88, 3.21, 0.29, 4.82],
-                backgroundColor: '#FFE600',
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: '#f3f4f6' },
-                title: { display: true, text: 't' },
-              },
-              x: { grid: { display: false } },
+        this.charts.push(
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['2020', '2021', '2022', '2023'],
+              datasets: [
+                {
+                  label: 'NWT Provision',
+                  data: [5, 6, 12, 14.4],
+                  backgroundColor: '#9ca3af',
+                  borderRadius: 4,
+                },
+                {
+                  label: 'Net Wealth Tax',
+                  data: [0.88, 3.21, 0.29, 4.82],
+                  backgroundColor: '#FFE600',
+                  borderRadius: 4,
+                },
+              ],
             },
-          },
-        }));
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: '#f3f4f6' },
+                  title: { display: true, text: 't' },
+                },
+                x: { grid: { display: false } },
+              },
+            },
+          })
+        );
       }
     }
   }
@@ -1157,44 +1278,46 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
     if (this.financingChartRef?.nativeElement) {
       const ctx = this.financingChartRef.nativeElement.getContext('2d');
       if (ctx) {
-        this.charts.push(new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['2020', '2021', '2022', '2023'],
-            datasets: [
-              {
-                label: 'Equity',
-                data: [16, 18, 15, 15],
-                backgroundColor: '#6b7280',
-                borderRadius: 4,
-              },
-              {
-                label: 'Debt',
-                data: [84, 84, 85, 85],
-                backgroundColor: '#FFE600',
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: {
-                stacked: true,
-                max: 100,
-                grid: { color: '#f3f4f6' },
-                ticks: { callback: (value) => value + '%' },
-              },
-              y: {
-                stacked: true,
-                grid: { display: false },
+        this.charts.push(
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['2020', '2021', '2022', '2023'],
+              datasets: [
+                {
+                  label: 'Equity',
+                  data: [16, 18, 15, 15],
+                  backgroundColor: '#6b7280',
+                  borderRadius: 4,
+                },
+                {
+                  label: 'Debt',
+                  data: [84, 84, 85, 85],
+                  backgroundColor: '#FFE600',
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: {
+                  stacked: true,
+                  max: 100,
+                  grid: { color: '#f3f4f6' },
+                  ticks: { callback: value => value + '%' },
+                },
+                y: {
+                  stacked: true,
+                  grid: { display: false },
+                },
               },
             },
-          },
-        }));
+          })
+        );
       }
     }
 
@@ -1202,45 +1325,51 @@ export class EntityInsightsComponent implements OnInit, AfterViewInit {
     if (this.recaptureChartRef?.nativeElement) {
       const ctx = this.recaptureChartRef.nativeElement.getContext('2d');
       if (ctx) {
-        this.charts.push(new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['Galaxy Deutschland', 'Galaxy Finance Luxembourg S.à r.l.', 'Galaxy Holdings France SAS'],
-            datasets: [
-              {
-                label: 'Total Value Adjustment',
-                data: [4.5, 3, 0],
-                backgroundColor: '#FFE600',
-                borderRadius: 4,
-              },
-              {
-                label: 'Interest And Other Expenses',
-                data: [0, 2.2, 1],
-                backgroundColor: '#9ca3af',
-                borderRadius: 4,
-              },
-              {
-                label: 'Total Recapture',
-                data: [0, 0, 0.8],
-                backgroundColor: '#2E2E38',
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: '#f3f4f6' },
-                title: { display: true, text: 'Mn' },
-              },
-              x: { grid: { display: false } },
+        this.charts.push(
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: [
+                'Galaxy Deutschland',
+                'Galaxy Finance Luxembourg S.à r.l.',
+                'Galaxy Holdings France SAS',
+              ],
+              datasets: [
+                {
+                  label: 'Total Value Adjustment',
+                  data: [4.5, 3, 0],
+                  backgroundColor: '#FFE600',
+                  borderRadius: 4,
+                },
+                {
+                  label: 'Interest And Other Expenses',
+                  data: [0, 2.2, 1],
+                  backgroundColor: '#9ca3af',
+                  borderRadius: 4,
+                },
+                {
+                  label: 'Total Recapture',
+                  data: [0, 0, 0.8],
+                  backgroundColor: '#2E2E38',
+                  borderRadius: 4,
+                },
+              ],
             },
-          },
-        }));
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: '#f3f4f6' },
+                  title: { display: true, text: 'Mn' },
+                },
+                x: { grid: { display: false } },
+              },
+            },
+          })
+        );
       }
     }
   }

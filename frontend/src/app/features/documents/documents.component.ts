@@ -11,14 +11,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
+import { MockDataService, Document, DocumentApiService, DocumentType } from '../../core';
 import {
-  MockDataService,
-  Document,
-  DocumentApiService,
-  DocumentType,
-} from '../../core';
-import {
-  BreadcrumbComponent,
   BreadcrumbItem,
   ViewToggleComponent,
   ViewMode,
@@ -35,10 +29,15 @@ import { PlacementAnimation } from '../../shared/components/flying-document/flyi
 import {
   DocumentTreeComponent,
   TreeNode,
+  DocumentMoveEvent,
+  CustomFolder,
 } from './components/document-tree/document-tree.component';
 import { DocumentGridComponent } from './components/document-grid/document-grid.component';
 import { DocumentListComponent } from './components/document-list/document-list.component';
-import { ClassificationDialogComponent, ClassificationResult } from './components/classification-dialog/classification-dialog.component';
+import {
+  ClassificationDialogComponent,
+  ClassificationResult,
+} from './components/classification-dialog/classification-dialog.component';
 
 export type ActiveTab = 'library' | 'upload';
 
@@ -71,7 +70,6 @@ export interface PendingFile {
     CommonModule,
     FormsModule,
     LucideAngularModule,
-    BreadcrumbComponent,
     ViewToggleComponent,
     DocumentTreeComponent,
     DocumentGridComponent,
@@ -137,7 +135,7 @@ export class DocumentsComponent implements OnInit {
   readonly entityOptions = computed(() => {
     const docs = this.allDocuments();
     const entities = new Set<string>();
-    docs.forEach((d) => {
+    docs.forEach(d => {
       if (d.entityName) {
         entities.add(d.entityName);
       }
@@ -148,7 +146,7 @@ export class DocumentsComponent implements OnInit {
   readonly yearOptions = computed(() => {
     const docs = this.allDocuments();
     const years = new Set<string>();
-    docs.forEach((d) => {
+    docs.forEach(d => {
       if (d.year) {
         years.add(String(d.year));
       }
@@ -156,8 +154,15 @@ export class DocumentsComponent implements OnInit {
     return Array.from(years).sort().reverse();
   });
 
-  readonly typeOptions = ['general_ledger', 'trial_balance', 'bank_statement', 'tax_return', 'financial_statement'];
-  readonly statusOptions = ['signed_off', 'in_review', 'pending', 'private', 'unclassified', 'missing', 'uploaded', 'analyzed', 'validated'];
+  readonly typeOptions = [
+    'general_ledger',
+    'trial_balance',
+    'bank_statement',
+    'tax_return',
+    'financial_statement',
+  ];
+  // Simplified status filters - only Missing and Unclassified
+  readonly statusOptions = ['missing', 'unclassified'];
 
   // Bulk download state
   readonly bulkDownloadProgress = signal(0);
@@ -220,7 +225,8 @@ export class DocumentsComponent implements OnInit {
       private: filteredDocs.filter(d => d.status === 'private').length,
       unclassified: filteredDocs.filter(d => d.status === 'unclassified').length,
       missing: filteredDocs.filter(d => (d as Document & { isMissing?: boolean }).isMissing).length,
-      uploaded: filteredDocs.filter(d => d.status === 'uploaded' || d.status === 'analyzing').length,
+      uploaded: filteredDocs.filter(d => d.status === 'uploaded' || d.status === 'analyzing')
+        .length,
       analyzed: filteredDocs.filter(d => d.status === 'analyzed').length,
       validated: filteredDocs.filter(d => d.status === 'validated').length,
     };
@@ -233,39 +239,39 @@ export class DocumentsComponent implements OnInit {
 
     // Filter by entity
     if (gf.entity) {
-      docs = docs.filter((d) => d.entityName === gf.entity);
+      docs = docs.filter(d => d.entityName === gf.entity);
     }
 
     // Filter by year
     if (gf.year) {
-      docs = docs.filter((d) => String(d.year) === gf.year);
+      docs = docs.filter(d => String(d.year) === gf.year);
     }
 
     // Filter by type
     if (gf.type) {
-      docs = docs.filter((d) => d.type === gf.type);
+      docs = docs.filter(d => d.type === gf.type);
     }
 
     // Filter by status
     if (gf.status) {
       if (gf.status === 'missing') {
-        docs = docs.filter((d) => (d as Document & { isMissing?: boolean }).isMissing);
+        docs = docs.filter(d => (d as Document & { isMissing?: boolean }).isMissing);
       } else if (gf.status === 'uploaded') {
-        docs = docs.filter((d) => d.status === 'analyzing' || d.status === 'pending');
+        docs = docs.filter(d => d.status === 'analyzing' || d.status === 'pending');
       } else if (gf.status === 'analyzed') {
-        docs = docs.filter((d) => d.status === 'analyzed');
+        docs = docs.filter(d => d.status === 'analyzed');
       } else if (gf.status === 'validated') {
-        docs = docs.filter((d) => d.status === 'validated');
+        docs = docs.filter(d => d.status === 'validated');
       } else if (gf.status === 'signed_off') {
-        docs = docs.filter((d) => d.status === 'signed_off');
+        docs = docs.filter(d => d.status === 'signed_off');
       } else if (gf.status === 'in_review') {
-        docs = docs.filter((d) => d.status === 'in_review');
+        docs = docs.filter(d => d.status === 'in_review');
       } else if (gf.status === 'pending') {
-        docs = docs.filter((d) => d.status === 'pending');
+        docs = docs.filter(d => d.status === 'pending');
       } else if (gf.status === 'private') {
-        docs = docs.filter((d) => d.status === 'private');
+        docs = docs.filter(d => d.status === 'private');
       } else if (gf.status === 'unclassified') {
-        docs = docs.filter((d) => d.status === 'unclassified');
+        docs = docs.filter(d => d.status === 'unclassified');
       }
     }
 
@@ -283,7 +289,7 @@ export class DocumentsComponent implements OnInit {
 
   ngOnInit(): void {
     // Check for query params
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.subscribe(params => {
       const entity = params['entity'];
       const status = params['status'];
       const type = params['type'];
@@ -325,23 +331,23 @@ export class DocumentsComponent implements OnInit {
 
   // Global filter methods
   onGlobalSearchChange(search: string): void {
-    this.globalFilters.update((f) => ({ ...f, search }));
+    this.globalFilters.update(f => ({ ...f, search }));
   }
 
   onGlobalEntityChange(entity: string): void {
-    this.globalFilters.update((f) => ({ ...f, entity }));
+    this.globalFilters.update(f => ({ ...f, entity }));
   }
 
   onGlobalYearChange(year: string): void {
-    this.globalFilters.update((f) => ({ ...f, year }));
+    this.globalFilters.update(f => ({ ...f, year }));
   }
 
   onGlobalTypeChange(type: string): void {
-    this.globalFilters.update((f) => ({ ...f, type }));
+    this.globalFilters.update(f => ({ ...f, type }));
   }
 
   onGlobalStatusChange(status: string): void {
-    this.globalFilters.update((f) => ({ ...f, status }));
+    this.globalFilters.update(f => ({ ...f, status }));
   }
 
   clearGlobalFilters(): void {
@@ -361,7 +367,9 @@ export class DocumentsComponent implements OnInit {
 
   // Bulk download methods
   async startBulkDownload(): Promise<void> {
-    const docs = this.filteredDocuments().filter(d => !(d as Document & { isMissing?: boolean }).isMissing);
+    const docs = this.filteredDocuments().filter(
+      d => !(d as Document & { isMissing?: boolean }).isMissing
+    );
     if (docs.length === 0) {
       this.toast.warning('No documents to download');
       return;
@@ -410,23 +418,26 @@ export class DocumentsComponent implements OnInit {
   }
 
   onTreeNodeSelect(node: TreeNode): void {
-    // Apply filters based on tree node selection
-    if (node.type === 'entity') {
-      this.globalFilters.update(f => ({ ...f, entity: node.label }));
-    } else if (node.type === 'year' && node.parentEntity) {
-      this.globalFilters.update(f => ({
-        ...f,
-        entity: node.parentEntity!,
-        year: node.label,
-      }));
-    } else if (node.type === 'doctype' && node.parentEntity && node.parentYear) {
-      this.globalFilters.update(f => ({
-        ...f,
-        entity: node.parentEntity!,
-        year: String(node.parentYear!),
-        type: node.docType || '',
-      }));
-    }
+    // Node selection is purely visual - no automatic filtering
+    // Users should use the "Filter by entity..." input to filter documents
+    // This prevents unwanted filtering behavior when browsing the tree
+  }
+
+  /**
+   * Handle document moved via drag & drop
+   */
+  onDocumentMoved(event: DocumentMoveEvent): void {
+    // Update document serviceType in mock data
+    this.mockData.updateDocumentServiceType(event.documentId, event.toService);
+
+    this.toast.success(`"${event.documentName}" moved to ${event.toService.toUpperCase()}`);
+  }
+
+  /**
+   * Handle custom folder created
+   */
+  onFolderCreated(folder: CustomFolder): void {
+    this.toast.success(`Folder "${folder.name}" created`);
   }
 
   onBreadcrumbNavigate(item: BreadcrumbItem): void {
@@ -481,11 +492,11 @@ export class DocumentsComponent implements OnInit {
 
     // Detect entity
     const entityPatterns: Record<string, string> = {
-      'france': 'France SPV',
-      'germany': 'Germany PropCo',
-      'netherlands': 'Netherlands BV',
-      'belgium': 'Belgium HoldCo',
-      'luxembourg': 'Luxembourg Fund',
+      france: 'France SPV',
+      germany: 'Germany PropCo',
+      netherlands: 'Netherlands BV',
+      belgium: 'Belgium HoldCo',
+      luxembourg: 'Luxembourg Fund',
     };
     for (const [pattern, entityName] of Object.entries(entityPatterns)) {
       if (lowerName.includes(pattern)) {
@@ -502,16 +513,16 @@ export class DocumentsComponent implements OnInit {
 
     // Detect document type
     const typePatterns: Record<string, string> = {
-      'grand_livre': 'general_ledger',
+      grand_livre: 'general_ledger',
       'grand livre': 'general_ledger',
-      'general_ledger': 'general_ledger',
-      'balance': 'trial_balance',
-      'trial_balance': 'trial_balance',
-      'tax': 'tax_return',
-      'fiscal': 'tax_return',
-      'declaration': 'tax_return',
-      'financial': 'financial_statement',
-      'etats_financiers': 'financial_statement',
+      general_ledger: 'general_ledger',
+      balance: 'trial_balance',
+      trial_balance: 'trial_balance',
+      tax: 'tax_return',
+      fiscal: 'tax_return',
+      declaration: 'tax_return',
+      financial: 'financial_statement',
+      etats_financiers: 'financial_statement',
       'états financiers': 'financial_statement',
     };
     for (const [pattern, docType] of Object.entries(typePatterns)) {
@@ -631,7 +642,7 @@ export class DocumentsComponent implements OnInit {
 
     // Mark as processing
     this.pendingFiles.update(files =>
-      files.map(f => f.file.id === file.id ? { ...f, isProcessing: true } : f)
+      files.map(f => (f.file.id === file.id ? { ...f, isProcessing: true } : f))
     );
 
     try {
@@ -639,9 +650,7 @@ export class DocumentsComponent implements OnInit {
       const response = await this.simulateUpload(file, metadata);
 
       // Find engagement ID from entity name
-      const matchingEngagement = this.engagements().find(
-        e => e.entity === metadata.entity
-      );
+      const matchingEngagement = this.engagements().find(e => e.entity === metadata.entity);
       const engagementIds = matchingEngagement ? [matchingEngagement.id] : [];
 
       // Create document in mock data
@@ -669,7 +678,7 @@ export class DocumentsComponent implements OnInit {
     } catch (error) {
       this.toast.error(`Upload failed: ${file.name}`);
       this.pendingFiles.update(files =>
-        files.map(f => f.file.id === file.id ? { ...f, isProcessing: false } : f)
+        files.map(f => (f.file.id === file.id ? { ...f, isProcessing: false } : f))
       );
     }
   }
@@ -708,11 +717,7 @@ export class DocumentsComponent implements OnInit {
     const targetNodeId = `type-${metadata.entity}-${metadata.year}-${docType}`;
 
     // Expand tree to target location
-    this.documentTree.expandAndHighlight(
-      metadata.entity,
-      metadata.year,
-      docType
-    );
+    this.documentTree.expandAndHighlight(metadata.entity, metadata.year, docType);
 
     await this.delay(200);
 
@@ -770,22 +775,30 @@ export class DocumentsComponent implements OnInit {
   /**
    * Handle inline attribution changes
    */
-  onAttributionChange(fileId: string, field: 'entity' | 'year' | 'type', value: string | number): void {
+  onAttributionChange(
+    fileId: string,
+    field: 'entity' | 'year' | 'type',
+    value: string | number
+  ): void {
     this.pendingFiles.update(files =>
       files.map(f => {
         if (f.file.id !== fileId) return f;
 
         const updatedMetadata = { ...f.metadata };
         if (field === 'entity') {
-          updatedMetadata.entity = value as string || null;
+          updatedMetadata.entity = (value as string) || null;
         } else if (field === 'year') {
           updatedMetadata.year = value ? Number(value) : null;
         } else if (field === 'type') {
-          updatedMetadata.type = value as string || null;
+          updatedMetadata.type = (value as string) || null;
         }
 
         // Recalculate confidence based on completeness
-        const detectedCount = [updatedMetadata.entity, updatedMetadata.year, updatedMetadata.type].filter(Boolean).length;
+        const detectedCount = [
+          updatedMetadata.entity,
+          updatedMetadata.year,
+          updatedMetadata.type,
+        ].filter(Boolean).length;
         if (detectedCount >= 3) {
           updatedMetadata.confidence = 'high';
         } else if (detectedCount >= 2) {
@@ -808,9 +821,7 @@ export class DocumentsComponent implements OnInit {
    */
   validateSingleFile(fileId: string): void {
     this.pendingFiles.update(files =>
-      files.map(f =>
-        f.file.id === fileId ? { ...f, isValidated: true } : f
-      )
+      files.map(f => (f.file.id === fileId ? { ...f, isValidated: true } : f))
     );
     this.toast.success('Attribution validated');
   }
@@ -820,9 +831,7 @@ export class DocumentsComponent implements OnInit {
    */
   editAttribution(fileId: string): void {
     this.pendingFiles.update(files =>
-      files.map(f =>
-        f.file.id === fileId ? { ...f, isValidated: false } : f
-      )
+      files.map(f => (f.file.id === fileId ? { ...f, isValidated: false } : f))
     );
   }
 
@@ -884,8 +893,12 @@ export class DocumentsComponent implements OnInit {
       const rowElement = document.querySelector(`[data-file-id="${pf.file.id}"]`) as HTMLElement;
       const sourcePosition = rowElement
         ? {
-            x: rowElement.getBoundingClientRect().left + rowElement.getBoundingClientRect().width / 2,
-            y: rowElement.getBoundingClientRect().top + rowElement.getBoundingClientRect().height / 2,
+            x:
+              rowElement.getBoundingClientRect().left +
+              rowElement.getBoundingClientRect().width / 2,
+            y:
+              rowElement.getBoundingClientRect().top +
+              rowElement.getBoundingClientRect().height / 2,
           }
         : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
@@ -912,7 +925,7 @@ export class DocumentsComponent implements OnInit {
 
     // Mark as processing
     this.pendingFiles.update(files =>
-      files.map(f => f.file.id === file.id ? { ...f, isProcessing: true } : f)
+      files.map(f => (f.file.id === file.id ? { ...f, isProcessing: true } : f))
     );
 
     // Prepare target position in tree
@@ -920,17 +933,15 @@ export class DocumentsComponent implements OnInit {
       const docType = metadata.type as DocumentType;
 
       // Expand tree to show target location
-      this.documentTree.expandAndHighlight(
-        metadata.entity,
-        metadata.year,
-        docType
-      );
+      this.documentTree.expandAndHighlight(metadata.entity, metadata.year, docType);
 
       await this.delay(200);
 
       // Get target position
       const targetNodeId = `type-${metadata.entity}-${metadata.year}-${docType}`;
-      const targetElement = document.querySelector(`[data-node-id="${targetNodeId}"]`) as HTMLElement;
+      const targetElement = document.querySelector(
+        `[data-node-id="${targetNodeId}"]`
+      ) as HTMLElement;
 
       let targetPos = { x: 100, y: 300 };
       if (targetElement) {
@@ -958,9 +969,7 @@ export class DocumentsComponent implements OnInit {
       await this.delay(800);
 
       // Update animation status to landed
-      this.activeAnimation.update(anim =>
-        anim ? { ...anim, status: 'landed' } : null
-      );
+      this.activeAnimation.update(anim => (anim ? { ...anim, status: 'landed' } : null));
 
       await this.delay(300);
 
@@ -976,9 +985,7 @@ export class DocumentsComponent implements OnInit {
       const response = await this.simulateUpload(file, metadata);
 
       // Find engagement ID from entity name
-      const matchingEngagement = this.engagements().find(
-        e => e.entity === metadata.entity
-      );
+      const matchingEngagement = this.engagements().find(e => e.entity === metadata.entity);
       const engagementIds = matchingEngagement ? [matchingEngagement.id] : [];
 
       // Create document in mock data
@@ -1001,7 +1008,7 @@ export class DocumentsComponent implements OnInit {
     } catch (error) {
       this.toast.error(`Upload failed: ${file.name}`);
       this.pendingFiles.update(files =>
-        files.map(f => f.file.id === file.id ? { ...f, isProcessing: false } : f)
+        files.map(f => (f.file.id === file.id ? { ...f, isProcessing: false } : f))
       );
     }
   }
@@ -1081,6 +1088,6 @@ export class DocumentsComponent implements OnInit {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

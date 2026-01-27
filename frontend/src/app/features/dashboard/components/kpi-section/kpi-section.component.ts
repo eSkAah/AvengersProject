@@ -65,96 +65,96 @@ interface EnhancedKpiMetric extends KpiMetric {
 
       <!-- Currency Note - EY Design System -->
       @if (stats()) {
-        <div class="currency-note">
-          Values in EUR (thousands)
-        </div>
+        <div class="currency-note">Values in EUR (thousands)</div>
       }
     </div>
   `,
-  styles: [`
-    .kpi-section {
-      width: 100%;
-    }
+  styles: [
+    `
+      .kpi-section {
+        width: 100%;
+      }
 
-    .kpi-section__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
+      .kpi-section__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
 
-    .kpi-section__title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #2E2E38;
-      margin: 0;
-    }
+      .kpi-section__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2e2e38;
+        margin: 0;
+      }
 
-    .kpi-section__period {
-      font-size: 12px;
-      font-weight: 500;
-      color: #6B7280;
-      padding: 4px 12px;
-      background: #F5F5F5;
-      border-radius: 9999px;
-    }
+      .kpi-section__period {
+        font-size: 12px;
+        font-weight: 500;
+        color: #6b7280;
+        padding: 4px 12px;
+        background: #f5f5f5;
+        border-radius: 9999px;
+      }
 
-    /* EY Design System: KPI Row with gap 12px */
-    .kpi-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .kpi-card-wrapper {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    /* Apply variant-specific styling through wrapper class */
-    .kpi-card-wrapper--dark {
-      /* Dark variant styles handled by inner component */
-    }
-
-    .kpi-card-wrapper--light {
-      /* Light variant styles handled by inner component */
-    }
-
-    .kpi-card-wrapper--highlight {
-      /* Highlight variant styles handled by inner component */
-    }
-
-    /* Currency Note - EY Design System */
-    .currency-note {
-      margin-top: 12px;
-      padding: 8px 16px;
-      background: #F3F4F6;
-      border-radius: 6px;
-      font-size: 12px;
-      color: #6B7280;
-      text-align: right;
-    }
-
-    @media (max-width: 1024px) {
+      /* EY Design System: KPI Row with gap 12px */
       .kpi-row {
-        flex-direction: column;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
       }
 
-      .kpi-card-wrapper {
-        min-width: 100%;
-      }
-    }
-
-    @media (min-width: 1280px) {
       .kpi-card-wrapper {
         flex: 1;
-        min-width: 0;
+        min-width: 200px;
       }
-    }
-  `],
+
+      /* Apply variant-specific styling through wrapper class */
+      .kpi-card-wrapper--dark {
+        /* Dark variant styles handled by inner component */
+      }
+
+      .kpi-card-wrapper--light {
+        /* Light variant styles handled by inner component */
+      }
+
+      .kpi-card-wrapper--highlight {
+        /* Highlight variant styles handled by inner component */
+      }
+
+      /* Currency Note - EY Design System */
+      .currency-note {
+        margin-top: 12px;
+        padding: 8px 16px;
+        background: #f3f4f6;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #6b7280;
+        text-align: right;
+      }
+
+      @media (max-width: 1024px) {
+        .kpi-row {
+          flex-direction: column;
+        }
+
+        .kpi-card-wrapper {
+          min-width: 100%;
+        }
+      }
+
+      @media (min-width: 1280px) {
+        .kpi-card-wrapper {
+          flex: 1;
+          min-width: 0;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KpiSectionComponent implements OnInit, OnChanges {
@@ -212,7 +212,9 @@ export class KpiSectionComponent implements OnInit, OnChanges {
         variancePercent: data.variance_percent?.revenue,
         icon: 'coins',
         sourceDocument: 'Income Statement',
-        variant: this.hasSignificantVariance(data.variance_percent?.revenue) ? 'highlight' : 'light',
+        variant: this.hasSignificantVariance(data.variance_percent?.revenue)
+          ? 'highlight'
+          : 'light',
       },
     ];
   });
@@ -254,11 +256,17 @@ export class KpiSectionComponent implements OnInit, OnChanges {
     return kpi.variant;
   }
 
-  getColorClass(kpi: KpiMetric): 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent' {
+  getColorClass(
+    kpi: KpiMetric
+  ): 'default' | 'positive' | 'negative' | 'info' | 'warning' | 'accent' {
     if (kpi.variancePercent === undefined) return 'default';
     if (kpi.label === 'Total Liabilities') {
       // For liabilities, decrease is positive
-      return kpi.variancePercent < 0 ? 'positive' : kpi.variancePercent > 0 ? 'negative' : 'default';
+      return kpi.variancePercent < 0
+        ? 'positive'
+        : kpi.variancePercent > 0
+          ? 'negative'
+          : 'default';
     }
     // For other metrics, increase is positive
     return kpi.variancePercent > 0 ? 'positive' : kpi.variancePercent < 0 ? 'negative' : 'default';

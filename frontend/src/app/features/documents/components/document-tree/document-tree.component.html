@@ -8,67 +8,120 @@
 </div>
 
 <!-- Empty State (no search results) -->
-@if (searchQuery() && !hasSearchResults()) {
-  <div class="document-tree__empty">
-    <lucide-icon name="search-x" [size]="32"></lucide-icon>
-    <p>No results found</p>
-    <span>Try a different search term</span>
-  </div>
-}
+<div class="document-tree__empty" *ngIf="searchQuery() && !hasSearchResults()">
+  <lucide-icon name="search-x" [size]="32"></lucide-icon>
+  <p>No results found</p>
+  <span>Try a different search term</span>
+</div>
 
-<!-- Tree View -->
-@if (filteredTreeData(); as tree) {
-  <div class="document-tree">
-    <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: tree, level: 0 }"></ng-container>
-  </div>
-}
-
-<ng-template #treeNodeTpl let-node="node" let-level="level">
+<!-- Recursive tree node template -->
+<ng-template #treeNodeTemplate let-node let-level="level">
   <div
     class="tree-node"
-    [class.tree-node--selected]="isSelected(node.id)"
-    [class.tree-node--highlighted]="isHighlighted(node.id)"
+    [class.tree-node--selected]="selectedNodeId() === node.id"
+    [class.tree-node--highlighted]="highlightedNodeId() === node.id"
     [class.tree-node--entity]="node.type === 'entity'"
     [class.tree-node--year]="node.type === 'year'"
+    [class.tree-node--service]="node.type === 'service'"
+    [class.tree-node--folder]="node.type === 'folder'"
+    [class.tree-node--document]="node.type === 'document'"
+    [class.tree-node--custom]="node.type === 'custom'"
+    [class.tree-node--empty]="node.count === 0"
+    [class.tree-node--dragging]="draggedNode()?.id === node.id"
+    [class.tree-node--drop-target]="dropTargetId() === node.id"
+    [class.tree-node--can-drop]="(node.type === 'service' || node.type === 'custom') && draggedNode()"
     [style.padding-left.px]="level * 16"
     [attr.data-node-id]="node.id"
+    [attr.draggable]="node.type === 'document'"
+    (dragstart)="onDragStart($event, node)"
+    (dragover)="onDragOver($event, node)"
+    (dragleave)="onDragLeave($event, node)"
+    (drop)="onDrop($event, node)"
+    (dragend)="onDragEnd()"
   >
     <div class="tree-node__content" (click)="selectNode(node)">
       <!-- Expand/Collapse toggle -->
-      @if (hasChildren(node)) {
-        <button
-          class="tree-node__toggle"
-          (click)="toggleExpand(node.id, $event)"
-        >
-          <lucide-icon [name]="isExpanded(node.id) ? 'chevron-down' : 'chevron-right'" [size]="14"></lucide-icon>
-        </button>
-      } @else {
-        <span class="tree-node__spacer"></span>
-      }
+      <button
+        *ngIf="node.children && node.children.length > 0"
+        class="tree-node__toggle"
+        (click)="toggleExpand(node.id, $event)"
+      >
+        <lucide-icon [name]="effectiveExpandedNodes().has(node.id) ? 'chevron-down' : 'chevron-right'" [size]="14"></lucide-icon>
+      </button>
+      <span *ngIf="!node.children || node.children.length === 0" class="tree-node__spacer"></span>
 
       <!-- Icon -->
-      @if (node.isEmoji) {
-        <span class="tree-node__icon">{{ node.icon }}</span>
-      } @else {
-        <lucide-icon [name]="node.icon" class="tree-node__icon" [size]="16"></lucide-icon>
-      }
+      <span *ngIf="node.isEmoji" class="tree-node__icon tree-node__icon--emoji">{{ node.icon }}</span>
+      <lucide-icon *ngIf="!node.isEmoji" [name]="node.icon" class="tree-node__icon" [size]="16"></lucide-icon>
 
       <!-- Label -->
       <span class="tree-node__label">{{ node.label }}</span>
 
       <!-- Count badge -->
-      @if (node.count !== undefined) {
-        <span class="tree-node__count">{{ node.count }}</span>
-      }
+      <span *ngIf="node.count !== undefined && node.type !== 'document'" class="tree-node__count">{{ node.count }}</span>
+
+      <!-- Add folder button for year nodes -->
+      <button
+        *ngIf="node.type === 'year'"
+        class="tree-node__add-folder"
+        (click)="startCreatingFolder(node.parentEntity, node.year, $event)"
+        title="Create custom folder"
+      >
+        <lucide-icon name="folder-plus" [size]="14"></lucide-icon>
+      </button>
+
+      <!-- Drag handle for documents -->
+      <span *ngIf="node.type === 'document'" class="tree-node__drag-handle" title="Drag to move">
+        <lucide-icon name="grip-vertical" [size]="12"></lucide-icon>
+      </span>
+    </div>
+
+    <!-- Drop zone indicator -->
+    <div *ngIf="(node.type === 'service' || node.type === 'custom') && draggedNode()" class="tree-node__drop-zone">
+      <lucide-icon name="arrow-down-to-line" [size]="12"></lucide-icon>
+      Drop here
     </div>
   </div>
 
-  <!-- Children -->
-  @if (hasChildren(node) && isExpanded(node.id)) {
-    <div class="tree-node__children">
-      @for (child of node.children; track child.id) {
-        <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: child, level: level + 1 }"></ng-container>
-      }
-    </div>
-  }
+  <!-- Create folder input (inline) -->
+  <div *ngIf="node.type === 'year' && isCreatingFolderFor(node.parentEntity, node.year)" class="tree-node__create-folder" [style.padding-left.px]="(level + 1) * 16">
+    <lucide-icon name="folder-plus" [size]="16"></lucide-icon>
+    <input
+      type="text"
+      class="tree-node__folder-input"
+      placeholder="Folder name..."
+      [ngModel]="newFolderName()"
+      (ngModelChange)="newFolderName.set($event)"
+      (keydown.enter)="confirmCreateFolder()"
+      (keydown.escape)="cancelCreatingFolder()"
+      autofocus
+    />
+    <button class="tree-node__folder-confirm" (click)="confirmCreateFolder()" title="Create">
+      <lucide-icon name="check" [size]="14"></lucide-icon>
+    </button>
+    <button class="tree-node__folder-cancel" (click)="cancelCreatingFolder()" title="Cancel">
+      <lucide-icon name="x" [size]="14"></lucide-icon>
+    </button>
+  </div>
+
+  <!-- Children - Recursive rendering using ng-template -->
+  <div class="tree-node__children" *ngIf="node.children && node.children.length > 0 && effectiveExpandedNodes().has(node.id)">
+    <ng-container *ngFor="let child of node.children; trackBy: trackByNodeId">
+      <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: child, level: level + 1 }"></ng-container>
+    </ng-container>
+  </div>
 </ng-template>
+
+<!-- Tree View - Using ng-template for recursion -->
+<div class="document-tree" *ngIf="filteredTreeData().length > 0">
+  <ng-container *ngFor="let entityNode of filteredTreeData(); trackBy: trackByNodeId">
+    <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: entityNode, level: 0 }"></ng-container>
+  </ng-container>
+</div>
+
+<!-- Empty state when no documents -->
+<div class="document-tree__empty" *ngIf="filteredTreeData().length === 0 && !searchQuery()">
+  <lucide-icon name="folder-open" [size]="32"></lucide-icon>
+  <p>No documents</p>
+  <span>Upload documents to get started</span>
+</div>

@@ -8,7 +8,10 @@ import {
   ToastService,
   DocumentPreviewModalComponent,
 } from '../../../../shared';
-import { DocumentTreeComponent, TreeNode } from '../../../documents/components/document-tree/document-tree.component';
+import {
+  DocumentTreeComponent,
+  TreeNode,
+} from '../../../documents/components/document-tree/document-tree.component';
 import { MOCK_ENTITY_DETAILS } from '../../../../core/mocks/entity-detail.mock';
 
 @Component({
@@ -64,9 +67,8 @@ export class EntityDocumentsComponent implements OnInit {
     const entityNameToMatch = entityDetail?.name || this.entityName();
 
     // Filter documents that directly belong to this entity
-    return allDocs.filter(doc =>
-      doc.engagementIds.includes(entityId) ||
-      doc.entityName === entityNameToMatch
+    return allDocs.filter(
+      doc => doc.engagementIds.includes(entityId) || doc.entityName === entityNameToMatch
     );
   });
 
@@ -83,9 +85,8 @@ export class EntityDocumentsComponent implements OnInit {
 
     // Apply search filter
     if (query) {
-      docs = docs.filter(doc =>
-        doc.name.toLowerCase().includes(query) ||
-        doc.type.toLowerCase().includes(query)
+      docs = docs.filter(
+        doc => doc.name.toLowerCase().includes(query) || doc.type.toLowerCase().includes(query)
       );
     }
 
@@ -189,11 +190,7 @@ export class EntityDocumentsComponent implements OnInit {
 
         // Highlight in tree
         if (this.documentTree) {
-          this.documentTree.expandAndHighlight(
-            this.entityDisplayName(),
-            newDoc.year,
-            docType
-          );
+          this.documentTree.expandAndHighlight(this.entityDisplayName(), newDoc.year, docType);
         }
 
         this.toast.success(`${file.name} uploaded successfully`);

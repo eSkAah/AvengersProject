@@ -11,7 +11,15 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 
 // EY Design System KPI Variants
-export type KpiVariant = 'default' | 'dark' | 'light' | 'highlight' | 'info' | 'warning' | 'error' | 'success';
+export type KpiVariant =
+  | 'default'
+  | 'dark'
+  | 'light'
+  | 'highlight'
+  | 'info'
+  | 'warning'
+  | 'error'
+  | 'success';
 
 @Component({
   selector: 'app-kpi-card',

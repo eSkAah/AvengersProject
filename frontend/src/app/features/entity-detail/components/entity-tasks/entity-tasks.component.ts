@@ -1,6 +1,18 @@
 import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Circle, CheckCircle2, Clock, AlertTriangle, Upload, Eye, FileCheck, Keyboard, ShieldCheck, User } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Circle,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Upload,
+  Eye,
+  FileCheck,
+  Keyboard,
+  ShieldCheck,
+  User,
+} from 'lucide-angular';
 import { EntityTask, TaskStatus, TaskPriority } from '../../../../core/models/entity.model';
 
 @Component({
@@ -27,20 +39,16 @@ export class EntityTasksComponent {
 
   // Group tasks by status
   pendingTasks = computed(() =>
-    this.tasks().filter(t => t.status === 'pending').sort((a, b) => this.priorityOrder(a.priority) - this.priorityOrder(b.priority))
+    this.tasks()
+      .filter(t => t.status === 'pending')
+      .sort((a, b) => this.priorityOrder(a.priority) - this.priorityOrder(b.priority))
   );
 
-  inProgressTasks = computed(() =>
-    this.tasks().filter(t => t.status === 'in_progress')
-  );
+  inProgressTasks = computed(() => this.tasks().filter(t => t.status === 'in_progress'));
 
-  blockedTasks = computed(() =>
-    this.tasks().filter(t => t.status === 'blocked')
-  );
+  blockedTasks = computed(() => this.tasks().filter(t => t.status === 'blocked'));
 
-  completedTasks = computed(() =>
-    this.tasks().filter(t => t.status === 'completed')
-  );
+  completedTasks = computed(() => this.tasks().filter(t => t.status === 'completed'));
 
   // Stats
   stats = computed(() => ({
@@ -57,21 +65,31 @@ export class EntityTasksComponent {
 
   getStatusIcon(status: TaskStatus) {
     switch (status) {
-      case 'completed': return this.CheckCircle2;
-      case 'in_progress': return this.Clock;
-      case 'blocked': return this.AlertTriangle;
-      default: return this.Circle;
+      case 'completed':
+        return this.CheckCircle2;
+      case 'in_progress':
+        return this.Clock;
+      case 'blocked':
+        return this.AlertTriangle;
+      default:
+        return this.Circle;
     }
   }
 
   getCategoryIcon(category: string) {
     switch (category) {
-      case 'document': return this.Upload;
-      case 'review': return this.Eye;
-      case 'approval': return this.FileCheck;
-      case 'data_entry': return this.Keyboard;
-      case 'validation': return this.ShieldCheck;
-      default: return this.Circle;
+      case 'document':
+        return this.Upload;
+      case 'review':
+        return this.Eye;
+      case 'approval':
+        return this.FileCheck;
+      case 'data_entry':
+        return this.Keyboard;
+      case 'validation':
+        return this.ShieldCheck;
+      default:
+        return this.Circle;
     }
   }
 

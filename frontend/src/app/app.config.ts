@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXsrfConfiguration, withInterceptors } from '@angular/common/http';
+import { errorInterceptor, loadingInterceptor } from './core/interceptors';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
@@ -105,7 +106,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(
+      withXsrfConfiguration({
+        cookieName: 'XSRF-TOKEN',
+        headerName: 'X-XSRF-TOKEN',
+      }),
+      withInterceptors([loadingInterceptor, errorInterceptor])
+    ),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
@@ -114,10 +121,10 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '.dark-mode',
           cssLayer: {
             name: 'primeng',
-            order: 'tailwind-base, primeng, tailwind-utilities'
-          }
-        }
-      }
+            order: 'tailwind-base, primeng, tailwind-utilities',
+          },
+        },
+      },
     }),
     importProvidersFrom(
       LucideAngularModule.pick({

@@ -4,7 +4,7 @@
 
 // Variables
 $navbar-height: 60px;
-$navbar-bg: #1A1A1F;
+$navbar-bg: #000000;
 $navbar-border: rgba(255, 255, 255, 0.08);
 $navbar-text: #FFFFFF;
 $navbar-text-secondary: rgba(255, 255, 255, 0.7);
@@ -59,27 +59,15 @@ $transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-// EY Logo - White with Yellow Apostrophe
-.ey-logo {
-  display: flex;
-  align-items: baseline;
-  font-family: 'EYInterstate', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 700;
-  font-size: 28px;
-  line-height: 1;
-  letter-spacing: -1px;
+// EY Logo Image
+.ey-logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 
   &--small {
-    font-size: 22px;
+    height: 24px;
   }
-}
-
-.ey-logo-e {
-  color: $navbar-text;
-}
-
-.ey-logo-y {
-  color: $ey-yellow;
 }
 
 .navbar-divider {

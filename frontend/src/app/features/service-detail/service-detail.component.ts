@@ -11,14 +11,33 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LucideAngularModule, ArrowLeft, ChevronRight, ChevronUp, ChevronDown, X } from 'lucide-angular';
-import { ServiceEntityService, Service, ServiceEntity, EntityStatus } from '../../core/services/service-entity.service';
-import { PieChartComponent, PieChartData } from '../../shared/components/charts/pie-chart.component';
-import { StackedBarChartComponent, StackedBarDataPoint } from '../../shared/components/charts/stacked-bar-chart.component';
+import {
+  LucideAngularModule,
+  ArrowLeft,
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  X,
+} from 'lucide-angular';
+import {
+  ServiceEntityService,
+  Service,
+  ServiceEntity,
+  EntityStatus,
+} from '../../core/services/service-entity.service';
+import {
+  PieChartComponent,
+  PieChartData,
+} from '../../shared/components/charts/pie-chart.component';
+import {
+  StackedBarChartComponent,
+  StackedBarDataPoint,
+} from '../../shared/components/charts/stacked-bar-chart.component';
 import { ServiceDocumentsComponent } from './components/service-documents/service-documents.component';
 import { ServiceInsightsComponent } from './components/service-insights/service-insights.component';
+import { ServiceContactsComponent } from './components/service-contacts/service-contacts.component';
 
-export type ServiceTab = 'entities' | 'documents' | 'insights';
+export type ServiceTab = 'entities' | 'documents' | 'insights' | 'contacts';
 
 @Component({
   selector: 'app-service-detail',
@@ -32,6 +51,7 @@ export type ServiceTab = 'entities' | 'documents' | 'insights';
     StackedBarChartComponent,
     ServiceDocumentsComponent,
     ServiceInsightsComponent,
+    ServiceContactsComponent,
   ],
   templateUrl: './service-detail.component.html',
   styleUrl: './service-detail.component.scss',
@@ -51,21 +71,15 @@ export class ServiceDetailComponent implements OnInit {
     x: X,
   };
 
-  // Filter state
-  readonly countryFilter = signal<string>('');
-  readonly statusFilter = signal<EntityStatus | ''>('');
+  // Filter state - Multi-country filters
+  readonly yearFilter = signal<string>('');
+  readonly jurisdictionFilter = signal<string>('');
+  readonly entityFilter = signal<string>('');
+  readonly subfundFilter = signal<string>('');
 
   // Sort state
   readonly sortColumn = signal<'name' | 'status' | 'progress' | 'lastUpdated'>('name');
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
-
-  // Status options for filter dropdown
-  readonly statusOptions: { value: EntityStatus; label: string }[] = [
-    { value: 'not-started', label: 'Not Started' },
-    { value: 'in-progress', label: 'In Progress' },
-    { value: 'reviewing', label: 'Reviewing' },
-    { value: 'completed', label: 'Completed' },
-  ];
 
   readonly serviceId = signal<string | null>(null);
   readonly activeTab = signal<ServiceTab>('entities');
@@ -83,36 +97,68 @@ export class ServiceDetailComponent implements OnInit {
     return this.serviceEntityService.getEntitiesByService(id);
   });
 
-  readonly uniqueCountries = computed<{ flag: string; name: string }[]>(() => {
+  // Unique filter options computed from entities
+  readonly uniqueYears = computed<number[]>(() => {
     const entityList = this.entities();
-    const countryMap = new Map<string, string>();
-
-    entityList.forEach(entity => {
-      if (!countryMap.has(entity.countryFlag)) {
-        // Extract country name from entity name or use flag as fallback
-        const countryName = this.getCountryName(entity.countryFlag);
-        countryMap.set(entity.countryFlag, countryName);
-      }
+    const years = new Set<number>();
+    entityList.forEach(e => {
+      if (e.year) years.add(e.year);
     });
+    return Array.from(years).sort((a, b) => b - a); // Most recent first
+  });
 
-    return Array.from(countryMap.entries())
-      .map(([flag, name]) => ({ flag, name }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+  readonly uniqueJurisdictions = computed<string[]>(() => {
+    const entityList = this.entities();
+    const jurisdictions = new Set<string>();
+    entityList.forEach(e => {
+      if (e.jurisdiction) jurisdictions.add(e.jurisdiction);
+    });
+    return Array.from(jurisdictions).sort();
+  });
+
+  readonly uniqueEntityNames = computed<string[]>(() => {
+    const entityList = this.entities();
+    const names = new Set<string>();
+    entityList.forEach(e => {
+      if (e.entity) names.add(e.entity);
+    });
+    return Array.from(names).sort();
+  });
+
+  readonly uniqueSubfunds = computed<string[]>(() => {
+    const entityList = this.entities();
+    const subfunds = new Set<string>();
+    entityList.forEach(e => {
+      if (e.subfund) subfunds.add(e.subfund);
+    });
+    return Array.from(subfunds).sort();
   });
 
   readonly filteredAndSortedEntities = computed<ServiceEntity[]>(() => {
     let result = [...this.entities()];
 
-    // Apply country filter (exact match for single-country, or contains for multi-country entities)
-    const country = this.countryFilter();
-    if (country) {
-      result = result.filter(e => e.countryFlag === country || e.countryFlag.length > 4 && e.countryFlag.includes(country));
+    // Apply year filter
+    const year = this.yearFilter();
+    if (year) {
+      result = result.filter(e => e.year?.toString() === year);
     }
 
-    // Apply status filter
-    const status = this.statusFilter();
-    if (status) {
-      result = result.filter(e => e.status === status);
+    // Apply jurisdiction filter
+    const jurisdiction = this.jurisdictionFilter();
+    if (jurisdiction) {
+      result = result.filter(e => e.jurisdiction === jurisdiction);
+    }
+
+    // Apply entity filter
+    const entity = this.entityFilter();
+    if (entity) {
+      result = result.filter(e => e.entity === entity);
+    }
+
+    // Apply subfund filter
+    const subfund = this.subfundFilter();
+    if (subfund) {
+      result = result.filter(e => e.subfund === subfund);
     }
 
     // Apply sorting
@@ -144,7 +190,42 @@ export class ServiceDetailComponent implements OnInit {
   });
 
   readonly hasActiveFilters = computed<boolean>(() => {
-    return this.countryFilter() !== '' || this.statusFilter() !== '';
+    return (
+      this.yearFilter() !== '' ||
+      this.jurisdictionFilter() !== '' ||
+      this.entityFilter() !== '' ||
+      this.subfundFilter() !== ''
+    );
+  });
+
+  // Sorted entities for Entities tab (no filtering)
+  readonly sortedEntities = computed<ServiceEntity[]>(() => {
+    const result = [...this.entities()];
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+
+    result.sort((a, b) => {
+      let comparison = 0;
+
+      switch (column) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'status':
+          comparison = this.getStatusOrder(a.status) - this.getStatusOrder(b.status);
+          break;
+        case 'progress':
+          comparison = a.progress - b.progress;
+          break;
+        case 'lastUpdated':
+          comparison = new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
+          break;
+      }
+
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    return result;
   });
 
   readonly progressionData = computed<StackedBarDataPoint[]>(() => {
@@ -199,13 +280,11 @@ export class ServiceDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.route.paramMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        const id = params.get('id');
-        this.serviceId.set(id);
-        this.loading.set(false);
-      });
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const id = params.get('id');
+      this.serviceId.set(id);
+      this.loading.set(false);
+    });
   }
 
   setActiveTab(tab: ServiceTab): void {
@@ -220,8 +299,8 @@ export class ServiceDetailComponent implements OnInit {
     const labels: Record<EntityStatus, string> = {
       'not-started': 'Not Started',
       'in-progress': 'In Progress',
-      'reviewing': 'Reviewing',
-      'completed': 'Completed',
+      reviewing: 'Reviewing',
+      completed: 'Completed',
     };
     return labels[status];
   }
@@ -250,57 +329,37 @@ export class ServiceDetailComponent implements OnInit {
     }
   }
 
-  onSortKeydown(event: KeyboardEvent, column: 'name' | 'status' | 'progress' | 'lastUpdated'): void {
+  onSortKeydown(
+    event: KeyboardEvent,
+    column: 'name' | 'status' | 'progress' | 'lastUpdated'
+  ): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.toggleSort(column);
     }
   }
 
-  getAriaSortValue(column: 'name' | 'status' | 'progress' | 'lastUpdated'): 'ascending' | 'descending' | 'none' {
+  getAriaSortValue(
+    column: 'name' | 'status' | 'progress' | 'lastUpdated'
+  ): 'ascending' | 'descending' | 'none' {
     if (this.sortColumn() !== column) return 'none';
     return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
   }
 
   clearFilters(): void {
-    this.countryFilter.set('');
-    this.statusFilter.set('');
+    this.yearFilter.set('');
+    this.jurisdictionFilter.set('');
+    this.entityFilter.set('');
+    this.subfundFilter.set('');
   }
 
   private getStatusOrder(status: EntityStatus): number {
     const order: Record<EntityStatus, number> = {
       'not-started': 0,
       'in-progress': 1,
-      'reviewing': 2,
-      'completed': 3,
+      reviewing: 2,
+      completed: 3,
     };
     return order[status];
-  }
-
-  /**
-   * Maps flag emoji to country name.
-   * Note: Country flag emojis are composed of two regional indicator symbols,
-   * each being a surrogate pair (2 UTF-16 code units), totaling 4 characters.
-   */
-  private getCountryName(flag: string): string {
-    const countryNames: Record<string, string> = {
-      '🇫🇷': 'France',
-      '🇩🇪': 'Germany',
-      '🇳🇱': 'Netherlands',
-      '🇱🇺': 'Luxembourg',
-      '🇪🇸': 'Spain',
-      '🇧🇪': 'Belgium',
-      '🇮🇹': 'Italy',
-      '🇵🇹': 'Portugal',
-      '🇦🇹': 'Austria',
-      '🇨🇭': 'Switzerland',
-      '🇬🇧': 'United Kingdom',
-      '🇮🇪': 'Ireland',
-      '🇵🇱': 'Poland',
-    };
-    // Extract first flag from multi-flag strings (e.g., 🇫🇷🇩🇪 → 🇫🇷)
-    // Each flag emoji = 4 UTF-16 code units (2 regional indicators × 2 surrogates each)
-    const firstFlag = flag.slice(0, 4);
-    return countryNames[firstFlag] || flag;
   }
 }

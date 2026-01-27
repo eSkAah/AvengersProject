@@ -12,6 +12,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CHART_RENDER_DELAY_MS } from '../../../core/constants';
 import {
   Chart,
   ChartConfiguration,
@@ -82,213 +83,221 @@ export interface PieClickEvent {
         }
       }
       @if (sourceDocument) {
-        <div class="chart-source">
-          Source: {{ sourceDocument }}
-        </div>
+        <div class="chart-source">Source: {{ sourceDocument }}</div>
       }
     </div>
   `,
-  styles: [`
-    .pie-chart-container {
-      position: relative;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+  styles: [
+    `
+      .pie-chart-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
 
-    .pie-chart-container--loading {
-      min-height: 300px;
-      justify-content: center;
-      align-items: center;
-    }
+      .pie-chart-container--loading {
+        min-height: 300px;
+        justify-content: center;
+        align-items: center;
+      }
 
-    .chart-skeleton-pie {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 200px;
-    }
+      .chart-skeleton-pie {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 200px;
+      }
 
-    .skeleton-circle {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
+      .skeleton-circle {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
 
-    .chart-wrapper {
-      position: relative;
-      width: 100%;
-      height: 200px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+      .chart-wrapper {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-    canvas {
-      max-width: 200px;
-      max-height: 200px;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
-    }
+      canvas {
+        max-width: 200px;
+        max-height: 200px;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+      }
 
-    .chart-center {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      pointer-events: none;
-      z-index: 1;
-    }
+      .chart-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+        z-index: 1;
+      }
 
-    .chart-wrapper canvas {
-      position: relative;
-      z-index: 2;
-    }
+      .chart-wrapper canvas {
+        position: relative;
+        z-index: 2;
+      }
 
-    /* External tooltip styling */
-    :host ::ng-deep .chartjs-tooltip {
-      position: absolute;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.98);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      border-radius: 12px;
-      padding: 12px 16px;
-      pointer-events: none;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      font-family: 'Inter', system-ui, sans-serif;
-      transition: all 150ms ease;
-      opacity: 0;
-    }
+      /* External tooltip styling */
+      :host ::ng-deep .chartjs-tooltip {
+        position: absolute;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        padding: 12px 16px;
+        pointer-events: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        font-family: 'Inter', system-ui, sans-serif;
+        transition: all 150ms ease;
+        opacity: 0;
+      }
 
-    :host ::ng-deep .chartjs-tooltip.active {
-      opacity: 1;
-    }
+      :host ::ng-deep .chartjs-tooltip.active {
+        opacity: 1;
+      }
 
-    :host ::ng-deep .chartjs-tooltip-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1F2937;
-      margin-bottom: 4px;
-    }
+      :host ::ng-deep .chartjs-tooltip-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+      }
 
-    :host ::ng-deep .chartjs-tooltip-body {
-      font-size: 12px;
-      color: #4B5563;
-    }
+      :host ::ng-deep .chartjs-tooltip-body {
+        font-size: 12px;
+        color: #4b5563;
+      }
 
-    :host ::ng-deep .chartjs-tooltip-body-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      :host ::ng-deep .chartjs-tooltip-body-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-    :host ::ng-deep .chartjs-tooltip-color {
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
+      :host ::ng-deep .chartjs-tooltip-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
 
-    :host ::ng-deep .chartjs-tooltip-footer {
-      font-size: 11px;
-      color: #9CA3AF;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(0, 0, 0, 0.06);
-    }
+      :host ::ng-deep .chartjs-tooltip-footer {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+      }
 
-    .chart-center__value {
-      display: block;
-      font-size: 20px;
-      font-weight: 700;
-      color: #1F2937;
-      letter-spacing: -0.02em;
-    }
+      .chart-center__value {
+        display: block;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+        letter-spacing: -0.02em;
+      }
 
-    .chart-center__label {
-      display: block;
-      font-size: 11px;
-      color: #9CA3AF;
-      margin-top: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 500;
-    }
+      .chart-center__label {
+        display: block;
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+      }
 
-    .chart-legend {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-    }
+      .chart-legend {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid transparent;
-    }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+      }
 
-    .legend-item:hover {
-      background: linear-gradient(135deg, rgba(255, 230, 0, 0.06) 0%, rgba(255, 208, 0, 0.02) 100%);
-      border-color: rgba(255, 230, 0, 0.2);
-      transform: translateX(4px);
-    }
+      .legend-item:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 230, 0, 0.06) 0%,
+          rgba(255, 208, 0, 0.02) 100%
+        );
+        border-color: rgba(255, 230, 0, 0.2);
+        transform: translateX(4px);
+      }
 
-    .legend-color {
-      width: 10px;
-      height: 10px;
-      border-radius: 4px;
-      flex-shrink: 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+      .legend-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
-    .legend-content {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-      flex: 1;
-    }
+      .legend-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+      }
 
-    .legend-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: #374151;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      .legend-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #374151;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-    .legend-value {
-      font-size: 12px;
-      color: #9CA3AF;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
+      .legend-value {
+        font-size: 12px;
+        color: #9ca3af;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
 
-    .chart-source {
-      font-size: 11px;
-      color: #D1D5DB;
-      font-style: normal;
-      text-align: right;
-      padding-top: 8px;
-      border-top: 1px solid rgba(0, 0, 0, 0.04);
-    }
-  `],
+      .chart-source {
+        font-size: 11px;
+        color: #d1d5db;
+        font-style: normal;
+        text-align: right;
+        padding-top: 8px;
+        border-top: 1px solid rgba(0, 0, 0, 0.04);
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -368,7 +377,15 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.segmentClick.emit(clickEvent);
   }
 
-  private externalTooltipHandler(context: { chart: Chart; tooltip: { opacity: number; dataPoints?: { dataIndex: number }[]; caretX: number; caretY: number } }): void {
+  private externalTooltipHandler(context: {
+    chart: Chart;
+    tooltip: {
+      opacity: number;
+      dataPoints?: { dataIndex: number }[];
+      caretX: number;
+      caretY: number;
+    };
+  }): void {
     const { chart, tooltip } = context;
     const tooltipEl = this.tooltipEl?.nativeElement;
 
@@ -384,18 +401,32 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (tooltip.dataPoints && tooltip.dataPoints.length > 0) {
       const dataIndex = tooltip.dataPoints[0].dataIndex;
       const item = this.data!.items[dataIndex];
-      const formatted = this.formatValue(item.value);  // Respects displayMode (count vs currency)
+      const formatted = this.formatValue(item.value); // Respects displayMode (count vs currency)
 
       // Format display text based on mode
-      const displayText = this.displayMode === 'count'
-        ? `${formatted} ${item.value === 1 ? 'entity' : 'entities'}`
-        : formatted;
+      const displayText =
+        this.displayMode === 'count'
+          ? `${formatted} ${item.value === 1 ? 'entity' : 'entities'}`
+          : formatted;
 
-      let html = `<div class="chartjs-tooltip-title">${item.label}</div>`;
+      // Escape HTML to prevent XSS
+      const escapeHtml = (str: string) =>
+        str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+
+      // Validate color is a valid CSS color (hex, rgb, or named)
+      const safeColor = /^(#[0-9A-Fa-f]{3,8}|rgb\(|rgba\(|[a-z]+)/.test(item.color)
+        ? item.color
+        : '#6B7280';
+
+      let html = `<div class="chartjs-tooltip-title">${escapeHtml(item.label)}</div>`;
       html += `<div class="chartjs-tooltip-body">`;
       html += `<div class="chartjs-tooltip-body-item">`;
-      html += `<span class="chartjs-tooltip-color" style="background-color: ${item.color}"></span>`;
-      html += `<span>${displayText} (${item.percentage.toFixed(1)}%)</span>`;
+      html += `<span class="chartjs-tooltip-color" style="background-color: ${safeColor}"></span>`;
+      html += `<span>${escapeHtml(displayText)} (${item.percentage.toFixed(1)}%)</span>`;
       html += `</div></div>`;
 
       if (this.cmdClickEnabled) {
@@ -432,12 +463,12 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // Premium color palette with subtle variations
     const premiumColors = [
-      { base: '#FFE600', hover: '#FFD000' },  // EY Yellow
-      { base: '#FFC107', hover: '#FFB300' },  // Amber
-      { base: '#3B82F6', hover: '#2563EB' },  // Blue
-      { base: '#8B5CF6', hover: '#7C3AED' },  // Purple
-      { base: '#10B981', hover: '#059669' },  // Green
-      { base: '#6B7280', hover: '#4B5563' },  // Gray
+      { base: '#FFE600', hover: '#FFD000' }, // EY Yellow
+      { base: '#FFC107', hover: '#FFB300' }, // Amber
+      { base: '#3B82F6', hover: '#2563EB' }, // Blue
+      { base: '#8B5CF6', hover: '#7C3AED' }, // Purple
+      { base: '#10B981', hover: '#059669' }, // Green
+      { base: '#6B7280', hover: '#4B5563' }, // Gray
     ];
 
     // Map item colors to premium palette or use provided colors
@@ -466,7 +497,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         },
         tooltip: {
           enabled: false,
-          external: (context) => this.externalTooltipHandler(context),
+          external: context => this.externalTooltipHandler(context),
         },
       },
       onClick: (event: ChartEvent, elements) => {
@@ -495,10 +526,10 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     const config: ChartConfiguration<'doughnut'> = {
       type: 'doughnut',
       data: {
-        labels: this.data.items.map((i) => i.label),
+        labels: this.data.items.map(i => i.label),
         datasets: [
           {
-            data: this.data.items.map((i) => i.value),
+            data: this.data.items.map(i => i.value),
             backgroundColor: this.data.items.map((item, i) => {
               const colorPair = getColorPair(item.color, i);
               return colorPair.base;
@@ -524,7 +555,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   private updateChart(): void {
     this.destroyChart();
     if (this.data && !this.loading) {
-      setTimeout(() => this.createChart(), 0);
+      setTimeout(() => this.createChart(), CHART_RENDER_DELAY_MS);
     }
   }
 

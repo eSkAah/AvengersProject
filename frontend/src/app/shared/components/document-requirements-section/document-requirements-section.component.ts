@@ -74,11 +74,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                   ></lucide-icon>
                 }
                 @case ('uploaded') {
-                  <lucide-icon
-                    name="clock"
-                    [size]="20"
-                    class="icon--uploaded"
-                  ></lucide-icon>
+                  <lucide-icon name="clock" [size]="20" class="icon--uploaded"></lucide-icon>
                 }
                 @case ('missing') {
                   @if (item.required) {
@@ -115,9 +111,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                   }
                 </span>
                 @if (item.status === 'year_mismatch') {
-                  <app-badge variant="warning" size="sm">
-                    Need {{ item.fiscalYear }}
-                  </app-badge>
+                  <app-badge variant="warning" size="sm"> Need {{ item.fiscalYear }} </app-badge>
                 }
               </div>
 
@@ -126,10 +120,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                 <!-- Year mismatch: show found document + upload zone -->
                 <div class="requirement-item__found-doc">
                   <span class="found-doc__label">Similar document found:</span>
-                  <div
-                    class="found-doc__info"
-                    (click)="onDocumentClick(item.matchedDocument!)"
-                  >
+                  <div class="found-doc__info" (click)="onDocumentClick(item.matchedDocument!)">
                     <lucide-icon
                       [name]="getDocumentIcon(item.matchedDocument.name)"
                       [size]="14"
@@ -142,9 +133,7 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                 </div>
                 <div
                   class="requirement-item__upload-zone"
-                  [class.requirement-item__upload-zone--drag-over]="
-                    dragOverType() === item.type
-                  "
+                  [class.requirement-item__upload-zone--drag-over]="dragOverType() === item.type"
                   (click)="triggerFileInput(item)"
                   (dragover)="onDragOver($event, item.type)"
                   (dragleave)="onDragLeave($event)"
@@ -174,25 +163,16 @@ export interface DocumentRequirementWithFile extends DocumentRequirement {
                     class="doc-icon"
                   ></lucide-icon>
                   <span class="doc-name">{{ item.matchedDocument.name }}</span>
-                  <app-badge
-                    [variant]="getStatusVariant(item.matchedDocument.status)"
-                    size="sm"
-                  >
+                  <app-badge [variant]="getStatusVariant(item.matchedDocument.status)" size="sm">
                     {{ getStatusLabel(item.matchedDocument.status) }}
                   </app-badge>
-                  <lucide-icon
-                    name="external-link"
-                    [size]="14"
-                    class="doc-link-icon"
-                  ></lucide-icon>
+                  <lucide-icon name="external-link" [size]="14" class="doc-link-icon"></lucide-icon>
                 </div>
               } @else {
                 <!-- No document found -->
                 <div
                   class="requirement-item__upload-zone"
-                  [class.requirement-item__upload-zone--drag-over]="
-                    dragOverType() === item.type
-                  "
+                  [class.requirement-item__upload-zone--drag-over]="dragOverType() === item.type"
                   (click)="triggerFileInput(item)"
                   (dragover)="onDragOver($event, item.type)"
                   (dragleave)="onDragLeave($event)"
@@ -517,13 +497,12 @@ export class DocumentRequirementsSectionComponent implements OnChanges {
     const reqs = this.requirementsSignal();
     const docs = this.documentsSignal();
 
-    return reqs.map((req) => {
+    return reqs.map(req => {
       // Find matching document by type
-      const matchedDoc = docs.find((d) => d.type === req.type);
+      const matchedDoc = docs.find(d => d.type === req.type);
 
       // Check if year matches
-      const yearMismatch =
-        matchedDoc && matchedDoc.year !== req.fiscalYear;
+      const yearMismatch = matchedDoc && matchedDoc.year !== req.fiscalYear;
 
       // Update status based on document match AND year validation
       let status = req.status;
@@ -553,14 +532,12 @@ export class DocumentRequirementsSectionComponent implements OnChanges {
     });
   });
 
-  readonly requiredCount = computed(
-    () => this.requirementsSignal().filter((r) => r.required).length
-  );
+  readonly requiredCount = computed(() => this.requirementsSignal().filter(r => r.required).length);
 
   readonly validatedCount = computed(
     () =>
       this.enrichedRequirements().filter(
-        (r) => r.required && r.status === 'validated' && !r.yearMismatch
+        r => r.required && r.status === 'validated' && !r.yearMismatch
       ).length
   );
 
@@ -585,13 +562,8 @@ export class DocumentRequirementsSectionComponent implements OnChanges {
     return icons[ext] ?? 'file';
   }
 
-  getStatusVariant(
-    status: DocumentStatus
-  ): 'success' | 'warning' | 'error' | 'info' {
-    const variants: Record<
-      DocumentStatus,
-      'success' | 'warning' | 'error' | 'info'
-    > = {
+  getStatusVariant(status: DocumentStatus): 'success' | 'warning' | 'error' | 'info' {
+    const variants: Record<DocumentStatus, 'success' | 'warning' | 'error' | 'info'> = {
       analyzed: 'success',
       validated: 'success',
       analyzing: 'warning',
@@ -618,10 +590,7 @@ export class DocumentRequirementsSectionComponent implements OnChanges {
     input?.click();
   }
 
-  onFileSelected(
-    event: Event,
-    item: DocumentRequirementWithFile
-  ): void {
+  onFileSelected(event: Event, item: DocumentRequirementWithFile): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.uploadFile.emit({

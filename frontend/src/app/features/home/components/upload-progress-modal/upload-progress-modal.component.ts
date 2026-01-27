@@ -61,7 +61,11 @@ export interface UploadingFile {
           <!-- Files List -->
           <div class="files-list">
             @for (file of files(); track file.id) {
-              <div class="file-item" [class.file-item--success]="file.status === 'classified'" [class.file-item--error]="file.status === 'error'">
+              <div
+                class="file-item"
+                [class.file-item--success]="file.status === 'classified'"
+                [class.file-item--error]="file.status === 'error'"
+              >
                 <div class="file-info">
                   <lucide-icon [img]="icons.fileText" [size]="18"></lucide-icon>
                   <div class="file-details">
@@ -91,7 +95,9 @@ export interface UploadingFile {
                         <lucide-icon [img]="icons.checkCircle" [size]="16"></lucide-icon>
                         <div class="classification-result">
                           <span class="entity">{{ file.classificationResult?.entity }}</span>
-                          <span class="doc-type">{{ file.classificationResult?.documentType }}</span>
+                          <span class="doc-type">{{
+                            file.classificationResult?.documentType
+                          }}</span>
                         </div>
                       </div>
                     }
@@ -135,315 +141,330 @@ export interface UploadingFile {
       </div>
     }
   `,
-  styles: [`
-    // =============================================================================
-    // UPLOAD PROGRESS MODAL - EY Design System
-    // Modal: border-radius 12px, shadow-modal, 300ms slide animation
-    // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
-    // =============================================================================
+  styles: [
+    `
+      // =============================================================================
+      // UPLOAD PROGRESS MODAL - EY Design System
+      // Modal: border-radius 12px, shadow-modal, 300ms slide animation
+      // Typography: Inter font, 11px labels uppercase, 13-14px body, 18px values
+      // =============================================================================
 
-    :host {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 200ms ease-out;
-    }
-
-    .modal-content {
-      background: #FFFFFF;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 520px;
-      max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
-      animation: slideUp 300ms ease-out;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .modal-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      lucide-icon {
-        color: #FFE600;
+      :host {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
       }
 
-      h3 {
-        margin: 0;
-        font-size: 18px; // text-h3
-        font-weight: 600;
-        color: #2E2E38;
-        line-height: 1.4;
-      }
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      padding: 8px;
-      cursor: pointer;
-      color: #6b7280;
-      border-radius: 6px;
-      transition: all 200ms ease-out;
-
-      &:hover {
-        background: #F5F5F5;
-        color: #2E2E38;
-      }
-    }
-
-    .ai-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: #FFF9CC; // ey-yellow-light
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 13px;
-      font-weight: 500;
-      color: #B45309; // warning-dark
-
-      lucide-icon {
-        color: #F59E0B; // warning
-      }
-    }
-
-    .files-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: #FAFAFA;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      transition: all 200ms ease-out;
-
-      &--success {
-        background: #D1FAE5; // success-light
-        border-color: #A7F3D0;
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 200ms ease-out;
       }
 
-      &--error {
-        background: #FEE2E2; // error-light
-        border-color: #FECACA;
+      .modal-content {
+        background: #ffffff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 520px;
+        max-height: 80vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16); // shadow-modal
+        animation: slideUp 300ms ease-out;
       }
-    }
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-      min-width: 0;
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+      }
 
-      lucide-icon {
+      .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        lucide-icon {
+          color: #ffe600;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 18px; // text-h3
+          font-weight: 600;
+          color: #2e2e38;
+          line-height: 1.4;
+        }
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
         color: #6b7280;
+        border-radius: 6px;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #f5f5f5;
+          color: #2e2e38;
+        }
+      }
+
+      .ai-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: #fff9cc; // ey-yellow-light
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 13px;
+        font-weight: 500;
+        color: #b45309; // warning-dark
+
+        lucide-icon {
+          color: #f59e0b; // warning
+        }
+      }
+
+      .files-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        background: #fafafa;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 200ms ease-out;
+
+        &--success {
+          background: #d1fae5; // success-light
+          border-color: #a7f3d0;
+        }
+
+        &--error {
+          background: #fee2e2; // error-light
+          border-color: #fecaca;
+        }
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+
+        lucide-icon {
+          color: #6b7280;
+          flex-shrink: 0;
+        }
+      }
+
+      .file-details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 2px;
+      }
+
+      .file-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #2e2e38;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-size {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .file-status {
         flex-shrink: 0;
-      }
-    }
-
-    .file-details {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      gap: 2px;
-    }
-
-    .file-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: #2E2E38;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .file-size {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .file-status {
-      flex-shrink: 0;
-      margin-left: 16px;
-    }
-
-    .status-uploading {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .progress-bar {
-      width: 80px;
-      height: 4px;
-      background: #e5e7eb;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #FFE600;
-      border-radius: 2px;
-      transition: width 200ms ease-out;
-    }
-
-    .progress-text {
-      font-size: 12px;
-      color: #6b7280;
-      width: 35px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .status-classifying {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #F59E0B; // warning
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .status-classified {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #10B981; // success
-    }
-
-    .classification-result {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 2px;
-    }
-
-    .entity {
-      font-size: 12px;
-      font-weight: 600;
-      color: #2E2E38;
-    }
-
-    .doc-type {
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .status-error {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #EF4444; // error
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .modal-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 24px;
-      border-top: 1px solid #e5e7eb;
-      background: #FAFAFA;
-    }
-
-    .summary {
-      display: flex;
-      gap: 16px;
-    }
-
-    .summary-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #10B981; // success
-
-      &.uploading {
-        color: #F59E0B; // warning
+        margin-left: 16px;
       }
 
-      &.error {
-        color: #EF4444; // error
-      }
-    }
-
-    .done-btn {
-      background: #FFE600;
-      color: #2E2E38;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 200ms ease-out;
-
-      &:hover {
-        background: #FFD000;
-        transform: scale(1.02);
+      .status-uploading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      &:active {
-        transform: scale(0.98);
+      .progress-bar {
+        width: 80px;
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
       }
-    }
 
-    .spin {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+      .progress-fill {
+        height: 100%;
+        background: #ffe600;
+        border-radius: 2px;
+        transition: width 200ms ease-out;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `],
+      .progress-text {
+        font-size: 12px;
+        color: #6b7280;
+        width: 35px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .status-classifying {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #f59e0b; // warning
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .status-classified {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #10b981; // success
+      }
+
+      .classification-result {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+      }
+
+      .entity {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2e2e38;
+      }
+
+      .doc-type {
+        font-size: 11px;
+        color: #6b7280;
+      }
+
+      .status-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #ef4444; // error
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        background: #fafafa;
+      }
+
+      .summary {
+        display: flex;
+        gap: 16px;
+      }
+
+      .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #10b981; // success
+
+        &.uploading {
+          color: #f59e0b; // warning
+        }
+
+        &.error {
+          color: #ef4444; // error
+        }
+      }
+
+      .done-btn {
+        background: #ffe600;
+        color: #2e2e38;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 200ms ease-out;
+
+        &:hover {
+          background: #ffd000;
+          transform: scale(1.02);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadProgressModalComponent {
@@ -461,21 +482,17 @@ export class UploadProgressModalComponent {
     loader2: Loader2,
   };
 
-  readonly classifiedCount = computed(() =>
-    this.files().filter(f => f.status === 'classified').length
+  readonly classifiedCount = computed(
+    () => this.files().filter(f => f.status === 'classified').length
   );
 
-  readonly uploadingCount = computed(() =>
-    this.files().filter(f => f.status === 'uploading' || f.status === 'classifying').length
+  readonly uploadingCount = computed(
+    () => this.files().filter(f => f.status === 'uploading' || f.status === 'classifying').length
   );
 
-  readonly errorCount = computed(() =>
-    this.files().filter(f => f.status === 'error').length
-  );
+  readonly errorCount = computed(() => this.files().filter(f => f.status === 'error').length);
 
-  readonly allCompleted = computed(() =>
-    this.files().length > 0 && this.uploadingCount() === 0
-  );
+  readonly allCompleted = computed(() => this.files().length > 0 && this.uploadingCount() === 0);
 
   formatFileSize(bytes: number): string {
     if (bytes < 1024) return bytes + ' B';

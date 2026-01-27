@@ -44,7 +44,10 @@ export class RiskBadgeComponent implements OnDestroy {
   private showTimeout: ReturnType<typeof setTimeout> | null = null;
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  readonly config: Record<RiskLevel, { color: string; label: string; tooltip: string; icon: string }> = {
+  readonly config: Record<
+    RiskLevel,
+    { color: string; label: string; tooltip: string; icon: string }
+  > = {
     high: {
       color: '#EF4444',
       label: 'HIGH',

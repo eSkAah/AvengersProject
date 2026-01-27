@@ -1,7 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Briefcase, FileText, Scale, Calculator, Building2 } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  LucideIconData,
+  Briefcase,
+  FileText,
+  Scale,
+  Building2,
+} from 'lucide-angular';
 
 interface StatusCount {
   notStarted: number;
@@ -15,7 +22,7 @@ interface ClientService {
   name: string;
   description: string;
   status: StatusCount;
-  icon: any;
+  icon: LucideIconData;
   iconBgColor: string;
 }
 
@@ -25,7 +32,7 @@ interface ClientService {
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './services-widget.component.html',
   styleUrl: './services-widget.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServicesWidgetComponent {
   private router = inject(Router);
@@ -34,8 +41,7 @@ export class ServicesWidgetComponent {
     briefcase: Briefcase,
     fileText: FileText,
     scale: Scale,
-    calculator: Calculator,
-    building: Building2
+    building: Building2,
   };
 
   readonly services: ClientService[] = [
@@ -45,7 +51,7 @@ export class ServicesWidgetComponent {
       description: 'CIT compliance and filing',
       status: { notStarted: 1, inProgress: 2, reviewing: 1, completed: 1 },
       icon: this.icons.briefcase,
-      iconBgColor: 'bg-blue'
+      iconBgColor: 'bg-blue',
     },
     {
       id: 'vat',
@@ -53,7 +59,7 @@ export class ServicesWidgetComponent {
       description: 'Indirect tax compliance',
       status: { notStarted: 0, inProgress: 1, reviewing: 0, completed: 4 },
       icon: this.icons.fileText,
-      iconBgColor: 'bg-green'
+      iconBgColor: 'bg-green',
     },
     {
       id: 'assessment',
@@ -61,15 +67,7 @@ export class ServicesWidgetComponent {
       description: 'Tax provision & analysis',
       status: { notStarted: 0, inProgress: 1, reviewing: 2, completed: 0 },
       icon: this.icons.scale,
-      iconBgColor: 'bg-purple'
-    },
-    {
-      id: 'accounting',
-      name: 'Accounting',
-      description: 'Financial statements & reporting',
-      status: { notStarted: 0, inProgress: 0, reviewing: 0, completed: 4 },
-      icon: this.icons.calculator,
-      iconBgColor: 'bg-orange'
+      iconBgColor: 'bg-purple',
     },
     {
       id: 'transfer-pricing',
@@ -77,8 +75,8 @@ export class ServicesWidgetComponent {
       description: 'Intercompany transactions',
       status: { notStarted: 1, inProgress: 1, reviewing: 1, completed: 0 },
       icon: this.icons.building,
-      iconBgColor: 'bg-teal'
-    }
+      iconBgColor: 'bg-teal',
+    },
   ];
 
   getTotalEntities(service: ClientService): number {

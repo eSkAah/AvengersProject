@@ -1,19 +1,25 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  computed,
-  signal,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule, X, ChevronRight, Calendar, TrendingUp, Building2 } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  X,
+  ChevronRight,
+  Calendar,
+  TrendingUp,
+  Building2,
+} from 'lucide-angular';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { TreeNode, PrimeTemplate } from 'primeng/api';
 import { OrganizationChart } from 'primeng/organizationchart';
 import { MockDataService, Engagement } from '../../core';
-import { BreadcrumbComponent, BreadcrumbItem, RiskBadgeComponent, BadgeComponent } from '../../shared';
+import {
+  BreadcrumbComponent,
+  BreadcrumbItem,
+  RiskBadgeComponent,
+  BadgeComponent,
+} from '../../shared';
 
 // Extended TreeNode with custom data
 export interface EntityTreeNode extends TreeNode<EntityData> {
@@ -64,9 +70,7 @@ export interface EntityData {
         style({ opacity: 0 }),
         animate('200ms ease-out', style({ opacity: 1 })),
       ]),
-      transition(':leave', [
-        animate('150ms ease-in', style({ opacity: 0 })),
-      ]),
+      transition(':leave', [animate('150ms ease-in', style({ opacity: 0 }))]),
     ]),
   ],
 })
@@ -105,7 +109,7 @@ export class StructureComponent {
 
     // Group engagements by entity name
     const entitiesByName: Record<string, Engagement[]> = {};
-    engagements.forEach((eng) => {
+    engagements.forEach(eng => {
       if (!entitiesByName[eng.entity]) {
         entitiesByName[eng.entity] = [];
       }
@@ -136,11 +140,17 @@ export class StructureComponent {
       // Calculate aggregated values
       const highestRisk = this.getHighestRisk(entityEngagements);
       const avgCompletion = Math.round(
-        entityEngagements.reduce((sum, e) => sum + e.completionPercent, 0) / entityEngagements.length
+        entityEngagements.reduce((sum, e) => sum + e.completionPercent, 0) /
+          entityEngagements.length
       );
       const totalRevenue = entityEngagements.reduce((sum, e) => sum + e.financialData.revenue, 0);
 
-      const riskClass = highestRisk === 'high' ? 'node-risk-high' : highestRisk === 'medium' ? 'node-risk-medium' : 'node-risk-low';
+      const riskClass =
+        highestRisk === 'high'
+          ? 'node-risk-high'
+          : highestRisk === 'medium'
+            ? 'node-risk-medium'
+            : 'node-risk-low';
 
       regions[regionName].children!.push({
         type: 'entity',
@@ -183,7 +193,7 @@ export class StructureComponent {
   readonly allEntities = computed(() => {
     const entities: EntityData[] = [];
     const collectEntities = (nodes: EntityTreeNode[]) => {
-      nodes.forEach((node) => {
+      nodes.forEach(node => {
         if (node.data?.nodeType === 'entity') {
           entities.push(node.data);
         }
@@ -203,7 +213,7 @@ export class StructureComponent {
 
     return this.allEntities()
       .filter(
-        (e) =>
+        e =>
           e.name.toLowerCase().includes(query) ||
           e.country?.toLowerCase().includes(query) ||
           e.countryFlag?.includes(query)
@@ -217,7 +227,7 @@ export class StructureComponent {
     let highest = 'low';
     let highestPriority = 0;
 
-    engagements.forEach((eng) => {
+    engagements.forEach(eng => {
       const priority = riskPriority[eng.riskLevel] || 0;
       if (priority > highestPriority) {
         highestPriority = priority;

@@ -1,16 +1,36 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Input,
   signal,
   computed,
   ElementRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, ChevronRight, ChevronDown, File, Folder, Calendar, Building2, Download, Eye, MessageCircle, Upload } from 'lucide-angular';
-import { Document, ServiceType, DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../../../../core/models/document.model';
+import {
+  LucideAngularModule,
+  ChevronRight,
+  ChevronDown,
+  File,
+  Folder,
+  Calendar,
+  Building2,
+  Download,
+  Eye,
+  MessageCircle,
+  Upload,
+} from 'lucide-angular';
+import {
+  Document,
+  ServiceType,
+  DOCUMENT_TYPE_LABELS,
+  DOCUMENT_STATUS_LABELS,
+} from '../../../../core/models/document.model';
 import { MOCK_DOCUMENTS } from '../../../../core/mocks/documents.mock';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
 
 export interface DocumentTreeNode {
   id: string;
@@ -47,8 +67,13 @@ const ENTITY_FLAGS: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServiceDocumentsComponent {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly toastService = inject(ToastService);
+
   @Input() set serviceId(value: string | null) {
     this.serviceIdSignal.set(value as ServiceType | null);
+    // Force change detection to ensure tree updates properly with OnPush
+    this.cdr.markForCheck();
   }
 
   private serviceIdSignal = signal<ServiceType | null>(null);
@@ -271,17 +296,17 @@ export class ServiceDocumentsComponent {
 
   downloadDocument(doc: Document, event: Event): void {
     event.stopPropagation();
-    console.log('Download:', doc.name);
+    this.toastService.info(`Downloading ${doc.name}...`);
   }
 
   previewDocument(doc: Document, event: Event): void {
     event.stopPropagation();
-    console.log('Preview:', doc.name);
+    this.toastService.info(`Opening preview for ${doc.name}...`);
   }
 
   askEve(doc: Document, event: Event): void {
     event.stopPropagation();
-    console.log('Ask Eve about:', doc.name);
+    this.toastService.info(`Opening Eve for ${doc.name}...`);
   }
 
   // Drag & Drop handlers
@@ -315,8 +340,6 @@ export class ServiceDocumentsComponent {
     const entityName = targetNode.entityName || targetNode.label;
     const year = targetNode.year || new Date().getFullYear();
 
-    console.log(`Uploading ${file.name} to ${entityName} / ${year}`);
-
     // Expand to show the target location
     if (targetNode.type === 'entity') {
       this.expandedNodes.update(set => {
@@ -333,8 +356,10 @@ export class ServiceDocumentsComponent {
       });
     }
 
-    // In a real app, this would upload the file
-    alert(`Document "${file.name}" will be uploaded to:\n\nEntity: ${entityName}\nYear: ${year}`);
+    // Show upload confirmation toast
+    this.toastService.success(
+      `Document "${file.name}" will be uploaded to ${entityName} (${year})`
+    );
   }
 
   // Drop zone handlers

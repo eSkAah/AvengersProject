@@ -31,9 +31,9 @@ import {
 
 // EY Design System Chart Colors
 const EY_CHART_COLORS = {
-  primary: '#FFE600',    // EY Yellow
-  secondary: '#9ca3af',  // Gray
-  tertiary: '#2E2E38',   // Dark
+  primary: '#FFE600', // EY Yellow
+  secondary: '#9ca3af', // Gray
+  tertiary: '#2E2E38', // Dark
   blue: '#3b82f6',
   green: '#10b981',
   orange: '#f59e0b',
@@ -57,12 +57,7 @@ interface LegendItem {
 @Component({
   selector: 'app-charts-section',
   standalone: true,
-  imports: [
-    CommonModule,
-    LucideAngularModule,
-    BarChartComponent,
-    PieChartComponent,
-  ],
+  imports: [CommonModule, LucideAngularModule, BarChartComponent, PieChartComponent],
   template: `
     <div class="charts-section">
       <div class="charts-grid">
@@ -159,126 +154,128 @@ interface LegendItem {
       </div>
     </div>
   `,
-  styles: [`
-    /* EY Design System - Charts Section */
-    .charts-section {
-      width: 100%;
-    }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 24px;
-    }
-
-    @media (min-width: 1280px) {
-      .charts-grid {
-        grid-template-columns: repeat(3, 1fr);
+  styles: [
+    `
+      /* EY Design System - Charts Section */
+      .charts-section {
+        width: 100%;
       }
-    }
 
-    /* EY Design System - Chart Card */
-    .chart-card {
-      background: #FFFFFF;
-      border: 1px solid #E5E5E5;
-      border-radius: 12px;
-      overflow: hidden;
-      transition: all 200ms ease-out;
-    }
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 24px;
+      }
 
-    .chart-card:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transform: translateY(-1px);
-    }
+      @media (min-width: 1280px) {
+        .charts-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
 
-    .chart-card__header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #F3F4F6;
-    }
+      /* EY Design System - Chart Card */
+      .chart-card {
+        background: #ffffff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 200ms ease-out;
+      }
 
-    .chart-card__title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #2E2E38;
-      margin: 0;
-    }
+      .chart-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
 
-    .chart-card__content {
-      padding: 20px;
-      min-height: 200px;
-      max-height: 250px;
-    }
+      .chart-card__header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f3f4f6;
+      }
 
-    /* EY Design System - Custom Chart Legend */
-    .chart-legend {
-      display: flex;
-      gap: 16px;
-      padding: 12px 20px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid #F3F4F6;
-    }
+      .chart-card__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2e2e38;
+        margin: 0;
+      }
 
-    .chart-legend--vertical {
-      flex-direction: column;
-      gap: 8px;
-    }
+      .chart-card__content {
+        padding: 20px;
+        min-height: 200px;
+        max-height: 250px;
+      }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #6B7280;
-    }
+      /* EY Design System - Custom Chart Legend */
+      .chart-legend {
+        display: flex;
+        gap: 16px;
+        padding: 12px 20px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #f3f4f6;
+      }
 
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
+      .chart-legend--vertical {
+        flex-direction: column;
+        gap: 8px;
+      }
 
-    /* EY Color Classes for Legend */
-    .legend-dot--yellow {
-      background: #FFE600;
-    }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #6b7280;
+      }
 
-    .legend-dot--gray {
-      background: #9ca3af;
-    }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
 
-    .legend-dot--dark {
-      background: #2E2E38;
-    }
+      /* EY Color Classes for Legend */
+      .legend-dot--yellow {
+        background: #ffe600;
+      }
 
-    .legend-dot--blue {
-      background: #3b82f6;
-    }
+      .legend-dot--gray {
+        background: #9ca3af;
+      }
 
-    .legend-dot--green {
-      background: #10b981;
-    }
+      .legend-dot--dark {
+        background: #2e2e38;
+      }
 
-    .legend-dot--orange {
-      background: #f59e0b;
-    }
+      .legend-dot--blue {
+        background: #3b82f6;
+      }
 
-    .legend-dot--purple {
-      background: #8b5cf6;
-    }
+      .legend-dot--green {
+        background: #10b981;
+      }
 
-    /* Area chart gradient style */
-    .legend-dot--yellow-area {
-      background: linear-gradient(180deg, rgba(255, 230, 0, 0.6) 0%, rgba(255, 230, 0, 0.2) 100%);
-    }
+      .legend-dot--orange {
+        background: #f59e0b;
+      }
 
-    .legend-label {
-      white-space: nowrap;
-    }
-  `],
+      .legend-dot--purple {
+        background: #8b5cf6;
+      }
+
+      /* Area chart gradient style */
+      .legend-dot--yellow-area {
+        background: linear-gradient(180deg, rgba(255, 230, 0, 0.6) 0%, rgba(255, 230, 0, 0.2) 100%);
+      }
+
+      .legend-label {
+        white-space: nowrap;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartsSectionComponent implements OnInit, OnChanges {
@@ -309,7 +306,7 @@ export class ChartsSectionComponent implements OnInit, OnChanges {
   readonly breakdownLegend = computed<LegendItem[]>(() => {
     const data = this.breakdownChart();
     if (!data) return [];
-    return data.items.map((item) => ({
+    return data.items.map(item => ({
       label: item.label,
       color: item.color || EY_CHART_COLORS.secondary,
       colorClass: '', // Use inline style for dynamic colors

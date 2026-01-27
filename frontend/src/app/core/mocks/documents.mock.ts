@@ -36,7 +36,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-FR-001',
     entityName: 'CCP 5 Paris Office SPV',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5FR-002',
@@ -56,7 +55,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-FR-001',
     entityName: 'CCP 5 Paris Office SPV',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5FR-003',
@@ -71,7 +69,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-FR-001',
     entityName: 'CCP 5 Paris Office SPV',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5FR-004',
@@ -116,7 +113,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-FR-001',
     entityName: 'CCP 5 Paris Office SPV',
-    serviceType: 'accounting',
   },
 
   // ==========================================
@@ -135,7 +131,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-DE-001',
     entityName: 'CCP 5 Munich Logistics PropCo',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5DE-002',
@@ -150,7 +145,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-DE-001',
     entityName: 'CCP 5 Munich Logistics PropCo',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5DE-003',
@@ -199,7 +193,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-NL-001',
     entityName: 'CCP 5 Amsterdam Retail BV',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5NL-002',
@@ -214,7 +207,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-NL-001',
     entityName: 'CCP 5 Amsterdam Retail BV',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-CCP5NL-003',
@@ -263,7 +255,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-EPISO6-LU-001',
     entityName: 'EPISO 6 Luxembourg HoldCo',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-EPISO6LU-002',
@@ -278,7 +269,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-EPISO6-LU-001',
     entityName: 'EPISO 6 Luxembourg HoldCo',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-EPISO6LU-003',
@@ -327,7 +317,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-EPISO6-ES-001',
     entityName: 'EPISO 6 Madrid Residential SL',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-EPISO6ES-002',
@@ -361,7 +350,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-EPISO6-IT-001',
     entityName: 'EPISO 6 Milan Mixed-Use Srl',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-EPISO6IT-002',
@@ -395,7 +383,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-EPISO6-BE-001',
     entityName: 'EPISO 6 Brussels Industrial SA',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-EPISO6BE-002',
@@ -451,7 +438,12 @@ export const MOCK_DOCUMENTS: Document[] = [
     name: 'TP_Documentation_EPISO6_2025.pdf',
     type: 'financial_statement',
     category: 'financial',
-    engagementIds: ['ENG-EPISO6-LU-001', 'ENG-EPISO6-ES-001', 'ENG-EPISO6-IT-001', 'ENG-EPISO6-BE-001'],
+    engagementIds: [
+      'ENG-EPISO6-LU-001',
+      'ENG-EPISO6-ES-001',
+      'ENG-EPISO6-IT-001',
+      'ENG-EPISO6-BE-001',
+    ],
     uploadedAt: '2026-01-20T14:00:00Z',
     status: 'pending',
     size: 5678901,
@@ -477,7 +469,6 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-CCP5-FR-001',
     entityName: 'CCP 5 Paris Office SPV',
-    serviceType: 'accounting',
   },
   {
     id: 'DOC-UNCL-002',
@@ -491,6 +482,5 @@ export const MOCK_DOCUMENTS: Document[] = [
     year: 2025,
     entityId: 'ENG-EPISO6-LU-001',
     entityName: 'EPISO 6 Luxembourg HoldCo',
-    serviceType: 'accounting',
   },
 ];

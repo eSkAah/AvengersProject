@@ -12,6 +12,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CHART_RENDER_DELAY_MS } from '../../../core/constants';
 import {
   Chart,
   ChartConfiguration,
@@ -64,62 +65,66 @@ export interface ChartClickEvent {
         <canvas #chartCanvas></canvas>
       }
       @if (sourceDocument) {
-        <div class="chart-source">
-          Source: {{ sourceDocument }}
-        </div>
+        <div class="chart-source">Source: {{ sourceDocument }}</div>
       }
     </div>
   `,
-  styles: [`
-    .bar-chart-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      min-height: 250px;
-    }
+  styles: [
+    `
+      .bar-chart-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 250px;
+      }
 
-    .bar-chart-container--loading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 20px;
-    }
+      .bar-chart-container--loading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 20px;
+      }
 
-    .chart-skeleton {
-      display: flex;
-      align-items: flex-end;
-      gap: 16px;
-      width: 100%;
-      height: 200px;
-    }
+      .chart-skeleton {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        width: 100%;
+        height: 200px;
+      }
 
-    .skeleton-bar {
-      flex: 1;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 50%, #F5F5F5 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-      border-radius: 4px 4px 0 0;
-    }
+      .skeleton-bar {
+        flex: 1;
+        background: linear-gradient(90deg, #f5f5f5 0%, #e5e5e5 50%, #f5f5f5 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+        border-radius: 4px 4px 0 0;
+      }
 
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
 
-    .chart-source {
-      position: absolute;
-      bottom: 4px;
-      right: 8px;
-      font-size: 11px;
-      color: #9CA3AF;
-      font-style: italic;
-    }
+      .chart-source {
+        position: absolute;
+        bottom: 4px;
+        right: 8px;
+        font-size: 11px;
+        color: #9ca3af;
+        font-style: italic;
+      }
 
-    canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  `],
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -202,8 +207,10 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
           borderRadius: 8,
           borderSkipped: false,
           hoverBackgroundColor: Array.isArray(ds.backgroundColor)
-            ? ds.backgroundColor.map(c => c === '#FFE600' ? '#FFD000' : c)
-            : (ds.backgroundColor === '#FFE600' ? '#FFD000' : ds.backgroundColor),
+            ? ds.backgroundColor.map(c => (c === '#FFE600' ? '#FFD000' : c))
+            : ds.backgroundColor === '#FFE600'
+              ? '#FFD000'
+              : ds.backgroundColor,
         };
       }),
     };
@@ -262,8 +269,8 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
           displayColors: true,
           usePointStyle: true,
           callbacks: {
-            title: (items) => items[0]?.label || '',
-            label: (context) => {
+            title: items => items[0]?.label || '',
+            label: context => {
               const value = context.parsed.y ?? context.parsed.x ?? 0;
               const formatted = new Intl.NumberFormat('en-US', {
                 style: 'currency',
@@ -318,7 +325,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
             },
             color: '#9CA3AF',
             padding: 12,
-            callback: (value) => {
+            callback: value => {
               if (typeof value === 'number') {
                 return new Intl.NumberFormat('en-US', {
                   notation: 'compact',
@@ -368,7 +375,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   private updateChart(): void {
     this.destroyChart();
     if (this.data && !this.loading) {
-      setTimeout(() => this.createChart(), 0);
+      setTimeout(() => this.createChart(), CHART_RENDER_DELAY_MS);
     }
   }
 
