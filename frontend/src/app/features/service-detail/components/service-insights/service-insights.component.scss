@@ -1011,27 +1011,21 @@ $transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
       padding-left: 12px;
       position: sticky;
       left: 0;
-      z-index: 30;
+      z-index: 65;
       background: $ey-dark;
     }
 
     &--sticky {
       position: sticky;
       left: 36px;
-      z-index: 30;
+      z-index: 60;
       background: $ey-dark;
       min-width: 200px;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: -8px;
-        width: 8px;
-        height: 100%;
-        background: linear-gradient(to right, rgba(0, 0, 0, 0.15), transparent);
-        pointer-events: none;
-      }
+      max-width: 220px;
+      padding-right: 16px;
+      overflow: hidden;
+      // Box-shadow mask to hide scrolling content
+      box-shadow: 20px 0 15px -5px $ey-dark;
     }
 
     &--actions {
@@ -1074,11 +1068,19 @@ $transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
     color: $text-primary;
     font-variant-numeric: tabular-nums;
     background: white;
-    // No position/z-index for regular cells - they stay in normal flow
+    // All non-sticky cells need position relative and low z-index
+    // so sticky columns appear on top when scrolling
+    position: relative;
+    z-index: 1;
+    // Clip content to prevent bleeding into sticky columns
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
 
     &--right {
       text-align: right;
       font-weight: 600;
+      max-width: none;
     }
 
     &--checkbox {
@@ -1087,6 +1089,7 @@ $transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
       left: 0;
       z-index: 10;
       background: white;
+      overflow: hidden;
 
       .mc-table__row:hover & {
         background: $surface-secondary;
@@ -1102,24 +1105,20 @@ $transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
       left: 36px;
       z-index: 10;
       background: white;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: -8px;
-        width: 8px;
-        height: 100%;
-        background: linear-gradient(to right, rgba(0, 0, 0, 0.1), transparent);
-        pointer-events: none;
-      }
+      padding-right: 16px;
+      overflow: hidden;
+      max-width: 220px;
+      // Box-shadow mask to hide scrolling content
+      box-shadow: 20px 0 15px -5px white;
 
       .mc-table__row:hover & {
         background: $surface-secondary;
+        box-shadow: 20px 0 15px -5px $surface-secondary;
       }
 
       .mc-table__row--selected & {
-        background: rgba($ey-yellow, 0.12) !important;
+        background: rgba($ey-yellow, 0.12);
+        box-shadow: 20px 0 15px -5px rgba($ey-yellow, 0.12);
       }
     }
 
