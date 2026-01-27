@@ -1039,8 +1039,9 @@ $transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
       position: sticky;
       right: 0;
-      z-index: 35; // Higher than all other columns
+      z-index: 40; // Higher than all other columns
       background: $ey-dark;
+      box-shadow: -4px 0 8px rgba(0, 0, 0, 0.15);
 
       &::before {
         content: '';
@@ -1124,10 +1125,12 @@ $transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
       position: sticky;
       right: 0;
-      z-index: 15; // Higher than left sticky columns
+      z-index: 25; // Higher than all other columns to prevent overlap
       background: white;
       // Clip content that might overflow from other cells
       overflow: hidden;
+      // Ensure button is always visible above cell content
+      box-shadow: -4px 0 8px rgba(0, 0, 0, 0.08);
 
       &::before {
         content: '';
